@@ -1,0 +1,13 @@
+-1: TRUE
+0: TRUE
+1: TRUE
+10: TRUE
+100000: TRUE
+0.5: 
+-0.5: 
+1.0: 
+.0: 
+: 
+1: TRUE
+NO ARGS: ❗  is-int: Argument $1 was not set. EXIT_CODE: 1
+

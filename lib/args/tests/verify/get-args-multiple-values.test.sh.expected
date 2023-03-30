@@ -1,0 +1,10 @@
+--int: -1
+--string: Value of --string
+1: path/to/file
+0: /path/to/file
+-s: Value of -s
+--optional: value
+-b: TRUE
+-c: TRUE
+-a: TRUE
+--flag: TRUE

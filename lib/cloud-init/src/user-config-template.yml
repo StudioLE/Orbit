@@ -1,0 +1,52 @@
+#cloud-config
+
+hostname: ${HOSTNAME}
+
+apt:
+  preserve_sources_list: true
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - qemu-guest-agent
+
+users:
+  - name: ${SUDO_USER}
+    groups: sudo
+    shell: /bin/bash
+    # TODO: Remove password
+    lock_passwd: false
+    plain_text_passwd: pw
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
+  - name: ${USER}
+    shell: /bin/bash
+    # TODO: Remove password
+    lock_passwd: false
+    plain_text_passwd: pw
+    ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
+
+write_files:
+
+  - path: /etc/ssh/sshd_config
+    append: true
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      Port ${SSH_PORT}
+
+  - path: /var/lib/cloud/scripts/per-instance/10-install-docker.sh
+    permissions: "0500"
+    content: ${INSTALL_DOCKER_CONTENT}
+
+  - path: /var/lib/cloud/scripts/per-instance/20-install-cri-dockerd.sh
+    permissions: "0500"
+    content: ${INSTALL_CRI_DOCKERD_CONTENT}
+
+  - path: /var/lib/cloud/scripts/per-instance/30-install-kubernetes.sh
+    permissions: "0500"
+    content: ${INSTALL_KUBERNETES_CONTENT}
+
+bootcmd: ${BOOTCMD_CONTENT}
+
+runcmd: ${RUNCMD_CONTENT}

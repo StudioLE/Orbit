@@ -1,0 +1,53 @@
+#!/bin/bash
+set -euo pipefail
+
+# IMPORTS
+
+source /srv/lib/args/get-args.sh
+source /srv/lib/args/get-arg.sh
+source /srv/lib/args/echo-args.sh
+
+# ARGS
+
+get-args "$@"
+
+declare TEST_FILE
+TEST_FILE=$(get-arg "0")
+
+# START
+
+declare USAGE="$0 [<TEST_FILE>|--all] [--update]"
+
+if [[ $(get-arg --help) != "" ]]
+then
+
+  echo "Usage: ${USAGE}"
+
+elif [[ $(get-arg --update) != "" && $(get-arg --all) != "" ]]
+then
+
+  /srv/lib/test/update-all-tests.sh
+
+elif [[ $(get-arg --update) != "" && "${TEST_FILE}" != "" ]]
+then
+
+  /srv/lib/test/update-test.sh "${TEST_FILE}"
+
+elif [[ $(get-arg --all) != "" ]]
+then
+
+  /srv/lib/test/run-all-tests.sh
+
+elif [[ "${TEST_FILE}" != "" ]]
+then
+
+  /srv/lib/test/run-test.sh "${TEST_FILE}"
+
+else
+
+  echo "❗  Invalid usage." >&2
+  echo-args "$@"
+  echo "Usage: ${USAGE}"
+  exit 1
+
+fi

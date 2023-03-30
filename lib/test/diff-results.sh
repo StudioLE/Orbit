@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euo pipefail
+
+# ARGS
+
+EXPECTED_FILE=${1}
+ACTUAL_FILE=${2}
+
+# START
+
+colordiff --side-by-side --report-identical-files "${EXPECTED_FILE}" "${ACTUAL_FILE}"
