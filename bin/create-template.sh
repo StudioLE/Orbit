@@ -17,7 +17,7 @@ wget https://launchpad.net/~${LAUNCHPAD_ID}/+sshkeys -O ./keys
 # See: https://www.techbythenerd.com/posts/using-launchpad-for-ssh-keys/
 
 echo "[*] Download the Ubuntu 'cloud image'"
-wget https://cloud-images.ubuntu.com/${UBUNTU_DISTRO}/current/${UBUNTU_DISTRO}-server-cloudimg-amd64.img
+# wget https://cloud-images.ubuntu.com/${UBUNTU_DISTRO}/current/${UBUNTU_DISTRO}-server-cloudimg-amd64.img
 
 echo "[*] From the same command-line, create a virtual machine:"
 qm create ${VM_ID} --memory ${MEM_SIZE} --name ubuntu-cloud-${UBUNTU_DISTRO} --net0 virtio,bridge=vmbr0
@@ -38,7 +38,8 @@ echo "[*] Add support for VNC and a serial console:"
 qm set ${VM_ID} --serial0 socket --vga serial0
 
 echo "[*] Set other template variables"
-qm set ${VM_ID} --ciuser ${CI_USERNAME} --cipassword ${CI_PASSWORD} --cores ${CORES} --searchdomain ${SEARCH_DOMAIN} --sshkeys ${SSH_KEYS} --description "Virtual machine based on the Ubuntu '${UBUNTU_DISTRO}' Cloud image." --ipconfig0 ip=dhcp --onboot 1 --ostype l26 --agent 1
+# qm set ${VM_ID} --ciuser ${CI_USERNAME} --cipassword ${CI_PASSWORD} --cores ${CORES} --searchdomain ${SEARCH_DOMAIN} --sshkeys ${SSH_KEYS} --description "Virtual machine based on the Ubuntu '${UBUNTU_DISTRO}' Cloud image." --ipconfig0 ip=dhcp --onboot 1 --ostype l26 --agent 1
+qm set <vmid> --cicustom "user=local:snippets/user-data.yml"
 
 echo "[*] Resize boot disk to ${DISK_SIZE}B"
 qm resize ${VM_ID} scsi0 ${DISK_SIZE}
@@ -46,5 +47,5 @@ qm resize ${VM_ID} scsi0 ${DISK_SIZE}
 echo "[*] Convert VM to a template"
 qm template ${VM_ID}
 
-rm ./keys
+# rm ./keys
 echo "[+] Done."

@@ -5,9 +5,27 @@
 {% set DOCKER_USER = "stivisto" %}
 {% set SUDO_USER = "radiko" %}
 {% set SSH_PORT = "4444" %}
+{% set VM_ID = "201" %}
 
 # Jinga shell shortcuts
 {% set RUN_AS_DOCKER_USER = "ssh " ~ DOCKER_USER ~ "@localhost -p " ~ SSH_PORT ~ " -o StrictHostKeyChecking=no" %}
+
+network:
+  version: 2
+  ethernets:
+    eth0:
+      addresses:
+        - 10.10.10.201/24
+      nameservers:
+        addresses:
+          - 10.10.10.1
+          - 1.1.1.1
+          - 213.186.33.99
+        search:
+          - local
+      routes:
+        - to: default
+          via: 10.10.10.1
 
 apt:
   preserve_sources_list: true
