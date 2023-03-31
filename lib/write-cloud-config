@@ -53,9 +53,9 @@ sed -i 's/${GATEWAY_IP}/'${GATEWAY_IP}'/' ${CONFIG_FILE}
 sed -i 's/${SSH_PORT}/'${SSH_PORT}'/' ${CONFIG_FILE}
 sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}
 sed -i 's/${SUDO_USER}/'${SUDO_USER}'/' ${CONFIG_FILE}
-"${DIR}/bin/replace-ssh-authorized-keys" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub"
-"${DIR}/bin/replace-cmd" ${CONFIG_FILE} "${DIR}/vm/src/bootcmd.sh" "\${BOOTCMD_CONTENT}"
-"${DIR}/bin/replace-cmd" ${CONFIG_FILE} "${DIR}/vm/src/runcmd.sh" "\${RUNCMD_CONTENT}"
+"${DIR}/lib/replace-ssh-authorized-keys" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub"
+"${DIR}/lib/replace-cmd" ${CONFIG_FILE} "${DIR}/vm/src/bootcmd.sh" "\${BOOTCMD_CONTENT}"
+"${DIR}/lib/replace-cmd" ${CONFIG_FILE} "${DIR}/vm/src/runcmd.sh" "\${RUNCMD_CONTENT}"
 
 #cp ${CONFIG_FILE} /var/lib/vz/snippets/
 
