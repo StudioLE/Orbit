@@ -5,7 +5,7 @@
 {% set DOCKER_USER = "stivisto" %}
 {% set SUDO_USER = "radiko" %}
 {% set SSH_PORT = "4444" %}
-{% set VM_ID = "205" %}
+{% set VM_ID = "206" %}
 {% set SSH_AUTHORIZED_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBBCUt4uHcGH8b4xf8aJSCvg3EXW5Pom0LyV7ll5EQTYmDux/B7CWh+W8C7xMZzKAspat/uyXe2lsCzN6ruwZHbtms0T3M6hxygUv7xkZlKnPlfLXmvjleLZj5PmehAZay1o3rIFvxw57uq0kxzJasqzutHpA3i9+l1occoj8Xp/MT/FT3kglg40ZLReOjOC9ZcsIm/KATuvU0T/xprVE0nAwSgt5oz1ueWG4KnE2HmszHPSfSZgq5Zxzhnvn+CnJ/sM7oqYik28QvzTYMg9a7u98NoZXeNJzXsqies6VlwL6Q5Qvzl0IV8IwlLXvquQwEBITdYJCEf9la2i/4qUsN root@saturn" %}
 
 # Jinga shell shortcuts
