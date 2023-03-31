@@ -1,22 +1,5 @@
 #cloud-config
 
-network:
-  version: 2
-  ethernets:
-    eth0:
-      addresses:
-        - ${VM_IP}/24
-      nameservers:
-        addresses:
-          - 10.10.10.1
-          - 1.1.1.1
-          - 1.0.0.1
-        search:
-          - local
-      routes:
-        - to: default
-          via: ${GATEWAY_IP}
-
 # apt:
 #   preserve_sources_list: true
 

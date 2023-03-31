@@ -95,10 +95,14 @@ echo "##### Add a CD-ROM for cloud-init"
 qm set ${ID} --ide2 ${STORAGE_NAME}:cloudinit
 
 echo "##### Set cloud-init"
-qm set ${ID} --cicustom "user=local:snippets/${ID}-config.yml"
+qm set ${ID} --cicustom \
+    "network=local:snippets/${ID}-network-config.yml,user=local:snippets/${ID}-user-config.yml"
 
-echo "##### Write cloud-init"
-"${DIR}/lib/write-config" ${ID} "/var/lib/vz/snippets/${ID}-config.yml"
+echo "##### Write user config"
+"${DIR}/lib/write-user-config" ${ID} "/var/lib/vz/snippets/${ID}-user-config.yml"
+
+echo "##### Write network config"
+"${DIR}/lib/write-network-config" ${ID} "/var/lib/vz/snippets/${ID}-network-config.yml"
 
 echo "##### Resize boot disk"
 qm disk resize ${ID} scsi0 ${DISK_SIZE}
