@@ -47,15 +47,13 @@ users:
     groups: sudo
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh_authorized_keys:
-      - ${SSH_AUTHORIZED_KEY}
+    ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
   - name: ${USER}
     shell: /bin/bash
     # TODO: Remove password
     lock_passwd: false
     plain_text_passwd: password
-    ssh_authorized_keys:
-      - ${SSH_AUTHORIZED_KEY}
+    ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
 
 runcmd:
   - sh /root/runcmd.sh

@@ -5,10 +5,10 @@ set -e
 
 # ARGS
 SOURCE_FILE=${1}
+INSERT_FROM_FILE=${2}
 
 # CONSTANTS
-FIND="$"
-INSERT_FROM_FILE=include
+FIND="\${SSH_AUTHORIZED_KEYS}"
 
 # VALIDATE
 
@@ -23,7 +23,7 @@ INSERT=""
 
 while read line;
 do
-  INSERT="$INSERT"$'\n'"   - $line"
+  INSERT="$INSERT"$'\n'"      - $line"
 done < "${INSERT_FROM_FILE}"
 
 # echo "$INSERT"

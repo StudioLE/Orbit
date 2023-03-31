@@ -55,7 +55,7 @@ sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}
 sed -i 's/${SUDO_USER}/'${SUDO_USER}'/' ${CONFIG_FILE}
 # sed -i 's/${BOOTCMD_CONTENT}/'${BOOTCMD_CONTENT}'/' ${CONFIG_FILE}
 # sed -i 's/${RUNCMD_CONTENT}/'${RUNCMD_CONTENT}'/' ${CONFIG_FILE}
-sh "${DIR}/bin/replace-ssh-authorized-keys.sh" ${CONFIG_FILE}
+"${DIR}/bin/replace-ssh-authorized-keys" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub"
 
 
 
