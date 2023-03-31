@@ -5,7 +5,8 @@
 {% set DOCKER_USER = "stivisto" %}
 {% set SUDO_USER = "radiko" %}
 {% set SSH_PORT = "4444" %}
-{% set VM_ID = "201" %}
+{% set VM_ID = "205" %}
+{% set SSH_AUTHORIZED_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBBCUt4uHcGH8b4xf8aJSCvg3EXW5Pom0LyV7ll5EQTYmDux/B7CWh+W8C7xMZzKAspat/uyXe2lsCzN6ruwZHbtms0T3M6hxygUv7xkZlKnPlfLXmvjleLZj5PmehAZay1o3rIFvxw57uq0kxzJasqzutHpA3i9+l1occoj8Xp/MT/FT3kglg40ZLReOjOC9ZcsIm/KATuvU0T/xprVE0nAwSgt5oz1ueWG4KnE2HmszHPSfSZgq5Zxzhnvn+CnJ/sM7oqYik28QvzTYMg9a7u98NoZXeNJzXsqies6VlwL6Q5Qvzl0IV8IwlLXvquQwEBITdYJCEf9la2i/4qUsN root@saturn" %}
 
 # Jinga shell shortcuts
 {% set RUN_AS_DOCKER_USER = "ssh " ~ DOCKER_USER ~ "@localhost -p " ~ SSH_PORT ~ " -o StrictHostKeyChecking=no" %}
@@ -50,20 +51,26 @@ users:
     groups: sudo
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - {{ SSH_AUTHORIZED_KEY }}
   - name: {{ DOCKER_USER }}
     shell: /bin/bash
+    lock_passwd: false
+    plain_text_passwd: password
+    ssh_authorized_keys:
+      - {{ SSH_AUTHORIZED_KEY }}
+
 
 runcmd:
   # Display variables
-  - echo "DOCKER_USER = {{ DOCKER_USER }}"
-  - echo "SUDO_USER = {{ SUDO_USER }}"
-  - echo "SSH_PORT = {{ SSH_PORT }}"
-  - echo "VOLUME_ID = {{ VOLUME_ID }}"
-  - echo "VOLUME_FILE_SYSTEM = {{ VOLUME_FILE_SYSTEM }}"
+  - echo 'DOCKER_USER = {{ DOCKER_USER }}'
+  - echo 'SUDO_USER = {{ SUDO_USER }}'
+  - echo 'SSH_PORT = {{ SSH_PORT }}'
+  - echo 'VM_ID = {{ VM_ID }}'
 
   # Generate ssh key for root
   - < /dev/zero ssh-keygen -t ed25519 -q -N ''
-  - echo ""
+  - echo ''
   - cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
 
   # Copy root ssh keys to new users
@@ -85,8 +92,8 @@ runcmd:
   - sed -i '1iexport DOCKER_HOST=unix:///run/user/1001/docker.sock' /home/{{ DOCKER_USER }}/.bashrc
 
   # Setup docker
-    - {{ RUN_AS_DOCKER_USER }} 'systemctl --user enable docker'
-    - loginctl enable-linger {{ DOCKER_USER }}
+  - {{ RUN_AS_DOCKER_USER }} 'systemctl --user enable docker'
+  - loginctl enable-linger {{ DOCKER_USER }}
 
   # Install docker-compose as {{ DOCKER_USER }}
   # - su - {{ DOCKER_USER }}

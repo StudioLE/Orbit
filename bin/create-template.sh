@@ -1,8 +1,8 @@
-VM_ID="111"
+VM_ID="299"
 UBUNTU_DISTRO="jammy"
 MEM_SIZE="8192"
 CORES="4"
-DISK_SIZE="50GB"
+DISK_SIZE="50G"
 STORAGE_NAME="local"
 CI_USERNAME="le"
 CI_PASSWORD="le"
@@ -39,7 +39,7 @@ qm set ${VM_ID} --serial0 socket --vga serial0
 
 echo "[*] Set other template variables"
 # qm set ${VM_ID} --ciuser ${CI_USERNAME} --cipassword ${CI_PASSWORD} --cores ${CORES} --searchdomain ${SEARCH_DOMAIN} --sshkeys ${SSH_KEYS} --description "Virtual machine based on the Ubuntu '${UBUNTU_DISTRO}' Cloud image." --ipconfig0 ip=dhcp --onboot 1 --ostype l26 --agent 1
-qm set <vmid> --cicustom "user=local:snippets/user-data.yml"
+qm set ${VM_ID} --cicustom "user=local:snippets/cloud-config.yml"
 
 echo "[*] Resize boot disk to ${DISK_SIZE}B"
 qm resize ${VM_ID} scsi0 ${DISK_SIZE}
