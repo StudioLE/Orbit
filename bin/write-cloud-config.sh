@@ -1,0 +1,63 @@
+# ARGS
+
+VM_ID="${1}"
+
+# CONSTANTS
+
+DIR="/root/infrastructure"
+CONFIG_SRC="${DIR}/vm/src/cloud-config-template.yml"
+CONFIG_FILE="${DIR}/vm/dist/vm-${VM_ID}-cloud-config.yml"
+BOOTCMD_FILE="${DIR}/vm/src/bootcmd.sh"
+RUNCMD_FILE="${DIR}/vm/src/runcmd.sh"
+
+VM_IP="10.10.10.${VM_ID}"
+GATEWAY_IP="10.10.10.1"
+SSH_PORT="4444"
+USER="stivisto"
+SUDO_USER="radiko"
+BOOTCMD_CONTENT=$(cat ${BOOTCMD_FILE})
+RUNCMD_CONTENT=$(cat ${RUNCMD_FILE})
+
+# VALIDATE
+
+if [ "${VM_ID}" = "" ] || [ "${VM_ID}" -lt "100" ] || ["${VM_ID}" -gt "253" ]; then
+    echo "ERROR: Invalid VM_ID: ${VM_ID}"
+    exit 1
+fi
+
+# OUTPUT
+
+echo "DIR: ${DIR}"
+echo "CONFIG_SRC: ${CONFIG_SRC}"
+echo "CONFIG_FILE: ${CONFIG_FILE}"
+
+echo "VM_ID: ${VM_ID}"
+echo "VM_IP: ${VM_IP}"
+echo "GATEWAY_IP: ${GATEWAY_IP}"
+echo "SSH_PORT: ${SSH_PORT}"
+echo "USER: ${USER}"
+echo "SUDO_USER: ${SUDO_USER}"
+
+# START
+
+# Exit on failure
+set -e
+
+echo "##### Copy cloud config"
+cp ${CONFIG_SRC}  ${CONFIG_FILE}
+
+echo "##### Set cloud config variables"
+sed -i 's/${VM_ID}/'${VM_ID}'/' ${CONFIG_FILE} 
+sed -i 's/${VM_IP}/'${VM_IP}'/' ${CONFIG_FILE} 
+sed -i 's/${GATEWAY_IP}/'${GATEWAY_IP}'/' ${CONFIG_FILE}
+sed -i 's/${SSH_PORT}/'${SSH_PORT}'/' ${CONFIG_FILE}
+sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}
+sed -i 's/${SUDO_USER}/'${SUDO_USER}'/' ${CONFIG_FILE}
+# sed -i 's/${BOOTCMD_CONTENT}/'${BOOTCMD_CONTENT}'/' ${CONFIG_FILE}
+# sed -i 's/${RUNCMD_CONTENT}/'${RUNCMD_CONTENT}'/' ${CONFIG_FILE}
+sh "${DIR}/bin/replace-ssh-authorized-keys.sh" ${CONFIG_FILE}
+
+
+
+#cp ${CONFIG_FILE} /var/lib/vz/snippets/
+

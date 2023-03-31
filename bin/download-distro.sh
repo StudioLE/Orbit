@@ -1,0 +1,29 @@
+# ARGS
+
+VERSION="${1}"
+
+# CONSTANTS
+
+FILENAME="${VERSION}-server-cloudimg-amd64.img"
+URL="https://cloud-images.ubuntu.com/${VERSION}/current/${FILENAME}"
+
+# VALIDATE
+
+if [ "${VERSION}" = "" ]; then
+    echo "ERROR: Argument 1 (VERSION) was not provided. Try calling with: jammy"
+    exit 1
+fi
+
+# OUTPUT
+
+echo "VERSION: ${VERSION}"
+echo "FILENAME: ${FILENAME}"
+echo "URL: ${URL}"
+
+# START
+
+# Exit on failure
+set -e
+
+echo "##### Download the Ubuntu cloud image"
+wget ${URL}

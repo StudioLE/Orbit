@@ -1,0 +1,68 @@
+#cloud-config
+
+network:
+  version: 2
+  ethernets:
+    eth0:
+      addresses:
+        - ${VM_IP}/24
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 1.0.0.1
+        search:
+          - local
+      routes:
+        - to: default
+          via: ${GATEWAY_IP}
+
+# apt:
+#   preserve_sources_list: true
+
+# package_update: true
+# package_upgrade: true
+# package_reboot_if_required: true
+
+# packages:
+#   - uidmap
+
+write_files:
+  - path: /etc/ssh/sshd_config
+    append: true
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      Port ${SSH_PORT}
+
+write_files:
+  - path: /root/bootcmd.sh
+    content: ${BOOTCMD_CONTENT}
+
+write_files:
+  - path: /root/runcmd.sh
+    content: ${RUNCMD_CONTENT}
+
+users:
+  - name: ${SUDO_USER}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ${SSH_AUTHORIZED_KEY}
+  - name: ${USER}
+    shell: /bin/bash
+    # TODO: Remove password
+    lock_passwd: false
+    plain_text_passwd: password
+    ssh_authorized_keys:
+      - ${SSH_AUTHORIZED_KEY}
+
+runcmd:
+  - sh /root/runcmd.sh
+
+bootcmd:
+  - sh /root/bootcmd.sh
+
+# power_state:
+#   mode: reboot
+#   message: "Time for a fresh start"
