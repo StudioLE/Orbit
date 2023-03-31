@@ -8,4 +8,4 @@ set -e
 echo "##### Executing runcmd"
 
 echo "##### Restart SSH"
-restart ssh
+systemctl restart ssh
