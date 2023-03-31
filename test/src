@@ -1,7 +1,0 @@
-example:
-  test: yes
-  hello: REPLACE_ME
-after:
-  nope: ok
-  alt: REPLACE_ME
-  nope: ok
