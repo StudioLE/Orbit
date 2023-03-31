@@ -21,7 +21,7 @@ SUDO_USER="radiko"
 
 # VALIDATE
 
-if [ "${VM_ID}" = "" ] || [ "${VM_ID}" -lt "100" ] || ["${VM_ID}" -gt "253" ]; then
+if [ "${VM_ID}" = "" || "${VM_ID}" -lt "100" || "${VM_ID}" -gt "253" ]; then
     echo "ERROR: Invalid VM_ID: ${VM_ID}"
     exit 1
 fi

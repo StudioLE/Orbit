@@ -88,9 +88,6 @@ qm set ${ID} \
 echo "##### Specify the boot disk"
 qm set ${ID} --boot c --bootdisk scsi0
 
-echo "##### Resize boot disk"
-qm resize ${ID} scsi0 ${DISK_SIZE}
-
 echo "##### Add support for VNC and a serial console"
 qm set ${ID} --serial0 socket --vga serial0
 
@@ -101,4 +98,7 @@ echo "##### Set cloud-init"
 qm set ${ID} --cicustom "user=local:snippets/${ID}-config.yml"
 
 echo "##### Write cloud-init"
-"${DIR}/lib/write-cloud-config" ${ID} "/var/lib/vz/snippets/${ID}-config.yml"
+"${DIR}/lib/write-config" ${ID} "/var/lib/vz/snippets/${ID}-config.yml"
+
+echo "##### Resize boot disk"
+qm disk resize ${ID} scsi0 ${DISK_SIZE}

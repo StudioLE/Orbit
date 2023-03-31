@@ -9,11 +9,12 @@ TYPE="C1"
 MEMORY="8"
 CORES="4"
 DISK_SIZE="50"
-IMG_FILE="${VERSION}-server-cloudimg-amd64.img"
+IMG_FILE="jammy-server-cloudimg-amd64.img"
 
 # CONSTANTS
 
 DIR="/root/infrastructure"
+IMG_FILE="${DIR}/artifacts/${IMG_FILE}"
 
 # START
 
