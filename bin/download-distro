@@ -9,6 +9,7 @@ VERSION="${1}"
 
 # CONSTANTS
 
+DIR="/root/infrastructure"
 FILENAME="${VERSION}-server-cloudimg-amd64.img"
 URL="https://cloud-images.ubuntu.com/${VERSION}/current/${FILENAME}"
 
@@ -28,4 +29,4 @@ echo "URL: ${URL}"
 # START
 
 echo "##### Download the Ubuntu cloud image"
-wget ${URL}
+curl -O --output-dir "${DIR}/artifacts/" ${URL}
