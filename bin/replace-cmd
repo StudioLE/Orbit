@@ -6,9 +6,9 @@ set -e
 # ARGS
 SOURCE_FILE=${1}
 INSERT_FROM_FILE=${2}
+FIND=${3}
 
 # CONSTANTS
-FIND="\${SSH_AUTHORIZED_KEYS}"
 TEMP_FILE=$(mktemp)
 
 # VALIDATE
@@ -20,11 +20,11 @@ fi
 
 # START
 
-INSERT=""
+INSERT="|"
 
 while read line;
 do
-  INSERT="$INSERT"$'\n'"      - $line"
+  INSERT="$INSERT"$'\n'"      $line"
 done < "${INSERT_FROM_FILE}"
 
 # echo "$INSERT"
