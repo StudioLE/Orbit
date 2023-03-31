@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
 # ARGS
 
 VERSION="${1}"
@@ -14,7 +19,8 @@ DISK_SIZE="50G"
 
 # VALIDATE
 
-if [ "${VM_ID}" = "" |  "${VM_ID}" -lt "100" | "${VM_ID}" -gt "253" ]; then
+if [ "${VM_ID}" = "" |  "${VM_ID}" -lt "100" | "${VM_ID}" -gt "253" ];
+then
     echo "ERROR: Invalid VM_ID: ${VM_ID}"
     exit 1
 fi
@@ -30,9 +36,6 @@ echo "CORES: ${CORES}"
 echo "DISK_SIZE: ${DISK_SIZE}"
 
 # START
-
-# Exit on failure
-set -e
 
 echo "##### Create a virtual machine:"
 qm create ${VM_ID} --memory ${MEM_SIZE} --name ubuntu-cloud-${UBUNTU_DISTRO} --net0 virtio,bridge=vmbr0

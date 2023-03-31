@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+# ARGS
+SOURCE_FILE=${1}
+
+# CONSTANTS
+FIND="$"
+INSERT_FROM_FILE=include
+
+# VALIDATE
+
+if [ "${SOURCE_FILE}" = "" ]; then
+    echo "ERROR: Invalid SOURCE_FILE: ${SOURCE_FILE}"
+    exit 1
+fi
+
+# START
+
+INSERT=""
+
+while read line;
+do
+  INSERT="$INSERT"$'\n'"   - $line"
+done < "${INSERT_FROM_FILE}"
+
+# echo "$INSERT"
+
+# Loop through each line of the source file and replace occurances
+while IFS= read -r line;
+do
+  if [[ $line == *"$FIND"* ]];
+  then
+    echo "${line/$FIND/$INSERT}"
+  else
+    echo "${line}"
+  fi
+done < "${SOURCE_FILE}"

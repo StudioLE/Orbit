@@ -1,4 +1,7 @@
-# ARGS
+#!/bin/bash
+
+# Exit on failure
+set -e
 
 VM_ID="${1}"
 
@@ -39,9 +42,6 @@ echo "USER: ${USER}"
 echo "SUDO_USER: ${SUDO_USER}"
 
 # START
-
-# Exit on failure
-set -e
 
 echo "##### Copy cloud config"
 cp ${CONFIG_SRC}  ${CONFIG_FILE}

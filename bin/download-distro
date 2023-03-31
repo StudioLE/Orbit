@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
 # ARGS
 
 VERSION="${1}"
@@ -21,9 +26,6 @@ echo "FILENAME: ${FILENAME}"
 echo "URL: ${URL}"
 
 # START
-
-# Exit on failure
-set -e
 
 echo "##### Download the Ubuntu cloud image"
 wget ${URL}
