@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+apt-get install python3-pip -y

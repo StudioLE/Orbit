@@ -35,11 +35,13 @@ write_files:
       Port ${SSH_PORT}
 
 write_files:
-  - path: /root/bootcmd.sh
+  - path: /root/bootcmd
+    permissions: "0500"
     content: ${BOOTCMD_CONTENT}
 
 write_files:
-  - path: /root/runcmd.sh
+  - path: /root/runcmd
+    permissions: "0500"
     content: ${RUNCMD_CONTENT}
 
 users:
@@ -56,10 +58,10 @@ users:
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
 
 runcmd:
-  - sh /root/runcmd.sh
+  - /root/runcmd
 
 bootcmd:
-  - sh /root/bootcmd.sh
+  - /root/bootcmd
 
 # power_state:
 #   mode: reboot
