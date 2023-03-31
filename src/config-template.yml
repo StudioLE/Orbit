@@ -8,6 +8,7 @@ network:
         - ${VM_IP}/24
       nameservers:
         addresses:
+          - 10.10.10.1
           - 1.1.1.1
           - 1.0.0.1
         search:
@@ -33,13 +34,9 @@ write_files:
       PermitRootLogin no
       PasswordAuthentication no
       Port ${SSH_PORT}
-
-write_files:
   - path: /root/bootcmd
     permissions: "0500"
     content: ${BOOTCMD_CONTENT}
-
-write_files:
   - path: /root/runcmd
     permissions: "0500"
     content: ${RUNCMD_CONTENT}
@@ -48,13 +45,16 @@ users:
   - name: ${SUDO_USER}
     groups: sudo
     shell: /bin/bash
-    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    # TODO: Remove password
+    lock_passwd: false
+    plain_text_passwd: pw
+    sudo: true
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
   - name: ${USER}
     shell: /bin/bash
     # TODO: Remove password
     lock_passwd: false
-    plain_text_passwd: password
+    plain_text_passwd: pw
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
 
 runcmd:
