@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+CONFIG_FILE="${1}"
+HOSTNAME="${2}"
+
+# CONSTANTS
+
+CONFIG_SRC="/srv/src/meta-config-template.yml"
+SERVER_HOSTNAME=$(hostname)
+
+# VALIDATE
+
+if [[ "${HOSTNAME}" = "" ]];
+then
+    echo "ERROR: Invalid HOSTNAME: ${HOSTNAME}"
+    exit 1
+fi
+
+# START
+
+cp ${CONFIG_SRC}  ${CONFIG_FILE}
+sed -i 's/${HOSTNAME}/'${HOSTNAME}'/' ${CONFIG_FILE}
+sed -i 's/${SERVER_HOSTNAME}/'${SERVER_HOSTNAME}'/' ${CONFIG_FILE}

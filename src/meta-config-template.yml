@@ -1,0 +1,9 @@
+#cloud-config
+
+dsmode: local
+
+v1:
+  cloud_name: "proxmox"
+  dsmode: local
+  local_hostname: ${HOSTNAME}
+  region: ${SERVER_HOSTNAME}
