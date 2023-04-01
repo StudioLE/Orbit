@@ -64,15 +64,6 @@ then
     TAGS="unknown"
 fi
 
-# OUTPUT
-
-echo "IMG_FILE: ${IMG_FILE}"
-echo "ID: ${ID}"
-echo "STORAGE_NAME: ${STORAGE_NAME}"
-echo "MEMORY: ${MEMORY}"
-echo "CORES: ${CORES}"
-echo "DISK_SIZE: ${DISK_SIZE}"
-
 # START
 
 echo "##### Create a virtual machine"

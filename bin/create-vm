@@ -22,5 +22,4 @@ IMG_FILE="/srv/artifacts/${IMG_FILE}"
 
 # START
 
-echo "##### Create a virtual machine"
 "/srv/lib/create-proxmox-vm" ${MEMORY} ${CORES} ${DISK_SIZE} ${IMG_FILE} ${NAME} ${TAGS}

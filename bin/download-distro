@@ -19,13 +19,6 @@ if [ "${VERSION}" = "" ]; then
     exit 1
 fi
 
-# OUTPUT
-
-echo "VERSION: ${VERSION}"
-echo "FILENAME: ${FILENAME}"
-echo "URL: ${URL}"
-
 # START
 
-echo "##### Download the Ubuntu cloud image"
 curl -O --output-dir "/srv/artifacts/" ${URL}

@@ -24,19 +24,8 @@ then
     exit 1
 fi
 
-# OUTPUT
-
-echo "CONFIG_SRC: ${CONFIG_SRC}"
-echo "CONFIG_FILE: ${CONFIG_FILE}"
-
-echo "HOSTNAME: ${HOSTNAME}"
-echo "USER: ${USER}"
-echo "SUDO_USER: ${SUDO_USER}"
-echo "SSH_PORT: ${SSH_PORT}"
-
 # START
 
-echo "##### Set network config variables"
 cp ${CONFIG_SRC}  ${CONFIG_FILE}
 sed -i 's/${HOSTNAME}/'${HOSTNAME}'/' ${CONFIG_FILE}
 sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}

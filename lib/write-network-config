@@ -21,18 +21,8 @@ then
     exit 1
 fi
 
-# OUTPUT
-
-echo "CONFIG_SRC: ${CONFIG_SRC}"
-echo "CONFIG_FILE: ${CONFIG_FILE}"
-
-echo "VM_ID: ${VM_ID}"
-echo "VM_IP: ${VM_IP}"
-echo "GATEWAY_IP: ${GATEWAY_IP}"
-
 # START
 
-echo "##### Set network config variables"
 cp ${CONFIG_SRC}  ${CONFIG_FILE}
 sed -i 's/${VM_IP}/'${VM_IP}'/' ${CONFIG_FILE}
 sed -i 's/${GATEWAY_IP}/'${GATEWAY_IP}'/' ${CONFIG_FILE}
