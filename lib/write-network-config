@@ -8,8 +8,7 @@ VM_ID="${2}"
 
 # CONSTANTS
 
-DIR="/root/infrastructure"
-CONFIG_SRC="${DIR}/src/network-config-template.yml"
+CONFIG_SRC="/srv/src/network-config-template.yml"
 
 VM_IP="10.10.10.${VM_ID}"
 GATEWAY_IP="10.10.10.1"
@@ -24,7 +23,6 @@ fi
 
 # OUTPUT
 
-echo "DIR: ${DIR}"
 echo "CONFIG_SRC: ${CONFIG_SRC}"
 echo "CONFIG_FILE: ${CONFIG_FILE}"
 

@@ -8,10 +8,9 @@ HOSTNAME="${2}"
 
 # CONSTANTS
 
-DIR="/root/infrastructure"
-CONFIG_SRC="${DIR}/src/user-config-template.yml"
-BOOTCMD_FILE="${DIR}/src/bootcmd"
-RUNCMD_FILE="${DIR}/src/runcmd"
+CONFIG_SRC="/srv/src/user-config-template.yml"
+BOOTCMD_FILE="/srv/src/bootcmd"
+RUNCMD_FILE="/srv/src/runcmd"
 
 USER="stivisto"
 SUDO_USER="radiko"
@@ -27,7 +26,6 @@ fi
 
 # OUTPUT
 
-echo "DIR: ${DIR}"
 echo "CONFIG_SRC: ${CONFIG_SRC}"
 echo "CONFIG_FILE: ${CONFIG_FILE}"
 
@@ -43,7 +41,7 @@ cp ${CONFIG_SRC}  ${CONFIG_FILE}
 sed -i 's/${HOSTNAME}/'${HOSTNAME}'/' ${CONFIG_FILE}
 sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}
 sed -i 's/${SUDO_USER}/'${SUDO_USER}'/' ${CONFIG_FILE}
-"${DIR}/lib/replace-ssh-authorized-keys" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub"
+"/srv/lib/replace-ssh-authorized-keys" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub"
 sed -i 's/${SSH_PORT}/'${SSH_PORT}'/' ${CONFIG_FILE}
-"${DIR}/lib/replace-cmd" ${CONFIG_FILE} "${BOOTCMD_FILE}" "\${BOOTCMD_CONTENT}"
-"${DIR}/lib/replace-cmd" ${CONFIG_FILE} "${RUNCMD_FILE}" "\${RUNCMD_CONTENT}"
+"/srv/lib/replace-cmd" ${CONFIG_FILE} "${BOOTCMD_FILE}" "\${BOOTCMD_CONTENT}"
+"/srv/lib/replace-cmd" ${CONFIG_FILE} "${RUNCMD_FILE}" "\${RUNCMD_CONTENT}"

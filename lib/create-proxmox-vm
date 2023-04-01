@@ -14,7 +14,6 @@ TAGS=${6}
 
 # CONSTANTS
 
-DIR="/root/infrastructure"
 ID=$(pvesh get /cluster/nextid)
 HOSTNAME="vm${ID}"
 STORAGE_NAME="local"
@@ -104,10 +103,10 @@ qm set ${ID} --cicustom \
     "network=local:snippets/${ID}-network-config.yml,user=local:snippets/${ID}-user-config.yml"
 
 echo "##### Write user config"
-"${DIR}/lib/write-user-config" "/var/lib/vz/snippets/${ID}-user-config.yml" ${HOSTNAME} 
+"/srv/lib/write-user-config" "/var/lib/vz/snippets/${ID}-user-config.yml" ${HOSTNAME} 
 
 echo "##### Write network config"
-"${DIR}/lib/write-network-config" "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
+"/srv/lib/write-network-config" "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
 
 echo "##### Resize boot disk"
 qm disk resize ${ID} scsi0 ${DISK_SIZE}
