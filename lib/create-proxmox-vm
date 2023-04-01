@@ -71,6 +71,7 @@ qm create ${ID} --name ${NAME} --tags ${TAGS}
 qm set ${ID} --memory ${MEMORY}
 qm set ${ID} --sockets 1 --cores ${CORES}
 qm set ${ID} --net0 virtio,bridge=vmbr0
+qm set ${ID} --agent enabled=1
 
 echo "##### Import the disk into the proxmox storage"
 qm importdisk ${ID} ${IMG_FILE} ${STORAGE_NAME}

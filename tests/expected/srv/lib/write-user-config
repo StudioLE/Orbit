@@ -1,14 +1,14 @@
 #cloud-config
 
-# apt:
-#   preserve_sources_list: true
+apt:
+  preserve_sources_list: true
 
-# package_update: true
-# package_upgrade: true
-# package_reboot_if_required: true
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
 
-# packages:
-#   - uidmap
+packages:
+  - qemu-guest-agent
 
 hostname: vm999
 
@@ -46,7 +46,4 @@ write_files:
 runcmd:
   - netplan apply
   - systemctl restart ssh
-
-# power_state:
-#   mode: reboot
-#   message: "Time for a fresh start"
+  - systemctl start qemu-guest-agent
