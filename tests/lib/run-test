@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Exit on failure
-set -e
-
 # ARGS
 
 SCRIPT_FILE=${1}
@@ -31,10 +28,10 @@ fi
 
 DISCARD=$(${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS})
 
-if cmp --silent -- ${ACTUAL_FILE} ${EXPECTED_FILE};
+if cmp --silent -- ${EXPECTED_FILE} ${ACTUAL_FILE};
 then
   echo "##### TEST PASSED"
 else
   echo "##### TEST FAILED: Actual and expected did not match."
-  diff ${ACTUAL_FILE} ${EXPECTED_FILE}
+  diff --side-by-side ${EXPECTED_FILE} ${ACTUAL_FILE}
 fi

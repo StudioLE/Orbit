@@ -35,18 +35,13 @@ write_files:
       PermitRootLogin no
       PasswordAuthentication no
       Port ${SSH_PORT}
-  - path: /root/bootcmd
+  - path: /var/lib/cloud/scripts/per-instance/50-hello-world
     permissions: "0500"
-    content: ${BOOTCMD_CONTENT}
-  - path: /root/runcmd
-    permissions: "0500"
-    content: ${RUNCMD_CONTENT}
+    content: ${HELLO_WORLD_CONTENT}
 
 runcmd:
-  - /root/runcmd
-
-bootcmd:
-  - /root/bootcmd
+  - netplan apply
+  - systemctl restart ssh
 
 # power_state:
 #   mode: reboot

@@ -37,37 +37,15 @@ write_files:
       PermitRootLogin no
       PasswordAuthentication no
       Port 4444
-  - path: /root/bootcmd
+  - path: /var/lib/cloud/scripts/per-instance/50-hello-world
     permissions: "0500"
     content: |
       #!/bin/bash
-      
-      # START
-      
-      # Exit on failure
-      set -e
-      
-      echo "##### Executing bootcmd"
-  - path: /root/runcmd
-    permissions: "0500"
-    content: |
-      #!/bin/bash
-      
-      # START
-      
-      # Exit on failure
-      set -e
-      
-      echo "##### Executing runcmd"
-      
-      echo "##### Restart SSH"
-      systemctl restart ssh
+      echo "##### Hello, world!"
 
 runcmd:
-  - /root/runcmd
-
-bootcmd:
-  - /root/bootcmd
+  - netplan apply
+  - systemctl restart ssh
 
 # power_state:
 #   mode: reboot
