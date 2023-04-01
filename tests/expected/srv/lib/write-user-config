@@ -1,0 +1,74 @@
+#cloud-config
+
+# apt:
+#   preserve_sources_list: true
+
+# package_update: true
+# package_upgrade: true
+# package_reboot_if_required: true
+
+# packages:
+#   - uidmap
+
+hostname: vm999
+
+users:
+  - name: radiko
+    groups: sudo
+    shell: /bin/bash
+    # TODO: Remove password
+    lock_passwd: false
+    plain_text_passwd: pw
+    sudo: true
+    ssh_authorized_keys: 
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBBCUt4uHcGH8b4xf8aJSCvg3EXW5Pom0LyV7ll5EQTYmDux/B7CWh+W8C7xMZzKAspat/uyXe2lsCzN6ruwZHbtms0T3M6hxygUv7xkZlKnPlfLXmvjleLZj5PmehAZay1o3rIFvxw57uq0kxzJasqzutHpA3i9+l1occoj8Xp/MT/FT3kglg40ZLReOjOC9ZcsIm/KATuvU0T/xprVE0nAwSgt5oz1ueWG4KnE2HmszHPSfSZgq5Zxzhnvn+CnJ/sM7oqYik28QvzTYMg9a7u98NoZXeNJzXsqies6VlwL6Q5Qvzl0IV8IwlLXvquQwEBITdYJCEf9la2i/4qUsN root@saturn
+  - name: stivisto
+    shell: /bin/bash
+    # TODO: Remove password
+    lock_passwd: false
+    plain_text_passwd: pw
+    ssh_authorized_keys: 
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBBCUt4uHcGH8b4xf8aJSCvg3EXW5Pom0LyV7ll5EQTYmDux/B7CWh+W8C7xMZzKAspat/uyXe2lsCzN6ruwZHbtms0T3M6hxygUv7xkZlKnPlfLXmvjleLZj5PmehAZay1o3rIFvxw57uq0kxzJasqzutHpA3i9+l1occoj8Xp/MT/FT3kglg40ZLReOjOC9ZcsIm/KATuvU0T/xprVE0nAwSgt5oz1ueWG4KnE2HmszHPSfSZgq5Zxzhnvn+CnJ/sM7oqYik28QvzTYMg9a7u98NoZXeNJzXsqies6VlwL6Q5Qvzl0IV8IwlLXvquQwEBITdYJCEf9la2i/4qUsN root@saturn
+
+write_files:
+  - path: /etc/ssh/sshd_config
+    append: true
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      Port 4444
+  - path: /root/bootcmd
+    permissions: "0500"
+    content: |
+      #!/bin/bash
+      
+      # START
+      
+      # Exit on failure
+      set -e
+      
+      echo "##### Executing bootcmd"
+  - path: /root/runcmd
+    permissions: "0500"
+    content: |
+      #!/bin/bash
+      
+      # START
+      
+      # Exit on failure
+      set -e
+      
+      echo "##### Executing runcmd"
+      
+      echo "##### Restart SSH"
+      systemctl restart ssh
+
+runcmd:
+  - /root/runcmd
+
+bootcmd:
+  - /root/bootcmd
+
+# power_state:
+#   mode: reboot
+#   message: "Time for a fresh start"

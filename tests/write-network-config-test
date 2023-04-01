@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+# CONSTANTS
+
+SCRIPT_FILE="/srv/lib/write-network-config"
+ID="253"
+
+# START
+
+/srv/tests/lib/run-test ${SCRIPT_FILE} ${ID}

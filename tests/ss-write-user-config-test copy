@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+# CONSTANTS
+
+HOSTNAME="vm999"
+SCRIPT_NAME="write-user-config"
+SCRIPT_FILE="/srv/lib/${SCRIPT_NAME}"
+ACTUAL_FILE="/srv/tests/actual/${SCRIPT_NAME}.yml"
+EXPECTED_FILE="/srv/tests/expected/${SCRIPT_NAME}.yml"
+
+# VALIDATE
+if [[ ! -f ${EXPECTED_FILE} ]];
+then
+  touch ${EXPECTED_FILE}
+fi
+
+# START
+
+echo "##### Execute"
+${SCRIPT_FILE} ${ACTUAL_FILE} ${HOSTNAME}
+
+echo "##### Start diff"
+
+diff ${ACTUAL_FILE} ${EXPECTED_FILE}
+
+echo "##### End diff"

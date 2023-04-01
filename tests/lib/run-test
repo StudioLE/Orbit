@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+# ARGS
+
+SCRIPT_FILE=${1}
+ARGUMENTS="${@:2}"
+
+# CONSTANTS
+
+ACTUAL_FILE="/srv/tests/actual${SCRIPT_FILE}"
+EXPECTED_FILE="/srv/tests/expected${SCRIPT_FILE}"
+
+# VALIDATE
+
+if [[ ! -f ${ACTUAL_FILE} ]];
+then
+  mkdir -p $(dirname "${ACTUAL_FILE}")
+  touch ${ACTUAL_FILE}
+fi
+
+if [[ ! -f ${EXPECTED_FILE} ]];
+then
+  mkdir -p $(dirname "${EXPECTED_FILE}")
+  touch ${EXPECTED_FILE}
+fi
+
+# START
+
+DISCARD=$(${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS})
+
+if cmp --silent -- ${ACTUAL_FILE} ${EXPECTED_FILE};
+then
+  echo "##### TEST PASSED"
+else
+  echo "##### TEST FAILED: Actual and expected did not match."
+  diff ${ACTUAL_FILE} ${EXPECTED_FILE}
+fi
