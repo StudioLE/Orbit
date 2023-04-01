@@ -39,7 +39,9 @@ write_files:
     permissions: "0500"
     content: ${HELLO_WORLD_CONTENT}
 
-runcmd:
+bootcmd:
   - netplan apply
+
+runcmd:
   - systemctl restart ssh
   - systemctl start qemu-guest-agent
