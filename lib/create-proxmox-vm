@@ -5,17 +5,18 @@ set -e
 
 # ARGS
 
-TYPE=${1}
-MEMORY=${2}
-CORES=${3}
-DISK_SIZE=${4}
-IMG_FILE=${5}
+MEMORY=${1}
+CORES=${2}
+DISK_SIZE=${3}
+IMG_FILE=${4}
+NAME=${5}
+TAGS=${6}
 
 # CONSTANTS
 
 DIR="/root/infrastructure"
 ID=$(pvesh get /cluster/nextid)
-NAME="${ID}-${TYPE}"
+HOSTNAME="vm${ID}"
 STORAGE_NAME="local"
 
 # VALIDATE
@@ -23,12 +24,6 @@ STORAGE_NAME="local"
 if [[ "${ID}" = "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
 then
     echo "ERROR: Invalid ID: ${ID}"
-    exit 1
-fi
-
-if [[ "${TYPE}" = "" ]];
-then
-    echo "ERROR: Invalid TYPE: ${TYPE}"
     exit 1
 fi
 
@@ -54,10 +49,20 @@ else
     DISK_SIZE="${DISK_SIZE}G"
 fi
 
-if [[ "${IMG_FILE}" = "" ]];
+if [[ "${IMG_FILE}" = "" || ! -f "${IMG_FILE}" ]];
 then
     echo "ERROR: Invalid IMG_FILE: ${IMG_FILE}"
     exit 1
+fi
+
+if [[ "${NAME}" = "" ]];
+then
+    NAME="${HOSTNAME}"
+fi
+
+if [[ "${TAGS}" = "" ]];
+then
+    TAGS="unknown"
 fi
 
 # OUTPUT
@@ -72,7 +77,7 @@ echo "DISK_SIZE: ${DISK_SIZE}"
 # START
 
 echo "##### Create a virtual machine"
-qm create ${ID} --name ${NAME}
+qm create ${ID} --name ${NAME} --tags ${TAGS}
 qm set ${ID} --memory ${MEMORY}
 qm set ${ID} --sockets 1 --cores ${CORES}
 qm set ${ID} --net0 virtio,bridge=vmbr0
@@ -99,10 +104,10 @@ qm set ${ID} --cicustom \
     "network=local:snippets/${ID}-network-config.yml,user=local:snippets/${ID}-user-config.yml"
 
 echo "##### Write user config"
-"${DIR}/lib/write-user-config" ${ID} "/var/lib/vz/snippets/${ID}-user-config.yml"
+"${DIR}/lib/write-user-config" "/var/lib/vz/snippets/${ID}-user-config.yml" ${HOSTNAME} 
 
 echo "##### Write network config"
-"${DIR}/lib/write-network-config" ${ID} "/var/lib/vz/snippets/${ID}-network-config.yml"
+"${DIR}/lib/write-network-config" "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
 
 echo "##### Resize boot disk"
 qm disk resize ${ID} scsi0 ${DISK_SIZE}

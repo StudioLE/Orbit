@@ -3,8 +3,8 @@
 # Exit on failure
 set -e
 
-VM_ID="${1}"
-CONFIG_FILE="${2}"
+CONFIG_FILE="${1}"
+HOSTNAME="${2}"
 
 # CONSTANTS
 
@@ -13,15 +13,15 @@ CONFIG_SRC="${DIR}/src/user-config-template.yml"
 BOOTCMD_FILE="${DIR}/src/bootcmd"
 RUNCMD_FILE="${DIR}/src/runcmd"
 
-SSH_PORT="4444"
 USER="stivisto"
 SUDO_USER="radiko"
+SSH_PORT="4444"
 
 # VALIDATE
 
-if [[ "${VM_ID}" = "" || "${VM_ID}" -lt "100" || "${VM_ID}" -gt "253" ]];
+if [[ "${HOSTNAME}" = "" ]];
 then
-    echo "ERROR: Invalid VM_ID: ${VM_ID}"
+    echo "ERROR: Invalid HOSTNAME: ${HOSTNAME}"
     exit 1
 fi
 
@@ -31,17 +31,19 @@ echo "DIR: ${DIR}"
 echo "CONFIG_SRC: ${CONFIG_SRC}"
 echo "CONFIG_FILE: ${CONFIG_FILE}"
 
-echo "SSH_PORT: ${SSH_PORT}"
+echo "HOSTNAME: ${HOSTNAME}"
 echo "USER: ${USER}"
 echo "SUDO_USER: ${SUDO_USER}"
+echo "SSH_PORT: ${SSH_PORT}"
 
 # START
 
 echo "##### Set network config variables"
 cp ${CONFIG_SRC}  ${CONFIG_FILE}
-sed -i 's/${SSH_PORT}/'${SSH_PORT}'/' ${CONFIG_FILE}
+sed -i 's/${HOSTNAME}/'${HOSTNAME}'/' ${CONFIG_FILE}
 sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}
 sed -i 's/${SUDO_USER}/'${SUDO_USER}'/' ${CONFIG_FILE}
 "${DIR}/lib/replace-ssh-authorized-keys" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub"
+sed -i 's/${SSH_PORT}/'${SSH_PORT}'/' ${CONFIG_FILE}
 "${DIR}/lib/replace-cmd" ${CONFIG_FILE} "${BOOTCMD_FILE}" "\${BOOTCMD_CONTENT}"
 "${DIR}/lib/replace-cmd" ${CONFIG_FILE} "${RUNCMD_FILE}" "\${RUNCMD_CONTENT}"

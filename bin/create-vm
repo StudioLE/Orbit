@@ -10,6 +10,11 @@ MEMORY="8"
 CORES="4"
 DISK_SIZE="50"
 IMG_FILE="jammy-server-cloudimg-amd64.img"
+PURPOSE="worker"
+OS_NAME="ubuntu"
+OS_VERSION="jammy"
+NAME="${PURPOSE}-${TYPE}-${OS_NAME}-${OS_VERSION}"
+TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # CONSTANTS
 
@@ -19,4 +24,4 @@ IMG_FILE="${DIR}/artifacts/${IMG_FILE}"
 # START
 
 echo "##### Create a virtual machine"
-"${DIR}/lib/create-proxmox-vm" ${TYPE} ${MEMORY} ${CORES} ${DISK_SIZE} ${IMG_FILE}
+"${DIR}/lib/create-proxmox-vm" ${MEMORY} ${CORES} ${DISK_SIZE} ${IMG_FILE} ${NAME} ${TAGS}

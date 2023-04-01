@@ -10,19 +10,7 @@
 # packages:
 #   - uidmap
 
-write_files:
-  - path: /etc/ssh/sshd_config
-    append: true
-    content: |
-      PermitRootLogin no
-      PasswordAuthentication no
-      Port ${SSH_PORT}
-  - path: /root/bootcmd
-    permissions: "0500"
-    content: ${BOOTCMD_CONTENT}
-  - path: /root/runcmd
-    permissions: "0500"
-    content: ${RUNCMD_CONTENT}
+hostname: ${HOSTNAME}
 
 users:
   - name: ${SUDO_USER}
@@ -39,6 +27,20 @@ users:
     lock_passwd: false
     plain_text_passwd: pw
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
+
+write_files:
+  - path: /etc/ssh/sshd_config
+    append: true
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      Port ${SSH_PORT}
+  - path: /root/bootcmd
+    permissions: "0500"
+    content: ${BOOTCMD_CONTENT}
+  - path: /root/runcmd
+    permissions: "0500"
+    content: ${RUNCMD_CONTENT}
 
 runcmd:
   - /root/runcmd
