@@ -5,7 +5,7 @@ set -e
 
 # ARGS
 
-TYPE="C1"
+TYPE="c1"
 MEMORY="8"
 CORES="4"
 DISK_SIZE="50"
@@ -13,7 +13,7 @@ IMG_FILE="jammy-server-cloudimg-amd64.img"
 PURPOSE="worker"
 OS_NAME="ubuntu"
 OS_VERSION="jammy"
-NAME="${PURPOSE}-${TYPE}-${OS_NAME}-${OS_VERSION}"
+NAME="${PURPOSE}-${TYPE}"
 TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # CONSTANTS
