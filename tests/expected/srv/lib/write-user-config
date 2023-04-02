@@ -1,16 +1,14 @@
 #cloud-config
 
+hostname: vm999
+
 apt:
   preserve_sources_list: true
-
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
-
 packages:
   - qemu-guest-agent
-
-hostname: vm999
 
 users:
   - name: radiko

@@ -1,16 +1,14 @@
 #cloud-config
 
+hostname: ${HOSTNAME}
+
 apt:
   preserve_sources_list: true
-
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
-
 packages:
   - qemu-guest-agent
-
-hostname: ${HOSTNAME}
 
 users:
   - name: ${SUDO_USER}
