@@ -22,13 +22,13 @@ STORAGE_NAME="local"
 
 if [[ "${ID}" = "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
 then
-    echo "ERROR: Invalid ID: ${ID}"
+    echo "ERROR: Invalid ID: ${ID}" >&2
     exit 1
 fi
 
 if [[ "${MEMORY}" = "" || "${MEMORY}" -lt "1" || "${MEMORY}" -gt "32" ]];
 then
-    echo "ERROR: Invalid MEMORY: ${MEMORY}"
+    echo "ERROR: Invalid MEMORY: ${MEMORY}" >&2
     exit 1
 else
     MEMORY=$((${MEMORY} * 1024))
@@ -36,13 +36,13 @@ fi
 
 if [[ "${CORES}" = "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
 then
-    echo "ERROR: Invalid CORES: ${CORES}"
+    echo "ERROR: Invalid CORES: ${CORES}" >&2
     exit 1
 fi
 
 if [[ "${DISK_SIZE}" = "" ||  "${DISK_SIZE}" -lt "20" || "${DISK_SIZE}" -gt "4000" ]];
 then
-    echo "ERROR: Invalid DISK_SIZE: ${DISK_SIZE}"
+    echo "ERROR: Invalid DISK_SIZE: ${DISK_SIZE}" >&2
     exit 1
 else
     DISK_SIZE="${DISK_SIZE}G"
@@ -50,7 +50,7 @@ fi
 
 if [[ "${IMG_FILE}" = "" || ! -f "${IMG_FILE}" ]];
 then
-    echo "ERROR: Invalid IMG_FILE: ${IMG_FILE}"
+    echo "ERROR: Invalid IMG_FILE: ${IMG_FILE}" >&2
     exit 1
 fi
 

@@ -19,7 +19,7 @@ SSH_PORT="4444"
 
 if [[ "${HOSTNAME}" = "" ]];
 then
-    echo "ERROR: Invalid HOSTNAME: ${HOSTNAME}"
+    echo "ERROR: Invalid HOSTNAME: ${HOSTNAME}" >&2
     exit 1
 fi
 

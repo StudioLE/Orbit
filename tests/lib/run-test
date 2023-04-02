@@ -15,7 +15,7 @@ EXPECTED_FILE="/srv/tests/expected${SCRIPT_FILE}"
 
 if [[ "${OPTION}" != "--execute" && "${OPTION}" != "--update" ]];
 then
-  echo "FAILED: Invalid OPTION: ${OPTION}"
+  echo "FAILED: Invalid OPTION: ${OPTION}" >&2
   exit 1
 fi
 
@@ -35,7 +35,7 @@ fi
 
 if ! ${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS};
 then
-  echo "##### TEST FAILED: The script returned an error code."
+  echo "##### TEST FAILED: The script returned an error code." >&2
   exit 1
 fi
 

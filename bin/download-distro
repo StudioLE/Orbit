@@ -15,7 +15,7 @@ URL="https://cloud-images.ubuntu.com/${VERSION}/current/${FILENAME}"
 # VALIDATE
 
 if [ "${VERSION}" = "" ]; then
-    echo "ERROR: Argument 1 (VERSION) was not provided. Try calling with: jammy"
+    echo "ERROR: Argument 1 (VERSION) was not provided. Try calling with: jammy" >&2
     exit 1
 fi
 
