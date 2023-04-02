@@ -19,7 +19,7 @@ users:
     # TODO: Remove password
     lock_passwd: false
     plain_text_passwd: pw
-    sudo: true
+    sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
   - name: ${USER}
     shell: /bin/bash
@@ -45,9 +45,9 @@ bootcmd:
   - echo "*********************************"
   - if [ ! -f /root/first-run-complete ]; then echo "IS FIRST RUN"; else echo "NOT FIRST RUN"; fi
   - if [ ! -f /root/first-run-complete ]; then netplan apply; fi
-  - echo "###### IP Addresses
-  - ip -br addr
-  - echo "###### IP Routes
+  - echo "###### IP Addresses"
+  - ip -c -br addr
+  - echo "###### IP Routes"
   - ip -c route
 
 runcmd:
