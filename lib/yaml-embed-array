@@ -6,9 +6,10 @@ set -e
 # ARGS
 SOURCE_FILE=${1}
 INSERT_FROM_FILE=${2}
+FIND=${3}
+INDENT_COUNT=${4}
 
 # CONSTANTS
-FIND="\${SSH_AUTHORIZED_KEYS}"
 TEMP_FILE=$(mktemp)
 
 # VALIDATE
@@ -18,13 +19,22 @@ if [ "${SOURCE_FILE}" = "" ]; then
   exit 1
 fi
 
+if [ "${INDENT_COUNT}" = "" ]; then
+  echo "ERROR: Invalid INDENT: ${INDENT_COUNT}" >&2
+  exit 1
+fi
+
 # START
+INDENT=""
+for i in $(seq 1 ${INDENT_COUNT});
+do
+	INDENT="${INDENT}  "
+done
 
 INSERT=""
-
 while read line;
 do
-  INSERT="$INSERT"$'\n'"      - $line"
+  INSERT="$INSERT"$'\n'"${INDENT}- $line"
 done < "${INSERT_FROM_FILE}"
 
 # echo "$INSERT"

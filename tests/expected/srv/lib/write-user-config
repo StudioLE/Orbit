@@ -41,7 +41,7 @@ write_files:
       #!/bin/bash
       echo "##### Hello, world!"
 
-bootcmd:
+bootcmd: 
   - echo "*********************************"
   - echo "Executing bootcmd"
   - echo "*********************************"
@@ -52,7 +52,7 @@ bootcmd:
   - echo "###### IP Routes"
   - ip -c route
 
-runcmd:
+runcmd: 
   - echo "*********************************"
   - echo "Executing runcmd"
   - echo "*********************************"

@@ -37,21 +37,6 @@ write_files:
     permissions: "0500"
     content: ${HELLO_WORLD_CONTENT}
 
-bootcmd:
-  - echo "*********************************"
-  - echo "Executing bootcmd"
-  - echo "*********************************"
-  - if [ ! -f /root/first-run-complete ]; then echo "IS FIRST RUN"; else echo "NOT FIRST RUN"; fi
-  - if [ ! -f /root/first-run-complete ]; then netplan apply; fi
-  - echo "###### IP Addresses"
-  - ip -c -br addr
-  - echo "###### IP Routes"
-  - ip -c route
+bootcmd: ${BOOTCMD_CONTENT}
 
-runcmd:
-  - echo "*********************************"
-  - echo "Executing runcmd"
-  - echo "*********************************"
-  - systemctl restart ssh
-  - systemctl start qemu-guest-agent
-  - touch /root/first-run-complete
+runcmd: ${RUNCMD_CONTENT}
