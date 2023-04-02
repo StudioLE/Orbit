@@ -5,3 +5,4 @@ set -e
 
 apt-get install python3-pip -y
 apt-get install jq -y
+apt-get install colordiff -y

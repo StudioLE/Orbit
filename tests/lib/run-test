@@ -2,8 +2,9 @@
 
 # ARGS
 
-SCRIPT_FILE=${1}
-ARGUMENTS="${@:2}"
+OPTION=${1}
+SCRIPT_FILE=${2}
+ARGUMENTS="${@:3}"
 
 # CONSTANTS
 
@@ -11,6 +12,12 @@ ACTUAL_FILE="/srv/tests/actual${SCRIPT_FILE}"
 EXPECTED_FILE="/srv/tests/expected${SCRIPT_FILE}"
 
 # VALIDATE
+
+if [[ "${OPTION}" != "--execute" && "${OPTION}" != "--update" ]];
+then
+  echo "FAILED: Invalid OPTION: ${OPTION}"
+  exit 1
+fi
 
 if [[ ! -f ${ACTUAL_FILE} ]];
 then
@@ -33,5 +40,12 @@ then
   echo "##### TEST PASSED"
 else
   echo "##### TEST FAILED: Actual and expected did not match."
-  diff --side-by-side ${EXPECTED_FILE} ${ACTUAL_FILE}
+  colordiff --side-by-side ${EXPECTED_FILE} ${ACTUAL_FILE}
+fi
+
+
+if [[ "${OPTION}" == "--update" ]];
+then
+  echo "##### Updating expected file"
+  cp ${ACTUAL_FILE} ${EXPECTED_FILE}
 fi
