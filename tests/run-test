@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# ARGS
+
+SCRIPT_FILE=${1}
+OPTION=${2}
+
+# CONSTANTS
+
+EXPECTED_FILE="/srv/tests/expected${SCRIPT_FILE}"
+ACTUAL_FILE="/srv/tests/actual${SCRIPT_FILE}"
+
+# VALIDATE
+
+if [[ ! -f ${SCRIPT_FILE} ]];
+then
+  echo "❗ Failed to run test. SCRIPT_FILE does not exist: ${SCRIPT_FILE}" >&2
+  exit 1
+fi
+
+if [[ ! -f ${EXPECTED_FILE} ]];
+then
+  mkdir -p $(dirname "${EXPECTED_FILE}")
+  touch ${EXPECTED_FILE}
+fi
+
+if [[ ! -f ${ACTUAL_FILE} ]];
+then
+  mkdir -p $(dirname "${ACTUAL_FILE}")
+  touch ${ACTUAL_FILE}
+fi
+
+# START
+
+# Detemine the arguments to use
+if [[ "${SCRIPT_FILE}" == "/srv/lib/write-network-config" ]];
+then
+  ARGUMENTS="253"
+elif [[ "${SCRIPT_FILE}" == "/srv/lib/write-user-config" ]];
+then
+  ARGUMENTS="vm999"
+else
+  echo "❗ Failed to run test. Unknown SCRIPT_FILE: ${SCRIPT_FILE}" >&2
+  exit 1
+fi
+
+TEST_COMMAND="${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS}"
+
+# Run the script file. Store the exit code
+${TEST_COMMAND}
+SCRIPT_EXIT_CODE=$?
+if [[ ${SCRIPT_EXIT_CODE} != 0 ]];
+then
+  echo "⚠️  Test failed. The script returned exit code: ${SCRIPT_EXIT_CODE}" >&2
+  exit 1
+fi
+
+# Compare the expected and actual files. Store the exit code
+cmp --silent -- ${EXPECTED_FILE} ${ACTUAL_FILE}
+COMPARE_EXIT_CODE=$?
+
+# Echo the status, the command and a diff if not matching
+if [[ ${COMPARE_EXIT_CODE} == 0 ]];
+then
+  echo "✅  Test passed: ${TEST_COMMAND}" 
+else
+  echo "❌  Test failed: Actual and expected did not match: ${TEST_COMMAND}"
+  /srv/tests/lib/diff-results "${EXPECTED_FILE}" "${ACTUAL_FILE}"
+fi
+
+if [[ ${OPTION} == "--update" ]];
+then
+  cp "${ACTUAL_FILE}" "${EXPECTED_FILE}"
+fi
