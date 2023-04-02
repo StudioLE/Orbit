@@ -67,8 +67,3 @@ else
   echo "❌  Test failed: Actual and expected did not match: ${TEST_COMMAND}"
   /srv/tests/lib/diff-results "${EXPECTED_FILE}" "${ACTUAL_FILE}"
 fi
-
-if [[ ${OPTION} == "--update" ]];
-then
-  cp "${ACTUAL_FILE}" "${EXPECTED_FILE}"
-fi
