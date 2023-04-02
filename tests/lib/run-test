@@ -33,7 +33,11 @@ fi
 
 # START
 
-DISCARD=$(${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS})
+if ! ${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS};
+then
+  echo "##### TEST FAILED: The script returned an error code."
+  exit 1
+fi
 
 if cmp --silent -- ${EXPECTED_FILE} ${ACTUAL_FILE};
 then
