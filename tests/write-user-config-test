@@ -21,4 +21,4 @@ fi
 
 # START
 
-/srv/tests/lib/run-test "${OPTION}" "${SCRIPT_FILE}" "${ID}"
+/srv/tests/lib/run-test "${OPTION}" "${SCRIPT_FILE}" "${HOSTNAME}"
