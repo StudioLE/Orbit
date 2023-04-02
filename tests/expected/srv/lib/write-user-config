@@ -19,7 +19,7 @@ users:
     # TODO: Remove password
     lock_passwd: false
     plain_text_passwd: pw
-    sudo: true
+    sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys: 
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBBCUt4uHcGH8b4xf8aJSCvg3EXW5Pom0LyV7ll5EQTYmDux/B7CWh+W8C7xMZzKAspat/uyXe2lsCzN6ruwZHbtms0T3M6hxygUv7xkZlKnPlfLXmvjleLZj5PmehAZay1o3rIFvxw57uq0kxzJasqzutHpA3i9+l1occoj8Xp/MT/FT3kglg40ZLReOjOC9ZcsIm/KATuvU0T/xprVE0nAwSgt5oz1ueWG4KnE2HmszHPSfSZgq5Zxzhnvn+CnJ/sM7oqYik28QvzTYMg9a7u98NoZXeNJzXsqies6VlwL6Q5Qvzl0IV8IwlLXvquQwEBITdYJCEf9la2i/4qUsN root@saturn
   - name: stivisto
@@ -43,7 +43,21 @@ write_files:
       #!/bin/bash
       echo "##### Hello, world!"
 
+bootcmd:
+  - echo "*********************************"
+  - echo "Executing bootcmd"
+  - echo "*********************************"
+  - if [ ! -f /root/first-run-complete ]; then echo "IS FIRST RUN"; else echo "NOT FIRST RUN"; fi
+  - if [ ! -f /root/first-run-complete ]; then netplan apply; fi
+  - echo "###### IP Addresses"
+  - ip -c -br addr
+  - echo "###### IP Routes"
+  - ip -c route
+
 runcmd:
-  - netplan apply
+  - echo "*********************************"
+  - echo "Executing runcmd"
+  - echo "*********************************"
   - systemctl restart ssh
   - systemctl start qemu-guest-agent
+  - touch /root/first-run-complete
