@@ -36,7 +36,7 @@ if [[ "${OS_NAME}" == "ubuntu" ]]
 then
   FILENAME="${OS_VERSION}-server-cloudimg-amd64"
   SRC_FORMAT="img"
-  URL="https://cloud-images.ubuntu.com/${OS_NAME}/current/${FILENAME}.${SRC_FORMAT}"
+  URL="https://cloud-images.ubuntu.com/${OS_VERSION}/current/${FILENAME}.${SRC_FORMAT}"
 else
   echo "❗  Only ubuntu is currently supported" >&2
   exit 1
