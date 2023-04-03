@@ -46,7 +46,7 @@ fi
 
 
 # Download the source file if it doesn't exist
-if [[ ${IGNORE_CACHE} || ! -f "${DIR}/${FILENAME}.${SRC_FORMAT}" ]]
+if ${IGNORE_CACHE} || [[ ! -f "${DIR}/${FILENAME}.${SRC_FORMAT}" ]]
 then
   # Create output directory if it doesn't exist
   if [[ ! -e "${DIR}" ]]
@@ -68,7 +68,7 @@ then
 fi
 
 # Convert to qcow2 format if required
-if [[ ${IGNORE_CACHE} || "${SRC_FORMAT}" != "qcow2" ]]
+if ${IGNORE_CACHE} || [[ "${SRC_FORMAT}" != "qcow2" && ! -f "${DIR}/${FILENAME}.qcow2" ]]
 then
   echo "➡️  Convert the disk file to qcow2"
   qemu-img convert -O qcow2 "${DIR}/${FILENAME}.${SRC_FORMAT}" "${DIR}/${FILENAME}.qcow2"
@@ -76,7 +76,7 @@ fi
 
 # Resize if required
 OUTPUT_FILE="${DIR}/${FILENAME}-${DISK_SIZE}.qcow2"
-if [[ ${IGNORE_CACHE} || ! -f "${OUTPUT_FILE}" ]]
+if ${IGNORE_CACHE} || [[ ! -f "${OUTPUT_FILE}" ]]
 then
   echo "➡️  Copy the disk file"
   cp "${DIR}/${FILENAME}.qcow2" "${OUTPUT_FILE}"
