@@ -14,26 +14,32 @@ fi
 
 # START
 
+echo "➡️  Start VM ${ID}"
 qm start ${ID}
 
-# Wait for the cloud-init status
-# If it takes more than 10 attempts then exit
-INTERVAL="2"
-TIMEOUT="120"
-for i in $(seq "0" "${INTERVAL}" "${TIMEOUT}")
+START_TIME="$(date -u +%s)"
+
+# Wait for the cloud-init status to show done
+while :
 do
-  RESPONSE=$(ssh "10.10.10.${ID}" 'cloud-init status')
-  if [[ "${i}" -ge "${TIMEOUT}" ]]
+  CURRENT_TIME="$(date -u +%s)"
+  ELAPSED="$(($CURRENT_TIME - $START_TIME))"
+  echo "⌛  ${ELAPSED} seconds"
+
+  RESPONSE=$(ssh "10.10.10.${ID}" -o 'LogLevel=FATAL' -o 'ConnectTimeout=1' 'cloud-init status')
+  EXIT_CODE=$?
+  
+  if [[ "${RESPONSE}" == "status: done" ]]
   then
-    echo "❗  Timeout exceeded: ${i} seconds" >&2
-    exit 1
-  elif [[ "${RESPONSE}" != "status: done" ]]
-  then
-    echo "⌛  Waiting ${i} seconds"
     echo "${RESPONSE}"
-    sleep "${INTERVAL}s"
-  else
-    echo "✅  VM is now online"
+    echo "✅ VM is Ready"
     break
+  elif [[ "${RESPONSE}" == "" ]]
+  then
+    echo "SSH Exit code: ${EXIT_CODE}"
+  else
+    echo "${RESPONSE}"
   fi
+
+  sleep 2s
 done
