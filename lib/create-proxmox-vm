@@ -100,10 +100,43 @@ echo "➡️  Write user config"
 echo "➡️  Write network config"
 /srv/lib/write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
 
-echo "➡️  Get status"
-/srv/lib/get-vm-status "${ID}"
+# echo "➡️  Get status"
+# /srv/lib/get-vm-status "${ID}"
 
-# echo "➡️  Resize boot disk"
-# qm disk resize ${ID} scsi0 ${DISK_SIZE}
+ATTEMPT_COUNT=0
+while :
+do
+  ATTEMPT_COUNT=$(( $ATTEMPT_COUNT + 1 ))
+  CURRENT_DISK_SIZE=$(/srv/lib/get-vm-status "${ID}" | jq '.maxdisk')
+  if [[ "${ATTEMPT_COUNT}" -gt "10" ]]
+  then
+    echo "❗  Unable to resize disk. Exceeded max attempts: ${ATTEMPT_COUNT}" >&2
+    exit 1
+  elif [[ "${CURRENT_DISK_SIZE}" -lt "2361393152" ]]
+  then
+    echo "⌛  Waiting for boot disk. Attempt: ${ATTEMPT_COUNT}"
+    sleep 0.2s
+  else
+    echo "🆗  Boot disk import complete"
+    break
+  fi
+done
+
+COUNTDOWN=5
+while :
+do
+  COUNTDOWN=$(( $COUNTDOWN - 1 ))
+  if [[ "${COUNTDOWN}" -gt "0" ]]
+  then
+    echo "⌛  Waiting ${COUNTDOWN} seconds"
+    sleep 1s
+  else
+    echo "🆗  Countdown complete"
+    break
+  fi
+done
+
+echo "➡️  Resize boot disk"
+qm disk resize ${ID} scsi0 ${DISK_SIZE}
 
 echo "✅  Created VM ${ID}"
