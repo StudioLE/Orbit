@@ -20,13 +20,13 @@ STORAGE_NAME="local"
 
 # VALIDATE
 
-if [[ "${ID}" = "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
+if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
 then
     echo "❗  Invalid ID: ${ID}" >&2
     exit 1
 fi
 
-if [[ "${MEMORY}" = "" || "${MEMORY}" -lt "1" || "${MEMORY}" -gt "32" ]];
+if [[ "${MEMORY}" == "" || "${MEMORY}" -lt "1" || "${MEMORY}" -gt "32" ]];
 then
     echo "❗  Invalid MEMORY: ${MEMORY}" >&2
     exit 1
@@ -34,13 +34,13 @@ else
     MEMORY=$((${MEMORY} * 1024))
 fi
 
-if [[ "${CORES}" = "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
+if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
 then
     echo "❗  Invalid CORES: ${CORES}" >&2
     exit 1
 fi
 
-if [[ "${DISK_SIZE}" = "" ||  "${DISK_SIZE}" -lt "20" || "${DISK_SIZE}" -gt "4000" ]];
+if [[ "${DISK_SIZE}" == "" ||  "${DISK_SIZE}" -lt "20" || "${DISK_SIZE}" -gt "4000" ]];
 then
     echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
     exit 1
@@ -48,18 +48,18 @@ else
     DISK_SIZE="${DISK_SIZE}G"
 fi
 
-if [[ "${DISK_FILE}" = "" || ! -f "${DISK_FILE}" ]];
+if [[ "${DISK_FILE}" == "" || ! -f "${DISK_FILE}" ]];
 then
     echo "❗  Invalid DISK_FILE: ${DISK_FILE}" >&2
     exit 1
 fi
 
-if [[ "${NAME}" = "" ]];
+if [[ "${NAME}" == "" ]];
 then
     NAME="${HOSTNAME}"
 fi
 
-if [[ "${TAGS}" = "" ]];
+if [[ "${TAGS}" == "" ]];
 then
     TAGS="unknown"
 fi

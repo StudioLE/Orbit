@@ -24,12 +24,12 @@ if [[ ! -f "${INSERT_FROM_FILE}" ]]; then
   exit 1
 fi
 
-if [[ "${FIND}" = "" ]]; then
+if [[ "${FIND}" == "" ]]; then
   echo "❗  Invalid FIND: ${FIND}" >&2
   exit 1
 fi
 
-if [[ "${INDENT_COUNT}" = "" ]]; then
+if [[ "${INDENT_COUNT}" == "" ]]; then
   echo "❗  Invalid INDENT_COUNT: ${INDENT_COUNT}" >&2
   exit 1
 fi

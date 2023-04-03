@@ -23,7 +23,7 @@ if [[ ! -f "${INSERT_FROM_FILE}" ]]; then
   exit 1
 fi
 
-if [[ "${FIND}" = "" ]]; then
+if [[ "${FIND}" == "" ]]; then
   echo "❗  Invalid FIND: ${FIND}" >&2
   exit 1
 fi

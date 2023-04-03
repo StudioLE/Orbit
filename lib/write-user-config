@@ -15,7 +15,7 @@ SSH_PORT="4444"
 
 # VALIDATE
 
-if [[ "${HOSTNAME}" = "" ]];
+if [[ "${HOSTNAME}" == "" ]];
 then
     echo "❗  Invalid HOSTNAME: ${HOSTNAME}" >&2
     exit 1

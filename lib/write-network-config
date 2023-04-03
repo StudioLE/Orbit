@@ -15,7 +15,7 @@ GATEWAY_IP="10.10.10.1"
 
 # VALIDATE
 
-if [[ "${VM_ID}" = "" || "${VM_ID}" -lt "100" || "${VM_ID}" -gt "253" ]];
+if [[ "${VM_ID}" == "" || "${VM_ID}" -lt "100" || "${VM_ID}" -gt "253" ]];
 then
     echo "❗  Invalid VM_ID: ${VM_ID}" >&2
     exit 1

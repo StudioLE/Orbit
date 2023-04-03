@@ -15,7 +15,7 @@ DIR="/srv/artifacts"
 
 # VALIDATE
 
-if [ "${VERSION}" = "" ]; then
+if [[ "${VERSION}" == "" ]]; then
   echo "❗  Invalid VERSION: ${VERSION}" >&2
   exit 1
 fi
