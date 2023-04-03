@@ -100,5 +100,10 @@ echo "➡️  Write user config"
 echo "➡️  Write network config"
 /srv/lib/write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
 
-# echo "➡️ Resize boot disk"
+echo "➡️  Get lock status"
+/srv/lib/get-vm-lock-status "${ID}"
+
+# echo "➡️  Resize boot disk"
 # qm disk resize ${ID} scsi0 ${DISK_SIZE}
+
+echo "✅  Created VM ${ID}"
