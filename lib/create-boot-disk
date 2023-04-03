@@ -84,6 +84,3 @@ then
   echo "➡️  Resize the disk file"
   qemu-img resize "${OUTPUT_FILE}" ${DISK_SIZE}
 fi
-
-# Return the file path
-echo "${OUTPUT_FILE}"
