@@ -64,7 +64,7 @@ then
   rm "${TEMP_FILE}"
   
   echo "➡️  Check the SHA256"
-  sha256sum -c "${DIR}/SHA256SUMS"
+  (cd ${DIR} && sha256sum -c "${DIR}/SHA256SUMS")
 fi
 
 # Convert to qcow2 format if required
