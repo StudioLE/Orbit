@@ -43,6 +43,6 @@ then
     exit 1
 fi
 
-# Select the lock status. This will be null if unlocked.
-LOCK_STATUS=$(echo "${VM_WITH_ID}" | jq '.[] | .["lock"]' --raw-output)
-echo "$LOCK_STATUS"
+# Select the VM
+STATUS=$(echo "${VM_WITH_ID}" | jq '.[]')
+echo "$STATUS"
