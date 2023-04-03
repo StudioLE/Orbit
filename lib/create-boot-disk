@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Exit on failure
+set -e
+
+# ARGS
+
+OS_NAME="${1}"
+OS_VERSION="${2}"
+DISK_SIZE="${3}"
+
+# CONSTANTS
+
+DIR="/srv/artifacts/${OS_NAME}/${OS_VERSION}"
+
+# VALIDATE
+
+if [ "${OS_NAME}" == "" ]; then
+  echo "❗  Invalid OS_NAME: ${OS_NAME}" >&2
+  exit 1
+fi
+
+if [ "${OS_VERSION}" == "" ]; then
+  echo "❗  Invalid OS_VERSION: ${OS_VERSION}" >&2
+  exit 1
+fi
+
+if [ "${DISK_SIZE}" == "" ]; then
+  echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
+  exit 1
+fi
+
+# START
+
+if [[ "${OS_NAME}" == "ubuntu" ]]
+then
+  FILENAME="${OS_VERSION}-server-cloudimg-amd64"
+  SRC_FORMAT="img"
+  URL="https://cloud-images.ubuntu.com/${OS_NAME}/current/${FILENAME}.${SRC_FORMAT}"
+else
+  echo "❗  Only ubuntu is currently supported" >&2
+  exit 1
+fi
+
+
+# Download the source file if it doesn't exist
+if [[ ! -f "${DIR}/${FILENAME}.${SRC_FORMAT}" ]]
+then
+  # Create output directory if it doesn't exist
+  if [[ ! -e "${DIR}" ]]
+  then
+    mkdir -p "${DIR}"
+  fi
+
+  # Download the file
+  curl --silent --show-error --output "${DIR}/${FILENAME}.${SRC_FORMAT}" "${URL}"
+fi
+
+# Convert to qcow2 format if required
+if [[ "${SRC_FORMAT}" != "qcow2" ]]
+then
+  qemu-img convert -O qcow2 "${DIR}/${FILENAME}.${SRC_FORMAT}" "${DIR}/${FILENAME}.qcow2"
+fi
+
+# Resize if required
+OUTPUT_FILE="${DIR}/${FILENAME}-${DISK_SIZE}.qcow2"
+if [[ ! -f "${OUTPUT_FILE}" ]]
+then
+  cp "${DIR}/${FILENAME}.qcow2" "${OUTPUT_FILE}"
+  qemu-img resize "${OUTPUT_FILE}" ${DISK_SIZE} > /dev/null
+fi
+
+# Return the file path
+echo "${OUTPUT_FILE}"

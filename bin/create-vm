@@ -5,17 +5,18 @@ set -e
 
 # ARGS
 
+OS_NAME="ubuntu"
+OS_VERSION="jammy"
+DISK_SIZE="20G"
+
 TYPE="c1"
 MEMORY="8"
 CORES="4"
-DISK_SIZE="20"
-DISK_FILE="/srv/artifacts/jammy-server-cloudimg-amd64.qcow2"
 PURPOSE="worker"
-OS_NAME="ubuntu"
-OS_VERSION="jammy"
 NAME="${PURPOSE}-${TYPE}"
 TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # START
 
-/srv/lib/create-proxmox-vm ${MEMORY} ${CORES} ${DISK_SIZE} ${DISK_FILE} ${NAME} ${TAGS}
+DISK_FILE=$(/srv/lib/create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}")
+/srv/lib/create-proxmox-vm "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"

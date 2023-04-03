@@ -7,10 +7,9 @@ set -e
 
 MEMORY=${1}
 CORES=${2}
-DISK_SIZE=${3}
-DISK_FILE=${4}
-NAME=${5}
-TAGS=${6}
+DISK_FILE=${3}
+NAME=${4}
+TAGS=${5}
 
 # CONSTANTS
 
@@ -38,14 +37,6 @@ if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
 then
     echo "❗  Invalid CORES: ${CORES}" >&2
     exit 1
-fi
-
-if [[ "${DISK_SIZE}" == "" ||  "${DISK_SIZE}" -lt "20" || "${DISK_SIZE}" -gt "4000" ]];
-then
-    echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
-    exit 1
-else
-    DISK_SIZE="${DISK_SIZE}G"
 fi
 
 if [[ "${DISK_FILE}" == "" || ! -f "${DISK_FILE}" ]];
@@ -99,27 +90,5 @@ echo "➡️  Write user config"
 
 echo "➡️  Write network config"
 /srv/lib/write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
-
-# Wait for the maxdisk value to be set
-# If it takes more than 10 attempts then exit
-for i in $(seq "1" "10")
-do
-  CURRENT_DISK_SIZE=$(/srv/lib/get-vm-status "${ID}" | jq '.maxdisk')
-  if [[ "${i}" -ge "10" ]]
-  then
-    echo "❗  Unable to resize disk. Exceeded max attempts: ${i}" >&2
-    exit 1
-  elif [[ "${CURRENT_DISK_SIZE}" -lt "2361393152" ]]
-  then
-    echo "⌛  Waiting for boot disk. Attempt: ${i}"
-    sleep 0.2s
-  else
-    echo "🆗  Boot disk import complete"
-    break
-  fi
-done
-
-echo "➡️  Resize boot disk"
-qm disk resize ${ID} scsi0 ${DISK_SIZE}
 
 echo "✅  Created VM ${ID}"
