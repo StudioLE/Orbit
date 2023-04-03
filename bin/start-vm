@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# ARGS
+
+ID=${1}
+
+# VALIDATE
+
+if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
+then
+    echo "❗  Invalid ID: ${ID}" >&2
+    exit 1
+fi
+
+# START
+
+qm start ${ID}
+
+# Wait for the cloud-init status
+# If it takes more than 10 attempts then exit
+INTERVAL="2"
+TIMEOUT="120"
+for i in $(seq "0" "${INTERVAL}" "${TIMEOUT}")
+do
+  RESPONSE=$(ssh "10.10.10.${ID}" 'cloud-init status')
+  if [[ "${i}" -ge "${TIMEOUT}" ]]
+  then
+    echo "❗  Timeout exceeded: ${i} seconds" >&2
+    exit 1
+  elif [[ "${RESPONSE}" != "status: done" ]]
+  then
+    echo "⌛  Waiting ${i} seconds"
+    echo "${RESPONSE}"
+    sleep "${INTERVAL}s"
+  else
+    echo "✅  VM is now online"
+    break
+  fi
+done

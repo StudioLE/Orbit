@@ -3,6 +3,14 @@
 # Exit on failure
 set -e
 
-apt-get install python3-pip -y
-apt-get install jq -y
-apt-get install colordiff -y
+apt-get install python3-pip jq colordiff -y
+
+cat > /root/.ssh/config <<- EOM
+Host 10.10.10.*
+    LogLevel ERROR
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    Port 4444
+    User radiko
+EOM
+
