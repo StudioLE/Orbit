@@ -18,5 +18,11 @@ TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # START
 
-DISK_FILE=$(/srv/lib/create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}")
+CREATE_DISK_OUTPUT=$(/srv/lib/create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}")
+echo "${CREATE_DISK_OUTPUT}"
+
+DISK_FILE=$(echo "${CREATE_DISK_OUTPUT}" | tail -n1)
+
+echo "${DISK_FILE}"
+
 /srv/lib/create-proxmox-vm "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"

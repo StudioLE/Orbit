@@ -12,6 +12,7 @@ DISK_SIZE="${3}"
 # CONSTANTS
 
 DIR="/srv/artifacts/${OS_NAME}/${OS_VERSION}"
+IGNORE_CACHE=false
 
 # VALIDATE
 
@@ -36,7 +37,8 @@ if [[ "${OS_NAME}" == "ubuntu" ]]
 then
   FILENAME="${OS_VERSION}-server-cloudimg-amd64"
   SRC_FORMAT="img"
-  URL="https://cloud-images.ubuntu.com/${OS_VERSION}/current/${FILENAME}.${SRC_FORMAT}"
+  SRC_URL="https://cloud-images.ubuntu.com/${OS_VERSION}/current/${FILENAME}.${SRC_FORMAT}"
+  SHA_URL="https://cloud-images.ubuntu.com/${OS_VERSION}/current/SHA256SUMS"
 else
   echo "❗  Only ubuntu is currently supported" >&2
   exit 1
@@ -44,7 +46,7 @@ fi
 
 
 # Download the source file if it doesn't exist
-if [[ ! -f "${DIR}/${FILENAME}.${SRC_FORMAT}" ]]
+if [[ ${IGNORE_CACHE} || ! -f "${DIR}/${FILENAME}.${SRC_FORMAT}" ]]
 then
   # Create output directory if it doesn't exist
   if [[ ! -e "${DIR}" ]]
@@ -52,22 +54,35 @@ then
     mkdir -p "${DIR}"
   fi
 
-  # Download the file
-  curl --silent --show-error --output "${DIR}/${FILENAME}.${SRC_FORMAT}" "${URL}"
+  echo "➡️  Download the disk file: ${SRC_URL}"
+  curl --silent --show-error --output "${DIR}/${FILENAME}.${SRC_FORMAT}" "${SRC_URL}"
+  
+  echo "➡️  Download the SHA256 file: ${SHA_URL}"
+  TEMP_FILE=$(mktemp)
+  curl --silent --show-error --output "${TEMP_FILE}" "${SHA_URL}"
+  cat "${TEMP_FILE}" | grep "*${FILENAME}.${SRC_FORMAT}$" > "${DIR}/SHA256SUMS"
+  rm "${TEMP_FILE}"
+  
+  echo "➡️  Check the SHA256"
+  sha256sum -c "${DIR}/SHA256SUMS"
 fi
 
 # Convert to qcow2 format if required
-if [[ "${SRC_FORMAT}" != "qcow2" ]]
+if [[ ${IGNORE_CACHE} || "${SRC_FORMAT}" != "qcow2" ]]
 then
+  echo "➡️  Convert the disk file to qcow2"
   qemu-img convert -O qcow2 "${DIR}/${FILENAME}.${SRC_FORMAT}" "${DIR}/${FILENAME}.qcow2"
 fi
 
 # Resize if required
 OUTPUT_FILE="${DIR}/${FILENAME}-${DISK_SIZE}.qcow2"
-if [[ ! -f "${OUTPUT_FILE}" ]]
+if [[ ${IGNORE_CACHE} || ! -f "${OUTPUT_FILE}" ]]
 then
+  echo "➡️  Copy the disk file"
   cp "${DIR}/${FILENAME}.qcow2" "${OUTPUT_FILE}"
-  qemu-img resize "${OUTPUT_FILE}" ${DISK_SIZE} > /dev/null
+
+  echo "➡️  Resize the disk file"
+  qemu-img resize "${OUTPUT_FILE}" ${DISK_SIZE}
 fi
 
 # Return the file path
