@@ -8,7 +8,7 @@ set -e
 MEMORY=${1}
 CORES=${2}
 DISK_SIZE=${3}
-IMG_FILE=${4}
+DISK_FILE=${4}
 NAME=${5}
 TAGS=${6}
 
@@ -48,9 +48,9 @@ else
     DISK_SIZE="${DISK_SIZE}G"
 fi
 
-if [[ "${IMG_FILE}" = "" || ! -f "${IMG_FILE}" ]];
+if [[ "${DISK_FILE}" = "" || ! -f "${DISK_FILE}" ]];
 then
-    echo "❗  Invalid IMG_FILE: ${IMG_FILE}" >&2
+    echo "❗  Invalid DISK_FILE: ${DISK_FILE}" >&2
     exit 1
 fi
 
@@ -74,12 +74,12 @@ qm set ${ID} --net0 virtio,bridge=vmbr0
 qm set ${ID} --agent enabled=1
 
 echo "➡️  Import the disk into the proxmox storage"
-qm importdisk ${ID} ${IMG_FILE} ${STORAGE_NAME}
+qm disk import ${ID} ${DISK_FILE} ${STORAGE_NAME} --format qcow2
 
 echo "➡️  Add the imported disk to the VM"
 qm set ${ID} \
     --scsihw virtio-scsi-pci \
-    --scsi0 ${STORAGE_NAME}:${ID}/vm-${ID}-disk-0.raw
+    --scsi0 ${STORAGE_NAME}:${ID}/vm-${ID}-disk-0.qcow2
 
 echo "➡️  Specify the boot disk"
 qm set ${ID} --boot c --bootdisk scsi0
@@ -117,14 +117,6 @@ do
     echo "🆗  Boot disk import complete"
     break
   fi
-done
-
-# Wait some additional time else it will fail
-# TODO: Determine why this is necessary
-for i in $(seq "10" "-1" "1")
-do
-  echo "⌛  Waiting ${i} seconds"
-  sleep 1s
 done
 
 echo "➡️  Resize boot disk"

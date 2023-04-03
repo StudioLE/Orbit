@@ -9,17 +9,13 @@ TYPE="c1"
 MEMORY="8"
 CORES="4"
 DISK_SIZE="50"
-IMG_FILE="jammy-server-cloudimg-amd64.img"
+DISK_FILE="/srv/artifacts/jammy-server-cloudimg-amd64.qcow2"
 PURPOSE="worker"
 OS_NAME="ubuntu"
 OS_VERSION="jammy"
 NAME="${PURPOSE}-${TYPE}"
 TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
-# CONSTANTS
-
-IMG_FILE="/srv/artifacts/${IMG_FILE}"
-
 # START
 
-/srv/lib/create-proxmox-vm ${MEMORY} ${CORES} ${DISK_SIZE} ${IMG_FILE} ${NAME} ${TAGS}
+/srv/lib/create-proxmox-vm ${MEMORY} ${CORES} ${DISK_SIZE} ${DISK_FILE} ${NAME} ${TAGS}

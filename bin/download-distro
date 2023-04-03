@@ -9,8 +9,9 @@ VERSION="${1}"
 
 # CONSTANTS
 
-FILENAME="${VERSION}-server-cloudimg-amd64.img"
-URL="https://cloud-images.ubuntu.com/${VERSION}/current/${FILENAME}"
+FILENAME="${VERSION}-server-cloudimg-amd64"
+URL="https://cloud-images.ubuntu.com/${VERSION}/current/${FILENAME}.img"
+DIR="/srv/artifacts"
 
 # VALIDATE
 
@@ -21,4 +22,5 @@ fi
 
 # START
 
-curl -O --output-dir "/srv/artifacts/" ${URL}
+curl -O --output-dir "${DIR}" "${URL}"
+qemu-img convert -O qcow2 "${DIR}/${FILENAME}.img" "${DIR}/${FILENAME}.qcow2"
