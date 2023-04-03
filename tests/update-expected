@@ -13,19 +13,19 @@ ACTUAL_FILE="/srv/tests/actual${SCRIPT_FILE}"
 
 if [[ ! -f ${SCRIPT_FILE} ]];
 then
-  echo "❗ Failed to update expected test. SCRIPT_FILE does not exist: ${SCRIPT_FILE}" >&2
+  echo "❗  Invalid SCRIPT_FILE: ${SCRIPT_FILE}" >&2
   exit 1
 fi
 
 if [[ ! -f ${EXPECTED_FILE} ]];
 then
-  echo "❗ Failed to update expected test. EXPECTED_FILE does not exist: ${EXPECTED_FILE}" >&2
+  echo "❗  Invalid EXPECTED_FILE: ${EXPECTED_FILE}" >&2
   exit 1
 fi
 
 if [[ ! -f ${ACTUAL_FILE} ]];
 then
-  echo "❗ Failed to update expected test. ACTUAL_FILE does not exist: ${ACTUAL_FILE}" >&2
+  echo "❗  Invalid ACTUAL_FILE: ${ACTUAL_FILE}" >&2
   exit 1
 fi
 

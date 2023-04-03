@@ -14,13 +14,23 @@ TEMP_FILE=$(mktemp)
 
 # VALIDATE
 
-if [ "${SOURCE_FILE}" = "" ]; then
-  echo "ERROR: Invalid SOURCE_FILE: ${SOURCE_FILE}" >&2
+if [[ ! -f "${SOURCE_FILE}" ]]; then
+  echo "❗  Invalid SOURCE_FILE: ${SOURCE_FILE}" >&2
   exit 1
 fi
 
-if [ "${INDENT_COUNT}" = "" ]; then
-  echo "ERROR: Invalid INDENT: ${INDENT_COUNT}" >&2
+if [[ ! -f "${INSERT_FROM_FILE}" ]]; then
+  echo "❗  Invalid INSERT_FROM_FILE: ${INSERT_FROM_FILE}" >&2
+  exit 1
+fi
+
+if [[ "${FIND}" = "" ]]; then
+  echo "❗  Invalid FIND: ${FIND}" >&2
+  exit 1
+fi
+
+if [[ "${INDENT_COUNT}" = "" ]]; then
+  echo "❗  Invalid INDENT_COUNT: ${INDENT_COUNT}" >&2
   exit 1
 fi
 

@@ -22,4 +22,4 @@ IMG_FILE="/srv/artifacts/${IMG_FILE}"
 
 # START
 
-"/srv/lib/create-proxmox-vm" ${MEMORY} ${CORES} ${DISK_SIZE} ${IMG_FILE} ${NAME} ${TAGS}
+/srv/lib/create-proxmox-vm ${MEMORY} ${CORES} ${DISK_SIZE} ${IMG_FILE} ${NAME} ${TAGS}

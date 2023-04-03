@@ -17,7 +17,7 @@ GATEWAY_IP="10.10.10.1"
 
 if [[ "${VM_ID}" = "" || "${VM_ID}" -lt "100" || "${VM_ID}" -gt "253" ]];
 then
-    echo "ERROR: Invalid VM_ID: ${VM_ID}" >&2
+    echo "❗  Invalid VM_ID: ${VM_ID}" >&2
     exit 1
 fi
 

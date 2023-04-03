@@ -19,7 +19,7 @@ ID_ARRAY=$(jq 'map(select(.status == "stopped" and .template == 0)) | map(.vmid)
 
 for ID in ${ID_ARRAY}
 do
-  echo "##### Destroying VM ${ID}"
+  echo "🗑️  Destroy VM ${ID}"
   qm destroy ${ID} --purge
 done
 

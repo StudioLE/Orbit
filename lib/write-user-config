@@ -17,7 +17,7 @@ SSH_PORT="4444"
 
 if [[ "${HOSTNAME}" = "" ]];
 then
-    echo "ERROR: Invalid HOSTNAME: ${HOSTNAME}" >&2
+    echo "❗  Invalid HOSTNAME: ${HOSTNAME}" >&2
     exit 1
 fi
 
@@ -29,6 +29,6 @@ sed -i 's/${USER}/'${USER}'/' ${CONFIG_FILE}
 sed -i 's/${SUDO_USER}/'${SUDO_USER}'/' ${CONFIG_FILE}
 "/srv/lib/yaml-embed-array" ${CONFIG_FILE} "/root/.ssh/id_rsa.pub" "\${SSH_AUTHORIZED_KEYS}" 3
 sed -i 's/${SSH_PORT}/'${SSH_PORT}'/' ${CONFIG_FILE}
-"/srv/lib/yaml-embed-block" ${CONFIG_FILE} "/srv/src/50-hello-world" "\${HELLO_WORLD_CONTENT}"
-"/srv/lib/yaml-embed-array" ${CONFIG_FILE} "/srv/src/bootcmd.sh" "\${BOOTCMD_CONTENT}" 1
-"/srv/lib/yaml-embed-array" ${CONFIG_FILE} "/srv/src/runcmd.sh" "\${RUNCMD_CONTENT}" 1
+/srv/lib/yaml-embed-block ${CONFIG_FILE} "/srv/src/50-hello-world" "\${HELLO_WORLD_CONTENT}"
+/srv/lib/yaml-embed-array ${CONFIG_FILE} "/srv/src/bootcmd.sh" "\${BOOTCMD_CONTENT}" 1
+/srv/lib/yaml-embed-array ${CONFIG_FILE} "/srv/src/runcmd.sh" "\${RUNCMD_CONTENT}" 1
