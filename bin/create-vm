@@ -8,7 +8,7 @@ set -e
 TYPE="c1"
 MEMORY="8"
 CORES="4"
-DISK_SIZE="50"
+DISK_SIZE="20"
 DISK_FILE="/srv/artifacts/jammy-server-cloudimg-amd64.qcow2"
 PURPOSE="worker"
 OS_NAME="ubuntu"
