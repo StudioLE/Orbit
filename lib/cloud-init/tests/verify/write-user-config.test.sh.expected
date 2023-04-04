@@ -61,3 +61,11 @@ runcmd:
   - systemctl restart ssh
   - systemctl start qemu-guest-agent
   - touch /root/first-run-complete
+
+
+
+
+
+
+
+

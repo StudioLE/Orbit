@@ -32,12 +32,15 @@ function write-user-config {
   write-yaml-string "${OUTPUT}" "\${HOSTNAME}" "${HOSTNAME}"
   write-yaml-string "${OUTPUT}" "\${USER}" "${USER}"
   write-yaml-string "${OUTPUT}" "\${SUDO_USER}" "${SUDO_USER}"
-  # write-yaml-array "${CONFIG_FILE}" "/root/.ssh/id_rsa.pub" "\${SSH_AUTHORIZED_KEYS}" 3
+  SSH_AUTHORIZED_KEYS=$(cat "/root/.ssh/id_rsa.pub")
+  write-yaml-array "${OUTPUT}" "\${SSH_AUTHORIZED_KEYS}" "${SSH_AUTHORIZED_KEYS}" 3
   write-yaml-string "${OUTPUT}" "\${SSH_PORT}" "${SSH_PORT}"
-  HELLO_WORLD_CONTENT=$(cat /srv/lib/cloud-init/src/50-hello-world)
+  HELLO_WORLD_CONTENT=$(cat "/srv/lib/cloud-init/src/50-hello-world")
   write-yaml-block "${OUTPUT}" "\${HELLO_WORLD_CONTENT}" "${HELLO_WORLD_CONTENT}"
-  # write-yaml-array "${CONFIG_FILE}" "/srv/lib/cloud-init/src/bootcmd.sh" "\${BOOTCMD_CONTENT}" 1
-  # write-yaml-array "${CONFIG_FILE}" "/srv/lib/cloud-init/src/runcmd.sh" "\${RUNCMD_CONTENT}" 1
+  BOOTCMD_CONTENT=$(cat "/srv/lib/cloud-init/src/bootcmd.sh")
+  write-yaml-array "${OUTPUT}" "\${BOOTCMD_CONTENT}" "${BOOTCMD_CONTENT}" 1
+  RUNCMD_CONTENT=$(cat "/srv/lib/cloud-init/src/runcmd.sh")
+  write-yaml-array "${OUTPUT}" "\${RUNCMD_CONTENT}" "${RUNCMD_CONTENT}" 1
 
 }
 
