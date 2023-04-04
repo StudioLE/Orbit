@@ -1,12 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+declare -x RETURN_VALUE_2
+
 function write-network-config {
+  
+  # IMPORTS
+
+  source /srv/lib/yaml/write-yaml-string.sh
   
   # ARGS
 
-  declare -r CONFIG_FILE="${1}"
-  declare -ri VM_ID="${2}"
+  declare -ri VM_ID="${1}"
 
   # CONSTANTS
 
@@ -23,8 +28,9 @@ function write-network-config {
   fi
 
   # START
-
-  cp "${CONFIG_SRC}"  "${CONFIG_FILE}"
-  sed -i "s/\${VM_IP}/${VM_IP}/" "${CONFIG_FILE}"
-  sed -i "s/\${GATEWAY_IP}/${GATEWAY_IP}/" "${CONFIG_FILE}"
+  SOURCE=$(cat "${CONFIG_SRC}")
+  write-yaml-string "${SOURCE}" "${VM_IP}" "\${VM_IP}"
+  # echo "${RETURN_VALUE}"
+  write-yaml-string "${RETURN_VALUE}" "${GATEWAY_IP}" "\${GATEWAY_IP}"
+  RETURN_VALUE_2="${RETURN_VALUE}"
 }
