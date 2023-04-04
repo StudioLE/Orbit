@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euo pipefail
+
+ARGS_ARRAY=( "$@" )
+ARRAY_COUNT=${#ARGS_ARRAY[@]}
+declare -A ARGS=()
+KEY=""
+for i in $(seq 0 $((ARRAY_COUNT - 1)) )
+do
+  ARG="${ARGS_ARRAY[$i]}"
+  if [[ "${ARG}" =~ ^--.* ]]
+  then
+    ARGS[${ARG}]="TRUE"
+    KEY="${ARG}"
+  elif [[ "${KEY}" != "" ]]
+  then
+    ARGS[$KEY]="${ARG}"
+    KEY=""
+  else
+    echo "Unexpected value with no key: ${ARG}"
+  fi
+done
+
+for key in "${!ARGS[@]}"
+do 
+  echo "$key: ${ARGS[$key]}"
+done
