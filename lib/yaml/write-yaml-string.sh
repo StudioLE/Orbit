@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-declare -x RETURN_VALUE
+declare -x OUTPUT
 
 function write-yaml-string {
 
@@ -44,5 +44,5 @@ function write-yaml-string {
     fi
   done <<< "${INPUT}"
 
-  RETURN_VALUE=$(cat "${TEMP_FILE}")
+  OUTPUT=$(cat "${TEMP_FILE}")
 }
