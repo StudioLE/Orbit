@@ -10,4 +10,4 @@ ACTUAL_FILE=$1
 # START
 
 write-network-config 253
-echo "${RETURN_VALUE_2}" > "${ACTUAL_FILE}"
+echo "${NETWORK_CONFIG}" > "${ACTUAL_FILE}"

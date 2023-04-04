@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-declare -x RETURN_VALUE_2
+declare -x NETWORK_CONFIG
 
 function write-network-config {
   
@@ -28,8 +28,9 @@ function write-network-config {
   fi
 
   # START
+  declare OUTPUT
   OUTPUT=$(cat "${CONFIG_SRC}")
   write-yaml-string "${OUTPUT}" "\${VM_IP}" "${VM_IP}"
   write-yaml-string "${OUTPUT}" "\${GATEWAY_IP}" "${GATEWAY_IP}"
-  RETURN_VALUE_2="${OUTPUT}"
+  NETWORK_CONFIG="${OUTPUT}"
 }
