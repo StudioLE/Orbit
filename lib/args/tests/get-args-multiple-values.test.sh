@@ -4,9 +4,13 @@ set -uo pipefail
 # ARGS
 ACTUAL_FILE=$1
 
+# SETUP
+
+source /srv/lib/args/get-args.sh
+
 # START
 
-/srv/lib/args/get-args.sh \
+get_args \
   --string "Hello, world!" \
   --int 1 \
   --flag \
