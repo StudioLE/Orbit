@@ -1,0 +1,58 @@
+#!/bin/bash
+set -uo pipefail
+
+# echo "$@"
+
+# declare TEST
+
+# TEST=$(getopt --long int:: --long string: --long flag -- "$@")
+
+# echo "${TEST}"
+
+# declare OPTARG
+# getopts ":i" INT
+
+# echo "$INT"
+
+# echo "$OPTARG"
+
+# # declare -i INT
+# INT=$(getopts --long int: -- "$@" > /dev/null 2>&1)
+# echo "INT: ${INT}"
+
+# # declare -l STRING
+# STRING=$(getopt --long string: -- "$@") > /dev/null 2>&1
+# echo "STRING: ${STRING}"
+
+# # declare -l FLAG
+# FLAG=$(getopt --long flag -- "$@") > /dev/null 2>&1
+# echo "FLAG: ${FLAG}"
+
+# # declare -l OPTIONAL
+# OPTIONAL=$(getopt --long optional: -- "$@") > /dev/null 2>&1
+# echo "OPTIONAL: ${OPTIONAL}"
+
+
+# t() {
+#   local OPTIND
+#   getopts "a:" OPTION
+#   echo Input: $*, OPTION: $OPTION, OPTARG: $OPTARG
+# }
+# t "$@"
+# t -a foo
+# t() {
+#   local OPTIND
+#   getopts "a:" OPTION
+#   echo Input: $*, OPTION: $OPTION, OPTARG: $OPTARG
+# }
+# t "$@"
+# t -a foo
+
+  # declare OPTIND
+  # getopts "a:" OPTION
+  # echo Input: $*, OPTION: $OPTION, OPTARG: $OPTARG
+
+
+  # declare OPTIND
+  getopts "i:" OPTION
+  echo Input: "${*}", OPTION: "${OPTION}", OPTARG: "${OPTARG}"

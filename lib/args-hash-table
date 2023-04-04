@@ -1,27 +1,35 @@
 #!/bin/bash
 set -euo pipefail
 
-ARGS_ARRAY=( "$@" )
-ARRAY_COUNT=${#ARGS_ARRAY[@]}
-declare -A ARGS=()
+SRC_ARRAY=( "$@" )
+SRC_ARRAY_COUNT=${#SRC_ARRAY[@]}
+
+declare -A NAMED_ARGS=()
+declare -a MISC_ARGS=()
+
 KEY=""
-for i in $(seq 0 $((ARRAY_COUNT - 1)) )
+for i in $(seq 0 $((SRC_ARRAY_COUNT - 1)) )
 do
-  ARG="${ARGS_ARRAY[$i]}"
+  ARG="${SRC_ARRAY[$i]}"
   if [[ "${ARG}" =~ ^--.* ]]
   then
-    ARGS[${ARG}]="TRUE"
+    NAMED_ARGS[${ARG}]="TRUE"
     KEY="${ARG}"
   elif [[ "${KEY}" != "" ]]
   then
-    ARGS[$KEY]="${ARG}"
+    NAMED_ARGS[$KEY]="${ARG}"
     KEY=""
   else
-    echo "Unexpected value with no key: ${ARG}"
+    MISC_ARGS+=("${ARG}")
   fi
 done
 
-for key in "${!ARGS[@]}"
+for key in "${!NAMED_ARGS[@]}"
 do 
-  echo "$key: ${ARGS[$key]}"
+  echo "$key: ${NAMED_ARGS[$key]}"
+done
+
+for key in "${!MISC_ARGS[@]}"
+do 
+  echo "$key: ${MISC_ARGS[$key]}"
 done
