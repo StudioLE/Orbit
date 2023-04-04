@@ -84,9 +84,9 @@ qm set "${ID}" --cicustom \
     "network=local:snippets/${ID}-network-config.yml,user=local:snippets/${ID}-user-config.yml"
 
 echo "➡️  Write user config"
-/srv/lib/write-user-config "/var/lib/vz/snippets/${ID}-user-config.yml" "${HOSTNAME}"
+/srv/lib/cloud-init/write-user-config.sh "/var/lib/vz/snippets/${ID}-user-config.yml" "${HOSTNAME}"
 
 echo "➡️  Write network config"
-/srv/lib/write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" "${ID}"
+/srv/lib/cloud-init/write-network-config.sh "/var/lib/vz/snippets/${ID}-network-config.yml" "${ID}"
 
 echo "✅  Created VM ${ID}"

@@ -6,7 +6,7 @@ VM_ID="${2}"
 
 # CONSTANTS
 
-CONFIG_SRC="/srv/src/network-config-template.yml"
+CONFIG_SRC="/srv/lib/cloud-init/src/network-config-template.yml"
 
 VM_IP="10.10.10.${VM_ID}"
 GATEWAY_IP="10.10.10.1"

@@ -7,8 +7,10 @@ SCRIPT_FILE=${1}
 
 # CONSTANTS
 
-EXPECTED_FILE="/srv/tests/expected${SCRIPT_FILE}"
-ACTUAL_FILE="/srv/tests/actual${SCRIPT_FILE}"
+DIR=$(dirname "${SCRIPT_FILE}")
+FILENAME=$(basename "${SCRIPT_FILE}")
+EXPECTED_FILE="${DIR}/tests/verify/${FILENAME}.expected"
+ACTUAL_FILE="${DIR}/tests/verify/${FILENAME}.actual"
 
 # VALIDATE
 
@@ -35,19 +37,19 @@ fi
 # Detemine the arguments to use
 
 
-if [[ "${SCRIPT_FILE}" == "/srv/lib/write-network-config" ]];
+if [[ "${SCRIPT_FILE}" == "/srv/lib/cloud-init/write-network-config.sh" ]];
 then
 
   ARGUMENTS="253"  
   "${SCRIPT_FILE}" "${ACTUAL_FILE}" "${ARGUMENTS}"
 
-elif [[ "${SCRIPT_FILE}" == "/srv/lib/write-user-config" ]];
+elif [[ "${SCRIPT_FILE}" == "/srv/lib/cloud-init/write-user-config.sh" ]];
 then
 
   ARGUMENTS="vm999"
   "${SCRIPT_FILE}" "${ACTUAL_FILE}" "${ARGUMENTS}"
 
-elif [[ "${SCRIPT_FILE}" == "/srv/lib/args-hash-table" ]];
+elif [[ "${SCRIPT_FILE}" == "/srv/lib/args/get-args.sh" ]];
 then
 
   ARGUMENTS=(--string "Hello, world!" --int 1 --flag --optional value /path/to/file path/to/file)

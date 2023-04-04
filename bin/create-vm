@@ -16,8 +16,8 @@ TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # START
 
-. /srv/lib/create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
+. /srv/lib/boot-disk/create-boot-disk.sh "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
 
 DISK_FILE="${OUTPUT_FILE}"
 
-/srv/lib/create-proxmox-vm "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"
+/srv/lib/vm/create-vm.sh "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"
