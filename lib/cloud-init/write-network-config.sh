@@ -29,8 +29,8 @@ function write-network-config {
 
   # START
   SOURCE=$(cat "${CONFIG_SRC}")
-  write-yaml-string "${SOURCE}" "${VM_IP}" "\${VM_IP}"
+  write-yaml-string "${SOURCE}" "\${VM_IP}" "${VM_IP}"
   # echo "${RETURN_VALUE}"
-  write-yaml-string "${RETURN_VALUE}" "${GATEWAY_IP}" "\${GATEWAY_IP}"
+  write-yaml-string "${RETURN_VALUE}" "\${GATEWAY_IP}" "${GATEWAY_IP}"
   RETURN_VALUE_2="${RETURN_VALUE}"
 }

@@ -7,12 +7,8 @@ function write-yaml-string {
 
   # ARGS
   declare -r SOURCE=${1}
-  declare -r INSERT=${2}
-  declare -r FIND=${3}
-
-  # echo "SOURCE: ${SOURCE}"
-  # echo "INSERT: ${INSERT}"
-  # echo "FIND: ${FIND}"
+  declare -r FIND=${2}
+  declare -r REPLACE=${3}
 
   # CONSTANTS
   declare TEMP_FILE
@@ -25,13 +21,13 @@ function write-yaml-string {
     exit 1
   fi
 
-  if [[ "${INSERT}" == "" ]]; then
-    echo "❗  Invalid INSERT: ${INSERT}" >&2
+  if [[ "${FIND}" == "" ]]; then
+    echo "❗  Invalid FIND: ${FIND}" >&2
     exit 1
   fi
 
-  if [[ "${FIND}" == "" ]]; then
-    echo "❗  Invalid FIND: ${FIND}" >&2
+  if [[ "${REPLACE}" == "" ]]; then
+    echo "❗  Invalid REPLACE: ${REPLACE}" >&2
     exit 1
   fi
 
@@ -42,7 +38,7 @@ function write-yaml-string {
   do
     if [[ $line == *"$FIND"* ]];
     then
-      echo "${line/$FIND/$INSERT}" >> "${TEMP_FILE}"
+      echo "${line/$FIND/$REPLACE}" >> "${TEMP_FILE}"
     else
       echo "${line}" >> "${TEMP_FILE}"
     fi
