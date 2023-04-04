@@ -8,5 +8,6 @@ source /srv/lib/cloud-init/write-user-config.sh
 ACTUAL_FILE=$1
 
 # START
-
-write-user-config "${ACTUAL_FILE}" vm999
+OUTPUT=""
+write-user-config vm999
+echo "${OUTPUT}" > "${ACTUAL_FILE}"

@@ -3,24 +3,20 @@ set -euo pipefail
 
 function write-yaml-block {
 
-  # ARGS
-  declare -r SOURCE_FILE=${1}
-  declare -r INSERT_FROM_FILE=${2}
-  declare -r FIND=${3}
+  # IMPORTS
 
-  # CONSTANTS
-  declare TEMP_FILE
-  TEMP_FILE=$(mktemp)
+  source /srv/lib/yaml/write-yaml-string.sh
+
+  # ARGS
+
+  declare -r INPUT=${1}
+  declare -r FIND=${2}
+  declare -r REPLACE=${3}
 
   # VALIDATE
 
-  if [[ ! -f "${SOURCE_FILE}" ]]; then
-    echo "❗  Invalid SOURCE_FILE: ${SOURCE_FILE}" >&2
-    exit 1
-  fi
-
-  if [[ ! -f "${INSERT_FROM_FILE}" ]]; then
-    echo "❗  Invalid INSERT_FROM_FILE: ${INSERT_FROM_FILE}" >&2
+  if [[ "${INPUT}" == "" ]]; then
+    echo "❗  Invalid INPUT: ${INPUT}" >&2
     exit 1
   fi
 
@@ -29,28 +25,23 @@ function write-yaml-block {
     exit 1
   fi
 
+  if [[ "${REPLACE}" == "" ]]; then
+    echo "❗  Invalid REPLACE: ${REPLACE}" >&2
+    exit 1
+  fi
+
   # START
 
-  declare INSERT="|"
+  declare BLOCK="|"
 
   # Loop through each line of the insert file and indent it
   while read -r line;
   do
-    INSERT+=$'\n'
-    INSERT+="      $line"
-  done < "${INSERT_FROM_FILE}"
+    BLOCK+=$'\n'
+    BLOCK+="      $line"
+  done <<< "${REPLACE}"
 
-  # Loop through each line of the source file and replace occurances
-  while IFS= read -r line;
-  do
-    if [[ $line == *"$FIND"* ]];
-    then
-      echo "${line/$FIND/$INSERT}" >> "${TEMP_FILE}"
-    else
-      echo "${line}" >> "${TEMP_FILE}"
-    fi
-  done < "${SOURCE_FILE}"
+  echo "$BLOCK"
 
-  cp "${TEMP_FILE}" "${SOURCE_FILE}"
-  rm "${TEMP_FILE}"
+  write-yaml-string "${INPUT}" "${FIND}" "${BLOCK}"
 }
