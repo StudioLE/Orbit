@@ -6,7 +6,7 @@ declare -x RETURN_VALUE
 function write-yaml-string {
 
   # ARGS
-  declare -r SOURCE=${1}
+  declare -r INPUT=${1}
   declare -r FIND=${2}
   declare -r REPLACE=${3}
 
@@ -16,8 +16,8 @@ function write-yaml-string {
 
   # VALIDATE
 
-  if [[ "${SOURCE}" == "" ]]; then
-    echo "❗  Invalid SOURCE: ${SOURCE}" >&2
+  if [[ "${INPUT}" == "" ]]; then
+    echo "❗  Invalid INPUT: ${INPUT}" >&2
     exit 1
   fi
 
@@ -42,7 +42,7 @@ function write-yaml-string {
     else
       echo "${line}" >> "${TEMP_FILE}"
     fi
-  done <<< "${SOURCE}"
+  done <<< "${INPUT}"
 
   RETURN_VALUE=$(cat "${TEMP_FILE}")
 }
