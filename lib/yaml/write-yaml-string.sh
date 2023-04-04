@@ -41,6 +41,7 @@ function write-yaml-string {
       echo "${line}" >> "${TEMP_FILE}"
     fi
   done <<< "${INPUT}"
-
+  
+  # shellcheck disable=SC2034
   OUTPUT=$(cat "${TEMP_FILE}")
 }
