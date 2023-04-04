@@ -9,7 +9,7 @@ source /srv/lib/test/setup-test.sh
 
 if [[ -f "${ACTUAL_FILE}" ]]
 then
-  rm "${ACTUAL_FILE}"
+  "${ACTUAL_FILE}" > ""
 fi
 
 # Execute the test
