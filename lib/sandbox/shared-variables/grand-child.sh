@@ -2,5 +2,7 @@
 set -euo pipefail
 
 echo "> > > ${OUTPUT}"
-OUTPUT="GRAND CHILD VALUE" 
+
+OUTPUT="GRAND CHILD VALUE"
+
 echo "> > > ${OUTPUT}"
