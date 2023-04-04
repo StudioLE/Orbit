@@ -4,4 +4,8 @@ set -uo pipefail
 # ARGS
 ACTUAL_FILE=$1
 
-/srv/lib/sandbox/shared-variables/parent.sh > "${ACTUAL_FILE}"
+source /srv/lib/sandbox/shared-variables/parent.sh
+
+RESULT=$(parent)
+echo "${RESULT}"
+echo "${RESULT}" > "${ACTUAL_FILE}"

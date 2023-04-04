@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "> > > ${OUTPUT}"
+function grand-child {
+  
+  echo "> > > ${OUTPUT}"
 
-OUTPUT="GRAND CHILD VALUE"
+  OUTPUT="GRAND CHILD VALUE"
 
-echo "> > > ${OUTPUT}"
+  echo "> > > ${OUTPUT}"
+  
+}
