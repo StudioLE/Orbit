@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+# IMPORTS
+
+source /srv/lib/vm/create-vm.sh
+
 # ARGS
 
 OS_NAME="ubuntu"
@@ -20,4 +24,4 @@ TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 DISK_FILE="${OUTPUT_FILE}"
 
-/srv/lib/vm/create-vm.sh "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"
+create-vm "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"
