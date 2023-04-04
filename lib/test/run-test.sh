@@ -3,20 +3,20 @@ set -uo pipefail
 
 # ARGS
 
-SCRIPT_FILE=${1}
+TEST_FILE=${1}
 
 # CONSTANTS
 
-DIR=$(dirname "${SCRIPT_FILE}")
-FILENAME=$(basename "${SCRIPT_FILE}")
-EXPECTED_FILE="${DIR}/tests/verify/${FILENAME}.expected"
-ACTUAL_FILE="${DIR}/tests/verify/${FILENAME}.actual"
+TEST_DIR=$(dirname "${TEST_FILE}")
+TEST_FILENAME=$(basename "${TEST_FILE}")
+EXPECTED_FILE="${TEST_DIR}/verify/${TEST_FILENAME}.expected"
+ACTUAL_FILE="${TEST_DIR}/verify/${TEST_FILENAME}.actual"
 
 # VALIDATE
 
-if [[ ! -f ${SCRIPT_FILE} ]];
+if [[ ! -f ${TEST_FILE} ]];
 then
-  echo "❗  Invalid SCRIPT_FILE: ${SCRIPT_FILE}" >&2
+  echo "❗  Invalid TEST_FILE: ${TEST_FILE}" >&2
   exit 1
 fi
 
@@ -34,32 +34,8 @@ fi
 
 # START
 
-# Detemine the arguments to use
-
-
-if [[ "${SCRIPT_FILE}" == "/srv/lib/cloud-init/write-network-config.sh" ]];
-then
-
-  ARGUMENTS="253"  
-  "${SCRIPT_FILE}" "${ACTUAL_FILE}" "${ARGUMENTS}"
-
-elif [[ "${SCRIPT_FILE}" == "/srv/lib/cloud-init/write-user-config.sh" ]];
-then
-
-  ARGUMENTS="vm999"
-  "${SCRIPT_FILE}" "${ACTUAL_FILE}" "${ARGUMENTS}"
-
-elif [[ "${SCRIPT_FILE}" == "/srv/lib/args/get-args.sh" ]];
-then
-
-  ARGUMENTS=(--string "Hello, world!" --int 1 --flag --optional value /path/to/file path/to/file)
-  # echo "$ARGUMENTS"
-  "${SCRIPT_FILE}" "${ARGUMENTS[@]}" > "${ACTUAL_FILE}"
-
-else
-  echo "❗  Unknown SCRIPT_FILE: ${SCRIPT_FILE}" >&2
-  exit 1
-fi
+# Execute the test
+${TEST_FILE} "${ACTUAL_FILE}"
 
 
 SCRIPT_EXIT_CODE=$?
@@ -76,8 +52,8 @@ COMPARE_EXIT_CODE=$?
 # Echo the status, the command and a diff if not matching
 if [[ ${COMPARE_EXIT_CODE} == 0 ]];
 then
-  echo "✅  Test passed: ${SCRIPT_FILE}" 
+  echo "✅  Test passed: ${TEST_FILE}" 
 else
-  echo "❌  Test failed: Actual and expected did not match: ${SCRIPT_FILE}"
-  /srv/tests/lib/diff-results "${EXPECTED_FILE}" "${ACTUAL_FILE}"
+  echo "❌  Test failed: Actual and expected did not match: ${TEST_FILE}"
+  /srv/lib/test/diff-results.sh "${EXPECTED_FILE}" "${ACTUAL_FILE}"
 fi
