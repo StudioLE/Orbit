@@ -1,0 +1,6 @@
+--int: 1
+--string: Hello, world!
+--optional: value
+--flag: TRUE
+0: /path/to/file
+1: path/to/file

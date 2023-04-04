@@ -33,21 +33,33 @@ fi
 # START
 
 # Detemine the arguments to use
+
+
 if [[ "${SCRIPT_FILE}" == "/srv/lib/write-network-config" ]];
 then
-  ARGUMENTS="253"
+
+  ARGUMENTS="253"  
+  "${SCRIPT_FILE}" "${ACTUAL_FILE}" "${ARGUMENTS}"
+
 elif [[ "${SCRIPT_FILE}" == "/srv/lib/write-user-config" ]];
 then
+
   ARGUMENTS="vm999"
+  "${SCRIPT_FILE}" "${ACTUAL_FILE}" "${ARGUMENTS}"
+
+elif [[ "${SCRIPT_FILE}" == "/srv/lib/args-hash-table" ]];
+then
+
+  ARGUMENTS=(--string "Hello, world!" --int 1 --flag --optional value /path/to/file path/to/file)
+  # echo "$ARGUMENTS"
+  "${SCRIPT_FILE}" "${ARGUMENTS[@]}" > "${ACTUAL_FILE}"
+
 else
   echo "❗  Unknown SCRIPT_FILE: ${SCRIPT_FILE}" >&2
   exit 1
 fi
 
-TEST_COMMAND="${SCRIPT_FILE} ${ACTUAL_FILE} ${ARGUMENTS}"
 
-# Run the script file. Store the exit code
-${TEST_COMMAND}
 SCRIPT_EXIT_CODE=$?
 if [[ ${SCRIPT_EXIT_CODE} != 0 ]];
 then
@@ -62,8 +74,8 @@ COMPARE_EXIT_CODE=$?
 # Echo the status, the command and a diff if not matching
 if [[ ${COMPARE_EXIT_CODE} == 0 ]];
 then
-  echo "✅  Test passed: ${TEST_COMMAND}" 
+  echo "✅  Test passed: ${SCRIPT_FILE}" 
 else
-  echo "❌  Test failed: Actual and expected did not match: ${TEST_COMMAND}"
+  echo "❌  Test failed: Actual and expected did not match: ${SCRIPT_FILE}"
   /srv/tests/lib/diff-results "${EXPECTED_FILE}" "${ACTUAL_FILE}"
 fi
