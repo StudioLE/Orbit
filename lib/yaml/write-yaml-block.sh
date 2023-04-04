@@ -36,7 +36,8 @@ function write-yaml-block {
   # Loop through each line of the insert file and indent it
   while read -r line;
   do
-    INSERT="$INSERT"$'\n'"      $line"
+    INSERT+=$'\n'
+    INSERT+="      $line"
   done < "${INSERT_FROM_FILE}"
 
   # Loop through each line of the source file and replace occurances
