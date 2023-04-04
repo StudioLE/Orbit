@@ -8,6 +8,7 @@ source /srv/lib/cloud-init/write-network-config.sh
 ACTUAL_FILE=$1
 
 # START
-
+OUTPUT=""
 write-network-config 253
-echo "${NETWORK_CONFIG}" > "${ACTUAL_FILE}"
+echo "${OUTPUT}" > "${ACTUAL_FILE}"
+echo "${OUTPUT}"

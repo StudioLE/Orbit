@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-declare -x OUTPUT
-
 function write-yaml-string {
 
   # ARGS

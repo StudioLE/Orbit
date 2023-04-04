@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-declare -x NETWORK_CONFIG
-
 function write-network-config {
   
   # IMPORTS
@@ -28,9 +26,7 @@ function write-network-config {
   fi
 
   # START
-  declare OUTPUT
   OUTPUT=$(cat "${CONFIG_SRC}")
   write-yaml-string "${OUTPUT}" "\${VM_IP}" "${VM_IP}"
   write-yaml-string "${OUTPUT}" "\${GATEWAY_IP}" "${GATEWAY_IP}"
-  NETWORK_CONFIG="${OUTPUT}"
 }
