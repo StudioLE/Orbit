@@ -4,7 +4,7 @@ set -euo pipefail
 declare -Ax NAMED_ARGS=()
 declare -ax MISC_ARGS=()
 
-function get_args {
+function get-args {
   declare -a ARGS
   declare -i ARGS_COUNT
   ARGS=( "$@" )

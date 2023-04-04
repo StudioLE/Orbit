@@ -10,6 +10,6 @@ source /srv/lib/args/get-args.sh
 
 # START
 
-get_args \
+get-args \
   --hello \
   > "${ACTUAL_FILE}"

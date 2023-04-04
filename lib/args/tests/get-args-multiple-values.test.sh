@@ -10,7 +10,7 @@ source /srv/lib/args/get-args.sh
 
 # START
 
-get_args \
+get-args \
   --string "Hello, world!" \
   --int 1 \
   --flag \
@@ -18,3 +18,4 @@ get_args \
   /path/to/file \
   path/to/file \
   > "${ACTUAL_FILE}"
+  
