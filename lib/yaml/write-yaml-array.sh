@@ -1,62 +1,68 @@
 #!/bin/bash
 set -euo pipefail
 
-# ARGS
-SOURCE_FILE=${1}
-INSERT_FROM_FILE=${2}
-FIND=${3}
-INDENT_COUNT=${4}
 
-# CONSTANTS
-TEMP_FILE=$(mktemp)
+function write-yaml-array {
 
-# VALIDATE
+  # ARGS
+  declare -r SOURCE_FILE=${1}
+  declare -r INSERT_FROM_FILE=${2}
+  declare -r FIND=${3}
+  declare -ri INDENT_COUNT="${4}"
 
-if [[ ! -f "${SOURCE_FILE}" ]]; then
-  echo "❗  Invalid SOURCE_FILE: ${SOURCE_FILE}" >&2
-  exit 1
-fi
+  # CONSTANTS
+  declare TEMP_FILE
+  TEMP_FILE=$(mktemp)
 
-if [[ ! -f "${INSERT_FROM_FILE}" ]]; then
-  echo "❗  Invalid INSERT_FROM_FILE: ${INSERT_FROM_FILE}" >&2
-  exit 1
-fi
+  # VALIDATE
 
-if [[ "${FIND}" == "" ]]; then
-  echo "❗  Invalid FIND: ${FIND}" >&2
-  exit 1
-fi
-
-if [[ "${INDENT_COUNT}" == "" ]]; then
-  echo "❗  Invalid INDENT_COUNT: ${INDENT_COUNT}" >&2
-  exit 1
-fi
-
-# START
-INDENT=""
-for i in $(seq 1 "${INDENT_COUNT}");
-do
-	INDENT="${INDENT}  "
-done
-
-INSERT=""
-while read -r line;
-do
-  INSERT="$INSERT"$'\n'"${INDENT}- $line"
-done < "${INSERT_FROM_FILE}"
-
-# echo "$INSERT"
-
-# Loop through each line of the source file and replace occurances
-while IFS= read -r line;
-do
-  if [[ $line == *"$FIND"* ]];
-  then
-    echo "${line/$FIND/$INSERT}" >> "${TEMP_FILE}"
-  else
-    echo "${line}" >> "${TEMP_FILE}"
+  if [[ ! -f "${SOURCE_FILE}" ]]; then
+    echo "❗  Invalid SOURCE_FILE: ${SOURCE_FILE}" >&2
+    exit 1
   fi
-done < "${SOURCE_FILE}"
 
-cp "${TEMP_FILE}" "${SOURCE_FILE}"
-rm "${TEMP_FILE}"
+  if [[ ! -f "${INSERT_FROM_FILE}" ]]; then
+    echo "❗  Invalid INSERT_FROM_FILE: ${INSERT_FROM_FILE}" >&2
+    exit 1
+  fi
+
+  if [[ "${FIND}" == "" ]]; then
+    echo "❗  Invalid FIND: ${FIND}" >&2
+    exit 1
+  fi
+
+  if [[ "${INDENT_COUNT}" == "" ]]; then
+    echo "❗  Invalid INDENT_COUNT: ${INDENT_COUNT}" >&2
+    exit 1
+  fi
+
+  # START
+  declare INDENT=""
+  for i in $(seq 1 "${INDENT_COUNT}");
+  do
+    INDENT="${INDENT}  "
+  done
+
+  declare INSERT=""
+  while read -r line;
+  do
+    INSERT="$INSERT"$'\n'"${INDENT}- $line"
+  done < "${INSERT_FROM_FILE}"
+
+  # echo "$INSERT"
+
+  # Loop through each line of the source file and replace occurances
+  while IFS= read -r line;
+  do
+    if [[ $line == *"$FIND"* ]];
+    then
+      echo "${line/$FIND/$INSERT}" >> "${TEMP_FILE}"
+    else
+      echo "${line}" >> "${TEMP_FILE}"
+    fi
+  done < "${SOURCE_FILE}"
+
+  cp "${TEMP_FILE}" "${SOURCE_FILE}"
+  rm "${TEMP_FILE}"
+
+}

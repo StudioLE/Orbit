@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+# ARGS
+
 CONFIG_FILE="${1}"
 VM_ID="${2}"
 
