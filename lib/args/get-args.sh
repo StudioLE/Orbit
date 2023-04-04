@@ -23,7 +23,13 @@ do
   elif [[ "${ARG}" =~ ^--.* ]]
   then
   
-    NEXT_ARG="${SRC_ARRAY[$i+1]}"
+    # If it's not the final iteration then define the next arg
+    if [[ $i -lt $((SRC_ARRAY_COUNT - 1)) ]]
+    then
+      NEXT_ARG="${SRC_ARRAY[$i+1]}"
+    else
+      NEXT_ARG=""
+    fi
 
     # If the next is a named argument then this must be a flag
     if [[ "${NEXT_ARG}" =~ ^--.* ]]
