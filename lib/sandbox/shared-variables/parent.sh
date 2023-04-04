@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-declare OUTPUT
-
 OUTPUT="PARENT VALUE"
 
 echo "> ${OUTPUT}"
