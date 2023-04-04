@@ -3,6 +3,7 @@ set -euo pipefail
 
 # IMPORTS
 
+source /srv/lib/boot-disk/create-boot-disk.sh
 source /srv/lib/vm/create-vm.sh
 
 # ARGS
@@ -20,8 +21,7 @@ TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # START
 
-. /srv/lib/boot-disk/create-boot-disk.sh "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
-
-DISK_FILE="${OUTPUT_FILE}"
+create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
+DISK_FILE="${RETURN_VALUE}"
 
 create-vm "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"
