@@ -8,10 +8,6 @@ function write-yaml-string {
   declare -r FIND=${2}
   declare -r REPLACE=${3}
 
-  # CONSTANTS
-  declare TEMP_FILE
-  TEMP_FILE=$(mktemp)
-
   # VALIDATE
 
   if [[ "${INPUT}" == "" ]]; then
@@ -31,17 +27,17 @@ function write-yaml-string {
 
   # START
 
+  OUTPUT=""
+
   # Loop through each line of the source file and replace occurances
   while IFS= read -r line;
   do
     if [[ $line == *"$FIND"* ]];
     then
-      echo "${line/$FIND/$REPLACE}" >> "${TEMP_FILE}"
+      OUTPUT+="${line/$FIND/$REPLACE}"
     else
-      echo "${line}" >> "${TEMP_FILE}"
+      OUTPUT+="${line}"
     fi
+    OUTPUT+=$'\n'
   done <<< "${INPUT}"
-  
-  # shellcheck disable=SC2034
-  OUTPUT=$(cat "${TEMP_FILE}")
 }

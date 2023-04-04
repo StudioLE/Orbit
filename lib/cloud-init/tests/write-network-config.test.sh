@@ -11,4 +11,3 @@ ACTUAL_FILE=$1
 OUTPUT=""
 write-network-config 253
 echo "${OUTPUT}" > "${ACTUAL_FILE}"
-echo "${OUTPUT}"
