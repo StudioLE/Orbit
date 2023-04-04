@@ -5,6 +5,13 @@ set -uo pipefail
 
 source /srv/lib/test/setup-test.sh
 
+# START
+
+if [[ -f "${ACTUAL_FILE}" ]]
+then
+  rm "${ACTUAL_FILE}"
+fi
+
 # Execute the test
 ${TEST_FILE} "${ACTUAL_FILE}"
 
