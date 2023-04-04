@@ -9,7 +9,8 @@ source /srv/lib/test/setup-test.sh
 
 if [[ -f "${ACTUAL_FILE}" ]]
 then
-  "${ACTUAL_FILE}" > ""
+  declare -r EMPTY=""
+  ${EMPTY} > "${ACTUAL_FILE}"
 fi
 
 # Execute the test
