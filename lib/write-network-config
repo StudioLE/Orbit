@@ -23,6 +23,6 @@ fi
 
 # START
 
-cp ${CONFIG_SRC}  ${CONFIG_FILE}
-sed -i 's/${VM_IP}/'${VM_IP}'/' ${CONFIG_FILE}
-sed -i 's/${GATEWAY_IP}/'${GATEWAY_IP}'/' ${CONFIG_FILE}
+cp "${CONFIG_SRC}"  "${CONFIG_FILE}"
+sed -i "s/\${VM_IP}/${VM_IP}/" "${CONFIG_FILE}"
+sed -i "s/\${GATEWAY_IP}/${GATEWAY_IP}/" "${CONFIG_FILE}"

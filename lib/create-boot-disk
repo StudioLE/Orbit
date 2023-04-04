@@ -58,13 +58,12 @@ then
   curl --silent --show-error --output "${DIR}/${FILENAME}.${SRC_FORMAT}" "${SRC_URL}"
   
   echo "➡️  Download the SHA256 file: ${SHA_URL}"
-  TEMP_FILE=$(mktemp)
-  curl --silent --show-error --output "${TEMP_FILE}" "${SHA_URL}"
-  cat "${TEMP_FILE}" | grep "*${FILENAME}.${SRC_FORMAT}$" > "${DIR}/SHA256SUMS"
-  rm "${TEMP_FILE}"
+  curl --silent --show-error --output "${TEMP_FILE}" "${SHA_URL}" \
+    | grep "\*${FILENAME}\.${SRC_FORMAT}$" \
+    > "${DIR}/SHA256SUMS"
   
   echo "➡️  Check the SHA256"
-  (cd ${DIR} && sha256sum -c "${DIR}/SHA256SUMS")
+  (cd "${DIR}" && sha256sum -c "${DIR}/SHA256SUMS")
 fi
 
 # Convert to qcow2 format if required
@@ -82,5 +81,5 @@ then
   cp "${DIR}/${FILENAME}.qcow2" "${OUTPUT_FILE}"
 
   echo "➡️  Resize the disk file"
-  qemu-img resize "${OUTPUT_FILE}" ${DISK_SIZE}
+  qemu-img resize "${OUTPUT_FILE}" "${DISK_SIZE}"
 fi

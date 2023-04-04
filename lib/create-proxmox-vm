@@ -30,7 +30,7 @@ then
     echo "❗  Invalid MEMORY: ${MEMORY}" >&2
     exit 1
 else
-    MEMORY=$((${MEMORY} * 1024))
+    MEMORY=$((MEMORY * 1024))
 fi
 
 if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
@@ -58,37 +58,37 @@ fi
 # START
 
 echo "🆕  Create a virtual machine"
-qm create ${ID} --name ${NAME} --tags ${TAGS}
-qm set ${ID} --memory ${MEMORY}
-qm set ${ID} --sockets 1 --cores ${CORES}
-qm set ${ID} --net0 virtio,bridge=vmbr0
-qm set ${ID} --agent enabled=1
+qm create "${ID}" --name "${NAME}" --tags "${TAGS}"
+qm set "${ID}" --memory ${MEMORY}
+qm set "${ID}" --sockets 1 --cores "${CORES}"
+qm set "${ID}" --net0 virtio,bridge=vmbr0
+qm set "${ID}" --agent enabled=1
 
 echo "➡️  Import the disk into the proxmox storage"
-qm disk import ${ID} ${DISK_FILE} ${STORAGE_NAME} --format qcow2
+qm disk import "${ID}" "${DISK_FILE}" "${STORAGE_NAME}" --format qcow2
 
 echo "➡️  Add the imported disk to the VM"
-qm set ${ID} \
+qm set "${ID}" \
     --scsihw virtio-scsi-pci \
-    --scsi0 ${STORAGE_NAME}:${ID}/vm-${ID}-disk-0.qcow2
+    --scsi0 "${STORAGE_NAME}:${ID}/vm-${ID}-disk-0.qcow2"
 
 echo "➡️  Specify the boot disk"
-qm set ${ID} --boot c --bootdisk scsi0
+qm set "${ID}" --boot c --bootdisk scsi0
 
 echo "➡️  Add support for VNC and a serial console"
-qm set ${ID} --serial0 socket --vga serial0
+qm set "${ID}" --serial0 socket --vga serial0
 
 echo "➡️  Add a CD-ROM for cloud-init"
-qm set ${ID} --ide2 ${STORAGE_NAME}:cloudinit
+qm set "${ID}" --ide2 "${STORAGE_NAME}:cloudinit"
 
 echo "➡️  Set cloud-init"
-qm set ${ID} --cicustom \
+qm set "${ID}" --cicustom \
     "network=local:snippets/${ID}-network-config.yml,user=local:snippets/${ID}-user-config.yml"
 
 echo "➡️  Write user config"
-/srv/lib/write-user-config "/var/lib/vz/snippets/${ID}-user-config.yml" ${HOSTNAME} 
+/srv/lib/write-user-config "/var/lib/vz/snippets/${ID}-user-config.yml" "${HOSTNAME}"
 
 echo "➡️  Write network config"
-/srv/lib/write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" ${ID}
+/srv/lib/write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" "${ID}"
 
 echo "✅  Created VM ${ID}"

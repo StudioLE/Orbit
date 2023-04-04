@@ -22,7 +22,7 @@ ALL_RESOURCES=$(pvesh get /cluster/resources --human-readable 0 --output-format 
 
 # Validate at least 1 resource is returned
 COUNT=$(echo "${ALL_RESOURCES}" | jq 'length')
-if [[ ${COUNT} < 1 ]];
+if [[ ${COUNT} -lt 1 ]];
 then
     echo "❗  No resources found" >&2
     exit 1
@@ -33,11 +33,11 @@ VM_WITH_ID=$(echo "${ALL_RESOURCES}" | jq "map(select(.vmid == ${ID}))")
 
 # Validate only one VM has that ID
 COUNT=$(echo "${VM_WITH_ID}" | jq 'length')
-if [[ ${COUNT} < 1 ]];
+if [[ ${COUNT} -lt 1 ]];
 then
     echo "❗  VM ${ID} does not exist" >&2
     exit 1
-elif [[ ${COUNT} > 1 ]];
+elif [[ ${COUNT} -gt 1 ]];
 then
     echo "❗  Multiple VMs with ${ID} were found" >&2
     exit 1

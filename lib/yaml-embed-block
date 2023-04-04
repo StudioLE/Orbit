@@ -32,7 +32,7 @@ fi
 
 INSERT="|"
 
-while read line;
+while read -r line;
 do
   INSERT="$INSERT"$'\n'"      $line"
 done < "${INSERT_FROM_FILE}"
@@ -44,11 +44,11 @@ while IFS= read -r line;
 do
   if [[ $line == *"$FIND"* ]];
   then
-    echo "${line/$FIND/$INSERT}" >> ${TEMP_FILE}
+    echo "${line/$FIND/$INSERT}" >> "${TEMP_FILE}"
   else
-    echo "${line}" >> ${TEMP_FILE}
+    echo "${line}" >> "${TEMP_FILE}"
   fi
 done < "${SOURCE_FILE}"
 
-cp ${TEMP_FILE} ${SOURCE_FILE}
-rm ${TEMP_FILE}
+cp "${TEMP_FILE}" "${SOURCE_FILE}"
+rm "${TEMP_FILE}"

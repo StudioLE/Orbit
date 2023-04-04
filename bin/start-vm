@@ -15,7 +15,7 @@ fi
 # START
 
 echo "➡️  Start VM ${ID}"
-qm start ${ID}
+qm start "${ID}"
 
 START_TIME="$(date -u +%s)"
 
@@ -23,7 +23,7 @@ START_TIME="$(date -u +%s)"
 while :
 do
   CURRENT_TIME="$(date -u +%s)"
-  ELAPSED="$(($CURRENT_TIME - $START_TIME))"
+  ELAPSED="$((CURRENT_TIME - START_TIME))"
   echo "⌛  ${ELAPSED} seconds"
 
   RESPONSE=$(ssh "10.10.10.${ID}" -o 'LogLevel=FATAL' -o 'ConnectTimeout=1' 'cloud-init status')
