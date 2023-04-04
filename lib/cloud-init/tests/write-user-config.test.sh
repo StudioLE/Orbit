@@ -1,9 +1,12 @@
 #!/bin/bash
 set -uo pipefail
 
+# IMPORTS
+source /srv/lib/cloud-init/write-user-config.sh
+
 # ARGS
 ACTUAL_FILE=$1
 
 # START
 
-/srv/lib/cloud-init/write-user-config.sh "${ACTUAL_FILE}" vm999
+write-user-config "${ACTUAL_FILE}" vm999

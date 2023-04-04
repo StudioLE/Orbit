@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+# IMPORTS
+
+source /srv/lib/cloud-init/write-network-config.sh
+source /srv/lib/cloud-init/write-user-config.sh
+
 # ARGS
 
 MEMORY=${1}
@@ -55,6 +60,12 @@ fi
 
 # START
 
+echo "➡️  Write user config"
+write-user-config "/var/lib/vz/snippets/${ID}-user-config.yml" "${HOSTNAME}"
+
+echo "➡️  Write network config"
+write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" "${ID}"
+
 echo "🆕  Create a virtual machine"
 qm create "${ID}" --name "${NAME}" --tags "${TAGS}"
 qm set "${ID}" --memory ${MEMORY}
@@ -82,11 +93,5 @@ qm set "${ID}" --ide2 "${STORAGE_NAME}:cloudinit"
 echo "➡️  Set cloud-init"
 qm set "${ID}" --cicustom \
     "network=local:snippets/${ID}-network-config.yml,user=local:snippets/${ID}-user-config.yml"
-
-echo "➡️  Write user config"
-/srv/lib/cloud-init/write-user-config.sh "/var/lib/vz/snippets/${ID}-user-config.yml" "${HOSTNAME}"
-
-echo "➡️  Write network config"
-/srv/lib/cloud-init/write-network-config.sh "/var/lib/vz/snippets/${ID}-network-config.yml" "${ID}"
 
 echo "✅  Created VM ${ID}"

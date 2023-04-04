@@ -1,9 +1,12 @@
 #!/bin/bash
 set -uo pipefail
 
+# IMPORTS
+source /srv/lib/cloud-init/write-network-config.sh
+
 # ARGS
 ACTUAL_FILE=$1
 
 # START
 
-/srv/lib/cloud-init/write-network-config.sh "${ACTUAL_FILE}" 253
+write-network-config "${ACTUAL_FILE}" 253
