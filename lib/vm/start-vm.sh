@@ -32,15 +32,14 @@ echo ""
 echo ""
 echo ""
 
+declare RESPONSE
+declare EXIT_CODE=255
+
 # Wait for the cloud-init status to show done
 while :
 do
   CURRENT_TIME="$(date -u +%s)"
   ELAPSED="$((CURRENT_TIME - START_TIME))"
-  set +e
-  RESPONSE=$(ssh "10.10.10.${ID}" -o 'LogLevel=FATAL' -o 'ConnectTimeout=1' 'cloud-init status')
-  EXIT_CODE=$?
-  set -e
 
   if [[ "${EXIT_CODE}" == "255" ]]
   then
@@ -54,7 +53,7 @@ do
   else
     STAGE="1"
   fi
-  
+
   [[ ${STAGE} -lt 1 ]] && ICON="1️⃣" || ICON="✅"
   [[ ${STAGE} == 1 ]] && ICON="▶️"
   echo-replace "${ICON}  Starting" 6
@@ -74,7 +73,13 @@ do
     echo ""
     echo "🟢  VM ${ID} is online."
     break
-  else
-    sleep 1s
   fi
+    
+  set +e
+  RESPONSE=$(ssh "10.10.10.${ID}" -o 'LogLevel=FATAL' -o 'ConnectTimeout=1' 'cloud-init status')
+  EXIT_CODE=$?
+  set -e
+
+  # Only sleep if SSH hasn't hit timeout
+  [[ "${EXIT_CODE}" != "255" ]] && sleep 1s
 done
