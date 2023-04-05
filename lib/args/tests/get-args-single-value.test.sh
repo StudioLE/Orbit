@@ -16,15 +16,9 @@ declare OUTPUT
 
 OUTPUT=""
 
-for key in "${!NAMED_ARGS[@]}"
+for key in "${!ARGS[@]}"
 do
-  OUTPUT+="$key: ${NAMED_ARGS[$key]}"
-  OUTPUT+=$'\n'
-done
-
-for key in "${!MISC_ARGS[@]}"
-do 
-  OUTPUT+="$key: ${MISC_ARGS[$key]}"
+  OUTPUT+="$key: ${ARGS[$key]}"
   OUTPUT+=$'\n'
 done
 

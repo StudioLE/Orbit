@@ -1,6 +1,6 @@
 --int: 1
 --string: Hello, world!
+1: path/to/file
+0: /path/to/file
 --optional: value
 --flag: TRUE
-0: /path/to/file
-1: path/to/file
