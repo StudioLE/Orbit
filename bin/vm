@@ -65,7 +65,7 @@ then
 elif [[ "${COMMAND}" == "create" ]]
 then
 
-  /srv/bin/create-vm
+  /srv/lib/vm/create-vm.sh "$@"
 
 elif [[ "${COMMAND}" == "help" || -v "ARGS[--help]" ]]
 then

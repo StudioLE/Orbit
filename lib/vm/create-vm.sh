@@ -17,25 +17,25 @@ function create-vm {
   get-args "$@"
 
   declare OS_NAME
-  OS_NAME=$(get-arg "--os-name")
+  OS_NAME=$(get-arg "--os-name" "ubuntu")
 
   declare OS_VERSION
-  OS_VERSION=$(get-arg "--os-version")
+  OS_VERSION=$(get-arg "--os-version" "jammy")
 
   declare DISK_SIZE
-  DISK_SIZE=$(get-arg "--disk-size")
+  DISK_SIZE=$(get-arg "--disk-size" "20G")
 
   declare TYPE
-  TYPE=$(get-arg "--type")
+  TYPE=$(get-arg "--type" "c1")
 
   declare MEMORY
-  MEMORY=$(get-arg "--memory")
+  MEMORY=$(get-arg "--memory" "8")
 
   declare CORES
-  CORES=$(get-arg "--cores")
+  CORES=$(get-arg "--cores" "4")
 
   declare PURPOSE
-  PURPOSE=$(get-arg "--purpose")
+  PURPOSE=$(get-arg "--purpose" "worker")
 
   # CONSTANTS
 
