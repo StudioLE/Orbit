@@ -20,14 +20,20 @@ then
   exit 1
 fi
 
+if [[ "${TEST_FILENAME}" != *".test.sh" ]];
+then
+  echo "❗  Invalid TEST_FILENAME: ${TEST_FILENAME}" >&2
+  exit 1
+fi
+
 if [[ ! -f ${EXPECTED_FILE} ]];
 then
-  mkdir -p $(dirname "${EXPECTED_FILE}")
+  mkdir -p "$(dirname "${EXPECTED_FILE}")"
   touch "${EXPECTED_FILE}"
 fi
 
 if [[ ! -f ${ACTUAL_FILE} ]];
 then
-  mkdir -p $(dirname "${ACTUAL_FILE}")
+  mkdir -p "$(dirname "${ACTUAL_FILE}")"
   touch "${ACTUAL_FILE}"
 fi
