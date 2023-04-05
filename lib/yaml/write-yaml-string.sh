@@ -40,4 +40,7 @@ function write-yaml-string {
     fi
     OUTPUT+=$'\n'
   done <<< "${INPUT}"
+  
+  # Remove unnecessary final new line
+  OUTPUT=$(echo "${OUTPUT}" | sed '$d')
 }

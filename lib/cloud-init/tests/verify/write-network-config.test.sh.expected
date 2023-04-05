@@ -19,5 +19,3 @@ network:
       routes:
         - to: default
           via: 10.10.10.1
-
-
