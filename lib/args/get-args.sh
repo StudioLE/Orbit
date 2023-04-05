@@ -55,14 +55,4 @@ function get-args {
 
     fi
   done
-
-  for key in "${!NAMED_ARGS[@]}"
-  do 
-    echo "$key: ${NAMED_ARGS[$key]}"
-  done
-
-  for key in "${!MISC_ARGS[@]}"
-  do 
-    echo "$key: ${MISC_ARGS[$key]}"
-  done
 }

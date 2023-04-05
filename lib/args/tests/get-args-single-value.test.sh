@@ -10,6 +10,23 @@ source /srv/lib/args/get-args.sh
 
 # START
 
-get-args \
-  --hello \
-  > "${ACTUAL_FILE}"
+get-args --hello
+
+declare OUTPUT
+
+OUTPUT=""
+
+for key in "${!NAMED_ARGS[@]}"
+do
+  OUTPUT+="$key: ${NAMED_ARGS[$key]}"
+  OUTPUT+=$'\n'
+done
+
+for key in "${!MISC_ARGS[@]}"
+do 
+  OUTPUT+="$key: ${MISC_ARGS[$key]}"
+  OUTPUT+=$'\n'
+done
+
+echo "${OUTPUT}"
+echo "${OUTPUT}" > "${ACTUAL_FILE}"
