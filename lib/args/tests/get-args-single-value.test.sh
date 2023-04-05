@@ -28,5 +28,6 @@ do
   OUTPUT+=$'\n'
 done
 
-echo "${OUTPUT}"
+OUTPUT=$(echo "${OUTPUT}" | sed '$d')
+
 echo "${OUTPUT}" > "${ACTUAL_FILE}"
