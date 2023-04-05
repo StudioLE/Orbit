@@ -1,0 +1,4 @@
+--string: Value of --string
+--no-set: 
+0: /path/to/file
+-a: TRUE
