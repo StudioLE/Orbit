@@ -21,7 +21,7 @@ TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 # START
 
 create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
-DISK_FILE="${RETURN_VALUE}"
+DISK_FILE="${OUTPUT}"
 
 /srv/lib/vm/create-vm.sh \
   --memory "${MEMORY}" \

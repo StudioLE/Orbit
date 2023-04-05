@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-declare -x RETURN_VALUE
-
 function create-boot-disk {
 
   # ARGS
@@ -94,5 +92,5 @@ function create-boot-disk {
   fi
 
   # Return the output
-  RETURN_VALUE="${OUTPUT_FILE}"
+  OUTPUT="${OUTPUT_FILE}"
 }
