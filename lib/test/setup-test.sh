@@ -14,7 +14,7 @@ ACTUAL_FILE="${TEST_DIR}/verify/${TEST_FILENAME}.actual"
 
 # VALIDATE
 
-if [[ ! -f ${TEST_FILE} ]];
+if [[ ! -f "${TEST_FILE}" ]];
 then
   echo "❗  Invalid TEST_FILE: ${TEST_FILE}" >&2
   exit 1
@@ -26,13 +26,13 @@ then
   exit 1
 fi
 
-if [[ ! -f ${EXPECTED_FILE} ]];
+if [[ ! -f "${EXPECTED_FILE}" ]];
 then
   mkdir -p "$(dirname "${EXPECTED_FILE}")"
   touch "${EXPECTED_FILE}"
 fi
 
-if [[ ! -f ${ACTUAL_FILE} ]];
+if [[ ! -f "${ACTUAL_FILE}" ]];
 then
   mkdir -p "$(dirname "${ACTUAL_FILE}")"
   touch "${ACTUAL_FILE}"
