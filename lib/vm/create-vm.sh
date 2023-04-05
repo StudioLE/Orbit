@@ -10,7 +10,6 @@ function create-vm {
   source /srv/lib/args/get-args.sh
   source /srv/lib/args/echo-args.sh
   source /srv/lib/args/get-arg.sh
-  
 
   # ARGS
 
@@ -116,3 +115,5 @@ function create-vm {
   echo "✅  Created VM ${ID}"
 
 }
+
+create-vm "$@"
