@@ -12,7 +12,7 @@ function get-args {
   POSITIONAL_INDEX=0
   declare SKIP_NEXT=""
   declare LONG_REGEX="^--.+$"
-  declare SHORT_REGEX="^-[A-Za-z0-9]+$"
+  declare SHORT_REGEX="^-[A-Za-z]+$"
   declare ESCAPE_REGEX="^--$"
 
   for i in $(seq 0 $((SRC_ARGS_COUNT - 1)) )

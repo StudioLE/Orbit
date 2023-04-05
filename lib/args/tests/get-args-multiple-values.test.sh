@@ -11,15 +11,13 @@ source /srv/lib/args/get-args.sh
 # START
 
 get-args \
-  --string "Hello, world!" \
-  --int 1 \
+  --string "Value of --string" \
+  --int -1 \
   --flag \
   --optional value \
-  -s "Short, value" \
+  -s "Value of -s" \
   -a \
   -bc \
-  -1 "Short int" \
-  -23 \
   -- \
   /path/to/file \
   path/to/file
