@@ -31,6 +31,10 @@ STRING=$(get-arg "--string")
 OUTPUT+="--string: ${STRING}"
 OUTPUT+=$'\n'
 
+FLAG=$(get-arg "--flag")
+OUTPUT+="--flag: ${FLAG}"
+OUTPUT+=$'\n'
+
 NOT_SET=$(get-arg "--not-set")
 OUTPUT+="--no-set: ${NOT_SET}"
 OUTPUT+=$'\n'

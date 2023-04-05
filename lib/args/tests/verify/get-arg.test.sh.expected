@@ -1,4 +1,5 @@
 --string: Value of --string
+--flag: TRUE
 --no-set: 
 0: /path/to/file
 -a: TRUE
