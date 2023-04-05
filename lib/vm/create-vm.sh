@@ -63,10 +63,12 @@ function create-vm {
   # START
 
   echo "➡️  Write user config"
-  write-user-config "/var/lib/vz/snippets/${ID}-user-config.yml" "${HOSTNAME}"
+  write-user-config "${HOSTNAME}"
+  echo "${OUTPUT}" > "/var/lib/vz/snippets/${ID}-user-config.yml"
 
   echo "➡️  Write network config"
-  write-network-config "/var/lib/vz/snippets/${ID}-network-config.yml" "${ID}"
+  write-network-config "${ID}"
+  echo "${OUTPUT}" > "/var/lib/vz/snippets/${ID}-network-config.yml"
 
   echo "🆕  Create a virtual machine"
   qm create "${ID}" --name "${NAME}" --tags "${TAGS}"
