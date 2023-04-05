@@ -57,6 +57,7 @@ do
 
   if [[ "${STAGE}" == "4" ]]
   then
+    echo ""
     echo "🟢  VM ${ID} is online."
     break
   else
