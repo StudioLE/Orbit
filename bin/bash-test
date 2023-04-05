@@ -25,6 +25,7 @@ declare UPDATE_USAGE="$0 update [<TEST_FILE>|--all]"
 
 if [[ "${COMMAND}" == "run" ]]
 then
+
   if [[ "${ALL}" != "" ]]
   then
     /srv/lib/test/run-all-tests.sh
@@ -36,8 +37,10 @@ then
     echo "Usage: ${RUN_USAGE}"
     exit 1
   fi
+
 elif [[ "${COMMAND}" == "update" ]]
 then
+
   if [[ "${ALL}" != "" ]]
   then
     /srv/lib/test/update-all-tests.sh
@@ -49,13 +52,18 @@ then
     echo "Usage: ${UPDATE_USAGE}"
     exit 1
   fi
+
 elif [[ "${COMMAND}" == "help" || -v "ARGS[--help]" ]]
 then
+
   echo "Usage: ${RUN_USAGE}"
   echo "Usage: ${UPDATE_USAGE}"
+
 else
+
   echo "❗  Invalid arguments." >&2
   echo "Usage: ${RUN_USAGE}"
   echo "Usage: ${UPDATE_USAGE}"
   exit 1
+  
 fi
