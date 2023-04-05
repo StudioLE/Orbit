@@ -42,7 +42,7 @@ function get-args {
       fi
 
       # If the next is a named argument then this must be a flag
-      if [[ "${NEXT_ARG}" =~ (${LONG_REGEX}|${SHORT_REGEX}|${ESCAPE_REGEX}) ]]
+      if [[ "${NEXT_ARG}" == "" || "${NEXT_ARG}" =~ (${LONG_REGEX}|${SHORT_REGEX}|${ESCAPE_REGEX}) ]]
       then
 
         if [[ "${ARG}" =~ ${LONG_REGEX} ]]
