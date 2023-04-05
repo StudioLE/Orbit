@@ -20,8 +20,8 @@ function get-args {
     declare ARG
     ARG="${SRC_ARGS[$i]}"
 
-    # Skip if this argument as already been assigned
-    if [[ ${SKIP_NEXT} != "" ]]
+    # Skip if ESCAPE_REGEX or if this argument as already been assigned
+    if [[  "${ARG}" =~ ${ESCAPE_REGEX} || ${SKIP_NEXT} != "" ]]
     then
 
       SKIP_NEXT=""

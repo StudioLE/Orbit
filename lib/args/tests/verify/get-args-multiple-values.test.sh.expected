@@ -1,8 +1,7 @@
 --int: -1
 --string: Value of --string
-2: path/to/file
-1: /path/to/file
-0: --
+1: path/to/file
+0: /path/to/file
 -s: Value of -s
 --optional: value
 -b: TRUE
