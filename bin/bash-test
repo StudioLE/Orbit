@@ -4,19 +4,20 @@ set -euo pipefail
 # IMPORTS
 
 source /srv/lib/args/get-args.sh
+source /srv/lib/args/get-arg.sh
 
 # ARGS
 
 get-args "$@"
 
 declare COMMAND
-[[ -v "ARGS[0]" ]] && COMMAND="${ARGS[0]}" || COMMAND=""
+COMMAND=$(get-arg "0")
 
 declare TEST_FILE
-[[ -v "ARGS[1]" ]] && TEST_FILE="${ARGS[1]}" || TEST_FILE=""
+TEST_FILE=$(get-arg "1")
 
 declare ALL
-[[ -v "ARGS[--all]" ]] && ALL="TRUE" || ALL=""
+ALL=$(get-arg "--all")
 
 # START
 
