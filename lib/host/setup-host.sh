@@ -12,3 +12,6 @@ Host 10.10.10.*
     User radiko
 EOM
 
+# shellcheck disable=SC2016
+echo 'export PATH="/srv/bin:$PATH"' >> /root/.bashrc
+
