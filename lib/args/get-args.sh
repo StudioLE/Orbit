@@ -44,7 +44,18 @@ function get-args {
       # If the next is a named argument then this must be a flag
       if [[ "${NEXT_ARG}" =~ (${LONG_REGEX}|${SHORT_REGEX}|${ESCAPE_REGEX}) ]]
       then
-        ARGS[$ARG]="TRUE"
+
+        if [[ "${ARG}" =~ ${LONG_REGEX} ]]
+        then
+          ARGS[$ARG]="TRUE"
+        # Short regex should be processed as individual characters
+        else
+          for ((ii = 1; ii < ${#ARG}; ii++))
+          do
+            CHAR="${ARG:ii:1}"
+            ARGS["-$CHAR"]="TRUE"
+          done
+        fi
 
       # Else it's a value so set it and skip the next arg
       else
