@@ -27,15 +27,19 @@ declare OUTPUT
 
 OUTPUT=""
 
-STRING=$(get-arg "--string")
+STRING=$(get-arg "--string" "OVERRIDE DEFAULT")
 OUTPUT+="--string: ${STRING}"
 OUTPUT+=$'\n'
 
-FLAG=$(get-arg "--flag")
+FLAG=$(get-arg "--flag" "OVERRIDE DEFAULT")
 OUTPUT+="--flag: ${FLAG}"
 OUTPUT+=$'\n'
 
 NOT_SET=$(get-arg "--not-set")
+OUTPUT+="--no-set: ${NOT_SET}"
+OUTPUT+=$'\n'
+
+NOT_SET=$(get-arg "--not-set" "OVERRIDE DEFAULT")
 OUTPUT+="--no-set: ${NOT_SET}"
 OUTPUT+=$'\n'
 
