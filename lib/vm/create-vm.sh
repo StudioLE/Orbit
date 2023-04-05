@@ -24,17 +24,25 @@ function create-vm {
   declare DISK_FILE
   DISK_FILE=$(get-arg "--disk-file")
 
-  declare NAME
-  NAME=$(get-arg "--name")
+  declare OS_NAME
+  OS_NAME=$(get-arg "--os-name")
 
-  declare TAGS
-  TAGS=$(get-arg "--tags")
+  declare OS_VERSION
+  OS_VERSION=$(get-arg "--os-version")
+
+  declare TYPE
+  TYPE=$(get-arg "--type")
+
+  declare PURPOSE
+  PURPOSE=$(get-arg "--purpose")
 
   # CONSTANTS
 
   declare -ri ID=$(pvesh get /cluster/nextid)
   declare -r HOSTNAME="vm${ID}"
   declare -r STORAGE_NAME="local"
+  declare -r NAME="${PURPOSE}-${TYPE}"
+  declare TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
   # VALIDATE
 

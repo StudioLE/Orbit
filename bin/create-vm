@@ -15,8 +15,6 @@ TYPE="c1"
 MEMORY="8"
 CORES="4"
 PURPOSE="worker"
-NAME="${PURPOSE}-${TYPE}"
-TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
 # START
 
@@ -27,5 +25,7 @@ DISK_FILE="${OUTPUT}"
   --memory "${MEMORY}" \
   --cores "${CORES}" \
   --disk-file "${DISK_FILE}" \
-  --name "${NAME}" \
-  --tags "${TAGS}"
+  --os-name "${OS_NAME}" \
+  --os-version "${OS_VERSION}" \
+  --type "${TYPE}" \
+  --purpose "${PURPOSE}"
