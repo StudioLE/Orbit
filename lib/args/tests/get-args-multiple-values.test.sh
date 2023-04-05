@@ -16,7 +16,11 @@ get-args \
   --flag \
   --optional value \
   -s "Short, value" \
-  -abc \
+  -a \
+  -bc \
+  -1 "Short int" \
+  -23 \
+  -- \
   /path/to/file \
   path/to/file
 

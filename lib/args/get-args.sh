@@ -11,6 +11,9 @@ function get-args {
   SRC_ARGS_COUNT=${#SRC_ARGS[@]}
   POSITIONAL_INDEX=0
   declare SKIP_NEXT=""
+  declare LONG_REGEX="^--.+$"
+  declare SHORT_REGEX="^-[A-Za-z0-9]+$"
+  declare ESCAPE_REGEX="^--$"
 
   for i in $(seq 0 $((SRC_ARGS_COUNT - 1)) )
   do
@@ -25,7 +28,7 @@ function get-args {
       continue
 
     # Match a long or short arg name
-    elif [[ "${ARG}" =~ ^(--.*$|-[A-Za-z])$ ]]
+    elif [[ "${ARG}" =~ (${LONG_REGEX}|${SHORT_REGEX}) ]]
     then
       
       declare NEXT_ARG
@@ -39,7 +42,7 @@ function get-args {
       fi
 
       # If the next is a named argument then this must be a flag
-      if [[ "${NEXT_ARG}" =~ ^(--.*$|-[A-Za-z])$ ]]
+      if [[ "${NEXT_ARG}" =~ (${LONG_REGEX}|${SHORT_REGEX}|${ESCAPE_REGEX}) ]]
       then
         ARGS[$ARG]="TRUE"
 
