@@ -1,0 +1,68 @@
+#!/bin/bash
+set -euo pipefail
+
+# IMPORTS
+
+source /srv/lib/args/get-args.sh
+
+# ARGS
+
+get-args "$@"
+
+declare COMMAND
+[[ -v "ARGS[0]" ]] && COMMAND="${ARGS[0]}" || COMMAND=""
+
+# START
+
+declare START_USAGE="$0 start <ID>"
+declare STATUS_USAGE="$0 status <ID>"
+declare CREATE_USAGE="$0 create"
+
+if [[ "${COMMAND}" == "start" ]]
+then
+
+  declare ID
+  [[ -v "ARGS[1]" ]] && ID="${ARGS[1]}" || ID=""
+
+  if [[ "${ID}" != "" ]]
+  then
+    /srv/lib/vm/start-vm.sh "${ID}"
+  else
+    echo "❗  Invalid arguments." >&2
+    echo "Usage: ${START_USAGE}"
+    exit 1
+  fi
+
+
+elif [[ "${COMMAND}" == "status" ]]
+then
+
+  declare ID
+  [[ -v "ARGS[1]" ]] && ID="${ARGS[1]}" || ID=""
+
+  if [[ "${ID}" != "" ]]
+  then
+    /srv/lib/vm/get-vm-status.sh "${ID}"
+  else
+    echo "❗  Invalid arguments." >&2
+    echo "Usage: ${STATUS_USAGE}"
+    exit 1
+  fi
+
+elif [[ "${COMMAND}" == "create" ]]
+then
+
+  /srv/bin/create-vm
+
+elif [[ "${COMMAND}" == "help" || -v "ARGS[--help]" ]]
+then
+  echo "Usage: ${START_USAGE}"
+  echo "Usage: ${STATUS_USAGE}"
+  echo "Usage: ${CREATE_USAGE}"
+else
+  echo "❗  Invalid arguments." >&2
+  echo "Usage: ${START_USAGE}"
+  echo "Usage: ${STATUS_USAGE}"
+  echo "Usage: ${CREATE_USAGE}"
+  exit 1
+fi
