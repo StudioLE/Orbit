@@ -4,13 +4,20 @@ set -euo pipefail
 # IMPORTS
 
 source /srv/lib/args/get-args.sh
+source /srv/lib/args/get-arg.sh
 
 # ARGS
 
 get-args "$@"
 
 declare COMMAND
-[[ -v "ARGS[0]" ]] && COMMAND="${ARGS[0]}" || COMMAND=""
+COMMAND=$(get-arg "0")
+
+declare ID
+ID=$(get-arg "1")
+
+declare ALL
+ALL=$(get-arg "--all")
 
 # START
 
@@ -21,9 +28,6 @@ declare CREATE_USAGE="$0 create"
 
 if [[ "${COMMAND}" == "start" ]]
 then
-
-  declare ID
-  [[ -v "ARGS[1]" ]] && ID="${ARGS[1]}" || ID=""
 
   if [[ "${ID}" != "" ]]
   then
@@ -37,9 +41,6 @@ then
 elif [[ "${COMMAND}" == "status" ]]
 then
 
-  declare ID
-  [[ -v "ARGS[1]" ]] && ID="${ARGS[1]}" || ID=""
-
   if [[ "${ID}" != "" ]]
   then
     /srv/lib/vm/get-vm-status.sh "${ID}"
@@ -52,7 +53,7 @@ then
 elif [[ "${COMMAND}" == "destroy" ]]
 then
 
-  if [[ -v "ARGS[--all]" ]]
+  if [[ "${ALL}" != "" ]]
   then
     /srv/lib/vm/destroy-stopped-vm.sh
   else
