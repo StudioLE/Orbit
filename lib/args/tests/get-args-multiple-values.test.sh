@@ -15,6 +15,8 @@ get-args \
   --int 1 \
   --flag \
   --optional value \
+  -s "Short, value" \
+  -abc \
   /path/to/file \
   path/to/file
 

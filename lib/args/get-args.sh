@@ -24,8 +24,8 @@ function get-args {
       SKIP_NEXT=""
       continue
 
-    # Match a long arg name
-    elif [[ "${ARG}" =~ ^--.* ]]
+    # Match a long or short arg name
+    elif [[ "${ARG}" =~ ^(--.*$|-[A-Za-z])$ ]]
     then
       
       declare NEXT_ARG
@@ -39,7 +39,7 @@ function get-args {
       fi
 
       # If the next is a named argument then this must be a flag
-      if [[ "${NEXT_ARG}" =~ ^--.* ]]
+      if [[ "${NEXT_ARG}" =~ ^(--.*$|-[A-Za-z])$ ]]
       then
         ARGS[$ARG]="TRUE"
 
