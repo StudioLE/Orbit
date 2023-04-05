@@ -5,24 +5,16 @@ function create-vm {
 
   # IMPORTS
 
-  source /srv/lib/cloud-init/write-network-config.sh
-  source /srv/lib/cloud-init/write-user-config.sh
   source /srv/lib/args/get-args.sh
   source /srv/lib/args/echo-args.sh
   source /srv/lib/args/get-arg.sh
+  source /srv/lib/boot-disk/create-boot-disk.sh
+  source /srv/lib/cloud-init/write-network-config.sh
+  source /srv/lib/cloud-init/write-user-config.sh
 
   # ARGS
 
   get-args "$@"
-
-  declare MEMORY
-  MEMORY=$(get-arg "--memory")
-
-  declare CORES
-  CORES=$(get-arg "--cores")
-
-  declare DISK_FILE
-  DISK_FILE=$(get-arg "--disk-file")
 
   declare OS_NAME
   OS_NAME=$(get-arg "--os-name")
@@ -30,8 +22,17 @@ function create-vm {
   declare OS_VERSION
   OS_VERSION=$(get-arg "--os-version")
 
+  declare DISK_SIZE
+  DISK_SIZE=$(get-arg "--disk-size")
+
   declare TYPE
   TYPE=$(get-arg "--type")
+
+  declare MEMORY
+  MEMORY=$(get-arg "--memory")
+
+  declare CORES
+  CORES=$(get-arg "--cores")
 
   declare PURPOSE
   PURPOSE=$(get-arg "--purpose")
@@ -45,6 +46,30 @@ function create-vm {
   declare TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
   # VALIDATE
+
+  if [[ "${OS_NAME}" == "" ]];
+  then
+      echo "❗  Invalid OS_NAME: ${OS_NAME}" >&2
+      exit 1
+  fi
+
+  if [[ "${OS_VERSION}" == "" ]];
+  then
+      echo "❗  Invalid OS_VERSION: ${OS_VERSION}" >&2
+      exit 1
+  fi
+
+  if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
+  then
+      echo "❗  Invalid CORES: ${CORES}" >&2
+      exit 1
+  fi
+
+  if [[ "${DISK_SIZE}" == "" || "${DISK_SIZE}" != *"G" ]];
+  then
+      echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
+      exit 1
+  fi
 
   if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
   then
@@ -66,12 +91,6 @@ function create-vm {
       exit 1
   fi
 
-  if [[ "${DISK_FILE}" == "" || ! -f "${DISK_FILE}" ]];
-  then
-      echo "❗  Invalid DISK_FILE: ${DISK_FILE}" >&2
-      exit 1
-  fi
-
   if [[ "${NAME}" == "" ]];
   then
       NAME="${HOSTNAME}"
@@ -83,6 +102,12 @@ function create-vm {
   fi
 
   # START
+
+  
+  echo "➡️  Create boot disk"
+  create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
+  DISK_FILE="${OUTPUT}"
+  echo "$DISK_FILE"
 
   echo "➡️  Write user config"
   write-user-config "${HOSTNAME}"

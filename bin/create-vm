@@ -18,14 +18,11 @@ PURPOSE="worker"
 
 # START
 
-create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
-DISK_FILE="${OUTPUT}"
-
 /srv/lib/vm/create-vm.sh \
-  --memory "${MEMORY}" \
-  --cores "${CORES}" \
-  --disk-file "${DISK_FILE}" \
   --os-name "${OS_NAME}" \
   --os-version "${OS_VERSION}" \
+  --disk-size "${DISK_SIZE}" \
   --type "${TYPE}" \
+  --memory "${MEMORY}" \
+  --cores "${CORES}" \
   --purpose "${PURPOSE}"
