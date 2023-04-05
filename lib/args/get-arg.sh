@@ -3,14 +3,6 @@ set -euo pipefail
 
 function get-arg {
 
-  # ARGS
-
-  if [[ ! -v "ARGS" ]]
-  then
-    echo "❗  get-arg has been called before get-args!" >&2
-    exit 1
-  fi
-
   declare KEY
   [[ -v "1" ]] && KEY="$1" || KEY=""
 

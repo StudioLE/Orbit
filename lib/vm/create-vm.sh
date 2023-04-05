@@ -7,14 +7,29 @@ function create-vm {
 
   source /srv/lib/cloud-init/write-network-config.sh
   source /srv/lib/cloud-init/write-user-config.sh
+  source /srv/lib/args/get-args.sh
+  source /srv/lib/args/echo-args.sh
+  source /srv/lib/args/get-arg.sh
+  
 
   # ARGS
 
-  declare -i MEMORY=${1}
-  declare -ri CORES=${2}
-  declare -r DISK_FILE=${3}
-  declare -r NAME=${4}
-  declare -r TAGS=${5}
+  get-args "$@"
+
+  declare MEMORY
+  MEMORY=$(get-arg "--memory")
+
+  declare CORES
+  CORES=$(get-arg "--cores")
+
+  declare DISK_FILE
+  DISK_FILE=$(get-arg "--disk-file")
+
+  declare NAME
+  NAME=$(get-arg "--name")
+
+  declare TAGS
+  TAGS=$(get-arg "--tags")
 
   # CONSTANTS
 

@@ -24,4 +24,9 @@ TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
 DISK_FILE="${RETURN_VALUE}"
 
-create-vm "${MEMORY}" "${CORES}" "${DISK_FILE}" "${NAME}" "${TAGS}"
+create-vm \
+  --memory "${MEMORY}" \
+  --cores "${CORES}" \
+  --disk-file "${DISK_FILE}" \
+  --name "${NAME}" \
+  --tags "${TAGS}"
