@@ -1,0 +1,67 @@
+#!/bin/bash
+set -euo pipefail
+
+function bash-test {
+
+  # IMPORTS
+
+  source /srv/lib/args/get-args.sh
+
+  # ARGS
+
+  get-args "$@"
+
+  declare COMMAND
+  [[ -v "ARGS[0]" ]] && COMMAND="${ARGS[0]}" || COMMAND=""
+
+  declare TEST_FILE
+  [[ -v "ARGS[1]" ]] && TEST_FILE="${ARGS[1]}" || TEST_FILE=""
+
+  declare ALL
+  [[ -v "ARGS[--all]" ]] && ALL="TRUE" || ALL=""
+
+  # START
+  
+  declare RUN_USAGE="$0 run [<TEST_FILE>|--all]"
+  declare UPDATE_USAGE="$0 update [<TEST_FILE>|--all]"
+
+  if [[ "${COMMAND}" == "run" ]]
+  then
+    if [[ "${ALL}" != "" ]]
+    then
+      /srv/lib/test/run-all-tests.sh
+    elif [[ "${TEST_FILE}" != "" ]]
+    then
+      /srv/lib/test/run-test.sh "${TEST_FILE}"
+    else
+      echo "❗  Invalid arguments." >&2
+      echo "Usage: ${RUN_USAGE}"
+      exit 1
+    fi
+  elif [[ "${COMMAND}" == "update" ]]
+  then
+    if [[ "${ALL}" != "" ]]
+    then
+      /srv/lib/test/update-all-tests.sh
+    elif [[ "${TEST_FILE}" != "" ]]
+    then
+      /srv/lib/test/update-test.sh "${TEST_FILE}"
+    else
+      echo "❗  Invalid arguments." >&2
+      echo "Usage: ${UPDATE_USAGE}"
+      exit 1
+    fi
+  elif [[ "${COMMAND}" == "help" || -v "ARGS[--help]" ]]
+  then
+    echo "Usage: ${RUN_USAGE}"
+    echo "Usage: ${UPDATE_USAGE}"
+  else
+    echo "❗  Invalid arguments." >&2
+    echo "Usage: ${RUN_USAGE}"
+    echo "Usage: ${UPDATE_USAGE}"
+    exit 1
+  fi
+    
+}
+
+bash-test "$@"
