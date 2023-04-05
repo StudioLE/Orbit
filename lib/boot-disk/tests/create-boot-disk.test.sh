@@ -11,4 +11,4 @@ source /srv/lib/boot-disk/create-boot-disk.sh
 # START
 
 create-boot-disk "ubuntu" "jammy" "20G"
-echo "${RETURN_VALUE}" > "${ACTUAL_FILE}"
+echo "${OUTPUT}" > "${ACTUAL_FILE}"
