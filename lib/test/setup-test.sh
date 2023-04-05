@@ -8,6 +8,13 @@ TEST_FILE=${1}
 # CONSTANTS
 
 TEST_DIR=$(dirname "${TEST_FILE}")
+
+if [[ "${TEST_DIR:0:1}" == "." ]];
+then
+  TEST_FILE="${PWD}/${TEST_FILE}"
+  TEST_DIR=$(dirname "${TEST_FILE}")
+fi
+
 TEST_FILENAME=$(basename "${TEST_FILE}")
 EXPECTED_FILE="${TEST_DIR}/verify/${TEST_FILENAME}.expected"
 ACTUAL_FILE="${TEST_DIR}/verify/${TEST_FILENAME}.actual"
