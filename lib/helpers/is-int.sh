@@ -2,7 +2,16 @@
 set -euo pipefail
 
 function is-int {
-  if [[ -v "1" && "$1" =~ ^-?[0-9]+$ ]]
+
+  # IMPORTS
+
+  source /srv/lib/helpers/echo-error.sh
+
+  if [[ ! -v "1" ]]
+  then
+    echo-error "\$1 was not set."
+    exit 1
+  elif [[ "$1" =~ ^-?[0-9]+$ ]]
   then
     echo "TRUE"
   else
