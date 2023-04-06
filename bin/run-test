@@ -18,8 +18,6 @@ TEST_FILE=$(get-arg "0")
 
 declare USAGE="$0 [<TEST_FILE>|--all] [--update]"
 
-
-
 if [[ $(get-arg --help) != "" ]]
 then
 
