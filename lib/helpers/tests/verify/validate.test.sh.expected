@@ -1,0 +1,12 @@
+-1: TRUE; EXIT_CODE: 0
+0: TRUE; EXIT_CODE: 0
+1: TRUE; EXIT_CODE: 0
+10: TRUE; EXIT_CODE: 0
+100000: TRUE; EXIT_CODE: 0
+0.5: ; EXIT_CODE: 0
+-0.5: ; EXIT_CODE: 0
+1.0: ; EXIT_CODE: 0
+.0: ; EXIT_CODE: 0
+: ❗  ❗  is-int: Argument $1 was not set.; EXIT_CODE: 1
+1: TRUE; EXIT_CODE: 0
+
