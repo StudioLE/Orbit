@@ -8,7 +8,9 @@ source /srv/lib/echo/echo-replace.sh
 # CONSTANTS
 
 declare -i ID=100
-declare -i STAGE_INTERVAL=3
+declare -i STAGE_INTERVAL=4
+declare SLEEP_INTERVAL=0.5
+declare CLOCK_ICONS="🕛🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚"
 
 # START
 
@@ -31,8 +33,10 @@ do
   ELAPSED="$((CURRENT_TIME - START_TIME))"
   declare STAGE
   STAGE=$((ELAPSED / STAGE_INTERVAL + 1))
+  declare CLOCK_NUMBER
+  CLOCK_NUMBER=$((FRAME % ${#CLOCK_ICONS}))
   
-  echo-replace "STAGE: ${STAGE}; FRAME: ${FRAME}" 7
+  echo-replace "STAGE: ${STAGE}; FRAME: ${FRAME}; CLOCK_NUMBER: ${CLOCK_NUMBER}" 7
 
   [[ ${STAGE} -lt 1 ]] && ICON="1️⃣" || ICON="✅"
   [[ ${STAGE} == 1 ]] && ICON="⌛"
@@ -50,7 +54,7 @@ do
   # [[ ${STAGE} == 4 ]] && ICON="⌛"
   echo-replace "${ICON}  Complete" 3
 
-  echo-replace "⌛  ${ELAPSED} seconds" 1
+  echo-replace "${CLOCK_ICONS:${CLOCK_NUMBER}:1}  ${ELAPSED} seconds" 1
 
   if [[ "${STAGE}" == "4" ]]
   then
@@ -58,6 +62,6 @@ do
     echo "🟢  VM ${ID} is online."
     break
   else
-    sleep 1s
+    sleep "${SLEEP_INTERVAL}s"
   fi
 done
