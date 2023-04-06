@@ -50,37 +50,37 @@ write_files:
       set +e
       for PACKAGE in docker docker-engine docker.io containerd runc
       do
-      sudo apt-get remove "$PACKAGE" --quiet --yes
+        sudo apt-get remove "$PACKAGE" --quiet --yes
       done
       set -e
       
       echo "➡️  Install apt dependencies"
       sudo apt-get update
       sudo apt-get install --quiet --yes \
-      ca-certificates \
-      curl \
-      gnupg
+        ca-certificates \
+        curl \
+        gnupg
       
       echo "➡️  Add Docker official GPG key"
       sudo mkdir -m 0755 -p /etc/apt/keyrings
       curl --fail --silent --show-error --location \
-      https://download.docker.com/linux/ubuntu/gpg \
-      | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        https://download.docker.com/linux/ubuntu/gpg \
+        | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
       
       echo "➡️  Set up the repository"
       echo \
-      "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
       
       echo "➡️  Install Docker Engine"
       sudo apt-get update
       sudo apt-get install --quiet --yes \
-      docker-ce \
-      docker-ce-cli \
-      containerd.io \
-      docker-buildx-plugin \
-      docker-compose-plugin
+        docker-ce \
+        docker-ce-cli \
+        containerd.io \
+        docker-buildx-plugin \
+        docker-compose-plugin
       
       
       # Post install steps
@@ -121,19 +121,19 @@ write_files:
       set -euo pipefail
       
       # Install kubeadm, kubelet, and kubectl
-      # Source:
+      # Source: 
       
       echo "➡️  Install apt dependencies"
       sudo apt-get update
       sudo apt-get install --quiet --yes \
-      ca-certificates \
-      curl \
-      gnupg
+        ca-certificates \
+        curl \
+        gnupg
       
       echo "➡️  Download the Google Cloud public signing key"
       sudo curl --fail --silent --show-error --location \
-      --output /etc/apt/keyrings/kubernetes-archive-keyring.gpg \
-      https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        --output /etc/apt/keyrings/kubernetes-archive-keyring.gpg \
+        https://packages.cloud.google.com/apt/doc/apt-key.gpg
       
       
       echo "➡️  Add the Kubernetes apt repository"
@@ -142,9 +142,9 @@ write_files:
       echo "➡️  Install kubelet, kubeadm and kubectl, and pin their version"
       sudo apt-get update
       sudo apt-get install --yes \
-      kubelet \
-      kubeadm \
-      kubectl
+        kubelet \
+        kubeadm \
+        kubectl
       
       # TODO: We probably need to fetch a specific version..
       sudo apt-mark hold kubelet kubeadm kubectl

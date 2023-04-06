@@ -50,7 +50,7 @@ function write-yaml-array {
   declare ARRAY=""
 
   # Loop through each line of the replacement content and indent it
-  while read -r line;
+  while IFS= read -r line;
   do
     ARRAY+=$'\n'
     ARRAY+="${INDENT}- $line"

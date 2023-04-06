@@ -35,7 +35,7 @@ function write-yaml-block {
   declare BLOCK="|"
 
   # Loop through each line of the replacement content and indent it
-  while read -r line;
+  while IFS= read -r line;
   do
     BLOCK+=$'\n'
     BLOCK+="      $line"
