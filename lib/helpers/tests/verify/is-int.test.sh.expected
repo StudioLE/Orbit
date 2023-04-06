@@ -9,5 +9,5 @@
 .0: 
 : 
 1: TRUE
-NO ARGS: ❗  $1 was not set. EXIT_CODE: 1
+NO ARGS: ❗  is-int: Argument $1 was not set. EXIT_CODE: 1
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-function is-int {
-
+function validate {
+  
   # IMPORTS
 
   source /srv/lib/helpers/echo-error.sh
@@ -11,8 +11,9 @@ function is-int {
 
   if [[ ! -v "1" ]]
   then
-    echo-error "is-int: Argument \$1 was not set."
+    echo-error "validate: \$1 was not set."
     exit 1
+  
   elif [[ "$1" =~ ^-?[0-9]+$ ]]
   then
     echo "TRUE"
