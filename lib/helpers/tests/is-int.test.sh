@@ -11,7 +11,7 @@ declare OUTPUT=""
 for i in -1 0 1 10 100000 0.5 -0.5 1.0 .0
 do
   OUTPUT+="$i: "
-  OUTPUT+=$(is_int "$i")
+  OUTPUT+=$(is-int "$i")
   OUTPUT+=$'\n'
 done
 
