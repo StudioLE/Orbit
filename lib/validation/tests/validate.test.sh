@@ -20,4 +20,11 @@ do
   OUTPUT+=$'\n'
 done
 
+OUTPUT+="NO ARGS: "
+set +e
+OUTPUT+=$(validate "is-int" 2>&1)
+EXIT_CODE=$?
+set -e
+OUTPUT+=" EXIT_CODE: ${EXIT_CODE}"
+
 echo "${OUTPUT}" > "${ACTUAL_FILE}"

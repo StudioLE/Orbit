@@ -34,22 +34,16 @@ function validate {
   set +e
   OUTPUT=$("${COMMAND}" "${ARG}")
   EXIT_CODE=$?
-  ERROR=$("${COMMAND}" "${ARG}" 2>&1 > /dev/null)
   set -e
 
   # If the command has errored then exit
   if [[ "${EXIT_CODE}" != 0 ]]
   then
-    [[ "${OUTPUT}" != "" ]] && echo "${OUTPUT}"
-    [[ "${ERROR}" != "" ]] && echo-error "${ERROR}"
     exit ${EXIT_CODE}
   # If the command returned invalid then exit
   elif [[ "${OUTPUT}" == "" ]]
   then
     echo-error "Failed validation ${COMMAND}: ${ARG}"
     exit 1
-  # Else it has succeeded
-  else
-    echo "${OUTPUT}"
   fi
 }
