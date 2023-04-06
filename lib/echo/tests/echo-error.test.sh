@@ -4,7 +4,7 @@ set -uo pipefail
 # ARGS
 ACTUAL_FILE=$1
 
-source /srv/lib/helpers/echo-error.sh
+source /srv/lib/echo/echo-error.sh
 
 declare OUTPUT=""
 

@@ -5,7 +5,7 @@ function echo-error {
 
   # IMPORTS
 
-  source /srv/lib/helpers/is-int.sh
+  source /srv/lib/validation/is-int.sh
 
   # ARGS
 

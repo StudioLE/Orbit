@@ -5,7 +5,7 @@ function is-int {
 
   # IMPORTS
 
-  source /srv/lib/helpers/echo-error.sh
+  source /srv/lib/echo/echo-error.sh
 
   # START
 
