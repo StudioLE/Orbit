@@ -33,9 +33,9 @@ write_files:
       PermitRootLogin no
       PasswordAuthentication no
       Port ${SSH_PORT}
-  - path: /var/lib/cloud/scripts/per-instance/50-hello-world
+  - path: /var/lib/cloud/scripts/per-instance/10-install-docker.sh
     permissions: "0500"
-    content: ${HELLO_WORLD_CONTENT}
+    content: ${INSTALL_DOCKER_CONTENT}
 
 bootcmd: ${BOOTCMD_CONTENT}
 
