@@ -7,10 +7,12 @@ source /srv/lib/echo/echo-replace.sh
 
 # CONSTANTS
 
-declare -i ID=100
-declare -i STAGE_INTERVAL=4
-declare SLEEP_INTERVAL=0.5
-declare CLOCK_ICONS="🕛🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚"
+declare START_TIME
+START_TIME="$(date -u +%s)"
+declare -ri ID=100
+declare -ri STAGE_INTERVAL=4
+declare -r SLEEP_INTERVAL=0.5
+declare -r CLOCK_ICONS="🕛🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚"
 
 # START
 
@@ -21,9 +23,8 @@ do
   echo ""
 done
 
-declare START_TIME
-START_TIME="$(date -u +%s)"
 declare -i FRAME=0
+
 while :
 do
   FRAME=$((FRAME + 1))
@@ -61,7 +62,7 @@ do
     echo ""
     echo "🟢  VM ${ID} is online."
     break
-  else
-    sleep "${SLEEP_INTERVAL}s"
   fi
+
+  sleep "${SLEEP_INTERVAL}s"
 done
