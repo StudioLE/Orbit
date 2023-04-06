@@ -5,16 +5,16 @@ set -euo pipefail
 # Source: https://docs.docker.com/engine/install/ubuntu/
 
 echo "➡️  Uninstall old versions"
-sudo apt-get remove \
-  docker \
-  docker-engine \
-  docker.io \
-  containerd \
-  runc
+set +e
+for PACKAGE in docker docker-engine docker.io containerd runc
+do
+  sudo apt-get remove "$PACKAGE" --quiet --yes
+done
+set -e
 
 echo "➡️  Install apt dependencies"
 sudo apt-get update
-sudo apt-get install \
+sudo apt-get install --quiet --yes \
   ca-certificates \
   curl \
   gnupg
@@ -31,7 +31,7 @@ echo \
 
 echo "➡️  Install Docker Engine"
 sudo apt-get update
-sudo apt-get install \
+sudo apt-get install --quiet --yes \
   docker-ce \
   docker-ce-cli \
   containerd.io \
@@ -43,11 +43,15 @@ sudo apt-get install \
 # Source: https://docs.docker.com/engine/install/linux-postinstall/
 
 echo "➡️  Create the docker group"
+set +e
 sudo groupadd docker
+set -e
 
 echo "➡️  Add user to group"
 sudo usermod -aG docker "${SUDO_USER}"
 
+echo "➡️  Reload groups"
+newgrp docker
 
 # TODO: Change docker logging provider
 # Source: https://docs.docker.com/engine/install/linux-postinstall/#configure-default-logging-driver
