@@ -33,6 +33,10 @@ function write-user-config {
   # Blocks
   INSTALL_DOCKER_CONTENT=$(cat "/srv/lib/cloud-init/src/10-install-docker.sh")
   write-yaml-block "${OUTPUT}" "\${INSTALL_DOCKER_CONTENT}" "${INSTALL_DOCKER_CONTENT}"
+  INSTALL_CRI_DOCKERD_CONTENT=$(cat "/srv/lib/cloud-init/src/20-install-cri-dockerd.sh")
+  write-yaml-block "${OUTPUT}" "\${INSTALL_CRI_DOCKERD_CONTENT}" "${INSTALL_CRI_DOCKERD_CONTENT}"
+  INSTALL_KUBERNETES_CONTENT=$(cat "/srv/lib/cloud-init/src/30-install-kubernetes.sh")
+  write-yaml-block "${OUTPUT}" "\${INSTALL_KUBERNETES_CONTENT}" "${INSTALL_KUBERNETES_CONTENT}"
 
   # Arrays
   SSH_AUTHORIZED_KEYS=$(cat "/root/.ssh/id_rsa.pub")
