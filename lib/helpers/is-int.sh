@@ -7,6 +7,8 @@ function is-int {
 
   source /srv/lib/helpers/echo-error.sh
 
+  # START
+
   if [[ ! -v "1" ]]
   then
     echo-error "\$1 was not set."
