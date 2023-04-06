@@ -13,7 +13,7 @@ for i in -1 0 1 10 100000 0.5 -0.5 1.0 .0 "" 1
 do
   OUTPUT+="$i: "
   set +e
-  OUTPUT+=$(validate "is-int $i" 2>&1)
+  OUTPUT+=$(validate "is-int" "$i" 2>&1)
   EXIT_CODE=$?
   set -e
   OUTPUT+="; EXIT_CODE: ${EXIT_CODE}"
