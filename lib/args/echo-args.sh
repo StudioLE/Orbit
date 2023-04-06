@@ -16,5 +16,3 @@ function echo-args {
   echo "${OUTPUT}"
     
 }
-
-echo-args
