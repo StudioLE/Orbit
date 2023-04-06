@@ -5,54 +5,51 @@ set -uo pipefail
 
 source /srv/lib/echo/echo-replace.sh
 
-# ARGS
+# CONSTANTS
 
-ID=100
+declare -i ID=100
+declare -i STAGE_INTERVAL=3
 
 # START
 
+# Create a blank canvas to overwrite
+# shellcheck disable=SC2034
+for i in {1..7}
+do
+  echo ""
+done
 
+declare START_TIME
 START_TIME="$(date -u +%s)"
-
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-echo ""
-
+declare -i FRAME=0
 while :
 do
+  FRAME=$((FRAME + 1))
+  declare CURRENT_TIME
   CURRENT_TIME="$(date -u +%s)"
+  declare ELAPSED
   ELAPSED="$((CURRENT_TIME - START_TIME))"
-
-  if [[ "${ELAPSED}" -lt "3" ]]
-  then
-    STAGE=1
-  elif [[ "${ELAPSED}" -lt "6" ]]
-  then
-    STAGE=2
-  elif [[ "${ELAPSED}" -lt "9" ]]
-  then
-    STAGE=3
-  else
-    STAGE=4
-  fi
+  declare STAGE
+  STAGE=$((ELAPSED / STAGE_INTERVAL + 1))
   
-  echo-replace "STAGE: ${STAGE}" 7
+  echo-replace "STAGE: ${STAGE}; FRAME: ${FRAME}" 7
+
   [[ ${STAGE} -lt 1 ]] && ICON="1️⃣" || ICON="✅"
-  [[ ${STAGE} == 1 ]] && ICON="▶️"
+  [[ ${STAGE} == 1 ]] && ICON="⌛"
   echo-replace "${ICON}  Booting" 6
+
   [[ ${STAGE} -lt 2 ]] && ICON="2️⃣" || ICON="✅"
-  [[ ${STAGE} == 2 ]] && ICON="▶️"
+  [[ ${STAGE} == 2 ]] && ICON="⌛"
   echo-replace "${ICON}  Responding to SSH" 5
+
   [[ ${STAGE} -lt 3 ]] && ICON="3️⃣" || ICON="✅"
-  [[ ${STAGE} == 3 ]] && ICON="▶️"
+  [[ ${STAGE} == 3 ]] && ICON="⌛"
   echo-replace "${ICON}  Running Cloud-Init" 4
+
   [[ ${STAGE} -lt 4 ]] && ICON="4️⃣" || ICON="✅"
-  # [[ ${STAGE} == 4 ]] && ICON="▶️"
+  # [[ ${STAGE} == 4 ]] && ICON="⌛"
   echo-replace "${ICON}  Complete" 3
+
   echo-replace "⌛  ${ELAPSED} seconds" 1
 
   if [[ "${STAGE}" == "4" ]]
