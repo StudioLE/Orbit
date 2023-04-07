@@ -37,8 +37,6 @@ function create-vm {
   declare ROLE
   ROLE=$(get-arg "--role" "vm")
 
-  # VALIDATE
-
   # CONSTANTS
 
   declare -ri ID=$(pvesh get /cluster/nextid)
@@ -52,12 +50,6 @@ function create-vm {
   if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
   then
       echo "❗  Invalid CORES: ${CORES}" >&2
-      exit 1
-  fi
-
-  if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
-  then
-      echo "❗  Invalid ID: ${ID}" >&2
       exit 1
   fi
 
