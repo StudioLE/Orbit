@@ -24,7 +24,7 @@ ALL=$(get-arg "--all")
 declare START_USAGE="$0 start <ID>"
 declare SSH_USAGE="$0 ssh <ID>"
 declare DESTROY_USAGE="$0 destroy --all"
-declare CREATE_USAGE="$0 create"
+declare CREATE_USAGE="$0 create [OPTIONS]"
 
 if [[ "${COMMAND}" == "start" ]]
 then

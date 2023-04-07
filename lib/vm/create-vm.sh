@@ -19,11 +19,29 @@ function create-vm {
   declare OS_NAME
   OS_NAME=$(get-arg "--os-name" "ubuntu")
 
+  if [[ "${OS_NAME}" == "" ]];
+  then
+      echo "❗  Invalid OS_NAME: ${OS_NAME}" >&2
+      exit 1
+  fi
+
   declare OS_VERSION
   OS_VERSION=$(get-arg "--os-version" "jammy")
 
+  if [[ "${OS_VERSION}" == "" ]];
+  then
+      echo "❗  Invalid OS_VERSION: ${OS_VERSION}" >&2
+      exit 1
+  fi
+
   declare DISK_SIZE
   DISK_SIZE=$(get-arg "--disk-size" "20G")
+
+  if [[ "${DISK_SIZE}" == "" || "${DISK_SIZE}" != *"G" ]];
+  then
+      echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
+      exit 1
+  fi
 
   declare TYPE
   TYPE=$(get-arg "--type" "c1")
@@ -31,8 +49,22 @@ function create-vm {
   declare MEMORY
   MEMORY=$(get-arg "--memory" "8")
 
+  if [[ "${MEMORY}" == "" || "${MEMORY}" -lt "1" || "${MEMORY}" -gt "32" ]];
+  then
+      echo "❗  Invalid MEMORY: ${MEMORY}" >&2
+      exit 1
+  else
+      MEMORY=$((MEMORY * 1024))
+  fi
+
   declare CORES
   CORES=$(get-arg "--cores" "4")
+
+  if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
+  then
+      echo "❗  Invalid CORES: ${CORES}" >&2
+      exit 1
+  fi
 
   declare PURPOSE
   PURPOSE=$(get-arg "--purpose" "worker")
@@ -45,49 +77,9 @@ function create-vm {
   declare -r NAME="${PURPOSE}-${TYPE}"
   declare TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
-  # VALIDATE
-
-  if [[ "${OS_NAME}" == "" ]];
-  then
-      echo "❗  Invalid OS_NAME: ${OS_NAME}" >&2
-      exit 1
-  fi
-
-  if [[ "${OS_VERSION}" == "" ]];
-  then
-      echo "❗  Invalid OS_VERSION: ${OS_VERSION}" >&2
-      exit 1
-  fi
-
-  if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
-  then
-      echo "❗  Invalid CORES: ${CORES}" >&2
-      exit 1
-  fi
-
-  if [[ "${DISK_SIZE}" == "" || "${DISK_SIZE}" != *"G" ]];
-  then
-      echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
-      exit 1
-  fi
-
   if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
   then
       echo "❗  Invalid ID: ${ID}" >&2
-      exit 1
-  fi
-
-  if [[ "${MEMORY}" == "" || "${MEMORY}" -lt "1" || "${MEMORY}" -gt "32" ]];
-  then
-      echo "❗  Invalid MEMORY: ${MEMORY}" >&2
-      exit 1
-  else
-      MEMORY=$((MEMORY * 1024))
-  fi
-
-  if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
-  then
-      echo "❗  Invalid CORES: ${CORES}" >&2
       exit 1
   fi
 
@@ -103,7 +95,6 @@ function create-vm {
 
   # START
 
-  
   echo "➡️  Create boot disk"
   create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
   DISK_FILE="${OUTPUT}"
