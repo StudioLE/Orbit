@@ -75,16 +75,6 @@ function create-vm {
       exit 1
   fi
 
-  if [[ "${NAME}" == "" ]];
-  then
-      NAME="${HOSTNAME}"
-  fi
-
-  if [[ "${TAGS}" == "" ]];
-  then
-      TAGS="unknown"
-  fi
-
   # START
 
   
