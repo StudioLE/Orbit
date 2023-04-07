@@ -145,7 +145,7 @@ function create-vm {
   echo "${OUTPUT}" > "/var/lib/vz/snippets/${ID}-user-config.yml"
 
   echo "➡️  Write network config"
-  write-network-config "${ID}"
+  write-network-config "${CLUSTER_ID}" "${NODE_ID}"
   echo "${OUTPUT}" > "/var/lib/vz/snippets/${ID}-network-config.yml"
 
   echo "🆕  Create a virtual machine"

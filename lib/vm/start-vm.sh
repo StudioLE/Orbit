@@ -11,7 +11,7 @@ ID=${1}
 
 # VALIDATE
 
-if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "253" ]];
+if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "9999" ]];
 then
     echo "❗  Invalid ID: ${ID}" >&2
     exit 1

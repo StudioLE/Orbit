@@ -8,6 +8,16 @@ function get-next-cluster-id {
   ALL_VM=$(/srv/lib/api/get-all-vm.sh)
 
   # Determine the highest ID
+  declare COUNT
+  COUNT=$(echo "$ALL_VM" | jq 'length')
+
+  if [[ "${COUNT}" == 0 ]] 
+  then
+    echo "1"
+    exit 0
+  fi
+
+  # Determine the highest ID
   declare ID
   ID=$(echo "$ALL_VM" | jq 'map(.vmid) | sort | last')
 

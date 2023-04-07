@@ -6,7 +6,7 @@ function get-cluster-id {
   # ARGS
   declare ID=$1
 
-  if [[ "${ID}" == "" ||  "${ID}" -lt "100" || "${ID}" -gt "9999" ]];
+  if [[ "${ID}" == "" || "${ID}" -lt "100" || "${ID}" -gt "9999" ]];
   then
       echo "❗  Invalid ID: ${ID}" >&2
       exit 1
