@@ -8,6 +8,7 @@ function create-vm {
   source /srv/lib/args/get-args.sh
   source /srv/lib/args/echo-args.sh
   source /srv/lib/args/get-arg.sh
+  source /srv/lib/echo/echo-error.sh
   source /srv/lib/boot-disk/create-boot-disk.sh
   source /srv/lib/cloud-init/write-network-config.sh
   source /srv/lib/cloud-init/write-user-config.sh
@@ -36,6 +37,43 @@ function create-vm {
 
   declare ROLE
   ROLE=$(get-arg "--role" "vm")
+
+  # VALIDATE
+
+  if [[ "${TYPE}" == "" ]];
+  then
+
+    TYPE="S${CORES}C${MEMORY}M"
+
+    if [[ "${MEMORY}" == "" ]]
+    then
+      echo-error "Neither --type or --memory were set."
+      exit 1
+    fi
+    
+    if [[ "${CORES}" == "" ]]
+    then
+      echo-error "Neither --type or --cores were set."
+      exit 1
+    fi
+
+  else
+
+    if [[ "${MEMORY}" != "" ]]
+    then
+      echo-error "--type and --memory can't both be set."
+      exit 1
+    fi
+    if [[ "${CORES}" != "" ]]
+    then
+      echo-error "--type and --cores can't both be set."
+      exit 1
+    fi
+
+    source /srv/lib/vm/set-args-by-type.sh
+    set-args-by-type "${TYPE}"
+
+  fi
 
   # CONSTANTS
 
