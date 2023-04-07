@@ -38,6 +38,12 @@ function create-vm {
   declare ROLE
   ROLE=$(get-arg "--role" "vm")
 
+  declare CLUSTER_ID
+  CLUSTER_ID=$(get-arg "--cluster-id")
+
+  declare NODE_ID
+  NODE_ID=$(get-arg "--node-id")
+
   # VALIDATE
 
   if [[ "${TYPE}" == "" ]];
@@ -76,18 +82,31 @@ function create-vm {
 
   fi
 
-  echo "TYPE: $TYPE"
-  echo "CORES: $CORES"
-  echo "MEMORY: $MEMORY"
-  exit 0
+  if [[ "${CLUSTER_ID}" == "" && "${NODE_ID}" == "" ]];
+  then
+    CLUSTER_ID=$(/srv/lib/api/get-next-cluster-id.sh)
+    NODE_ID="00"
+  elif [[ "${CLUSTER_ID}" == "" || "${CLUSTER_ID}" -lt "1" || "${CLUSTER_ID}" -gt "99" ]]
+  then
+      echo-error "Invalid CLUSTER_ID: ${CLUSTER_ID}"
+      exit 1
+  elif [[ "${NODE_ID}" == "" || "${NODE_ID}" -lt "0" || "${NODE_ID}" -gt "99" ]]
+  then
+      echo-error "Invalid NODE_ID: ${NODE_ID}"
+      exit 1
+  elif [[ "${#NODE_ID}" != 2 ]]
+  then
+    NODE_ID="0${NODE_ID}"
+  fi
 
   # CONSTANTS
-
-  declare -ri ID=$(pvesh get /cluster/nextid)
-  declare -r HOSTNAME="vm${ID}"
+  declare -r ID="${CLUSTER_ID}${NODE_ID}"
+  declare -r HOSTNAME="vm-${CLUSTER_ID}-${NODE_ID}"
   declare -r STORAGE_NAME="local"
-  declare -r NAME="${ROLE}-${TYPE}"
-  declare TAGS="${ROLE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
+  declare TYPE_LOWER
+  TYPE_LOWER=$(echo "${TYPE}" | tr '[:upper:]' '[:lower:]')
+  declare -r NAME="${ROLE}-${TYPE_LOWER}"
+  declare TAGS="${ROLE},${TYPE_LOWER},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
   # VALIDATE
 
@@ -105,15 +124,8 @@ function create-vm {
       MEMORY=$((MEMORY * 1024))
   fi
 
-  if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
-  then
-      echo "❗  Invalid CORES: ${CORES}" >&2
-      exit 1
-  fi
-
   # START
 
-  
   echo "➡️  Create boot disk"
   create-boot-disk "${OS_NAME}" "${OS_VERSION}" "${DISK_SIZE}"
   DISK_FILE="${OUTPUT}"
