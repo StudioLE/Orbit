@@ -43,8 +43,6 @@ function create-vm {
   if [[ "${TYPE}" == "" ]];
   then
 
-    TYPE="S${CORES}C${MEMORY}M"
-
     if [[ "${MEMORY}" == "" ]]
     then
       echo-error "Neither --type or --memory were set."
@@ -56,6 +54,9 @@ function create-vm {
       echo-error "Neither --type or --cores were set."
       exit 1
     fi
+
+    source /srv/lib/vm/set-type-by-args.sh
+    set-type-by-args "${CORES}" "${MEMORY}"
 
   else
 
@@ -74,6 +75,11 @@ function create-vm {
     set-args-by-type "${TYPE}"
 
   fi
+
+  echo "TYPE: $TYPE"
+  echo "CORES: $CORES"
+  echo "MEMORY: $MEMORY"
+  exit 0
 
   # CONSTANTS
 
