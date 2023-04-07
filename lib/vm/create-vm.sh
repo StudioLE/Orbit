@@ -34,16 +34,16 @@ function create-vm {
   declare CORES
   CORES=$(get-arg "--cores" "4")
 
-  declare PURPOSE
-  PURPOSE=$(get-arg "--purpose" "worker")
+  declare ROLE
+  ROLE=$(get-arg "--role" "worker")
 
   # CONSTANTS
 
   declare -ri ID=$(pvesh get /cluster/nextid)
   declare -r HOSTNAME="vm${ID}"
   declare -r STORAGE_NAME="local"
-  declare -r NAME="${PURPOSE}-${TYPE}"
-  declare TAGS="${PURPOSE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
+  declare -r NAME="${ROLE}-${TYPE}"
+  declare TAGS="${ROLE},${TYPE},${OS_NAME},${OS_NAME}-${OS_VERSION}"
 
   # VALIDATE
 
