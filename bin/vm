@@ -22,7 +22,6 @@ ALL=$(get-arg "--all")
 # START
 
 declare START_USAGE="$0 start <ID>"
-declare STATUS_USAGE="$0 status <ID>"
 declare SSH_USAGE="$0 ssh <ID>"
 declare DESTROY_USAGE="$0 destroy --all"
 declare CREATE_USAGE="$0 create"
@@ -36,18 +35,6 @@ then
   else
     echo "❗  Invalid arguments." >&2
     echo "Usage: ${START_USAGE}"
-    exit 1
-  fi
-
-elif [[ "${COMMAND}" == "status" ]]
-then
-
-  if [[ "${ID}" != "" ]]
-  then
-    /srv/lib/vm/get-vm-status.sh "${ID}"
-  else
-    echo "❗  Invalid arguments." >&2
-    echo "Usage: ${STATUS_USAGE}"
     exit 1
   fi
 
@@ -83,14 +70,12 @@ then
 elif [[ "${COMMAND}" == "help" || -v "ARGS[--help]" ]]
 then
   echo "Usage: ${START_USAGE}"
-  echo "Usage: ${STATUS_USAGE}"
   echo "Usage: ${SSH_USAGE}"
   echo "Usage: ${DESTROY_USAGE}"
   echo "Usage: ${CREATE_USAGE}"
 else
   echo "❗  Invalid arguments." >&2
   echo "Usage: ${START_USAGE}"
-  echo "Usage: ${STATUS_USAGE}"
   echo "Usage: ${SSH_USAGE}"
   echo "Usage: ${DESTROY_USAGE}"
   echo "Usage: ${CREATE_USAGE}"
