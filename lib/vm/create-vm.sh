@@ -26,16 +26,18 @@ function create-vm {
   DISK_SIZE=$(get-arg "--disk-size" "20G")
 
   declare TYPE
-  TYPE=$(get-arg "--type" "c1")
+  TYPE=$(get-arg "--type")
 
   declare MEMORY
-  MEMORY=$(get-arg "--memory" "8")
+  MEMORY=$(get-arg "--memory")
 
   declare CORES
-  CORES=$(get-arg "--cores" "4")
+  CORES=$(get-arg "--cores")
 
   declare ROLE
-  ROLE=$(get-arg "--role" "worker")
+  ROLE=$(get-arg "--role" "vm")
+
+  # VALIDATE
 
   # CONSTANTS
 
@@ -47,27 +49,9 @@ function create-vm {
 
   # VALIDATE
 
-  if [[ "${OS_NAME}" == "" ]];
-  then
-      echo "❗  Invalid OS_NAME: ${OS_NAME}" >&2
-      exit 1
-  fi
-
-  if [[ "${OS_VERSION}" == "" ]];
-  then
-      echo "❗  Invalid OS_VERSION: ${OS_VERSION}" >&2
-      exit 1
-  fi
-
   if [[ "${CORES}" == "" || "${CORES}" -lt "1" || "${CORES}" -gt "4" ]];
   then
       echo "❗  Invalid CORES: ${CORES}" >&2
-      exit 1
-  fi
-
-  if [[ "${DISK_SIZE}" == "" || "${DISK_SIZE}" != *"G" ]];
-  then
-      echo "❗  Invalid DISK_SIZE: ${DISK_SIZE}" >&2
       exit 1
   fi
 
