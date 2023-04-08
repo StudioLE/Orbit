@@ -35,7 +35,7 @@ function write-network-config {
   fi
 
   declare -r CONFIG_SRC="/srv/lib/cloud-init/src/network-config-template.yml"
-  declare -r VM_IP="10.10.${CLUSTER_ID}.${NODE_IP_ID}"
+  declare -r VM_IP="10.10.${CLUSTER_ID}.${NODE_IP_ID}/18"
   declare -r GATEWAY_IP="10.10.0.1"
 
   # VALIDATE

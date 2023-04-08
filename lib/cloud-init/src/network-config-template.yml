@@ -6,12 +6,11 @@ network:
     eth0:
       set-name: eth0
       match:     
-        name: en*
+        name: e*
       addresses:
-        - ${VM_IP}/16
+        - ${VM_IP}
       nameservers:
         addresses:
-          - 10.10.10.1
           - 1.1.1.1
           - 1.0.0.1
         search:

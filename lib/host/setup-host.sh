@@ -32,14 +32,14 @@ iface eno1 inet static
 auto vmbr0
 #private sub network
 iface vmbr0 inet static
-        address  10.10.0.1/16
+        address  10.10.0.1/18
         bridge-ports none
         bridge-stp off
         bridge-fd 0
 
         post-up   echo 1 > /proc/sys/net/ipv4/ip_forward
-        post-up   iptables -t nat -A POSTROUTING -s '10.10.0.0/16' -o eno1 -j MASQUERADE
-        post-down iptables -t nat -D POSTROUTING -s '10.10.0.0/16' -o eno1 -j MASQUERADE
+        post-up   iptables -t nat -A POSTROUTING -s '10.10.0.0/18' -o eno1 -j MASQUERADE
+        post-down iptables -t nat -D POSTROUTING -s '10.10.0.0/18' -o eno1 -j MASQUERADE
 
         post-up   iptables -t raw -I PREROUTING -i fwbr+ -j CT --zone 1
         post-down iptables -t raw -D PREROUTING -i fwbr+ -j CT --zone 1
