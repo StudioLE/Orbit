@@ -85,7 +85,7 @@ function create-vm {
   if [[ "${CLUSTER_ID}" == "" && "${NODE_ID}" == "" ]];
   then
     CLUSTER_ID=$(/srv/lib/api/get-next-cluster-id.sh)
-    NODE_ID="00"
+    NODE_ID="01"
   elif [[ "${CLUSTER_ID}" == "" && "${NODE_ID}" != "" ]];
   then
       echo-error "--node was provided but not --cluster"

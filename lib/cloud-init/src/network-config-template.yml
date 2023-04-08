@@ -8,7 +8,7 @@ network:
       match:     
         name: en*
       addresses:
-        - ${VM_IP}/24
+        - ${VM_IP}/16
       nameservers:
         addresses:
           - 10.10.10.1
