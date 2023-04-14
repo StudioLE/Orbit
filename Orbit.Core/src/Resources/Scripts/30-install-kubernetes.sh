@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Install kubeadm, kubelet, and kubectl
-# Source: 
+# Source:
 
 echo "➡️  Install apt dependencies"
 sudo apt-get update

@@ -5,7 +5,7 @@ network:
   ethernets:
     eth0:
       set-name: eth0
-      match:     
+      match:
         name: e*
       addresses:
         - ${VM_IP}
