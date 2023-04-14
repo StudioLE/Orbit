@@ -15,12 +15,12 @@ internal sealed class CreateTests
         // ILogger<Create> logger = loggerFactory.CreateLogger<Create>();
 
         // Act
-        IResult<Instance> createdResult = Create.Execute(instance);
+        IResult createdResult = Create.Execute(instance);
+        createdResult.ThrowOnFailure();
 
         // Assert
-        Instance createdInstance = createdResult.GetValueOrThrow();
         IResult<Instance> apiResult = Api.TryGetInstance(instance.Id);
         Instance apiInstance = apiResult.GetValueOrThrow();
-        Assert.That(createdInstance.Id, Is.EqualTo(apiInstance.Id));
+        Assert.That(instance.Id, Is.EqualTo(apiInstance.Id));
     }
 }

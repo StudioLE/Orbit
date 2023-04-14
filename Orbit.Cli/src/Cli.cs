@@ -3,7 +3,6 @@ using Orbit.Cli.Utils.CommandLine;
 using Orbit.Cli.Utils.Converters;
 using Orbit.Core;
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
 using StudioLE.Core.Results;
 using StudioLE.Core.System;
 
@@ -48,14 +47,13 @@ public class Cli
         // builder.RegisterCreateServices();
         // using IHost host = builder.Build();
         // ILogger<Create> logger = host.Services.GetRequiredService<ILogger<Create>>();
-        IResult<Instance> result = Create.Execute(sourceInstance);
-        if(result is Failure<Instance> failure)
+        IResult result = Create.Execute(sourceInstance);
+        if(result is Failure failure)
         {
             Console.WriteLine("Failed to create an instance.");
             Console.WriteLine(failure.Errors.Join());
             return;
         }
-        Instance createdInstance = result.GetValueOrThrow();
-        Console.WriteLine($"Created instance {createdInstance.Id}");
+        Console.WriteLine($"Created instance {sourceInstance.Id}");
     }
 }
