@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Use consistent properties across all tests projects -->
+  <Import Project="..\..\GlobalProperties.tests.props" />
+
+  <!-- Use consistent global usings across all tests projects -->
+  <Import Project="..\..\GlobalUsings.tests.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Orbit.Core.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="StudioLE.Verify.NUnit" Version="0.1.0" />
+  </ItemGroup>
+
+</Project>

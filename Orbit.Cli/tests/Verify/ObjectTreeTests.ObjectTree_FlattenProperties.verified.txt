@@ -1,0 +1,17 @@
+﻿Name: System.String
+Role: System.String
+Host: System.String
+InstanceNumber: System.Int32
+ClusterNumber: System.Int32
+Network: Orbit.Core.Schema.Network
+Network.Address: System.String
+Network.Gateway: System.String
+OS: Orbit.Core.Schema.OS
+OS.Name: System.String
+OS.Version: System.String
+Hardware: Orbit.Core.Schema.Hardware
+Hardware.Platform: Orbit.Core.Schema.Platform
+Hardware.Type: System.String
+Hardware.Cpus: System.Int32
+Hardware.Memory: System.Int32
+Hardware.Disk: System.Int32

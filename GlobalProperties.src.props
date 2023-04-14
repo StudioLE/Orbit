@@ -1,0 +1,29 @@
+<Project>
+
+  <PropertyGroup>
+    <Authors>StudioLE</Authors>
+    <Copyright>Copyright © Laurence Elsdon 2023</Copyright>
+    <PackageProjectUrl>https://github.com/StudioLE/Orbit</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>kubernetes docker multipass</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <LangVersion>11</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable Condition="'$(OutputType)' != 'Library'">false</IsPackable>
+    <IsPackable Condition="'$(OutputType)' == 'Library'">true</IsPackable>
+    <!--    <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" Visible="false"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OutputType)' == 'Library'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
+
+
+</Project>

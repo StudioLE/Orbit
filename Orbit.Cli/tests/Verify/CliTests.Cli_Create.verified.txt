@@ -1,0 +1,15 @@
+﻿name: node-01-01
+host: host-02
+network:
+  address: 10.1.1.1
+  gateway: 10.0.0.1
+  cluster: cluster-01
+os:
+  name: ubuntu
+  version: jammy
+hardware:
+  platform: Virtual
+  cpus: 2
+  memory: 8
+  disk: 20
+

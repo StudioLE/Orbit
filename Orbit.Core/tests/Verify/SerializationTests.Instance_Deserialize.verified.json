@@ -1,0 +1,23 @@
+﻿{
+  "Name": "node-01-01",
+  "Id": "12-01",
+  "Number": 1,
+  "Cluster": 12,
+  "Host": 2,
+  "Role": "node",
+  "Network": {
+    "Address": "10.1.1.1",
+    "Gateway": "10.0.0.1"
+  },
+  "OS": {
+    "Name": "ubuntu",
+    "Version": "jammy"
+  },
+  "Hardware": {
+    "Platform": "Virtual",
+    "Type": "G1",
+    "Cpus": 2,
+    "Memory": 8,
+    "Disk": 20
+  }
+}

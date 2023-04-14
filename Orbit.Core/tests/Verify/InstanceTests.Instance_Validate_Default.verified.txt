@@ -1,0 +1,4 @@
+﻿The field Id must match the regular expression '^(0[1-9]|[1-5][0-9]|6[0-4])-(0[1-9]|[1-5][0-9]|6[0-4])$'.
+The field Number must be between 1 and 64.
+The field Cluster must be between 1 and 64.
+The field Host must be between 1 and 64.
