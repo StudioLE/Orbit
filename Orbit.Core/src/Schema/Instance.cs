@@ -51,8 +51,8 @@ public sealed class Instance
 
         if (Cluster == default)
         {
-            int[] clusters = Api
-                .GetInstanceIds()
+            int[] clusters = InstanceApi
+                .GetIds()
                 .Select(IdHelpers.GetClusterNumber)
                 .ToArray();
             int lastClusterNumber= clusters.Any()
@@ -63,8 +63,8 @@ public sealed class Instance
 
         if (Number == default)
         {
-            int[] instances = Api
-                .GetInstanceIds()
+            int[] instances = InstanceApi
+                .GetIds()
                 .Where(id => IdHelpers.GetClusterNumber(id) == Cluster)
                 .Select(IdHelpers.GetInstanceNumber)
                 .ToArray();

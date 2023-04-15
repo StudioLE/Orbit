@@ -1,10 +1,11 @@
 using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.CommandLine;
 using Orbit.Cli.Utils.Converters;
 using Orbit.Core;
+using Orbit.Core.Activities;
 using Orbit.Core.Schema;
-using StudioLE.Core.Results;
-using StudioLE.Core.System;
 
 namespace Orbit.Cli;
 
@@ -43,17 +44,13 @@ public class Cli
 
     private void CreateHandler(Instance sourceInstance)
     {
-        // IHostBuilder builder = Host.CreateDefaultBuilder(_args);
-        // builder.RegisterCreateServices();
-        // using IHost host = builder.Build();
-        // ILogger<Create> logger = host.Services.GetRequiredService<ILogger<Create>>();
-        IResult result = Create.Execute(sourceInstance);
-        if(result is Failure failure)
-        {
-            Console.WriteLine("Failed to create an instance.");
-            Console.WriteLine(failure.Errors.Join());
-            return;
-        }
-        Console.WriteLine($"Created instance {sourceInstance.Id}");
+        using IHost host = Host
+            .CreateDefaultBuilder(_args)
+            .RegisterCreateServices()
+            .Build();
+        Create create = host.Services.GetRequiredService<Create>();
+        Instance? createdInstance = create.Execute(sourceInstance);
+        if(createdInstance is not null)
+            Console.WriteLine($"Created instance {createdInstance.Id}");
     }
 }

@@ -2,14 +2,14 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Tests;
 
-internal sealed class ApiTests
+internal sealed class InstanceApiTests
 {
     [Test]
-    public void Api_GetNodeIds()
+    public void InstanceApi_GetIds()
     {
         // Arrange
         // Act
-        string[] nodeIds = Api.GetInstanceIds().ToArray();
+        string[] nodeIds = InstanceApi.GetIds().ToArray();
         Console.WriteLine(nodeIds.Join());
 
         // Assert

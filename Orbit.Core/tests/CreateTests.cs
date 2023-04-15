@@ -1,6 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
-using StudioLE.Core.Results;
+using Create = Orbit.Core.Activities.Create;
 
 namespace Orbit.Core.Tests;
 
@@ -9,18 +10,26 @@ internal sealed class CreateTests
     [Test]
     public void Create_Execute_Default()
     {
+        // TODO: Use moq to create a logger
+        // https://stackoverflow.com/a/58697253/247218
+
         // Arrange
-        Instance instance = new();
-        // ILoggerFactory loggerFactory = LoggerFactory.Create(_ => { });
-        // ILogger<Create> logger = loggerFactory.CreateLogger<Create>();
+        Instance sourceInstance = new();
+
+        string[] args = { "--environment", "Development" };
+        using IHost host = Host
+            .CreateDefaultBuilder(args)
+            .RegisterCreateServices()
+            .Build();
+        Create create = host.Services.GetRequiredService<Create>();
 
         // Act
-        IResult createdResult = Create.Execute(instance);
-        createdResult.ThrowOnFailure();
+        Instance? createdInstance = create.Execute(sourceInstance);
 
         // Assert
-        IResult<Instance> apiResult = Api.TryGetInstance(instance.Id);
-        Instance apiInstance = apiResult.GetValueOrThrow();
-        Assert.That(instance.Id, Is.EqualTo(apiInstance.Id));
+        if(createdInstance is null)
+            Assert.Fail();
+        else
+            Assert.That(sourceInstance.Id, Is.EqualTo(createdInstance.Id));
     }
 }

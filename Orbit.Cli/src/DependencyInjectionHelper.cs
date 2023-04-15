@@ -9,16 +9,14 @@ namespace Orbit.Cli;
 
 public static class DependencyInjectionHelper
 {
-    public static IHostBuilder RegisterCreateServices(this IHostBuilder builder)
+    public static IHostBuilder RegisterRemoteServices(this IHostBuilder builder)
     {
-        builder.ConfigureServices((_, services) =>
+        return builder.ConfigureServices((_, services) =>
         {
             services.AddLogging(loggingBuilder => loggingBuilder.SetMinimumLevel(LogLevel.Debug));
             services.AddSingleton<HostShellOptions>();
             services.AddSingleton<HostShell>();
-            services.AddTransient<ConverterResolver>(_ => DefaultConverterResolver());
         });
-        return builder;
     }
 
     public static ConverterResolver DefaultConverterResolver()

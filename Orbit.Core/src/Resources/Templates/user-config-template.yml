@@ -33,19 +33,7 @@ write_files:
     content: |
       PermitRootLogin no
       PasswordAuthentication no
-      Port ${SSH_PORT}
-
-  - path: /var/lib/cloud/scripts/per-instance/10-install-docker.sh
-    permissions: "0500"
-    content: ${INSTALL_DOCKER_CONTENT}
-
-  - path: /var/lib/cloud/scripts/per-instance/20-install-cri-dockerd.sh
-    permissions: "0500"
-    content: ${INSTALL_CRI_DOCKERD_CONTENT}
-
-  - path: /var/lib/cloud/scripts/per-instance/30-install-kubernetes.sh
-    permissions: "0500"
-    content: ${INSTALL_KUBERNETES_CONTENT}
+      Port 22
 
 bootcmd: ${BOOTCMD_CONTENT}
 
