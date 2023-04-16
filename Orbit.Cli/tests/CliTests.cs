@@ -30,6 +30,24 @@ internal sealed class CliTests
         Assert.That(console.StartsWith("Created "));
     }
 
+    [Test]
+    [Explicit]
+    public async Task Cli_Launch()
+    {
+        // Arrange
+        string[] args =
+        {
+            "launch"
+        };
+        ConverterResolver resolver = DependencyInjectionHelper.DefaultConverterResolver();
+        Cli entry = new(args, resolver);
+
+        // Act
+        await entry.Run();
+
+        // Assert
+    }
+
     private static async Task<string> CaptureConsoleOutput(Func<Task> func)
     {
         // Temporarily capture the console output

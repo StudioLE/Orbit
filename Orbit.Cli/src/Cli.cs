@@ -23,6 +23,10 @@ public class Cli
 
     public async Task Run()
     {
+
+        #if DEBUG
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+        #endif
         CommandFactory<Instance> factory = new(_resolver)
         {
             Name = "create",
@@ -31,9 +35,14 @@ public class Cli
         };
         Command createCommand = factory.Build();
 
+        Command launchCommand = new("launch", "Launch an instance");
+        launchCommand.SetHandler(LaunchHandler);
+
+
         RootCommand rootCommand = new("Sample app for System.CommandLine")
         {
-            createCommand
+            createCommand,
+            launchCommand
         };
         rootCommand.SetHandler(() =>
         {
@@ -52,5 +61,17 @@ public class Cli
         Instance? createdInstance = create.Execute(sourceInstance);
         if(createdInstance is not null)
             Console.WriteLine($"Created instance {createdInstance.Id}");
+    }
+
+    private void LaunchHandler()
+    {
+        using IHost host = Host
+            .CreateDefaultBuilder(_args)
+            .RegisterLaunchServices()
+            .Build();
+        Launch launch = host.Services.GetRequiredService<Launch>();
+        launch.Execute("blah");
+        // if(createdInstance is not null)
+        //     Console.WriteLine($"Created instance {createdInstance.Id}");
     }
 }

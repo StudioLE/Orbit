@@ -1,5 +1,5 @@
 using Orbit.Cli.Utils.Composition;
-using Orbit.Cli.Utils.Patterns;
+using Orbit.Core.Utils.Patterns;
 
 namespace Orbit.Cli.Utils.Converters;
 

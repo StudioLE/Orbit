@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orbit.Core.Activities;
 using Orbit.Core.Schema;
-using Create = Orbit.Core.Activities.Create;
 
 namespace Orbit.Core.Tests;
 

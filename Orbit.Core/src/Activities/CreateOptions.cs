@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
+using Orbit.Core.Utils;
 using StudioLE.Core.System;
 
 namespace Orbit.Core.Activities;
@@ -23,9 +24,7 @@ public class CreateOptions
     public CreateOptions(IConfiguration configuration)
     {
         configuration.GetSection(MarkerKey).Bind(this);
-        ValidationContext context = new(this);
-        List<ValidationResult> results = new();
-        if (!Validator.TryValidateObject(this, context, results))
-            throw new(results.Select(x => x.ErrorMessage).OfType<string>().Join());
+        if(!this.TryValidate(out IReadOnlyCollection<string> errors))
+            throw new(errors.Join());
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Orbit.Cli.Utils.Patterns;
+﻿namespace Orbit.Core.Utils.Patterns;
 
 /// <summary>
 /// Build a <typeparamref name="TResult"/> from a <typeparamref name="TSource"/>
