@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using StudioLE.Core.Results;
 
 namespace Orbit.Cli.Utils.Composition;
 
@@ -49,23 +47,6 @@ public class ObjectTreeProperty : ObjectTreeBase
     public void SetValue(object value)
     {
         _property.SetValue(_parentInstance, value);
-    }
-
-    /// <summary>
-    /// Validate the value of the property according to the <see cref="System.ComponentModel.DataAnnotations"/>
-    /// using <see cref="Validator.TryValidateProperty"/>
-    /// </summary>
-    /// <returns><see cref="Success"/> if valid otherwise <see cref="Failure"/> with errors messages stored to <see cref="Failure.Errors"/>.</returns>
-    public IResult Validate()
-    {
-        ValidationContext context = new(_parentInstance);
-        List<ValidationResult> results = new();
-        return Validator.TryValidateObject(_parentInstance, context, results)
-            ? new Success()
-            : new Failure(results
-                .Select(x => x.ErrorMessage)
-                .OfType<string>()
-                .ToArray());
     }
 
     /// <inheritdoc />

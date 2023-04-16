@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Orbit.Core.Schema;
+using Orbit.Core.Utils;
 using StudioLE.Core.System;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
@@ -17,18 +17,15 @@ internal sealed class InstanceTests
         Instance instance = new();
 
         // Act
-        ValidationContext context = new(instance);
-        List<ValidationResult> results = new();
-        bool isValid =  Validator.TryValidateObject(instance, context, results, validateAllProperties: true);
-        string errors = results.Select(x => x.ErrorMessage ?? string.Empty).Join();
-        Console.WriteLine(errors);
+        bool isValid =  instance.TryValidate(out IReadOnlyCollection<string> errors);
+        Console.WriteLine(errors.Join());
 
         // Assert
         Assert.Multiple(() =>
         {
-            _verify.String(errors);
+            _verify.String(errors.Join());
             Assert.That(isValid, Is.False);
-            Assert.That(results, Is.Not.Empty);
+            Assert.That(errors, Is.Not.Empty);
         });
     }
 
@@ -40,16 +37,15 @@ internal sealed class InstanceTests
         instance.Review();
 
         // Act
-        ValidationContext context = new(instance);
-        List<ValidationResult> results = new();
-        bool isValid =  Validator.TryValidateObject(instance, context, results);
+        bool isValid =  instance.TryValidate(out IReadOnlyCollection<string> errors);
+        Console.WriteLine(errors.Join());
 
         // Assert
         Assert.Multiple(() =>
         {
             _verify.AsYaml(instance);
             Assert.That(isValid, Is.True);
-            Assert.That(results, Is.Empty);
+            Assert.That(errors, Is.Empty);
         });
     }
 }

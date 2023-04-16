@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
+using Orbit.Core.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
@@ -23,7 +23,7 @@ public class Create
         _instance = instance;
         instance.Review();
 
-        if (!ValidateInstance())
+        if (!_instance.TryValidate(_logger))
             return null;
 
         if (!CreateInstance())
@@ -36,18 +36,6 @@ public class Create
             return null;
 
         return _instance;
-    }
-
-    private bool ValidateInstance()
-    {
-        List<ValidationResult> results = new();
-        ValidationContext context = new(_instance);
-        if (Validator.TryValidateObject(_instance, context, results, validateAllProperties: true))
-            return true;
-        _logger.LogError("The following validation errors occured:");
-        foreach (ValidationResult result in results)
-            _logger.LogError(result.ErrorMessage);
-        return false;
     }
 
     private bool CreateInstance()
