@@ -60,6 +60,6 @@ public class Launch
 
     private bool LaunchInstance()
     {
-        return _multipass.Launch(_instance, Console.WriteLine);
+        return _multipass.Launch(_instance);
     }
 }

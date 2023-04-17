@@ -21,7 +21,7 @@ public class Multipass : IDisposable
         _ssh.Connect();
     }
 
-    private string? Execute(string commandText, Action<string> onLineEmitted)
+    private string? ExecuteToLogger(string commandText)
     {
         SshCommand command = _ssh.CreateCommand(commandText);
         IAsyncResult result = command.BeginExecute();
@@ -41,7 +41,7 @@ public class Multipass : IDisposable
                 .Replace("\u0008", "");
             if (string.IsNullOrWhiteSpace(line))
                 continue;
-            onLineEmitted.Invoke(line);
+            _logger.LogInformation(line);
         }
         command.EndExecute(result);
 
@@ -111,7 +111,7 @@ public class Multipass : IDisposable
     }
 
 
-    public bool Launch(Instance instance, Action<string> onLineEmitted)
+    public bool Launch(Instance instance)
     {
         string[] command =
         {
@@ -121,7 +121,7 @@ public class Multipass : IDisposable
             $"--disk {instance.Hardware.Disk}G",
             $"--name {instance.Name}"
         };
-        string? output = Execute(command.Join(" "), onLineEmitted);
+        string? output = ExecuteToLogger(command.Join(" "));
         return output is null;
     }
 

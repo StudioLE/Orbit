@@ -53,7 +53,7 @@ internal sealed class MultipassTests
         instance.Review(_provider);
 
         // Act
-        bool result = _multipass.Launch(instance, lines.Add);
+        bool result = _multipass.Launch(instance);
         string output = lines.Join();
 
         // Assert
