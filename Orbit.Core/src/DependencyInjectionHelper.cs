@@ -11,6 +11,8 @@ public static class DependencyInjectionHelper
     {
         return builder.ConfigureServices((_, services) =>
         {
+            services.AddSingleton<ProviderOptions>();
+            services.AddSingleton<InstanceProvider>();
             services.AddSingleton<CreateOptions>();
             services.AddSingleton<Create>();
         });
@@ -20,6 +22,8 @@ public static class DependencyInjectionHelper
     {
         return builder.ConfigureServices((_, services) =>
         {
+            services.AddSingleton<ProviderOptions>();
+            services.AddSingleton<InstanceProvider>();
             services.AddSingleton<ConnectionOptions>();
             services.AddSingleton<Multipass>();
             services.AddSingleton<Launch>();

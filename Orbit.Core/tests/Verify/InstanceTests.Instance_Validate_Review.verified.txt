@@ -1,9 +1,9 @@
 ﻿name: 01-01
-role: node
 id: 01-01
-host: 01-01
-instance_number: 1
-cluster_number: 1
+number: 1
+cluster: 1
+host: 1
+role: node
 network:
   address: 10.0.1.1
   gateway: 10.0.0.1

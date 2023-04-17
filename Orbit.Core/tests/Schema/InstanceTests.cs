@@ -9,6 +9,7 @@ namespace Orbit.Core.Tests.Schema;
 internal sealed class InstanceTests
 {
     private readonly Verify _verify = new(new NUnitVerifyContext());
+    private readonly InstanceProvider _provider = InstanceProvider.CreateTemp();
 
     [Test]
     public void Instance_Validate_Default()
@@ -34,7 +35,7 @@ internal sealed class InstanceTests
     {
         // Arrange
         Instance instance = new();
-        instance.Review();
+        instance.Review(_provider);
 
         // Act
         bool isValid =  instance.TryValidate(out IReadOnlyCollection<string> errors);

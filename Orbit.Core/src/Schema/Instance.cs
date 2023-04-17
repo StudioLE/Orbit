@@ -41,7 +41,7 @@ public sealed class Instance
     [ValidateComplexType]
     public Hardware Hardware { get; set; } = new();
 
-    public void Review()
+    public void Review(InstanceProvider provider)
     {
         Hardware.Review();
         OS.Review();
@@ -51,8 +51,8 @@ public sealed class Instance
 
         if (Cluster == default)
         {
-            int[] clusters = InstanceApi
-                .GetIds()
+            int[] clusters = provider
+                .GetAllIds()
                 .Select(IdHelpers.GetClusterNumber)
                 .ToArray();
             int lastClusterNumber= clusters.Any()
@@ -63,8 +63,8 @@ public sealed class Instance
 
         if (Number == default)
         {
-            int[] instances = InstanceApi
-                .GetIds()
+            int[] instances = provider
+                .GetAllIds()
                 .Where(id => IdHelpers.GetClusterNumber(id) == Cluster)
                 .Select(IdHelpers.GetInstanceNumber)
                 .ToArray();

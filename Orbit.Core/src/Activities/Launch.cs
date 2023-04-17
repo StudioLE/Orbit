@@ -10,6 +10,7 @@ public class Launch
 {
     private readonly ILogger<Launch> _logger;
     private readonly Multipass _multipass;
+    private readonly InstanceProvider _provider;
     private Instance _instance = new();
 
     public Launch()
@@ -20,12 +21,14 @@ public class Launch
             .Build();
         _logger = host.Services.GetRequiredService<ILogger<Launch>>();
         _multipass = host.Services.GetRequiredService<Multipass>();
+        _provider = host.Services.GetRequiredService<InstanceProvider>();
     }
 
-    public Launch(ILogger<Launch> logger, Multipass multipass)
+    public Launch(ILogger<Launch> logger, Multipass multipass, InstanceProvider provider)
     {
         _logger = logger;
         _multipass = multipass;
+        _provider = provider;
     }
 
     public bool Execute(string id)
@@ -44,7 +47,7 @@ public class Launch
 
     private bool GetInstance(string id)
     {
-        Instance? instance = InstanceApi.Get(id);
+        Instance? instance = _provider.Get(id);
         if (instance is null)
         {
             _logger.LogError("The instance does not exist.");

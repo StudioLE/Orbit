@@ -3,7 +3,6 @@ namespace Orbit.Cli.Tests;
 internal sealed class CliTests
 {
     [Test]
-    [Explicit]
     public async Task Cli_Create()
     {
         // Arrange
@@ -24,7 +23,7 @@ internal sealed class CliTests
     }
 
     [Test]
-    [Explicit]
+    [Explicit("Requires SSH")]
     public async Task Cli_Launch()
     {
         // Arrange

@@ -9,6 +9,7 @@ namespace Orbit.Core.Tests;
 internal sealed class MultipassTests
 {
     private readonly Multipass _multipass;
+    private readonly InstanceProvider _provider = InstanceProvider.CreateTemp();
 
     public MultipassTests()
     {
@@ -21,6 +22,7 @@ internal sealed class MultipassTests
     }
 
     [Test]
+    [Explicit("Requires SSH")]
     public void Multipass_List()
     {
         // Arrange
@@ -39,12 +41,13 @@ internal sealed class MultipassTests
     }
 
     [Test]
+    [Explicit("Requires SSH")]
     public void Multipass_Launch()
     {
         // Arrange
         List<string> lines = new();
         Instance instance = new();
-        instance.Review();
+        instance.Review(_provider);
 
         // Act
         bool result = _multipass.Launch(instance, lines.Add);
