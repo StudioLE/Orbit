@@ -1,6 +1,9 @@
 using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.CommandLine;
 using Orbit.Cli.Utils.Converters;
+using Orbit.Core;
 using Orbit.Core.Activities;
 using Orbit.Core.Schema;
 
@@ -54,13 +57,23 @@ public class Cli
 
     private void CreateHandler(Instance sourceInstance)
     {
-        Create create = new();
+        IHost host = Host
+            .CreateDefaultBuilder()
+            .RegisterCustomLoggingProviders()
+            .RegisterCreateServices()
+            .Build();
+        Create create = host.Services.GetRequiredService<Create>();
         create.Execute(sourceInstance);
     }
 
     private void LaunchHandler()
     {
-        Launch launch = new();
+        IHost host = Host
+            .CreateDefaultBuilder()
+            .RegisterCustomLoggingProviders()
+            .RegisterLaunchServices()
+            .Build();
+        Launch launch = host.Services.GetRequiredService<Launch>();
         launch.Execute("test");
     }
 }

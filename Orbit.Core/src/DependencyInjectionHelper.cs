@@ -3,7 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Activities;
 using Orbit.Core.SSH;
-using Orbit.Core.Utils.Logging;
+using Orbit.Core.Utils.Logging.ColorConsoleLogger;
+using Orbit.Core.Utils.Logging.TestLogger;
 
 namespace Orbit.Core;
 
@@ -20,6 +21,20 @@ public static class DependencyInjectionHelper
                 logging.AddDebug();
                 // logging.AddConsole();
                 logging.AddColorConsoleLogger();
+            });
+    }
+
+    public static IHostBuilder RegisterTestLoggingProviders(this IHostBuilder builder)
+    {
+        return builder
+            .ConfigureLogging((hostingContext, logging) =>
+            {
+                logging.ClearProviders();
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                logging.AddDebug();
+                // logging.AddConsole();
+                logging.AddColorConsoleLogger();
+                logging.AddTestLogger();
             });
     }
 

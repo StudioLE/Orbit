@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
@@ -12,18 +10,6 @@ public class Launch
     private readonly Multipass _multipass;
     private readonly InstanceProvider _provider;
     private Instance _instance = new();
-
-    public Launch()
-    {
-        using IHost host = Host
-            .CreateDefaultBuilder()
-            .RegisterCustomLoggingProviders()
-            .RegisterLaunchServices()
-            .Build();
-        _logger = host.Services.GetRequiredService<ILogger<Launch>>();
-        _multipass = host.Services.GetRequiredService<Multipass>();
-        _provider = host.Services.GetRequiredService<InstanceProvider>();
-    }
 
     public Launch(ILogger<Launch> logger, Multipass multipass, InstanceProvider provider)
     {
