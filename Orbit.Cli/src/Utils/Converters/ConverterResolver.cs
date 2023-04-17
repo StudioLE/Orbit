@@ -1,4 +1,5 @@
 using Orbit.Cli.Utils.Composition;
+using Orbit.Core.Schema;
 using StudioLE.Core.Results;
 
 namespace Orbit.Cli.Utils.Converters;
@@ -38,5 +39,14 @@ public class ConverterResolver
         return instance is null
             ? new Failure<object>("Failed to construct instance.")
             : new Success<object>(instance);
+    }
+
+    public static ConverterResolver Default()
+    {
+        return new ConverterResolverBuilder()
+            .Register<int, StringToInteger>()
+            .Register<double, StringToDouble>()
+            .Register<Platform, StringToEnum<Platform>>()
+            .Build();
     }
 }

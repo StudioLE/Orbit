@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
@@ -11,6 +13,16 @@ public class Create
     private readonly ILogger<Create> _logger;
     private readonly CreateOptions _options;
     private Instance _instance = new();
+
+    public Create()
+    {
+        using IHost host = Host
+            .CreateDefaultBuilder()
+            .RegisterCreateServices()
+            .Build();
+        _logger = host.Services.GetRequiredService<ILogger<Create>>();
+        _options = host.Services.GetRequiredService<CreateOptions>();
+    }
 
     public Create(ILogger<Create> logger, CreateOptions options)
     {

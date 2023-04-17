@@ -1,9 +1,6 @@
 using System.CommandLine;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.CommandLine;
 using Orbit.Cli.Utils.Converters;
-using Orbit.Core;
 using Orbit.Core.Activities;
 using Orbit.Core.Schema;
 
@@ -11,18 +8,22 @@ namespace Orbit.Cli;
 
 public class Cli
 {
-    private readonly string[] _args;
     private readonly ConverterResolver _resolver;
+    private string[] _args = Array.Empty<string>();
 
-    public Cli(string[] args, ConverterResolver resolver)
+    public Cli()
     {
-        _args = args;
+        _resolver = ConverterResolver.Default();
+    }
+
+    public Cli(ConverterResolver resolver)
+    {
         _resolver = resolver;
     }
 
-
-    public async Task Run()
+    public async Task Run(params string[] args)
     {
+        _args = args;
 
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -53,25 +54,13 @@ public class Cli
 
     private void CreateHandler(Instance sourceInstance)
     {
-        using IHost host = Host
-            .CreateDefaultBuilder(_args)
-            .RegisterCreateServices()
-            .Build();
-        Create create = host.Services.GetRequiredService<Create>();
-        Instance? createdInstance = create.Execute(sourceInstance);
-        if(createdInstance is not null)
-            Console.WriteLine($"Created instance {createdInstance.Id}");
+        Create create = new();
+        create.Execute(sourceInstance);
     }
 
     private void LaunchHandler()
     {
-        using IHost host = Host
-            .CreateDefaultBuilder(_args)
-            .RegisterLaunchServices()
-            .Build();
-        Launch launch = host.Services.GetRequiredService<Launch>();
-        launch.Execute("blah");
-        // if(createdInstance is not null)
-        //     Console.WriteLine($"Created instance {createdInstance.Id}");
+        Launch launch = new();
+        launch.Execute("test");
     }
 }

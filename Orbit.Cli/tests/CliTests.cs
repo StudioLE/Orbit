@@ -1,4 +1,3 @@
-using Orbit.Cli.Utils.Converters;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
 
@@ -19,11 +18,10 @@ internal sealed class CliTests
             "--host", "1",
             "--type", "G1"
         };
-        ConverterResolver resolver = DependencyInjectionHelper.DefaultConverterResolver();
-        Cli entry = new(args, resolver);
+        Cli entry = new();
 
         // Act
-        string console = await CaptureConsoleOutput(async () => await entry.Run());
+        string console = await CaptureConsoleOutput(async () => await entry.Run(args));
         Console.WriteLine(console);
 
         // Assert
@@ -39,11 +37,10 @@ internal sealed class CliTests
         {
             "launch"
         };
-        ConverterResolver resolver = DependencyInjectionHelper.DefaultConverterResolver();
-        Cli entry = new(args, resolver);
+        Cli entry = new();
 
         // Act
-        await entry.Run();
+        await entry.Run(args);
 
         // Assert
     }
