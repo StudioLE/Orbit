@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Orbit.Core.Activities;
 using Orbit.Core.Schema;
 
@@ -7,6 +5,13 @@ namespace Orbit.Core.Tests;
 
 internal sealed class CreateTests
 {
+    public CreateTests()
+    {
+        #if DEBUG
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+        #endif
+    }
+
     [Test]
     public void Create_Execute_Default()
     {
@@ -15,13 +20,7 @@ internal sealed class CreateTests
 
         // Arrange
         Instance sourceInstance = new();
-
-        string[] args = { "--environment", "Development" };
-        using IHost host = Host
-            .CreateDefaultBuilder(args)
-            .RegisterCreateServices()
-            .Build();
-        Create create = host.Services.GetRequiredService<Create>();
+        Create create = new();
 
         // Act
         Instance? createdInstance = create.Execute(sourceInstance);
