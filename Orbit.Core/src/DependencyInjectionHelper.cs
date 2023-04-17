@@ -50,6 +50,15 @@ public static class DependencyInjectionHelper
             });
     }
 
+    public static IHostBuilder RegisterTestInstanceProvider(this IHostBuilder builder)
+    {
+        return builder
+            .ConfigureServices((_, services) =>
+            {
+                services.AddSingleton<InstanceProvider>(_ => InstanceProvider.CreateTemp());
+            });
+    }
+
     public static IHostBuilder RegisterLaunchServices(this IHostBuilder builder)
     {
         return builder

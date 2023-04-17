@@ -19,6 +19,7 @@ internal sealed class CreateTests
             .CreateDefaultBuilder()
             .RegisterTestLoggingProviders()
             .RegisterCreateServices()
+            .RegisterTestInstanceProvider()
             .Build();
     }
 
@@ -40,6 +41,6 @@ internal sealed class CreateTests
             Assert.That(sourceInstance.Id, Is.EqualTo(createdInstance.Id));
 
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
-        Assert.That(logger.Logs.ElementAt(0).Message, Does.StartWith("Created"));
+        Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo("Created instance 01-01"));
     }
 }
