@@ -13,9 +13,12 @@ internal sealed class MultipassTests
 
     public MultipassTests()
     {
-        string[] args = { "--environment", "Development" };
+        #if DEBUG
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+        #endif
         using IHost host = Host
-            .CreateDefaultBuilder(args)
+            .CreateDefaultBuilder()
+            .RegisterCustomLoggingProviders()
             .RegisterLaunchServices()
             .Build();
         _multipass = host.Services.GetRequiredService<Multipass>();

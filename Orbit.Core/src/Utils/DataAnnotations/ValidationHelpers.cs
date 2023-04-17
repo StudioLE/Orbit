@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using StudioLE.Core.System;
 
-namespace Orbit.Core.Utils;
+namespace Orbit.Core.Utils.DataAnnotations;
 
-public static class DataAnnotationsHelpers
+public static class ValidationHelpers
 {
     private const bool ValidateAllProperties = true;
 
@@ -20,7 +20,7 @@ public static class DataAnnotationsHelpers
                 .ToArray();
     }
 
-    public static bool TryValidate(this object @this, out IReadOnlyCollection<string> errors, bool validateAllProperties = ValidateAllProperties)
+    public static bool TryValidate(this IHasValidationAttributes @this, out IReadOnlyCollection<string> errors, bool validateAllProperties = ValidateAllProperties)
     {
         List<ValidationResult> results = new();
         ValidationContext context = new(@this);
@@ -36,7 +36,7 @@ public static class DataAnnotationsHelpers
         return false;
     }
 
-    public static bool TryValidate(this object @this, ILogger logger, LogLevel logLevel = LogLevel.Error, bool validateAllProperties = ValidateAllProperties)
+    public static bool TryValidate(this IHasValidationAttributes @this, ILogger logger, LogLevel logLevel = LogLevel.Error, bool validateAllProperties = ValidateAllProperties)
     {
         if (TryValidate(@this, out IReadOnlyCollection<string> errors, validateAllProperties))
             return true;

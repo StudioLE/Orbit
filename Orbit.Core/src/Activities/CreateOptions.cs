@@ -1,13 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
-using Orbit.Core.Utils;
-using StudioLE.Core.System;
+using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Activities;
 
-public class CreateOptions
+public class CreateOptions : IHasValidationAttributes
 {
-    public const string MarkerKey = "Create";
+    private const string MarkerKey = "Create";
 
     [Required]
     public string SudoUser { get; set; } = string.Empty;
@@ -17,14 +16,8 @@ public class CreateOptions
 
     public string[] SshAuthorizedKeys { get; set; } = Array.Empty<string>();
 
-    public CreateOptions()
-    {
-    }
-
     public CreateOptions(IConfiguration configuration)
     {
         configuration.GetSection(MarkerKey).Bind(this);
-        if(!this.TryValidate(out IReadOnlyCollection<string> errors))
-            throw new(errors.Join());
     }
 }

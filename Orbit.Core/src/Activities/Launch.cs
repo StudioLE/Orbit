@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
+using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Activities;
 
@@ -17,6 +17,7 @@ public class Launch
     {
         using IHost host = Host
             .CreateDefaultBuilder()
+            .RegisterCustomLoggingProviders()
             .RegisterLaunchServices()
             .Build();
         _logger = host.Services.GetRequiredService<ILogger<Launch>>();

@@ -1,5 +1,5 @@
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
+using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.System;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;

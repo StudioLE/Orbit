@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
-using Orbit.Core.Utils;
-using StudioLE.Core.System;
+using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core;
 
-public class ProviderOptions
+public class ProviderOptions : IHasValidationAttributes
 {
     private const string MarkerKey = "Provider";
 
+    // TODO: Add a directory exists CustomValidationAttribute
     [Required]
     public string Directory { get; set; } = string.Empty;
 
@@ -19,9 +19,5 @@ public class ProviderOptions
     public ProviderOptions(IConfiguration configuration)
     {
         configuration.GetSection(MarkerKey).Bind(this);
-        if(!this.TryValidate(out IReadOnlyCollection<string> errors))
-            throw new(errors.Join());
-        if (!System.IO.Directory.Exists(Directory))
-            throw new("The directory does not exist");
     }
 }

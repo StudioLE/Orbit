@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
-using Orbit.Core.Utils;
+using Orbit.Core.Utils.DataAnnotations;
 using Renci.SshNet;
 using StudioLE.Core.System;
 
 namespace Orbit.Core.SSH;
 
-public class ConnectionOptions
+public class ConnectionOptions : IHasValidationAttributes
 {
     private const string MarkerKey = "Host";
 

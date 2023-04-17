@@ -1,16 +1,23 @@
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
+using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Core.Utils.Logging;
 using YamlDotNet.Serialization;
 
 namespace Orbit.Core;
 
 public class InstanceProvider
 {
-    private readonly IFileProvider _provider;
+    private readonly IFileProvider _provider = null!;
 
-    public InstanceProvider(ProviderOptions options)
+    public bool IsValid { get; } = false;
+
+    public InstanceProvider(ProviderOptions options, ILogger<InstanceProvider> logger)
     {
-
+        if(!options.TryValidate(logger))
+            return;
+        IsValid = true;
         _provider = new PhysicalFileProvider(options.Directory);
     }
 
@@ -18,10 +25,11 @@ public class InstanceProvider
     {
         string directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(directory);
+        ILogger<InstanceProvider> logger = LoggingHelpers.CreateConsoleLogger<InstanceProvider>();
         return new(new()
         {
             Directory = directory
-        });
+        }, logger);
     }
 
     public IEnumerable<string> GetAllIds()

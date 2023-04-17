@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils;
+using Orbit.Core.Utils.DataAnnotations;
 using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Schema;
 
-public sealed class Instance
+public sealed class Instance : IHasValidationAttributes
 {
     private const int DefaultInstanceNumber = 1;
     private const int DefaultClusterNumber = 1;

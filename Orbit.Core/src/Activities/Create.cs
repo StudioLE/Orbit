@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
+using Orbit.Core.Utils.DataAnnotations;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
@@ -19,6 +19,7 @@ public class Create
     {
         using IHost host = Host
             .CreateDefaultBuilder()
+            .RegisterCustomLoggingProviders()
             .RegisterCreateServices()
             .Build();
         _logger = host.Services.GetRequiredService<ILogger<Create>>();
@@ -36,7 +37,14 @@ public class Create
     public Instance? Execute(Instance instance)
     {
         _instance = instance;
+
+        if (!_provider.IsValid)
+            return null;
+
         instance.Review(_provider);
+
+        if (!_options.TryValidate(_logger))
+            return null;
 
         if (!_instance.TryValidate(_logger))
             return null;
@@ -49,6 +57,8 @@ public class Create
 
         if (!CreateUserConfig())
             return null;
+
+        _logger.LogInformation($"Created instance {_instance.Id}");
 
         return _instance;
     }
