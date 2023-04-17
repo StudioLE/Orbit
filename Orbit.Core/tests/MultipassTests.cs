@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
+using Orbit.Core.Schema;
 using StudioLE.Core.System;
 
 namespace Orbit.Core.Tests;
@@ -42,9 +43,11 @@ internal sealed class MultipassTests
     {
         // Arrange
         List<string> lines = new();
+        Instance instance = new();
+        instance.Review();
 
         // Act
-        bool result = _multipass.Launch("test", lines.Add);
+        bool result = _multipass.Launch(instance, lines.Add);
         string output = lines.Join();
 
         // Assert

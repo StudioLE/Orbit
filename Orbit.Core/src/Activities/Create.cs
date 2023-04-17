@@ -47,9 +47,6 @@ public class Create
         if (!CreateUserConfig())
             return null;
 
-        if (!CreateMultipassInstance())
-            return null;
-
         return _instance;
     }
 
@@ -111,21 +108,5 @@ public class Create
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;
-    }
-
-    private bool CreateMultipassInstance()
-    {
-        string cloudInitPath = "";
-        string[] command =
-        {
-            "multipass",
-            $"--cpus {_instance.Hardware.Cpus}",
-            $"--memory {_instance.Hardware.Memory}G",
-            $"--disk {_instance.Hardware.Disk}G",
-            $"--name {_instance.Name}",
-            $"--cloud-init {cloudInitPath}"
-
-        };
-        return true;
     }
 }

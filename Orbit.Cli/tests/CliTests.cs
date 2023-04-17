@@ -1,12 +1,7 @@
-using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
-
 namespace Orbit.Cli.Tests;
 
 internal sealed class CliTests
 {
-    private readonly Verify _verify = new(new NUnitVerifyContext());
-
     [Test]
     [Explicit]
     public async Task Cli_Create()

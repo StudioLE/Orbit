@@ -1,8 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Orbit.Core.Schema;
 using Orbit.Core.SSH;
 using Orbit.Core.Utils;
 using Renci.SshNet;
+using StudioLE.Core.System;
+// ReSharper disable CommentTypo
 
 namespace Orbit.Core;
 
@@ -108,9 +111,17 @@ public class Multipass : IDisposable
     }
 
 
-    public bool Launch(string name, Action<string> onLineEmitted)
+    public bool Launch(Instance instance, Action<string> onLineEmitted)
     {
-        string? output = Execute("multipass launch", onLineEmitted);
+        string[] command =
+        {
+            "multipass launch",
+            $"--cpus {instance.Hardware.Cpus}",
+            $"--memory {instance.Hardware.Memory}G",
+            $"--disk {instance.Hardware.Disk}G",
+            $"--name {instance.Name}"
+        };
+        string? output = Execute(command.Join(" "), onLineEmitted);
         return output is null;
     }
 
