@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Orbit.Cli Create": {
+      "commandName": "Project",
+      "commandLineArgs": "create --host 1 --type G1",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
