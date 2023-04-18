@@ -1,10 +1,11 @@
 using System.Reflection;
+using StudioLE.Core.Exceptions;
 
 namespace Orbit.Cli.Utils.Composition;
 
 public class ObjectTreeProperty : ObjectTreeBase
 {
-    private readonly object _parentInstance;
+    private readonly ObjectTreeBase _parent;
     private readonly PropertyInfo _property;
 
     public Type Type { get; private set; }
@@ -15,10 +16,10 @@ public class ObjectTreeProperty : ObjectTreeBase
 
     public string HelperText { get; private set; }
 
-    internal ObjectTreeProperty(PropertyInfo property, object parentInstance, string? parentFullKey)
+    internal ObjectTreeProperty(PropertyInfo property, ObjectTreeBase parent, string? parentFullKey)
     {
         _property = property;
-        _parentInstance = parentInstance;
+        _parent = parent;
         Type? underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
         Type type = underlyingType ?? property.PropertyType;
         Type = type;
@@ -28,8 +29,17 @@ public class ObjectTreeProperty : ObjectTreeBase
             : $"{parentFullKey}.{Key}";
         // TODO: Get the HelperText from DescriptionAttribute
         HelperText = property.Name;
-        object instance = GetValue();
-        SetProperties(type, instance);
+        SetProperties(type, this);
+    }
+
+    private object GetParentInstance()
+    {
+        return _parent switch
+        {
+            ObjectTree tree => tree.Instance ?? throw new("Parent value isn't set."),
+            ObjectTreeProperty parentProperty => parentProperty.GetValue(),
+            _ => throw new TypeSwitchException<ObjectTreeBase>(_parent)
+        };
     }
 
     /// <summary>
@@ -37,7 +47,8 @@ public class ObjectTreeProperty : ObjectTreeBase
     /// </summary>
     public object GetValue()
     {
-        return _property.GetValue(_parentInstance) ?? throw new("Failed to get property value.");
+        object parentInstance = GetParentInstance();
+        return _property.GetValue(parentInstance) ?? throw new("Failed to get property value.");
     }
 
     /// <summary>
@@ -46,7 +57,8 @@ public class ObjectTreeProperty : ObjectTreeBase
     /// <param name="value">The value.</param>
     public void SetValue(object value)
     {
-        _property.SetValue(_parentInstance, value);
+        object parentInstance = GetParentInstance();
+        _property.SetValue(parentInstance, value);
     }
 
     /// <inheritdoc />

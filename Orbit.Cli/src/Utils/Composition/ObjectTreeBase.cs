@@ -6,7 +6,7 @@ public abstract class ObjectTreeBase
 {
     public IReadOnlyCollection<ObjectTreeProperty> Properties { get; private set; } = Array.Empty<ObjectTreeProperty>();
 
-    protected void SetProperties(Type type, object instance)
+    protected void SetProperties(Type type, ObjectTreeBase instance)
     {
         PropertyInfo[] childProperties = type.GetProperties();
         Properties = childProperties

@@ -38,6 +38,21 @@ public static class DependencyInjectionHelper
             });
     }
 
+    public static IHostBuilder RegisterServices(this IHostBuilder builder)
+    {
+        return builder
+            .ConfigureServices((_, services) =>
+            {
+                services.AddSingleton<ProviderOptions>();
+                services.AddSingleton<InstanceProvider>();
+                services.AddSingleton<CreateOptions>();
+                services.AddSingleton<Create>();
+                services.AddSingleton<ConnectionOptions>();
+                services.AddSingleton<Multipass>();
+                services.AddSingleton<Launch>();
+            });
+    }
+
     public static IHostBuilder RegisterCreateServices(this IHostBuilder builder)
     {
         return builder
