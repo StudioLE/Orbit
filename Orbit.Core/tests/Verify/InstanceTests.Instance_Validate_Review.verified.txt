@@ -1,12 +1,15 @@
-﻿name: 01-01
-id: 01-01
+﻿name: cluster-01-01
 number: 1
-cluster: 1
-host: 1
 role: node
+cluster:
+  name: cluster-01
+  number: 1
+host:
+  name: host-01
+  number: 1
 network:
-  address: 10.0.1.1
-  gateway: 10.0.0.1
+  address: 10.1.1.1
+  gateway: 10.1.0.1
 os:
   name: ubuntu
   version: jammy

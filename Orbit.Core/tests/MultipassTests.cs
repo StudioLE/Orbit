@@ -26,6 +26,8 @@ internal sealed class MultipassTests
         _multipass = host.Services.GetRequiredService<Multipass>();
     }
 
+#if DEBUG
+
     [Test]
     [Explicit("Requires SSH")]
     public void Multipass_List()
@@ -35,11 +37,11 @@ internal sealed class MultipassTests
         JObject? json = _multipass.List();
 
         // Preview
-        if(json is not null)
+        if (json is not null)
             Console.WriteLine(json.ToString());
 
         // Assert
-        if(json is null)
+        if (json is null)
             Assert.Fail();
         else
             Assert.Pass();
@@ -62,4 +64,5 @@ internal sealed class MultipassTests
         Assert.That(output, Is.Not.Empty);
         Assert.That(result);
     }
+#endif
 }

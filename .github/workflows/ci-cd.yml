@@ -7,16 +7,16 @@ jobs:
 
   analysis:
     name: Analysis
-    uses: StudioLE/Core/.github/workflows/01-analysis.yml@main
+    uses: StudioLE/Actions/.github/workflows/01-analysis.yml@main
     secrets: inherit
 
   build-and-test-ubuntu:
     name: Ubuntu
     needs: analysis
-    uses: StudioLE/Core/.github/workflows/02-build-and-test.yml@main
+    uses: StudioLE/Actions/.github/workflows/02-build-and-test.yml@main
     with:
+      solution: ""
       os: ubuntu-latest
-      configuration: ${{ needs.analysis.outputs.configuration }}
       version: ${{ needs.analysis.outputs.version }}
     secrets: inherit
 
@@ -24,10 +24,10 @@ jobs:
     name: Windows
     if: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/alpha", "refs/heads/beta"]'), github.ref) }}
     needs: analysis
-    uses: StudioLE/Core/.github/workflows/02-build-and-test.yml@main
+    uses: StudioLE/Actions/.github/workflows/02-build-and-test.yml@main
     with:
+      solution:  ""
       os: windows-latest
-      configuration: ${{ needs.analysis.outputs.configuration }}
       version: ${{ needs.analysis.outputs.version }}
     secrets: inherit
 
@@ -37,9 +37,7 @@ jobs:
 #    needs:
 #      - analysis
 #      - build-and-test-ubuntu
-#    uses: StudioLE/Core/.github/workflows/03-publish-nuget.yml@main
+#    uses: StudioLE/Actions/.github/workflows/03-publish-nuget.yml@main
 #    with:
-#      os: ubuntu-latest
-#      configuration: ${{ needs.analysis.outputs.configuration }}
 #      version: ${{ needs.analysis.outputs.version }}
 #    secrets: inherit
