@@ -1,9 +1,11 @@
-repositoryUrl: https://github.com/StudioLE/Infrastructure.git
+repositoryUrl: https://github.com/StudioLE/Orbit.git
 
 branches:
   - name: main
     prerelease: false
-  - name: develop
+  - name: alpha
+    prerelease: true
+  - name: beta
     prerelease: true
 
 plugins:
