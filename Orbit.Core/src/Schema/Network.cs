@@ -16,8 +16,8 @@ public sealed class Network
     public void Review(Instance instance)
     {
         if (Address.IsNullOrEmpty())
-            Address = $"10.0.{instance.Cluster}.{instance.Number}";
+            Address = $"10.{instance.Host.Number}.{instance.Cluster.Number}.{instance.Number}";
         if (Gateway.IsNullOrEmpty())
-            Gateway = "10.0.0.1";
+            Gateway = $"10.{instance.Host.Number}.0.1";
     }
 }

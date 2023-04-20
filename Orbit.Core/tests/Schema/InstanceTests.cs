@@ -1,3 +1,4 @@
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.System;
@@ -9,7 +10,7 @@ namespace Orbit.Core.Tests.Schema;
 internal sealed class InstanceTests
 {
     private readonly Verify _verify = new(new NUnitVerifyContext());
-    private readonly InstanceProvider _provider = InstanceProvider.CreateTemp();
+    private readonly EntityProvider _provider = EntityProvider.CreateTemp();
 
     [Test]
     public void Instance_Validate_Default()

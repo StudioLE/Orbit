@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Orbit.Core.Providers;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
@@ -6,30 +7,25 @@ using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Schema;
 
-public sealed class Instance : IHasValidationAttributes
+public sealed class Instance : IEntity, IHasValidationAttributes
 {
     private const int DefaultInstanceNumber = 1;
-    private const int DefaultClusterNumber = 1;
-    private const int DefaultHost = 1;
     private const string DefaultRole = "node";
 
     [NameSchema]
     public string Name { get; set; } = string.Empty;
 
-    [IdSchema]
-    public string Id => $"{Cluster:00}-{Number:00}";
-
     [Range(1,64)]
     public int Number { get; set; }
 
-    [Range(1,64)]
-    public int Cluster { get; set; }
-
-    [Range(1,64)]
-    public int Host { get; set; }
-
     [NameSchema]
     public string Role { get; set; } = string.Empty;
+
+    [ValidateComplexType]
+    public Cluster Cluster { get; set; } = new();
+
+    [ValidateComplexType]
+    public Host Host { get; set; } = new();
 
     [ValidateComplexType]
     public Network Network { get; set; } = new();
@@ -42,44 +38,31 @@ public sealed class Instance : IHasValidationAttributes
     [ValidateComplexType]
     public Hardware Hardware { get; set; } = new();
 
-    public void Review(InstanceProvider provider)
+    public void Review(EntityProvider provider)
     {
         Hardware.Review();
         OS.Review();
-
-        if (Host == default)
-            Host = DefaultHost;
-
-        if (Cluster == default)
-        {
-            int[] clusters = provider
-                .GetAllIds()
-                .Select(IdHelpers.GetClusterNumber)
-                .ToArray();
-            int lastClusterNumber= clusters.Any()
-                    ? clusters.Max()
-                    : DefaultClusterNumber - 1;
-            Cluster = lastClusterNumber + 1;
-        }
+        Host.Review(provider);
+        Cluster.Review(provider);
 
         if (Number == default)
         {
-            int[] instances = provider
-                .GetAllIds()
-                .Where(id => IdHelpers.GetClusterNumber(id) == Cluster)
-                .Select(IdHelpers.GetInstanceNumber)
+            int[] numbers = provider
+                .Instance
+                .GetAllInCluster(Cluster.Name)
+                .Select(x => x.Number)
                 .ToArray();
-            int lastInstanceNumber = instances.Any()
-                ? instances.Max()
+            int finalNumber = numbers.Any()
+                ? numbers.Max()
                 : DefaultInstanceNumber - 1;
-            Number = lastInstanceNumber + 1;
+            Number = finalNumber + 1;
         }
 
         if (Role.IsNullOrEmpty())
             Role = DefaultRole;
 
         if (Name.IsNullOrEmpty())
-            Name = Id;
+            Name = $"{Cluster.Name}-{Number:00}";
 
         Network.Review(this);
     }

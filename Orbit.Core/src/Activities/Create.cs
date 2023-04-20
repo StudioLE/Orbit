@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
 using YamlDotNet.Core;
@@ -10,10 +11,10 @@ public class Create
 {
     private readonly ILogger<Create> _logger;
     private readonly CreateOptions _options;
-    private readonly InstanceProvider _provider;
+    private readonly EntityProvider _provider;
     private Instance _instance = new();
 
-    public Create(ILogger<Create> logger, CreateOptions options, InstanceProvider provider)
+    public Create(ILogger<Create> logger, CreateOptions options, EntityProvider provider)
     {
         _logger = logger;
         _options = options;
@@ -44,14 +45,16 @@ public class Create
         if (!CreateUserConfig())
             return null;
 
-        _logger.LogInformation($"Created instance {_instance.Id}");
+        _logger.LogInformation($"Created instance {_instance.Name}");
 
         return _instance;
     }
 
     private bool CreateInstance()
     {
-        if (_provider.Put(_instance))
+        // TODO: CreateCluster if required?
+
+        if (_provider.Instance.Put(_instance))
             return true;
         _logger.LogError("Failed to write the instance file.");
         return false;
@@ -65,7 +68,7 @@ public class Create
         adapter["addresses"][0].SetValue(_instance.Network.Address);
         adapter["routes"][0]["via"].SetValue(_instance.Network.Gateway);
 
-        if (_provider.PutResource(_instance.Id, "network-config.yml", yaml))
+        if (_provider.Instance.PutResource(_instance.Cluster.Name, _instance.Name, "network-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the network config file.");
         return false;
@@ -103,7 +106,7 @@ public class Create
         }
         // ReSharper restore StringLiteralTypo
 
-        if (_provider.PutResource(_instance.Id, "user-config.yml", yaml))
+        if (_provider.Instance.PutResource(_instance.Cluster.Name, _instance.Name, "user-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;

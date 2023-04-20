@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Activities;
+using Orbit.Core.Providers;
 using Orbit.Core.SSH;
 using Orbit.Core.Utils.Logging.ColorConsoleLogger;
 using Orbit.Core.Utils.Logging.TestLogger;
@@ -44,7 +45,7 @@ public static class DependencyInjectionHelper
             .ConfigureServices((_, services) =>
             {
                 services.AddSingleton<ProviderOptions>();
-                services.AddSingleton<InstanceProvider>();
+                services.AddSingleton<EntityProvider>();
                 services.AddSingleton<CreateOptions>();
                 services.AddSingleton<Create>();
                 services.AddSingleton<ConnectionOptions>();
@@ -59,7 +60,7 @@ public static class DependencyInjectionHelper
             .ConfigureServices((_, services) =>
             {
                 services.AddSingleton<ProviderOptions>();
-                services.AddSingleton<InstanceProvider>();
+                services.AddSingleton<EntityProvider>();
                 services.AddSingleton<CreateOptions>();
                 services.AddSingleton<Create>();
             });
@@ -70,7 +71,7 @@ public static class DependencyInjectionHelper
         return builder
             .ConfigureServices((_, services) =>
             {
-                services.AddSingleton<InstanceProvider>(_ => InstanceProvider.CreateTemp());
+                services.AddSingleton<EntityProvider>(_ => EntityProvider.CreateTemp());
             });
     }
 
@@ -80,7 +81,7 @@ public static class DependencyInjectionHelper
             .ConfigureServices((_, services) =>
             {
                 services.AddSingleton<ProviderOptions>();
-                services.AddSingleton<InstanceProvider>();
+                services.AddSingleton<EntityProvider>();
                 services.AddSingleton<ConnectionOptions>();
                 services.AddSingleton<Multipass>();
                 services.AddSingleton<Launch>();

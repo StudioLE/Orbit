@@ -3,11 +3,15 @@ using Microsoft.Extensions.Hosting;
 using Orbit.Core.Activities;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Verify;
+using StudioLE.Verify.NUnit;
+using Host = Microsoft.Extensions.Hosting.Host;
 
 namespace Orbit.Core.Tests;
 
 internal sealed class CreateTests
 {
+    private readonly Verify _verify = new(new NUnitVerifyContext());
     private readonly IHost _host;
 
     public CreateTests()
@@ -24,7 +28,7 @@ internal sealed class CreateTests
     }
 
     [Test]
-    public void Create_Execute_Default()
+    public async Task Create_Execute_Default()
     {
         // Arrange
         TestLogger logger = TestLogger.GetInstance();
@@ -35,12 +39,12 @@ internal sealed class CreateTests
         Instance? createdInstance = create.Execute(sourceInstance);
 
         // Assert
-        if(createdInstance is null)
+        if (createdInstance is null)
             Assert.Fail();
         else
-            Assert.That(sourceInstance.Id, Is.EqualTo(createdInstance.Id));
+            await _verify.AsYaml(createdInstance);
 
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
-        Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo("Created instance 01-01"));
+        Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {sourceInstance.Name}"));
     }
 }

@@ -1,15 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using StudioLE.Core.System;
+using Host = Microsoft.Extensions.Hosting.Host;
 
 namespace Orbit.Core.Tests;
 
 internal sealed class MultipassTests
 {
     private readonly Multipass _multipass;
-    private readonly InstanceProvider _provider = InstanceProvider.CreateTemp();
+    private readonly EntityProvider _provider = EntityProvider.CreateTemp();
 
     public MultipassTests()
     {

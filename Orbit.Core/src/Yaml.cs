@@ -30,6 +30,12 @@ public static class Yaml
         return serializer.Serialize(obj);
     }
 
+    public static T Deserialize<T>(string yaml)
+    {
+        IDeserializer deserializer = Deserializer();
+        return deserializer.Deserialize<T>(yaml);
+    }
+
     public static void SetValue(this YamlNode @this, string value, ScalarStyle? style = null)
     {
         if (@this is not YamlScalarNode node)

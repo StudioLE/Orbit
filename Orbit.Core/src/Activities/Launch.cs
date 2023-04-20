@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
 
@@ -8,19 +9,19 @@ public class Launch
 {
     private readonly ILogger<Launch> _logger;
     private readonly Multipass _multipass;
-    private readonly InstanceProvider _provider;
+    private readonly EntityProvider _provider;
     private Instance _instance = new();
 
-    public Launch(ILogger<Launch> logger, Multipass multipass, InstanceProvider provider)
+    public Launch(ILogger<Launch> logger, Multipass multipass, EntityProvider provider)
     {
         _logger = logger;
         _multipass = multipass;
         _provider = provider;
     }
 
-    public bool Execute(string id)
+    public bool Execute(string cluster, string instance)
     {
-        if (!GetInstance(id))
+        if (!GetInstance(cluster, instance))
             return false;
 
         if (!_instance.TryValidate(_logger))
@@ -32,9 +33,9 @@ public class Launch
         return true;
     }
 
-    private bool GetInstance(string id)
+    private bool GetInstance(string clusterName, string instanceName)
     {
-        Instance? instance = _provider.Get(id);
+        Instance? instance = _provider.Instance.Get(clusterName, instanceName);
         if (instance is null)
         {
             _logger.LogError("The instance does not exist.");

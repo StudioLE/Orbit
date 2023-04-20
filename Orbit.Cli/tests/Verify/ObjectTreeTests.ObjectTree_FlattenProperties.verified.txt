@@ -1,8 +1,12 @@
 ﻿Name: System.String
 Number: System.Int32
-Cluster: System.Int32
-Host: System.Int32
 Role: System.String
+Cluster: Orbit.Core.Schema.Cluster
+Cluster.Name: System.String
+Cluster.Number: System.Int32
+Host: Orbit.Core.Schema.Host
+Host.Name: System.String
+Host.Number: System.Int32
 Network: Orbit.Core.Schema.Network
 Network.Address: System.String
 Network.Gateway: System.String

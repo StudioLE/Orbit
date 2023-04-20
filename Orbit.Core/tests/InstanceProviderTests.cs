@@ -1,39 +1,42 @@
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 
 namespace Orbit.Core.Tests;
 
 internal sealed class InstanceProviderTests
 {
-    private readonly InstanceProvider _provider = InstanceProvider.CreateTemp();
+    private const string ClusterName = "cluster-01";
+    private const string InstanceName = $"{ClusterName}-01";
+    private readonly EntityProvider _provider = EntityProvider.CreateTemp();
 
     [Test]
     public void InstanceProvider_In_Sequence()
     {
         InstanceProvider_Get_Empty();
-        InstanceProvider_GetAllIds_Empty();
+        InstanceProvider_GetAllNamesInCluster_Empty();
         InstanceProvider_Put();
         InstanceProvider_Get();
-        InstanceProvider_GetAllIds();
+        InstanceProvider_GetAllNamesInCluster();
     }
 
     private void InstanceProvider_Get_Empty()
     {
         // Arrange
         // Act
-        Instance? instance = _provider.Get("01-01");
+        Instance? instance = _provider.Instance.Get(ClusterName, InstanceName);
 
         // Assert
         Assert.That(instance, Is.Null);
     }
 
-    private void InstanceProvider_GetAllIds_Empty()
+    private void InstanceProvider_GetAllNamesInCluster_Empty()
     {
         // Arrange
         // Act
-        string[] ids = _provider.GetAllIds().ToArray();
+        string[] names = _provider.Instance.GetAllNamesInCluster(ClusterName).ToArray();
 
         // Assert
-        Assert.That(ids.Count, Is.EqualTo(0));
+        Assert.That(names.Count, Is.EqualTo(0));
     }
 
     private void InstanceProvider_Put()
@@ -43,7 +46,7 @@ internal sealed class InstanceProviderTests
         instance.Review(_provider);
 
         // Act
-        bool result = _provider.Put(instance);
+        bool result = _provider.Instance.Put(instance);
 
         // Assert
         Assert.That(result, Is.True);
@@ -53,17 +56,17 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        Instance? instance = _provider.Get("01-01");
+        Instance? instance = _provider.Instance.Get(ClusterName, InstanceName);
 
         // Assert
         Assert.That(instance, Is.Not.Null);
     }
 
-    private void InstanceProvider_GetAllIds()
+    private void InstanceProvider_GetAllNamesInCluster()
     {
         // Arrange
         // Act
-        string[] ids = _provider.GetAllIds().ToArray();
+        string[] ids = _provider.Instance.GetAllNamesInCluster(ClusterName).ToArray();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(1));
