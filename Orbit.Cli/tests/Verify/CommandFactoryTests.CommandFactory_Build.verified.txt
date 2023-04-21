@@ -1,0 +1,92 @@
+﻿- description: Name
+  type: String
+  aliases:
+  - --name
+- description: Number
+  type: String
+  aliases:
+  - --number
+- description: Role
+  type: String
+  aliases:
+  - --role
+- description: Cluster
+  type: String
+  aliases:
+  - --cluster
+- description: Name
+  type: String
+  aliases:
+  - --cluster.name
+- description: Number
+  type: String
+  aliases:
+  - --cluster.number
+- description: Host
+  type: String
+  aliases:
+  - --host
+- description: Name
+  type: String
+  aliases:
+  - --host.name
+- description: Number
+  type: String
+  aliases:
+  - --host.number
+- description: Network
+  type: String
+  aliases:
+  - --network
+- description: Address
+  type: String
+  aliases:
+  - --network.address
+  - --address
+- description: Gateway
+  type: String
+  aliases:
+  - --network.gateway
+  - --gateway
+- description: OS
+  type: String
+  aliases:
+  - --os
+- description: Name
+  type: String
+  aliases:
+  - --os.name
+- description: Version
+  type: String
+  aliases:
+  - --os.version
+  - --version
+- description: Hardware
+  type: String
+  aliases:
+  - --hardware
+- description: Platform
+  type: String
+  aliases:
+  - --hardware.platform
+  - --platform
+- description: Type
+  type: String
+  aliases:
+  - --hardware.type
+  - --type
+- description: Cpus
+  type: String
+  aliases:
+  - --hardware.cpus
+  - --cpus
+- description: Memory
+  type: String
+  aliases:
+  - --hardware.memory
+  - --memory
+- description: Disk
+  type: String
+  aliases:
+  - --hardware.disk
+  - --disk
