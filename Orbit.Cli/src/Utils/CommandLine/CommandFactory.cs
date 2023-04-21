@@ -91,11 +91,21 @@ public class CommandFactory
     {
         if (!IsParseable(tree.Type))
             return null;
-        string[] aliases = _options.ContainsKey(tree.Key.ToLongOption())
-            ? new[] { tree.FullKey.ToLongOption() }
-            : new[] { tree.FullKey.ToLongOption(), tree.Key.ToLongOption() };
+        List<string> aliases = new()
+        {
+            tree.FullKey.ToLongOption()
+        };
+        if(!_options.ContainsKey(tree.Key.ToLongOption()))
+            aliases.Add(tree.Key.ToLongOption());
+        if (tree.Parent is ObjectTreeProperty parent)
+        {
+            if(!_options.ContainsKey(parent.FullKey.ToLongOption()))
+                aliases.Add(parent.FullKey.ToLongOption());
+            if(!_options.ContainsKey(parent.Key.ToLongOption()))
+                aliases.Add(parent.Key.ToLongOption());
+        }
         Type optionType = typeof(Option<>).MakeGenericType(tree.Type);
-        object instance = Activator.CreateInstance(optionType, aliases, tree.HelperText) ?? throw new("Failed to construct option. Activator returned null.");
+        object instance = Activator.CreateInstance(optionType, aliases.ToArray(), tree.HelperText) ?? throw new("Failed to construct option. Activator returned null.");
         if (instance is not Option option)
             throw new("Failed to construct option. Activator didn't return an Option.");
         foreach (string alias in aliases.Distinct())
@@ -116,10 +126,14 @@ public class CommandFactory
             .ToArray();
         foreach (ObjectTreeProperty factory in propertyFactories)
         {
+            if(!IsParseable(factory.Type))
+                continue;
             if (!_options.TryGetValue(factory.FullKey.ToLongOption(), out Option? option))
                 continue;
             object? value = context.ParseResult.GetValueForOption(option);
             if (value is null)
+                continue;
+            if(!factory.Type.IsInstanceOfType(value))
                 continue;
             factory.SetValue(value);
         }

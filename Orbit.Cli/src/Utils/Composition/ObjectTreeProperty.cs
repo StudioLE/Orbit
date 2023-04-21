@@ -5,21 +5,22 @@ namespace Orbit.Cli.Utils.Composition;
 
 public class ObjectTreeProperty : ObjectTreeBase
 {
-    private readonly ObjectTreeBase _parent;
     private readonly PropertyInfo _property;
+
+    public ObjectTreeBase Parent { get; }
 
     public Type Type { get; private set; }
 
-    public string Key { get; private set; }
+    public string Key { get; }
 
-    public string FullKey { get; private set; }
+    public string FullKey { get; }
 
     public string HelperText { get; private set; }
 
     internal ObjectTreeProperty(PropertyInfo property, ObjectTreeBase parent, string? parentFullKey)
     {
         _property = property;
-        _parent = parent;
+        Parent = parent;
         Type? underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
         Type type = underlyingType ?? property.PropertyType;
         Type = type;
@@ -34,11 +35,11 @@ public class ObjectTreeProperty : ObjectTreeBase
 
     private object GetParentInstance()
     {
-        return _parent switch
+        return Parent switch
         {
             ObjectTree tree => tree.Instance ?? throw new("Parent value isn't set."),
             ObjectTreeProperty parentProperty => parentProperty.GetValue(),
-            _ => throw new TypeSwitchException<ObjectTreeBase>(_parent)
+            _ => throw new TypeSwitchException<ObjectTreeBase>(Parent)
         };
     }
 
