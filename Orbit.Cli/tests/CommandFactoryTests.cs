@@ -1,7 +1,6 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.CommandLine;
-using Orbit.Cli.Utils.Converters;
 using Orbit.Core;
 using Orbit.Core.Activities;
 using StudioLE.Verify;
@@ -21,8 +20,7 @@ internal sealed class CommandFactoryTests
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
             .RegisterServices();
-        ConverterResolver resolver = ConverterResolver.Default();
-        CommandFactory factory = new(hostBuilder, resolver);
+        CommandFactory factory = new(hostBuilder);
 
         // Act
         Command command = factory.Build(typeof(Create));
@@ -38,8 +36,8 @@ internal sealed class CommandFactoryTests
             }));
         Assert.Multiple(() =>
         {
-            Assert.That(command.Children.Count(), Is.EqualTo(21));
-            Assert.That(command.Options.Count, Is.EqualTo(21));
+            Assert.That(command.Children.Count(), Is.EqualTo(16));
+            Assert.That(command.Options.Count, Is.EqualTo(16));
             Assert.That(command.Arguments.Count, Is.EqualTo(0));
         });
     }

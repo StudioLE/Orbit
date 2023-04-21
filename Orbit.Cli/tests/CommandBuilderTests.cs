@@ -1,7 +1,6 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.CommandLine;
-using Orbit.Cli.Utils.Converters;
 using Orbit.Core;
 using Orbit.Core.Activities;
 
@@ -17,8 +16,7 @@ internal sealed class CommandBuilderTests
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
             .RegisterServices();
-        ConverterResolver resolver = ConverterResolver.Default();
-        CommandFactory factory = new(hostBuilder, resolver);
+        CommandFactory factory = new(hostBuilder);
 
         // Act
         RootCommand command = new CommandBuilder(factory)
@@ -34,8 +32,8 @@ internal sealed class CommandBuilderTests
             Symbol createSymbol = command.Children.First();
             if (createSymbol is Command createCommand)
             {
-                Assert.That(createCommand.Children.Count(), Is.EqualTo(21));
-                Assert.That(createCommand.Options.Count, Is.EqualTo(21));
+                Assert.That(createCommand.Children.Count(), Is.EqualTo(16));
+                Assert.That(createCommand.Options.Count, Is.EqualTo(16));
                 Assert.That(createCommand.Arguments.Count, Is.EqualTo(0));
             }
             else

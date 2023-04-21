@@ -6,23 +6,32 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.Composition;
-using Orbit.Cli.Utils.Converters;
 using Orbit.Core.Utils;
-using StudioLE.Core.Results;
 
 namespace Orbit.Cli.Utils.CommandLine;
 
 public class CommandFactory
 {
     private readonly IHostBuilder _hostBuilder;
-    private readonly ConverterResolver _resolver;
-    private readonly Dictionary<string, Option<string>> _options = new();
+    private readonly HashSet<Type> _parseableTypes =  new()
+        {
+            typeof(string),
+            typeof(int),
+            typeof(double),
+            typeof(Enum)
+        };
+    private readonly Dictionary<string, Option> _options = new();
     private readonly List<ObjectTree> _trees = new();
 
-    public CommandFactory(IHostBuilder hostBuilder, ConverterResolver resolver)
+    public CommandFactory(IHostBuilder hostBuilder)
     {
         _hostBuilder = hostBuilder;
-        _resolver = resolver;
+    }
+
+    public CommandFactory(IHostBuilder hostBuilder, HashSet<Type> parseableTypes)
+    {
+        _hostBuilder = hostBuilder;
+        _parseableTypes = parseableTypes;
     }
 
     public Command Build(Type activityType)
@@ -36,8 +45,8 @@ public class CommandFactory
             : descriptionAttribute.Description;
         Command command = new(name, description);
         MethodInfo activityMethod = activityType.GetMethod("Execute") ?? throw new("No Execute method");
-        Option<string>[] options = CreateOptions(activityMethod);
-        foreach (Option<string> option in options)
+        Option[] options = CreateOptions(activityMethod);
+        foreach (Option option in options)
             command.AddOption(option);
         Action<InvocationContext> handler = context =>
         {
@@ -53,7 +62,7 @@ public class CommandFactory
         return command;
     }
 
-    private Option<string>[] CreateOptions(MethodInfo method)
+    private Option[] CreateOptions(MethodInfo method)
     {
         return method
             .GetParameters()
@@ -61,31 +70,43 @@ public class CommandFactory
             .ToArray();
     }
 
-    private Option<string>[] CreateOptions(ParameterInfo parameter)
+    private Option[] CreateOptions(ParameterInfo parameter)
     {
         ObjectTree tree = new(parameter.ParameterType);
         _trees.Add(tree);
         return CreateOptions(tree);
     }
 
-    private Option<string>[] CreateOptions(ObjectTree tree)
+    private Option[] CreateOptions(ObjectTree tree)
     {
-        Option<string>[] options = tree
+        Option[] options = tree
             .FlattenProperties()
             .Select(CreateOption)
+            .OfType<Option>()
             .ToArray();
         return options;
     }
 
-    private Option<string> CreateOption(ObjectTreeProperty tree)
+    private Option? CreateOption(ObjectTreeProperty tree)
     {
+        if (!IsParseable(tree.Type))
+            return null;
         string[] aliases = _options.ContainsKey(tree.Key.ToLongOption())
             ? new[] { tree.FullKey.ToLongOption() }
             : new[] { tree.FullKey.ToLongOption(), tree.Key.ToLongOption() };
-        Option<string> option = new(aliases, tree.HelperText);
+        Type optionType = typeof(Option<>).MakeGenericType(tree.Type);
+        object instance = Activator.CreateInstance(optionType, aliases, tree.HelperText) ?? throw new("Failed to construct option. Activator returned null.");
+        if (instance is not Option option)
+            throw new("Failed to construct option. Activator didn't return an Option.");
         foreach (string alias in aliases.Distinct())
             _options.Add(alias, option);
         return option;
+    }
+
+    private bool IsParseable(Type type)
+    {
+        return _parseableTypes.Contains(type)
+               || _parseableTypes.Any(x => x.IsAssignableFrom(type));
     }
 
     private object GetOptionValue(BindingContext context, ObjectTree tree)
@@ -95,24 +116,11 @@ public class CommandFactory
             .ToArray();
         foreach (ObjectTreeProperty factory in propertyFactories)
         {
-            if(!_options.TryGetValue(factory.FullKey.ToLongOption(), out Option<string>? option))
+            if (!_options.TryGetValue(factory.FullKey.ToLongOption(), out Option? option))
                 continue;
-            string? stringValue = context.ParseResult.GetValueForOption(option);
-            if (stringValue is null)
+            object? value = context.ParseResult.GetValueForOption(option);
+            if (value is null)
                 continue;
-            object value;
-            if (factory.Type == typeof(string))
-            {
-                value = stringValue;
-            }
-            else
-            {
-                IResult<object> result = _resolver.TryResolve(factory.Type);
-                if (result is not Success<object> success)
-                    continue;
-                dynamic converter = success.Value;
-                value = converter.Convert(stringValue);
-            }
             factory.SetValue(value);
         }
         return tree.Instance;

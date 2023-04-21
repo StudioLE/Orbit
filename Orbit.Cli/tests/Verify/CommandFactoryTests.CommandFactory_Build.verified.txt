@@ -3,41 +3,29 @@
   aliases:
   - --name
 - description: Number
-  type: String
+  type: Int32
   aliases:
   - --number
 - description: Role
   type: String
   aliases:
   - --role
-- description: Cluster
-  type: String
-  aliases:
-  - --cluster
 - description: Name
   type: String
   aliases:
   - --cluster.name
 - description: Number
-  type: String
+  type: Int32
   aliases:
   - --cluster.number
-- description: Host
-  type: String
-  aliases:
-  - --host
 - description: Name
   type: String
   aliases:
   - --host.name
 - description: Number
-  type: String
+  type: Int32
   aliases:
   - --host.number
-- description: Network
-  type: String
-  aliases:
-  - --network
 - description: Address
   type: String
   aliases:
@@ -48,10 +36,6 @@
   aliases:
   - --network.gateway
   - --gateway
-- description: OS
-  type: String
-  aliases:
-  - --os
 - description: Name
   type: String
   aliases:
@@ -61,12 +45,8 @@
   aliases:
   - --os.version
   - --version
-- description: Hardware
-  type: String
-  aliases:
-  - --hardware
 - description: Platform
-  type: String
+  type: Platform
   aliases:
   - --hardware.platform
   - --platform
@@ -76,17 +56,17 @@
   - --hardware.type
   - --type
 - description: Cpus
-  type: String
+  type: Int32
   aliases:
   - --hardware.cpus
   - --cpus
 - description: Memory
-  type: String
+  type: Int32
   aliases:
   - --hardware.memory
   - --memory
 - description: Disk
-  type: String
+  type: Int32
   aliases:
   - --hardware.disk
   - --disk

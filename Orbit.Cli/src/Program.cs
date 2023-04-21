@@ -1,7 +1,6 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using Orbit.Cli.Utils.CommandLine;
-using Orbit.Cli.Utils.Converters;
 using Orbit.Core;
 using Orbit.Core.Activities;
 
@@ -15,8 +14,7 @@ internal static class Program
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
             .RegisterServices();
-        ConverterResolver resolver = ConverterResolver.Default();
-        CommandFactory factory = new(hostBuilder, resolver);
+        CommandFactory factory = new(hostBuilder);
         RootCommand command = new CommandBuilder(factory)
             .Register<Create>()
             // .Register<Launch>()
