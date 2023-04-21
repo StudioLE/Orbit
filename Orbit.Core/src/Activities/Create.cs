@@ -52,7 +52,8 @@ public class Create
 
     private bool CreateInstance()
     {
-        // TODO: CreateCluster if required?
+        if (_provider.Cluster.Get(_instance.Cluster.Name) is null)
+            _provider.Cluster.Put(_instance.Cluster);
 
         if (_provider.Instance.Put(_instance))
             return true;
