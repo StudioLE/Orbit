@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Authors>StudioLE</Authors>
     <Copyright>Copyright © Laurence Elsdon 2023</Copyright>
-    <PackageProjectUrl>https://github.com/StudioLE/Core</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/StudioLE/Orbit</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>helpers utilities</PackageTags>
+    <PackageTags>multipass launcher wrapper cli console launch vm virtual machine infrastructure as code iac</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>
