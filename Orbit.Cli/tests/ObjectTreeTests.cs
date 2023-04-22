@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using Orbit.Cli.Utils.Composition;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;

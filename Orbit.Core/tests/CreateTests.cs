@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NUnit.Framework;
 using Orbit.Core.Activities;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;

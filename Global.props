@@ -1,0 +1,48 @@
+<Project>
+
+  <PropertyGroup>
+    <Authors>StudioLE</Authors>
+    <Copyright>Copyright © Laurence Elsdon 2023</Copyright>
+    <PackageProjectUrl>https://github.com/StudioLE/Core</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>helpers utilities</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!--    <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" Visible="false"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <IsExecutable>false</IsExecutable>
+    <IsTestLibrary>false</IsTestLibrary>
+    <IsLibrary>false</IsLibrary>
+    <IsExecutable Condition="'$(OutputType)' == 'Exe'">true</IsExecutable>
+    <IsTestLibrary Condition="'$(OutputType)' == 'Library' AND $(MSBuildProjectName.EndsWith('.Tests'))">true</IsTestLibrary>
+    <IsLibrary Condition="'$(OutputType)' == 'Library' AND ! $(MSBuildProjectName.EndsWith('.Tests'))">true</IsLibrary>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(IsExecutable)">
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(IsTestLibrary)">
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(IsLibrary)">
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(IsLibrary)">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
+
+</Project>

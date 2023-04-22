@@ -1,15 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Hello, world!</Description>
   </PropertyGroup>
 
-  <!-- Use consistent properties across all src projects -->
-  <Import Project="..\..\GlobalProperties.src.props" />
-
-  <!-- Use consistent global usings across all src projects -->
-  <Import Project="..\..\GlobalUsings.src.props" />
+  <!-- Use consistent properties across all projects -->
+  <Import Project="..\..\Global.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />

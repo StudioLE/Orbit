@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
+using NUnit.Framework;
 using Orbit.Cli.Utils.CommandLine;
 using Orbit.Core;
 using Orbit.Core.Activities;
