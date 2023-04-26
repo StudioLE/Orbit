@@ -1,4 +1,4 @@
-namespace Orbit.Cli.Utils.Composition;
+namespace StudioLE.CommandLine.Composition;
 
 public class ObjectTree : ObjectTreeBase
 {

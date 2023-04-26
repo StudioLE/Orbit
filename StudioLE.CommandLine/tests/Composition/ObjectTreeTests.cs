@@ -1,28 +1,24 @@
 using NUnit.Framework;
-using Orbit.Cli.Utils.Composition;
-using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
-using Orbit.Core.Schema;
+using StudioLE.CommandLine.Composition;
+using StudioLE.CommandLine.Tests.Resources;
 using StudioLE.Core.System;
+using StudioLE.Verify.NUnit;
 
-namespace Orbit.Cli.Tests;
+namespace StudioLE.CommandLine.Tests.Composition;
 
 internal sealed class ObjectTreeTests
 {
-    private readonly Verify _verify = new(new NUnitVerifyContext());
+    private readonly Verify.Verify _verify = new(new NUnitVerifyContext());
 
     [Test]
     public async Task ObjectTree_FlattenProperties()
     {
         // Arrange
-        ObjectTree objectTree = ObjectTree.Create<Instance>();
+        ObjectTree objectTree = ObjectTree.Create<ExampleClass>();
 
         // Act
         ObjectTreeProperty[] properties = objectTree.FlattenProperties().ToArray();
         string[] output = properties.Select(x => $"{x.FullKey}: {x.Type}").ToArray();
-
-        // Preview
-        Console.WriteLine(output.Join());
 
         // Assert
         await _verify.String(output.Join());

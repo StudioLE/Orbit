@@ -1,11 +1,9 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Cli.Utils.CommandLine;
-using Orbit.Core;
-using Orbit.Core.Activities;
+using StudioLE.CommandLine.Tests.Resources;
 
-namespace Orbit.Cli.Tests;
+namespace StudioLE.CommandLine.Tests;
 
 internal sealed class CommandBuilderTests
 {
@@ -13,16 +11,12 @@ internal sealed class CommandBuilderTests
     public void CommandBuilder_Build()
     {
         // Arrange
-        IHostBuilder hostBuilder = Host
-            .CreateDefaultBuilder()
-            .RegisterCustomLoggingProviders()
-            .RegisterServices();
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
         CommandFactory factory = new(hostBuilder);
 
         // Act
         RootCommand command = new CommandBuilder(factory)
-            .Register<Create>()
-            // .Register<Launch>()
+            .Register<ExampleActivity>()
             .Build();
 
         // Assert

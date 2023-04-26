@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orbit.Cli.Utils.Composition;
-using Orbit.Core.Utils;
+using StudioLE.CommandLine.Composition;
+using StudioLE.CommandLine.Utils;
 
-namespace Orbit.Cli.Utils.CommandLine;
+namespace StudioLE.CommandLine;
 
 public class CommandFactory
 {

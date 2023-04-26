@@ -1,4 +1,4 @@
-namespace Orbit.Cli.Utils.CommandLine;
+namespace StudioLE.CommandLine;
 
 public static class KeyExtensions
 {

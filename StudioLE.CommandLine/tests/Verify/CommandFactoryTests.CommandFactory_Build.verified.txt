@@ -1,0 +1,33 @@
+﻿- description: String
+  type: String
+  aliases:
+  - --string
+- description: Integer
+  type: Int32
+  aliases:
+  - --integer
+- description: Double
+  type: Double
+  aliases:
+  - --double
+- description: Number
+  type: Int32
+  aliases:
+  - --number
+- description: String
+  type: String
+  aliases:
+  - --nested.string
+  - --nested
+- description: Integer
+  type: Int32
+  aliases:
+  - --nested.integer
+- description: Double
+  type: Double
+  aliases:
+  - --nested.double
+- description: Number
+  type: Int32
+  aliases:
+  - --nested.number

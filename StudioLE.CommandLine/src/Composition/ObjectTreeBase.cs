@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Orbit.Cli.Utils.Composition;
+namespace StudioLE.CommandLine.Composition;
 
 public abstract class ObjectTreeBase
 {

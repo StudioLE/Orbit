@@ -1,7 +1,7 @@
 using System.CommandLine;
-using Orbit.Core.Utils.Patterns;
+using StudioLE.CommandLine.Utils.Patterns;
 
-namespace Orbit.Cli.Utils.CommandLine;
+namespace StudioLE.CommandLine;
 
 public class CommandBuilder : IBuilder<RootCommand>
 {

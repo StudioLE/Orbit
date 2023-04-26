@@ -1,7 +1,7 @@
 using System.Reflection;
 using StudioLE.Core.Exceptions;
 
-namespace Orbit.Cli.Utils.Composition;
+namespace StudioLE.CommandLine.Composition;
 
 public class ObjectTreeProperty : ObjectTreeBase
 {

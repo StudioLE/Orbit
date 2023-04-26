@@ -1,10 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>Hello, world!</Description>
-    <OutputType>Exe</OutputType>
-  </PropertyGroup>
-
   <!-- Use consistent properties across all projects -->
   <Import Project="..\..\Global.props" />
 
@@ -12,11 +7,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="StudioLE.Core" Version="0.3.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Orbit.Core\src\Orbit.Core.csproj" />
-    <ProjectReference Include="..\..\StudioLE.CommandLine\src\StudioLE.CommandLine.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,33 +1,27 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Cli.Utils.CommandLine;
-using Orbit.Core;
-using Orbit.Core.Activities;
-using StudioLE.Verify;
+using StudioLE.CommandLine.Tests.Resources;
 using StudioLE.Verify.NUnit;
 
-namespace Orbit.Cli.Tests;
+namespace StudioLE.CommandLine.Tests;
 
 internal sealed class CommandFactoryTests
 {
     internal const int ExpectedArgumentsCount = 0;
-    internal const int ExpectedOptionsCount = 14;
+    internal const int ExpectedOptionsCount = 8;
     internal const int ExpectedChildrenCount = ExpectedArgumentsCount + ExpectedOptionsCount;
-    private readonly Verify _verify = new(new NUnitVerifyContext());
+    private readonly Verify.Verify _verify = new(new NUnitVerifyContext());
 
     [Test]
     public async Task CommandFactory_Build()
     {
         // Arrange
-        IHostBuilder hostBuilder = Host
-            .CreateDefaultBuilder()
-            .RegisterCustomLoggingProviders()
-            .RegisterServices();
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
         CommandFactory factory = new(hostBuilder);
 
         // Act
-        Command command = factory.Build(typeof(Create));
+        Command command = factory.Build(typeof(ExampleActivity));
 
         // Assert
         await _verify.AsYaml(command
