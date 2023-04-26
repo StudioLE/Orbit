@@ -2,14 +2,8 @@
   "Name": "cluster-01-01",
   "Number": 1,
   "Role": "node",
-  "Cluster": {
-    "Name": "cluster-01",
-    "Number": 1
-  },
-  "Host": {
-    "Name": "host-01",
-    "Number": 1
-  },
+  "Cluster": "cluster-01",
+  "Host": "host-01",
   "Network": {
     "Address": "10.1.1.1",
     "Gateway": "10.1.0.1"

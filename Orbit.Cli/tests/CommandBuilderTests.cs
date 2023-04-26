@@ -33,9 +33,9 @@ internal sealed class CommandBuilderTests
             Symbol createSymbol = command.Children.First();
             if (createSymbol is Command createCommand)
             {
-                Assert.That(createCommand.Children.Count(), Is.EqualTo(16));
-                Assert.That(createCommand.Options.Count, Is.EqualTo(16));
-                Assert.That(createCommand.Arguments.Count, Is.EqualTo(0));
+                Assert.That(createCommand.Children.Count(), Is.EqualTo(CommandFactoryTests.ExpectedChildrenCount));
+                Assert.That(createCommand.Options.Count, Is.EqualTo(CommandFactoryTests.ExpectedOptionsCount));
+                Assert.That(createCommand.Arguments.Count, Is.EqualTo(CommandFactoryTests.ExpectedArgumentsCount));
             }
             else
                 Assert.Fail();

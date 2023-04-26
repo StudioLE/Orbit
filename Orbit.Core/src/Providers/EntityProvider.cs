@@ -28,12 +28,24 @@ public class EntityProvider
 
     public static EntityProvider CreateTemp()
     {
+
         string directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(directory);
         ILogger<EntityProvider> logger = LoggingHelpers.CreateConsoleLogger<EntityProvider>();
-        return new(new()
+        EntityProvider provider = new(new()
         {
             Directory = directory
         }, logger);
+        provider.Host.Put(new()
+        {
+            Name = "host-01",
+            Number = 1
+        });
+        provider.Cluster.Put(new()
+        {
+            Name = "cluster-01",
+            Number = 1
+        });
+        return provider;
     }
 }

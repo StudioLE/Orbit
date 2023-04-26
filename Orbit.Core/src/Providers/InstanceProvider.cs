@@ -20,7 +20,7 @@ public class InstanceProvider
 
     public bool Put(Instance instance)
     {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(instance.Cluster.Name, instance.Name, instance.Name + ".yml"));
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(instance.Cluster, instance.Name, instance.Name + ".yml"));
         return file.WriteYamlFile(instance);
     }
 

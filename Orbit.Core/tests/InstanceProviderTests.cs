@@ -43,7 +43,11 @@ internal sealed class InstanceProviderTests
     private void InstanceProvider_Put()
     {
         // Arrange
-        Instance instance = new();
+        Instance instance = new()
+        {
+            Host = "host-01",
+            Cluster = "cluster-01"
+        };
         instance.Review(_provider);
 
         // Act

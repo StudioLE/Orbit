@@ -21,11 +21,12 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     [NameSchema]
     public string Role { get; set; } = string.Empty;
 
-    [ValidateComplexType]
-    public Cluster Cluster { get; set; } = new();
+    [NameSchema]
+    public string Cluster { get; set; } = string.Empty;
 
-    [ValidateComplexType]
-    public Host Host { get; set; } = new();
+    [Required]
+    [NameSchema]
+    public string Host { get; set; } = string.Empty;
 
     [ValidateComplexType]
     public Network Network { get; set; } = new();
@@ -42,14 +43,12 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     {
         Hardware.Review();
         OS.Review();
-        Host.Review(provider);
-        Cluster.Review(provider);
 
         if (Number == default)
         {
             int[] numbers = provider
                 .Instance
-                .GetAllInCluster(Cluster.Name)
+                .GetAllInCluster(Cluster)
                 .Select(x => x.Number)
                 .ToArray();
             int finalNumber = numbers.Any()
@@ -62,8 +61,8 @@ public sealed class Instance : IEntity, IHasValidationAttributes
             Role = DefaultRole;
 
         if (Name.IsNullOrEmpty())
-            Name = $"{Cluster.Name}-{Number:00}";
+            Name = $"{Cluster}-{Number:00}";
 
-        Network.Review(this);
+        Network.Review(this, provider);
     }
 }

@@ -11,6 +11,9 @@ namespace Orbit.Cli.Tests;
 
 internal sealed class CommandFactoryTests
 {
+    internal const int ExpectedArgumentsCount = 0;
+    internal const int ExpectedOptionsCount = 14;
+    internal const int ExpectedChildrenCount = ExpectedArgumentsCount + ExpectedOptionsCount;
     private readonly Verify _verify = new(new NUnitVerifyContext());
 
     [Test]
@@ -37,9 +40,9 @@ internal sealed class CommandFactoryTests
             }));
         Assert.Multiple(() =>
         {
-            Assert.That(command.Children.Count(), Is.EqualTo(16));
-            Assert.That(command.Options.Count, Is.EqualTo(16));
-            Assert.That(command.Arguments.Count, Is.EqualTo(0));
+            Assert.That(command.Children.Count(), Is.EqualTo(ExpectedChildrenCount));
+            Assert.That(command.Options.Count, Is.EqualTo(ExpectedOptionsCount));
+            Assert.That(command.Arguments.Count, Is.EqualTo(ExpectedArgumentsCount));
         });
     }
 }

@@ -28,10 +28,13 @@ public class Create
         if (!_provider.IsValid)
             return null;
 
-        instance.Review(_provider);
-
         if (!_options.TryValidate(_logger))
             return null;
+
+        if (!GetOrCreateCluster())
+            return null;
+
+        instance.Review(_provider);
 
         if (!_instance.TryValidate(_logger))
             return null;
@@ -50,11 +53,25 @@ public class Create
         return _instance;
     }
 
+    private bool GetOrCreateCluster()
+    {
+        Cluster? cluster = _provider.Cluster.Get(_instance.Cluster);
+        if (cluster is null)
+        {
+            cluster = new();
+            cluster.Review(_provider);
+            if (!_provider.Cluster.Put(cluster))
+            {
+                _logger.LogError("Failed to write the cluster file.");
+                return false;
+            }
+            _instance.Cluster = cluster.Name;
+        }
+        return cluster.TryValidate(_logger);
+    }
+
     private bool CreateInstance()
     {
-        if (_provider.Cluster.Get(_instance.Cluster.Name) is null)
-            _provider.Cluster.Put(_instance.Cluster);
-
         if (_provider.Instance.Put(_instance))
             return true;
         _logger.LogError("Failed to write the instance file.");
@@ -69,7 +86,7 @@ public class Create
         adapter["addresses"][0].SetValue(_instance.Network.Address);
         adapter["routes"][0]["via"].SetValue(_instance.Network.Gateway);
 
-        if (_provider.Instance.PutResource(_instance.Cluster.Name, _instance.Name, "network-config.yml", yaml))
+        if (_provider.Instance.PutResource(_instance.Cluster, _instance.Name, "network-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the network config file.");
         return false;
@@ -107,7 +124,7 @@ public class Create
         }
         // ReSharper restore StringLiteralTypo
 
-        if (_provider.Instance.PutResource(_instance.Cluster.Name, _instance.Name, "user-config.yml", yaml))
+        if (_provider.Instance.PutResource(_instance.Cluster, _instance.Name, "user-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;

@@ -33,7 +33,10 @@ internal sealed class CreateTests
     {
         // Arrange
         TestLogger logger = TestLogger.GetInstance();
-        Instance sourceInstance = new();
+        Instance sourceInstance = new()
+        {
+            Host = "host-01"
+        };
         Create create = _host.Services.GetRequiredService<Create>();
 
         // Act

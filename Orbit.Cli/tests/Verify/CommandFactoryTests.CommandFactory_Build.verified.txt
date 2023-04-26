@@ -10,24 +10,14 @@
   type: String
   aliases:
   - --role
-- description: Name
+- description: Cluster
   type: String
   aliases:
-  - --cluster.name
   - --cluster
-- description: Number
-  type: Int32
-  aliases:
-  - --cluster.number
-- description: Name
+- description: Host
   type: String
   aliases:
-  - --host.name
   - --host
-- description: Number
-  type: Int32
-  aliases:
-  - --host.number
 - description: Address
   type: String
   aliases:

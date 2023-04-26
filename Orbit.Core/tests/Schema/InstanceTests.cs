@@ -14,7 +14,7 @@ internal sealed class InstanceTests
     private readonly EntityProvider _provider = EntityProvider.CreateTemp();
 
     [Test]
-    public void Instance_Validate_Default()
+    public async Task Instance_Validate_Default()
     {
         // Arrange
         Instance instance = new();
@@ -24,19 +24,23 @@ internal sealed class InstanceTests
         Console.WriteLine(errors.Join());
 
         // Assert
+        await _verify.String(errors.Join());
         Assert.Multiple(() =>
         {
-            _verify.String(errors.Join());
             Assert.That(isValid, Is.False);
             Assert.That(errors, Is.Not.Empty);
         });
     }
 
     [Test]
-    public void Instance_Validate_Review()
+    public async Task Instance_Validate_Review()
     {
         // Arrange
-        Instance instance = new();
+        Instance instance = new()
+        {
+            Host = "host-01",
+            Cluster = "cluster-01"
+        };
         instance.Review(_provider);
 
         // Act
@@ -44,9 +48,9 @@ internal sealed class InstanceTests
         Console.WriteLine(errors.Join());
 
         // Assert
+        await _verify.AsYaml(instance);
         Assert.Multiple(() =>
         {
-            _verify.AsYaml(instance);
             Assert.That(isValid, Is.True);
             Assert.That(errors, Is.Empty);
         });

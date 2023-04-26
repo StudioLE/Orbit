@@ -14,12 +14,8 @@ internal sealed class SerializationTests
         name: cluster-01-01
         number: 1
         role: node
-        cluster:
-          name: cluster-01
-          number: 1
-        host:
-          name: host-01
-          number: 1
+        cluster: cluster-01
+        host: host-01
         network:
           address: 10.1.1.1
           gateway: 10.1.0.1
@@ -38,7 +34,11 @@ internal sealed class SerializationTests
     public async Task Instance_Serialize()
     {
         // Arrange
-        Instance instance = new();
+        Instance instance = new()
+        {
+            Host = "host-01",
+            Cluster = "cluster-01"
+        };
         instance.Review(_provider);
 
         // Act
