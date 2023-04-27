@@ -1,0 +1,19 @@
+﻿Unrecognized command or argument '--nope'.
+Unrecognized command or argument '1'.
+
+Description:
+
+Usage:
+  RootCommand exampleactivity [options]
+
+Options:
+  --string <string>                          String
+  --integer <integer>                        Integer
+  --double <double>                          Double
+  --number <number>                          Number
+  --nested, --nested.string <nested.string>  String
+  --nested.integer <nested.integer>          Integer
+  --nested.double <nested.double>            Double
+  --nested.number <nested.number>            Number
+  -?, -h, --help                             Show help and usage information
+

@@ -1,0 +1,13 @@
+﻿Required command was not provided.
+
+Description:
+
+Usage:
+  RootCommand [command] [options]
+
+Options:
+  --version       Show version information
+  -?, -h, --help  Show help and usage information
+
+Commands:
+  exampleactivity

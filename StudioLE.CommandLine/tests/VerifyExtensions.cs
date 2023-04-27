@@ -1,3 +1,5 @@
+using StudioLE.CommandLine.Utils.Logging.TestLogger;
+using StudioLE.Core.System;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -12,5 +14,14 @@ public static class VerifyExtensions
             .Build();
         string yaml = serializer.Serialize(obj);
         return verify.String(yaml);
+    }
+
+    public static Task AsString(this Verify.Verify verify, TestLogger logger)
+    {
+        string value = logger
+            .Logs
+            .Select(x => x.Message)
+            .Join();
+        return verify.String(value);
     }
 }

@@ -1,0 +1,9 @@
+﻿string: ''
+integer: 0
+double: 0
+number: 1
+nested:
+  string: ''
+  integer: 0
+  double: 0
+  number: 0
