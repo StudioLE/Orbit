@@ -1,9 +1,7 @@
 using System.CommandLine;
-using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
 using System.ComponentModel;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
 using StudioLE.CommandLine.Utils;
@@ -12,7 +10,6 @@ namespace StudioLE.CommandLine;
 
 public class CommandFactory
 {
-    private readonly IHostBuilder _hostBuilder;
     private readonly HashSet<Type> _parseableTypes = new()
     {
         typeof(string),
@@ -21,7 +18,7 @@ public class CommandFactory
         typeof(Enum)
     };
     private readonly CommandOptionsFactory _optionsFactory;
-    private readonly Dictionary<string, Option> _options = new();
+    private readonly CommandHandlerFactory _handlerFactory;
 
     public Type? ActivityType { get; set; }
 
@@ -31,15 +28,13 @@ public class CommandFactory
 
     public CommandFactory(IHostBuilder hostBuilder)
     {
-        _hostBuilder = hostBuilder;
         _optionsFactory = new(IsParseable);
+        _handlerFactory = new(hostBuilder, IsParseable);
     }
 
-    public CommandFactory(IHostBuilder hostBuilder, HashSet<Type> parseableTypes)
+    public CommandFactory(IHostBuilder hostBuilder, HashSet<Type> parseableTypes) : this(hostBuilder)
     {
-        _hostBuilder = hostBuilder;
         _parseableTypes = parseableTypes;
-        _optionsFactory = new(IsParseable);
     }
 
     public Command Build()
@@ -52,12 +47,13 @@ public class CommandFactory
         ObjectTree tree = CreateObjectTree(activityMethod);
 
         Option[] options = _optionsFactory.Create(tree);
+        Dictionary<string, Option> optionsDictionary = new();
         foreach (Option option in options)
         {
-            _options.Add(option.Aliases.First(), option);
+            optionsDictionary.Add(option.Aliases.First(), option);
             command.AddOption(option);
         }
-        Action<InvocationContext> handler = CreateHandler(ActivityType, activityMethod, tree);
+        Action<InvocationContext> handler = _handlerFactory.Create(ActivityType, activityMethod, tree, optionsDictionary);
         command.SetHandler(handler);
         return command;
     }
@@ -73,7 +69,7 @@ public class CommandFactory
             : descriptionAttribute.Description;
     }
 
-    private ObjectTree CreateObjectTree(MethodInfo method)
+    private static ObjectTree CreateObjectTree(MethodInfo method)
     {
         ParameterInfo[] parameters = method.GetParameters();
         if (parameters.Length != 1)
@@ -82,41 +78,9 @@ public class CommandFactory
         return new(parameter.ParameterType);
     }
 
-    private Action<InvocationContext> CreateHandler(Type activityType, MethodInfo activityMethod, ObjectTree tree)
-    {
-        return context =>
-        {
-            object parameter = GetOptionValue(context.BindingContext, tree);
-            IHost host = _hostBuilder.Build();
-            object activity = host.Services.GetRequiredService(activityType);
-            activityMethod.Invoke(activity, new[] { parameter });
-        };
-    }
-
     private bool IsParseable(Type type)
     {
         return _parseableTypes.Contains(type)
                || _parseableTypes.Any(x => x.IsAssignableFrom(type));
-    }
-
-    private object GetOptionValue(BindingContext context, ObjectTree tree)
-    {
-        ObjectTreeProperty[] propertyFactories = tree
-            .FlattenProperties()
-            .ToArray();
-        foreach (ObjectTreeProperty factory in propertyFactories)
-        {
-            if (!IsParseable(factory.Type))
-                continue;
-            if (!_options.TryGetValue(factory.FullKey.ToLongOption(), out Option? option))
-                continue;
-            object? value = context.ParseResult.GetValueForOption(option);
-            if (value is null)
-                continue;
-            if (!factory.Type.IsInstanceOfType(value))
-                continue;
-            factory.SetValue(value);
-        }
-        return tree.Instance;
     }
 }
