@@ -53,7 +53,6 @@ public class CommandFactory
             object[] parameters = _trees
                 .Select(tree => GetOptionValue(context.BindingContext, tree))
                 .ToArray();
-            Console.WriteLine("Hello, world");
             IHost host = _hostBuilder.Build();
             object activity = host.Services.GetRequiredService(activityType);
             activityMethod.Invoke(activity, parameters);
