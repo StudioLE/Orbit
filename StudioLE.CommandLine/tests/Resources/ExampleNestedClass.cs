@@ -1,12 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace StudioLE.CommandLine.Tests.Resources;
 
 public class ExampleNestedClass
 {
-    public string String { get; set; } = string.Empty;
+    [Required]
+    public string StringValue { get; set; } = string.Empty;
 
-    public int Integer { get; set; }
+    [Required]
+    [Range(10,20)]
+    public int IntegerValue { get; set; }
 
-    public double Double { get; set; }
-
-    public int Number { get; set; }
+    [Required]
+    [Range(0,1)]
+    public double DoubleValue { get; set; }
 }

@@ -1,5 +1,6 @@
-﻿Unrecognized command or argument '--nope'.
-Unrecognized command or argument '1'.
+﻿The field --integervalue must be between 10 and 20.
+The field --nested.integervalue must be between 10 and 20.
+The --stringvalue field is required.
 
 Description:
 

@@ -101,7 +101,7 @@ internal sealed class ExecutionTests
     }
 
     [Test]
-    public async Task ExecutionTests_Invalid_Argument()
+    public void ExecutionTests_Invalid_Argument()
     {
         // Arrange
         string[] arguments =
@@ -116,23 +116,59 @@ internal sealed class ExecutionTests
 
         // Assert
         _console.Flush();
-        Assert.Multiple(() =>
+        Assert.Multiple(async () =>
         {
+            await _verify.AsString(_logger);
             Assert.That(exitCode, Is.EqualTo(1), "Exit code");
             Assert.That(_logger.Logs.Count(x => x.LogLevel == LogLevel.Error), Is.EqualTo(3), "Error count");
         });
-        await _verify.AsString(_logger);
     }
 
     [Test]
-    public async Task ExecutionTests_Validation()
+    public void ExecutionTests_Validation_Errors()
     {
         // Arrange
         string[] arguments =
         {
+            // ReSharper disable StringLiteralTypo
             "exampleactivity",
-            "--number",
-            "1"
+            "--integervalue",
+            "1",
+            "--nested.integervalue",
+            "50",
+            "--stringvalue",
+            ""
+            // ReSharper restore StringLiteralTypo
+        };
+
+        // Act
+        int exitCode = _command.Invoke(arguments, _console);
+
+        // Assert
+        _console.Flush();
+        Assert.Multiple(async () =>
+        {
+            await _verify.AsString(_logger);
+            Assert.That(exitCode, Is.EqualTo(1), "Exit code");
+            Assert.That(_logger.Logs.Count(x => x.LogLevel == LogLevel.Error), Is.EqualTo(4), "Error count");
+        });
+    }
+
+    [Test]
+    public void ExecutionTests_Validation_No_Errors()
+    {
+        // Arrange
+        string[] arguments =
+        {
+            // ReSharper disable StringLiteralTypo
+            "exampleactivity",
+            "--integervalue",
+            "15",
+            "--nested.integervalue",
+            "10",
+            "--stringvalue",
+            "Hello, world!"
+            // ReSharper restore StringLiteralTypo
         };
 
         // Act
@@ -145,6 +181,5 @@ internal sealed class ExecutionTests
             Assert.That(exitCode, Is.EqualTo(0), "Exit code");
             Assert.That(_logger.Logs.Count(x => x.LogLevel == LogLevel.Error), Is.EqualTo(0), "Error count");
         });
-        await _verify.AsString(_logger);
     }
 }

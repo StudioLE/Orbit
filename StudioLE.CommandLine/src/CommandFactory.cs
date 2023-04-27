@@ -2,11 +2,13 @@ using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
 using StudioLE.CommandLine.Utils;
+using StudioLE.Core.System;
 
 namespace StudioLE.CommandLine;
 
@@ -107,6 +109,31 @@ public class CommandFactory
         object instance = Activator.CreateInstance(optionType, aliases.ToArray(), tree.HelperText) ?? throw new("Failed to construct option. Activator returned null.");
         if (instance is not Option option)
             throw new("Failed to construct option. Activator didn't return an Option.");
+        ValidationAttribute[] validationAttributes = tree
+            .Property
+            .GetCustomAttributes<ValidationAttribute>()
+            .ToArray();
+        if (validationAttributes.Any())
+        {
+            option.AddValidator(result =>
+            {
+                object? value = result.GetValueForOption(option);
+                List<ValidationResult> results = new();
+                ValidationContext context = new(value!)
+                {
+                    DisplayName = result.Token?.Value ?? throw new("Failed to get the value of the token.")
+                    // DisplayName = option.Description ?? throw new("Failed to get the value of the token.")
+                };
+                if (Validator.TryValidateValue(value!, context, results, validationAttributes))
+                    return;
+                string message = results
+                        .Select(x => x.ErrorMessage)
+                        .OfType<string>()
+                        .Join();
+                result.ErrorMessage = message;
+            });
+        }
+
         foreach (string alias in aliases.Distinct())
             _options.Add(alias, option);
         return option;

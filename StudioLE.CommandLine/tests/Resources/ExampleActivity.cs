@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
-using StudioLE.Core.System;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -22,14 +20,6 @@ public class ExampleActivity
             .Build();
         string yaml = serializer.Serialize(example);
         _logger.LogInformation(yaml);
-
-        List<ValidationResult> results = new();
-        ValidationContext context = new(example);
-        if(!Validator.TryValidateObject(example, context, results, validateAllProperties: true))
-            _logger.LogError(results
-                .Select(x => x.ErrorMessage)
-                .OfType<string>()
-                .Join());
 
         return example;
     }

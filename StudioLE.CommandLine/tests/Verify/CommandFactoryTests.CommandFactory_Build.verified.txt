@@ -1,33 +1,25 @@
-﻿- description: String
+﻿- description: StringValue
   type: String
   aliases:
-  - --string
-- description: Integer
+  - --stringvalue
+- description: IntegerValue
   type: Int32
   aliases:
-  - --integer
-- description: Double
+  - --integervalue
+- description: DoubleValue
   type: Double
   aliases:
-  - --double
-- description: Number
-  type: Int32
-  aliases:
-  - --number
-- description: String
+  - --doublevalue
+- description: StringValue
   type: String
   aliases:
-  - --nested.string
+  - --nested.stringvalue
   - --nested
-- description: Integer
+- description: IntegerValue
   type: Int32
   aliases:
-  - --nested.integer
-- description: Double
+  - --nested.integervalue
+- description: DoubleValue
   type: Double
   aliases:
-  - --nested.double
-- description: Number
-  type: Int32
-  aliases:
-  - --nested.number
+  - --nested.doublevalue

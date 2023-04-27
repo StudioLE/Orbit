@@ -5,7 +5,7 @@ namespace StudioLE.CommandLine.Composition;
 
 public class ObjectTreeProperty : ObjectTreeBase
 {
-    private readonly PropertyInfo _property;
+    public PropertyInfo Property { get; }
 
     public ObjectTreeBase Parent { get; }
 
@@ -19,7 +19,7 @@ public class ObjectTreeProperty : ObjectTreeBase
 
     internal ObjectTreeProperty(PropertyInfo property, ObjectTreeBase parent, string? parentFullKey)
     {
-        _property = property;
+        Property = property;
         Parent = parent;
         Type? underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
         Type type = underlyingType ?? property.PropertyType;
@@ -49,7 +49,7 @@ public class ObjectTreeProperty : ObjectTreeBase
     public object GetValue()
     {
         object parentInstance = GetParentInstance();
-        return _property.GetValue(parentInstance) ?? throw new("Failed to get property value.");
+        return Property.GetValue(parentInstance) ?? throw new("Failed to get property value.");
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class ObjectTreeProperty : ObjectTreeBase
     public void SetValue(object value)
     {
         object parentInstance = GetParentInstance();
-        _property.SetValue(parentInstance, value);
+        Property.SetValue(parentInstance, value);
     }
 
     /// <inheritdoc />

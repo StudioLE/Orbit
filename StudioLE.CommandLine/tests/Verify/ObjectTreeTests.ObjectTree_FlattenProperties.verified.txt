@@ -1,9 +1,7 @@
-﻿String: System.String
-Integer: System.Int32
-Double: System.Double
-Number: System.Int32
+﻿StringValue: System.String
+IntegerValue: System.Int32
+DoubleValue: System.Double
 Nested: StudioLE.CommandLine.Tests.Resources.ExampleNestedClass
-Nested.String: System.String
-Nested.Integer: System.Int32
-Nested.Double: System.Double
-Nested.Number: System.Int32
+Nested.StringValue: System.String
+Nested.IntegerValue: System.Int32
+Nested.DoubleValue: System.Double
