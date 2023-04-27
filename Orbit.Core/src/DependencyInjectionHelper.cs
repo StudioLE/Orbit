@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Activities;
 using Orbit.Core.Providers;
-using Orbit.Core.SSH;
 using Orbit.Core.Utils.Logging.ColorConsoleLogger;
 using Orbit.Core.Utils.Logging.TestLogger;
 
@@ -48,7 +47,6 @@ public static class DependencyInjectionHelper
                 services.AddSingleton<EntityProvider>();
                 services.AddSingleton<CreateOptions>();
                 services.AddSingleton<Create>();
-                services.AddSingleton<ConnectionOptions>();
                 services.AddSingleton<Multipass>();
                 services.AddSingleton<Launch>();
             });
@@ -82,7 +80,6 @@ public static class DependencyInjectionHelper
             {
                 services.AddSingleton<ProviderOptions>();
                 services.AddSingleton<EntityProvider>();
-                services.AddSingleton<ConnectionOptions>();
                 services.AddSingleton<Multipass>();
                 services.AddSingleton<Launch>();
             });

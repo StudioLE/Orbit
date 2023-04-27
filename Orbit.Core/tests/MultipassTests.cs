@@ -1,30 +1,27 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
+using Orbit.Core.Utils.Logging;
 using StudioLE.Core.System;
-using Host = Microsoft.Extensions.Hosting.Host;
 
 namespace Orbit.Core.Tests;
 
 internal sealed class MultipassTests
 {
-    private readonly Multipass _multipass;
-    private readonly EntityProvider _provider = EntityProvider.CreateTemp();
+    private readonly Multipass _multipass = new();
+    private readonly EntityProvider _provider;
 
     public MultipassTests()
     {
-        #if DEBUG
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
-        using IHost host = Host
-            .CreateDefaultBuilder()
-            .RegisterCustomLoggingProviders()
-            .RegisterLaunchServices()
-            .Build();
-        _multipass = host.Services.GetRequiredService<Multipass>();
+        ILogger<EntityProvider> logger = LoggingHelpers.CreateConsoleLogger<EntityProvider>();
+        _provider = new(new(), logger);
+        Host host = _provider
+            .Host
+            .GetAll()
+            .FirstOrDefault() ?? throw new("Expected a host");
+        _multipass.Connect(host);
     }
 
 #if DEBUG
@@ -34,6 +31,7 @@ internal sealed class MultipassTests
     public void Multipass_List()
     {
         // Arrange
+
         // Act
         JObject? json = _multipass.List();
 
@@ -42,10 +40,7 @@ internal sealed class MultipassTests
             Console.WriteLine(json.ToString());
 
         // Assert
-        if (json is null)
-            Assert.Fail();
-        else
-            Assert.Pass();
+        Assert.That(json, Is.Not.Null);
     }
 
     [Test]

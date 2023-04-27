@@ -39,7 +39,14 @@ public class EntityProvider
         provider.Host.Put(new()
         {
             Name = "host-01",
-            Number = 1
+            Number = 1,
+            Address = "localhost",
+            Ssh = new()
+            {
+                Port = 22,
+                User = "user",
+                PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
+            }
         });
         provider.Cluster.Put(new()
         {

@@ -10,13 +10,14 @@ public class ProviderOptions : IHasValidationAttributes
 
     // TODO: Add a directory exists CustomValidationAttribute
     [Required]
-    public string Directory { get; set; } = string.Empty;
+    public string Directory { get; set; }
 
     public ProviderOptions()
     {
+        Directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".orbit");
     }
 
-    public ProviderOptions(IConfiguration configuration)
+    public ProviderOptions(IConfiguration configuration) : this()
     {
         configuration.GetSection(MarkerKey).Bind(this);
     }

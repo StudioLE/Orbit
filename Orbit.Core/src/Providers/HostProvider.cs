@@ -28,8 +28,9 @@ public class HostProvider
     public IEnumerable<string> GetAllNames()
     {
         return _provider.GetDirectoryContents(HostsDirectory)
-            .Where(x => !x.IsDirectory)
-            .Select(x => x.Name);
+            .Where(x => !x.IsDirectory
+                        && x.Name.EndsWith(".yml"))
+            .Select(x => x.Name.Substring(0, x.Name.Length - 4));
     }
 
     public IEnumerable<Host> GetAll()

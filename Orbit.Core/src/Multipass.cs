@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Orbit.Core.Schema;
-using Orbit.Core.SSH;
 using Orbit.Core.Utils;
+using Orbit.Core.Utils.Logging;
 using Renci.SshNet;
 using StudioLE.Core.System;
 // ReSharper disable CommentTypo
@@ -12,17 +12,37 @@ namespace Orbit.Core;
 public class Multipass : IDisposable
 {
     private readonly ILogger<Multipass> _logger;
-    private readonly SshClient _ssh;
+    private SshClient? _ssh;
 
-    public Multipass(ILogger<Multipass> logger, ConnectionOptions connection)
+    public Multipass()
+    {
+        _logger = LoggingHelpers.CreateConsoleLogger<Multipass>();;
+    }
+
+    public Multipass(ILogger<Multipass> logger)
     {
         _logger = logger;
-        _ssh = new(connection.CreateConnection());
+    }
+
+    public void Connect(Host host)
+    {
+        List<AuthenticationMethod> auth = new();
+        if (!string.IsNullOrWhiteSpace(host.Ssh.Password))
+            auth.Add(new PasswordAuthenticationMethod(host.Ssh.User, host.Ssh.Password));
+        if (!string.IsNullOrWhiteSpace(host.Ssh.PrivateKeyFile))
+            auth.Add(new PrivateKeyAuthenticationMethod(host.Ssh.User, new PrivateKeyFile(host.Ssh.PrivateKeyFile)));
+        ConnectionInfo connection = new(host.Address, host.Ssh.Port, host.Ssh.User, auth.ToArray());
+        _ssh = new(connection);
         _ssh.Connect();
     }
 
     private string? ExecuteToLogger(string commandText)
     {
+        if (_ssh is null)
+        {
+            _logger.LogError("Tried to execute before connecting.");
+            return null;
+        }
         SshCommand command = _ssh.CreateCommand(commandText);
         IAsyncResult result = command.BeginExecute();
         using StreamReader reader = new(command.OutputStream);
@@ -57,6 +77,11 @@ public class Multipass : IDisposable
 
     private string? Execute(string commandText)
     {
+        if (_ssh is null)
+        {
+            _logger.LogError("Tried to execute before connecting.");
+            return null;
+        }
         SshCommand command = _ssh.RunCommand(commandText);
         if(command.ExitStatus == 0)
             return command.Result;

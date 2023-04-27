@@ -17,6 +17,11 @@ public sealed class Host : IEntity, IHasValidationAttributes
     [Range(1,64)]
     public int Number { get; set; }
 
+    [Required]
+    public string Address { get; set; } = string.Empty;
+
+    public SshConnection Ssh { get; set; } = new();
+
     public void Review(EntityProvider provider)
     {
         if (!Name.IsNullOrEmpty())
