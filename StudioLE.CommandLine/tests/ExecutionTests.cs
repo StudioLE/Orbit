@@ -29,8 +29,7 @@ internal sealed class ExecutionTests
                 services.AddSingleton<ExampleActivity>();
             })
             .RegisterTestLoggingProviders();
-        CommandFactory factory = new(hostBuilder);
-        _command = new CommandBuilder(factory)
+        _command = new CommandBuilder(hostBuilder)
             .Register<ExampleActivity>()
             .Build();
         _command.Name = "RootCommand";

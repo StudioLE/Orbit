@@ -12,10 +12,9 @@ internal sealed class CommandBuilderTests
     {
         // Arrange
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-        CommandFactory factory = new(hostBuilder);
 
         // Act
-        RootCommand command = new CommandBuilder(factory)
+        RootCommand command = new CommandBuilder(hostBuilder)
             .Register<ExampleActivity>()
             .Build();
 

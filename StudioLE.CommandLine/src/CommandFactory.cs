@@ -22,8 +22,14 @@ public class CommandFactory
             typeof(double),
             typeof(Enum)
         };
+    private readonly HashSet<string> _optionAliases = new();
     private readonly Dictionary<string, Option> _options = new();
-    private readonly List<ObjectTree> _trees = new();
+
+    public Type? ActivityType { get; set; }
+
+    public string? CommandName { get; set; }
+
+    public string? Description { get; set; }
 
     public CommandFactory(IHostBuilder hostBuilder)
     {
@@ -36,113 +42,134 @@ public class CommandFactory
         _parseableTypes = parseableTypes;
     }
 
-    public Command Build(Type activityType)
+    public Command Build()
     {
-        _options.Clear();
-        _trees.Clear();
-        string name = activityType.Name.ToLower();
-        DescriptionAttribute? descriptionAttribute = activityType.GetAttribute<DescriptionAttribute>();
-        string description = descriptionAttribute is null
-            ? string.Empty
-            : descriptionAttribute.Description;
-        Command command = new(name, description);
-        MethodInfo activityMethod = activityType.GetMethod("Execute") ?? throw new("No Execute method");
-        Option[] options = CreateOptions(activityMethod);
+        if (ActivityType is null)
+            throw new("Failed to build Command. ActivityType has not been set.");
+        SetUnsetProperties();
+        Command command = new(CommandName!, Description);
+        MethodInfo activityMethod = ActivityType.GetMethod("Execute") ?? throw new("No Execute method");
+        ObjectTree tree = CreateObjectTree(activityMethod);
+        Option[] options = CreateOptionsForProperties(tree);
         foreach (Option option in options)
-            command.AddOption(option);
-        Action<InvocationContext> handler = context =>
         {
-            object[] parameters = _trees
-                .Select(tree => GetOptionValue(context.BindingContext, tree))
-                .ToArray();
-            IHost host = _hostBuilder.Build();
-            object activity = host.Services.GetRequiredService(activityType);
-            activityMethod.Invoke(activity, parameters);
-        };
+            _options.Add(option.Aliases.First(), option);
+            command.AddOption(option);
+        }
+        Action<InvocationContext> handler = CreateHandler(ActivityType, activityMethod, tree);
         command.SetHandler(handler);
         return command;
     }
 
-    private Option[] CreateOptions(MethodInfo method)
+    private void SetUnsetProperties()
     {
-        return method
-            .GetParameters()
-            .SelectMany(CreateOptions)
-            .ToArray();
+        if (ActivityType is null)
+            throw new("Failed to build Command. ActivityType has not been set.");
+        CommandName ??= ActivityType?.Name.ToLower();
+        DescriptionAttribute? descriptionAttribute = ActivityType?.GetAttribute<DescriptionAttribute>();
+        Description ??= descriptionAttribute is null
+            ? string.Empty
+            : descriptionAttribute.Description;
     }
 
-    private Option[] CreateOptions(ParameterInfo parameter)
+    private Action<InvocationContext> CreateHandler(Type activityType, MethodInfo activityMethod, ObjectTree tree)
     {
-        ObjectTree tree = new(parameter.ParameterType);
-        _trees.Add(tree);
-        return CreateOptions(tree);
-    }
-
-    private Option[] CreateOptions(ObjectTree tree)
-    {
-        Option[] options = tree
-            .FlattenProperties()
-            .Select(CreateOption)
-            .OfType<Option>()
-            .ToArray();
-        return options;
-    }
-
-    private Option? CreateOption(ObjectTreeProperty tree)
-    {
-        if (!IsParseable(tree.Type))
-            return null;
-        List<string> aliases = new()
+        return context =>
         {
-            tree.FullKey.ToLongOption()
+            object parameter = GetOptionValue(context.BindingContext, tree);
+            IHost host = _hostBuilder.Build();
+            object activity = host.Services.GetRequiredService(activityType);
+            activityMethod.Invoke(activity, new [] { parameter });
         };
-        if(!_options.ContainsKey(tree.Key.ToLongOption()))
-            aliases.Add(tree.Key.ToLongOption());
-        if (tree.Parent is ObjectTreeProperty parent)
-        {
-            if(!_options.ContainsKey(parent.FullKey.ToLongOption()))
-                aliases.Add(parent.FullKey.ToLongOption());
-            if(!_options.ContainsKey(parent.Key.ToLongOption()))
-                aliases.Add(parent.Key.ToLongOption());
-        }
-        Type optionType = typeof(Option<>).MakeGenericType(tree.Type);
-        object instance = Activator.CreateInstance(optionType, aliases.ToArray(), tree.HelperText) ?? throw new("Failed to construct option. Activator returned null.");
-        if (instance is not Option option)
-            throw new("Failed to construct option. Activator didn't return an Option.");
-        ValidationAttribute[] validationAttributes = tree
-            .Property
-            .GetCustomAttributes<ValidationAttribute>()
-            .ToArray();
-        if (validationAttributes.Any())
-        {
-            option.AddValidator(result =>
-            {
-                object? value = result.GetValueForOption(option);
-                List<ValidationResult> results = new();
-                ValidationContext context = new(value!)
-                {
-                    DisplayName = result.Token?.Value ?? throw new("Failed to get the value of the token.")
-                    // DisplayName = option.Description ?? throw new("Failed to get the value of the token.")
-                };
-                if (Validator.TryValidateValue(value!, context, results, validationAttributes))
-                    return;
-                string message = results
-                        .Select(x => x.ErrorMessage)
-                        .OfType<string>()
-                        .Join();
-                result.ErrorMessage = message;
-            });
-        }
+    }
 
-        foreach (string alias in aliases.Distinct())
-            _options.Add(alias, option);
-        return option;
+    private ObjectTree CreateObjectTree(MethodInfo method)
+    {
+        ParameterInfo[] parameters = method.GetParameters();
+        if (parameters.Length != 1)
+            throw new("Only a single parameter is permitted.");
+        ParameterInfo parameter = parameters.First();
+        return new(parameter.ParameterType);
+    }
+
+    private Option[] CreateOptionsForProperties(ObjectTree tree)
+    {
+         return tree
+            .FlattenProperties()
+            .Where(x => IsParseable(x.Type))
+            .Select(CreateOptionForProperty)
+            .ToArray();
     }
 
     private bool IsParseable(Type type)
     {
         return _parseableTypes.Contains(type)
                || _parseableTypes.Any(x => x.IsAssignableFrom(type));
+    }
+
+    private Option CreateOptionForProperty(ObjectTreeProperty tree)
+    {
+        IReadOnlyCollection<string> aliases = GetAliases(tree);
+        Option option = CreateInstanceOfOption(tree);
+        SetOptionValidator(tree, option);
+        foreach (string alias in aliases)
+            _optionAliases.Add(alias);
+        return option;
+    }
+
+    private IReadOnlyCollection<string> GetAliases(ObjectTreeProperty tree)
+    {
+        HashSet<string> aliases = new()
+        {
+            tree.FullKey.ToLongOption()
+        };
+        if(!_optionAliases.Contains(tree.Key.ToLongOption()))
+            aliases.Add(tree.Key.ToLongOption());
+        if (tree.Parent is ObjectTreeProperty parent)
+        {
+            if(!_optionAliases.Contains(parent.FullKey.ToLongOption()))
+                aliases.Add(parent.FullKey.ToLongOption());
+            if(!_optionAliases.Contains(parent.Key.ToLongOption()))
+                aliases.Add(parent.Key.ToLongOption());
+        }
+        return aliases;
+    }
+
+    private Option CreateInstanceOfOption(ObjectTreeProperty tree)
+    {
+        IReadOnlyCollection<string> aliases = GetAliases(tree);
+        Type optionType = typeof(Option<>).MakeGenericType(tree.Type);
+        object instance = Activator.CreateInstance(optionType, aliases.ToArray(), tree.HelperText) ?? throw new("Failed to construct option. Activator returned null.");
+        if (instance is not Option option)
+            throw new("Failed to construct option. Activator didn't return an Option.");
+        return option;
+    }
+
+    private static void SetOptionValidator(ObjectTreeProperty tree, Option option)
+    {
+        ValidationAttribute[] validationAttributes = tree
+            .Property
+            .GetCustomAttributes<ValidationAttribute>()
+            .ToArray();
+        if (!validationAttributes.Any())
+            return;
+        option.AddValidator(result =>
+        {
+            object? value = result.GetValueForOption(option);
+            List<ValidationResult> results = new();
+            ValidationContext context = new(value!)
+            {
+                DisplayName = result.Token?.Value ?? throw new("Failed to get the value of the token.")
+                // DisplayName = option.Description ?? throw new("Failed to get the value of the token.")
+            };
+            if (Validator.TryValidateValue(value!, context, results, validationAttributes))
+                return;
+            string message = results
+                .Select(x => x.ErrorMessage)
+                .OfType<string>()
+                .Join();
+            result.ErrorMessage = message;
+        });
     }
 
     private object GetOptionValue(BindingContext context, ObjectTree tree)

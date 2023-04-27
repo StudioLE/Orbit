@@ -18,10 +18,13 @@ internal sealed class CommandFactoryTests
     {
         // Arrange
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-        CommandFactory factory = new(hostBuilder);
+        CommandFactory factory = new(hostBuilder)
+        {
+            ActivityType = typeof(ExampleActivity)
+        };
 
         // Act
-        Command command = factory.Build(typeof(ExampleActivity));
+        Command command = factory.Build();
 
         // Assert
         await _verify.AsYaml(command

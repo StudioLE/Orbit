@@ -1,27 +1,45 @@
 using System.CommandLine;
+using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine;
 
 public class CommandBuilder : IBuilder<RootCommand>
 {
-    private readonly CommandFactory _factory;
-    private readonly List<Type> _activities = new();
-
-    public CommandBuilder(CommandFactory factory)
+    private readonly IHostBuilder _hostBuilder;
+    private readonly HashSet<Type> _parseableTypes =  new()
     {
-        _factory = factory;
+        typeof(string),
+        typeof(int),
+        typeof(double),
+        typeof(Enum)
+    };
+    private readonly List<CommandFactory> _factories = new();
+
+    public CommandBuilder(IHostBuilder hostBuilder)
+    {
+        _hostBuilder = hostBuilder;
+    }
+
+    public CommandBuilder(IHostBuilder hostBuilder, HashSet<Type> parseableTypes)
+    {
+        _hostBuilder = hostBuilder;
+        _parseableTypes = parseableTypes;
     }
 
     public CommandBuilder Register(Type activity)
     {
-        _activities.Add(activity);
+        CommandFactory factory = new(_hostBuilder, _parseableTypes)
+        {
+            ActivityType = activity
+        };
+        _factories.Add(factory);
         return this;
     }
 
     public CommandBuilder Register<TActivity>()
     {
-        _activities.Add(typeof(TActivity));
+        Register(typeof(TActivity));
         return this;
     }
 
@@ -29,8 +47,8 @@ public class CommandBuilder : IBuilder<RootCommand>
     public RootCommand Build()
     {
         RootCommand root = new();
-        Command[] commands = _activities
-            .Select(_factory.Build)
+        Command[] commands = _factories
+            .Select(factory => factory.Build())
             .ToArray();
         foreach (Command command in commands)
             root.AddCommand(command);

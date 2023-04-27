@@ -14,8 +14,7 @@ internal static class Program
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
             .RegisterServices();
-        CommandFactory factory = new(hostBuilder);
-        RootCommand command = new CommandBuilder(factory)
+        RootCommand command = new CommandBuilder(hostBuilder)
             .Register<Create>()
             // .Register<Launch>()
             .Build();
