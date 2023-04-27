@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "StudioLE.CommandLine.Sample": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

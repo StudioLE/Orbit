@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudioLE.CommandLine", "Stu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudioLE.CommandLine.Tests", "StudioLE.CommandLine\tests\StudioLE.CommandLine.Tests.csproj", "{B05F6672-1D85-4C4B-835A-A8499D266AE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudioLE.CommandLine.Sample", "StudioLE.CommandLine\samples\StudioLE.CommandLine.Sample.csproj", "{AD8E339E-3944-47FE-971A-5643419D38A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{B05F6672-1D85-4C4B-835A-A8499D266AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B05F6672-1D85-4C4B-835A-A8499D266AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B05F6672-1D85-4C4B-835A-A8499D266AE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD8E339E-3944-47FE-971A-5643419D38A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD8E339E-3944-47FE-971A-5643419D38A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD8E339E-3944-47FE-971A-5643419D38A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD8E339E-3944-47FE-971A-5643419D38A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

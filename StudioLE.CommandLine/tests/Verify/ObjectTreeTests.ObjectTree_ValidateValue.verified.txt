@@ -1,0 +1,4 @@
+﻿The StringValue field is required.
+The field IntegerValue must be between 10 and 20.
+The Nested.StringValue field is required.
+The field Nested.IntegerValue must be between 10 and 20.

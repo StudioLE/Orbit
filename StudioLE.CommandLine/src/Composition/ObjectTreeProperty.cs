@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using StudioLE.Core.Exceptions;
 
@@ -60,6 +61,25 @@ public class ObjectTreeProperty : ObjectTreeBase
     {
         object parentInstance = GetParentInstance();
         Property.SetValue(parentInstance, value);
+    }
+
+    public IReadOnlyCollection<string> ValidateValue()
+    {
+        object value = GetValue();
+        ValidationContext context = new(value)
+        {
+            DisplayName = FullKey
+        };
+        List<ValidationResult> results = new();
+        ValidationAttribute[] validationAttributes = Property
+            .GetCustomAttributes<ValidationAttribute>()
+            .ToArray();
+        if (Validator.TryValidateValue(value, context, results, validationAttributes))
+            return Array.Empty<string>();
+        return results
+            .Select(x => x.ErrorMessage)
+            .OfType<string>()
+            .ToArray();
     }
 
     /// <inheritdoc />
