@@ -7,12 +7,16 @@ using StudioLE.Core.System;
 
 namespace StudioLE.CommandLine;
 
-public class CommandOptionsStrategy : IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>>
+public interface ICommandOptionsStrategy : IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>>
+{
+}
+
+public class CommandOptionsStrategy : ICommandOptionsStrategy
 {
     private readonly HashSet<string> _optionAliases = new();
-    private readonly IStrategy<Type, bool> _isParsableStrategy;
+    private readonly IIsParseableStrategy _isParsableStrategy;
 
-    public CommandOptionsStrategy(IStrategy<Type, bool> isParsableStrategy)
+    public CommandOptionsStrategy(IIsParseableStrategy isParsableStrategy)
     {
         _isParsableStrategy = isParsableStrategy;
     }

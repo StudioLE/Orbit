@@ -7,7 +7,6 @@ using StudioLE.CommandLine.Logging;
 using StudioLE.CommandLine.Tests.Resources;
 using StudioLE.CommandLine.Utils;
 using StudioLE.CommandLine.Utils.Logging.TestLogger;
-using StudioLE.CommandLine.Utils.Patterns;
 using StudioLE.Verify.NUnit;
 
 namespace StudioLE.CommandLine.Tests;
@@ -30,7 +29,7 @@ internal sealed class ExecutionTests
                 services.AddSingleton<ExampleActivity>();
             })
             .RegisterTestLoggingProviders();
-        IStrategy<Type, bool> isParsableStrategy = new IsParseableStrategy();
+        IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
         _command = new CommandBuilder(hostBuilder, isParsableStrategy)
             .Register<ExampleActivity>()
             .Build();

@@ -5,14 +5,13 @@ using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
 using StudioLE.CommandLine.Utils;
-using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine;
 
 public class CommandFactory
 {
-    private readonly IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>> _optionsStrategy;
-    private readonly IStrategy<CommandFactory, Action<InvocationContext>> _handlerStrategy;
+    private readonly ICommandOptionsStrategy _optionsStrategy;
+    private readonly ICommandHandlerStrategy _handlerStrategy;
 
     public Type? ActivityType { get; set; }
 
@@ -22,7 +21,7 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, Option> Options { get; private set; } = new Dictionary<string, Option>();
 
-    public CommandFactory(IHostBuilder hostBuilder, IStrategy<Type, bool> isParsableStrategy)
+    public CommandFactory(IHostBuilder hostBuilder, IIsParseableStrategy isParsableStrategy)
     {
         _optionsStrategy = new CommandOptionsStrategy(isParsableStrategy);
         _handlerStrategy = new CommandHandlerStrategy(hostBuilder, isParsableStrategy);

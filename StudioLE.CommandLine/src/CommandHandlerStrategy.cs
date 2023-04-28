@@ -8,12 +8,16 @@ using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine;
 
-public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<InvocationContext>>
+public interface ICommandHandlerStrategy : IStrategy<CommandFactory, Action<InvocationContext>>
+{
+}
+
+public class CommandHandlerStrategy : ICommandHandlerStrategy
 {
     private readonly IHostBuilder _hostBuilder;
-    private readonly IStrategy<Type, bool> _isParsableStrategy;
+    private readonly IIsParseableStrategy _isParsableStrategy;
 
-    public CommandHandlerStrategy(IHostBuilder hostBuilder, IStrategy<Type, bool> isParsableStrategy)
+    public CommandHandlerStrategy(IHostBuilder hostBuilder, IIsParseableStrategy isParsableStrategy)
     {
         _hostBuilder = hostBuilder;
         _isParsableStrategy = isParsableStrategy;

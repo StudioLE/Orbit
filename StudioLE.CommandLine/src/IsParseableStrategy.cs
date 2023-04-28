@@ -2,7 +2,11 @@ using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine;
 
-public class IsParseableStrategy : IStrategy<Type, bool>
+public interface IIsParseableStrategy : IStrategy<Type, bool>
+{
+}
+
+public class IsParseableStrategy : IIsParseableStrategy
 {
     private readonly HashSet<Type> _parseableTypes = new()
     {

@@ -2,7 +2,6 @@ using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using StudioLE.CommandLine.Tests.Resources;
-using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine.Tests;
 
@@ -13,7 +12,7 @@ internal sealed class CommandBuilderTests
     {
         // Arrange
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-        IStrategy<Type, bool> isParsableStrategy = new IsParseableStrategy();
+        IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
 
         // Act
         RootCommand command = new CommandBuilder(hostBuilder, isParsableStrategy)

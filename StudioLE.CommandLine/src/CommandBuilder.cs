@@ -7,10 +7,10 @@ namespace StudioLE.CommandLine;
 public class CommandBuilder : IBuilder<RootCommand>
 {
     private readonly IHostBuilder _hostBuilder;
-    private readonly IStrategy<Type, bool> _isParsableStrategy;
+    private readonly IIsParseableStrategy _isParsableStrategy;
     private readonly List<CommandFactory> _factories = new();
 
-    public CommandBuilder(IHostBuilder hostBuilder, IStrategy<Type, bool> isParsableStrategy)
+    public CommandBuilder(IHostBuilder hostBuilder, IIsParseableStrategy isParsableStrategy)
     {
         _hostBuilder = hostBuilder;
         _isParsableStrategy = isParsableStrategy;
