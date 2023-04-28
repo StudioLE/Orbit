@@ -39,12 +39,9 @@ internal static class Program
 
                 Console.WriteLine(errors.Join());
                 string? line = Console.ReadLine();
-
-                dynamic? converter = resolver.ResolveActivated(typeof(string), property.Type);
-                if (converter is null)
-                    throw new("Failed to resolve a converter");
-                object? parsed = converter.Convert(line);
-                property.SetValue(parsed);
+                line ??= string.Empty;
+                object? parsed = resolver.TryConvert(line, property.Type);
+                property.SetValue(parsed!);
                 attemptCount++;
             }
             if (exceededMaxAttempts)
