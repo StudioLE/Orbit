@@ -11,10 +11,12 @@ namespace StudioLE.CommandLine;
 public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<InvocationContext>>
 {
     private readonly IHostBuilder _hostBuilder;
+    private readonly IStrategy<Type, bool> _isParsableStrategy;
 
-    public CommandHandlerStrategy(IHostBuilder hostBuilder)
+    public CommandHandlerStrategy(IHostBuilder hostBuilder, IStrategy<Type, bool> isParsableStrategy)
     {
         _hostBuilder = hostBuilder;
+        _isParsableStrategy = isParsableStrategy;
     }
 
     public Action<InvocationContext> Execute(CommandFactory commandFactory)
@@ -34,7 +36,7 @@ public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<Invocatio
         };
     }
 
-    private static object GetOptionValue(BindingContext context, CommandFactory commandFactory)
+    private object GetOptionValue(BindingContext context, CommandFactory commandFactory)
     {
         ObjectTreeProperty[] propertyFactories = commandFactory
             .Tree!
@@ -42,7 +44,7 @@ public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<Invocatio
             .ToArray();
         foreach (ObjectTreeProperty factory in propertyFactories)
         {
-            if (!commandFactory.IsParseable(factory.Type))
+            if (!_isParsableStrategy.Execute(factory.Type))
                 continue;
             if (!commandFactory.Options.TryGetValue(factory.FullKey.ToLongOption(), out Option? option))
                 continue;

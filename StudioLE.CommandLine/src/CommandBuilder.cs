@@ -7,29 +7,18 @@ namespace StudioLE.CommandLine;
 public class CommandBuilder : IBuilder<RootCommand>
 {
     private readonly IHostBuilder _hostBuilder;
-    private readonly HashSet<Type> _parseableTypes =  new()
-    {
-        typeof(string),
-        typeof(int),
-        typeof(double),
-        typeof(Enum)
-    };
+    private readonly IStrategy<Type, bool> _isParsableStrategy;
     private readonly List<CommandFactory> _factories = new();
 
-    public CommandBuilder(IHostBuilder hostBuilder)
+    public CommandBuilder(IHostBuilder hostBuilder, IStrategy<Type, bool> isParsableStrategy)
     {
         _hostBuilder = hostBuilder;
-    }
-
-    public CommandBuilder(IHostBuilder hostBuilder, HashSet<Type> parseableTypes)
-    {
-        _hostBuilder = hostBuilder;
-        _parseableTypes = parseableTypes;
+        _isParsableStrategy = isParsableStrategy;
     }
 
     public CommandBuilder Register(Type activity)
     {
-        CommandFactory factory = new(_hostBuilder, _parseableTypes)
+        CommandFactory factory = new(_hostBuilder, _isParsableStrategy)
         {
             ActivityType = activity
         };

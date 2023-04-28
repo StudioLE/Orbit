@@ -2,6 +2,7 @@ using System.CommandLine;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using StudioLE.CommandLine.Tests.Resources;
+using StudioLE.CommandLine.Utils.Patterns;
 using StudioLE.Verify.NUnit;
 
 namespace StudioLE.CommandLine.Tests;
@@ -18,7 +19,8 @@ internal sealed class CommandFactoryTests
     {
         // Arrange
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-        CommandFactory factory = new(hostBuilder)
+        IStrategy<Type, bool> isParsableStrategy = new IsParseableStrategy();
+        CommandFactory factory = new(hostBuilder, isParsableStrategy)
         {
             ActivityType = typeof(ExampleActivity)
         };

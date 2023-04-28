@@ -11,13 +11,6 @@ namespace StudioLE.CommandLine;
 
 public class CommandFactory
 {
-    private readonly HashSet<Type> _parseableTypes = new()
-    {
-        typeof(string),
-        typeof(int),
-        typeof(double),
-        typeof(Enum)
-    };
     private readonly IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>> _optionsStrategy;
     private readonly IStrategy<CommandFactory, Action<InvocationContext>> _handlerStrategy;
 
@@ -29,15 +22,10 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, Option> Options { get; private set; } = new Dictionary<string, Option>();
 
-    public CommandFactory(IHostBuilder hostBuilder)
+    public CommandFactory(IHostBuilder hostBuilder, IStrategy<Type, bool> isParsableStrategy)
     {
-        _optionsStrategy = new CommandOptionsStrategy();
-        _handlerStrategy = new CommandHandlerStrategy(hostBuilder);
-    }
-
-    public CommandFactory(IHostBuilder hostBuilder, HashSet<Type> parseableTypes) : this(hostBuilder)
-    {
-        _parseableTypes = parseableTypes;
+        _optionsStrategy = new CommandOptionsStrategy(isParsableStrategy);
+        _handlerStrategy = new CommandHandlerStrategy(hostBuilder, isParsableStrategy);
     }
 
     public Command Build()
@@ -77,11 +65,5 @@ public class CommandFactory
             throw new("Only a single parameter is permitted.");
         ParameterInfo parameter = parameters.First();
         return new(parameter.ParameterType);
-    }
-
-    public bool IsParseable(Type type)
-    {
-        return _parseableTypes.Contains(type)
-               || _parseableTypes.Any(x => x.IsAssignableFrom(type));
     }
 }
