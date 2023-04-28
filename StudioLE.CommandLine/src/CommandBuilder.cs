@@ -6,19 +6,23 @@ namespace StudioLE.CommandLine;
 
 public class CommandBuilder : IBuilder<RootCommand>
 {
-    private readonly IHostBuilder _hostBuilder;
-    private readonly IIsParseableStrategy _isParsableStrategy;
     private readonly List<CommandFactory> _factories = new();
 
-    public CommandBuilder(IHostBuilder hostBuilder, IIsParseableStrategy isParsableStrategy)
+    private readonly IHostBuilder _activityHostBuilder;
+    private readonly IIsParseableStrategy _isParsableStrategy;
+
+    public CommandBuilder(IHostBuilder activityHostBuilder, IIsParseableStrategy isParsableStrategy)
     {
-        _hostBuilder = hostBuilder;
+        _activityHostBuilder = activityHostBuilder;
         _isParsableStrategy = isParsableStrategy;
     }
 
     public CommandBuilder Register(Type activity)
     {
-        CommandFactory factory = new(_hostBuilder, _isParsableStrategy)
+        // TODO: This is manual DI
+        ICommandOptionsStrategy optionsStrategy = new CommandOptionsStrategy(_isParsableStrategy);
+        ICommandHandlerStrategy handlerStrategy = new CommandHandlerStrategy(_activityHostBuilder, _isParsableStrategy);
+        CommandFactory factory = new(optionsStrategy, handlerStrategy)
         {
             ActivityType = activity
         };

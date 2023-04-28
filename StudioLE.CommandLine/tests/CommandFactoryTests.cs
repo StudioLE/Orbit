@@ -17,9 +17,12 @@ internal sealed class CommandFactoryTests
     public async Task CommandFactory_Build()
     {
         // Arrange
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+        // TODO: This is manual DI
         IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
-        CommandFactory factory = new(hostBuilder, isParsableStrategy)
+        ICommandOptionsStrategy optionsStrategy = new CommandOptionsStrategy(isParsableStrategy);
+        IHostBuilder activityHostBuilder = Host.CreateDefaultBuilder();
+        ICommandHandlerStrategy handlerStrategy = new CommandHandlerStrategy(activityHostBuilder, isParsableStrategy);
+        CommandFactory factory = new(optionsStrategy, handlerStrategy)
         {
             ActivityType = typeof(ExampleActivity)
         };

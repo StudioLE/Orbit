@@ -2,7 +2,6 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.ComponentModel;
 using System.Reflection;
-using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
 using StudioLE.CommandLine.Utils;
 
@@ -21,10 +20,10 @@ public class CommandFactory
 
     public IReadOnlyDictionary<string, Option> Options { get; private set; } = new Dictionary<string, Option>();
 
-    public CommandFactory(IHostBuilder hostBuilder, IIsParseableStrategy isParsableStrategy)
+    public CommandFactory(ICommandOptionsStrategy optionsStrategy, ICommandHandlerStrategy handlerStrategy)
     {
-        _optionsStrategy = new CommandOptionsStrategy(isParsableStrategy);
-        _handlerStrategy = new CommandHandlerStrategy(hostBuilder, isParsableStrategy);
+        _optionsStrategy = optionsStrategy;
+        _handlerStrategy = handlerStrategy;
     }
 
     public Command Build()
