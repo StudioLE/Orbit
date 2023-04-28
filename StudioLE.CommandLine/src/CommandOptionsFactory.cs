@@ -16,13 +16,16 @@ public class CommandOptionsFactory
         _isParseable = isParseable;
     }
 
-    public Option[] Create(ObjectTree tree)
+    public IReadOnlyDictionary<string, Option> Create(CommandFactory commandFactory)
     {
-         return tree
+        if (commandFactory.Tree is null)
+            throw new("Expected tree to be set.");
+        return commandFactory
+            .Tree
             .FlattenProperties()
             .Where(x => _isParseable.Invoke(x.Type))
             .Select(CreateOptionForProperty)
-            .ToArray();
+            .ToDictionary(option => option.Aliases.First(), option => option);
     }
 
     private Option CreateOptionForProperty(ObjectTreeProperty tree)

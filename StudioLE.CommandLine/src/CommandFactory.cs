@@ -22,9 +22,11 @@ public class CommandFactory
 
     public Type? ActivityType { get; set; }
 
-    public string? CommandName { get; set; }
+    public MethodInfo? ActivityMethod { get; private set; }
 
-    public string? Description { get; set; }
+    public ObjectTree? Tree { get; private set; }
+
+    public IReadOnlyDictionary<string, Option> Options { get; private set; } = new Dictionary<string, Option>();
 
     public CommandFactory(IHostBuilder hostBuilder)
     {
@@ -41,30 +43,28 @@ public class CommandFactory
     {
         if (ActivityType is null)
             throw new("Failed to build Command. ActivityType has not been set.");
-        SetUnsetProperties();
-        Command command = new(CommandName!, Description);
-        MethodInfo activityMethod = ActivityType.GetMethod("Execute") ?? throw new("No Execute method");
-        ObjectTree tree = CreateObjectTree(activityMethod);
-
-        Option[] options = _optionsFactory.Create(tree);
-        Dictionary<string, Option> optionsDictionary = new();
-        foreach (Option option in options)
-        {
-            optionsDictionary.Add(option.Aliases.First(), option);
+        ActivityMethod = ActivityType.GetMethod("Execute") ?? throw new("No Execute method");
+        Tree = CreateObjectTree(ActivityMethod);
+        Options = _optionsFactory.Create(this);
+        string commandName = GetCommandName();
+        string description = GetDescription();
+        Command command = new(commandName, description);
+        foreach ((string? _, Option? option) in Options)
             command.AddOption(option);
-        }
-        Action<InvocationContext> handler = _handlerFactory.Create(ActivityType, activityMethod, tree, optionsDictionary);
+        Action<InvocationContext> handler = _handlerFactory.Create(this);
         command.SetHandler(handler);
         return command;
     }
 
-    private void SetUnsetProperties()
+    private string GetCommandName()
     {
-        if (ActivityType is null)
-            throw new("Failed to build Command. ActivityType has not been set.");
-        CommandName ??= ActivityType?.Name.ToLower();
-        DescriptionAttribute? descriptionAttribute = ActivityType?.GetAttribute<DescriptionAttribute>();
-        Description ??= descriptionAttribute is null
+        return ActivityType!.Name.ToLower();
+    }
+
+    private string GetDescription()
+    {
+        DescriptionAttribute? descriptionAttribute = ActivityType!.GetAttribute<DescriptionAttribute>();
+        return descriptionAttribute is null
             ? string.Empty
             : descriptionAttribute.Description;
     }
