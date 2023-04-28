@@ -31,8 +31,8 @@ public class CommandFactory
 
     public CommandFactory(IHostBuilder hostBuilder)
     {
-        _optionsStrategy = new CommandOptionsStrategy(IsParseable);
-        _handlerStrategy = new CommandHandlerStrategy(hostBuilder, IsParseable);
+        _optionsStrategy = new CommandOptionsStrategy();
+        _handlerStrategy = new CommandHandlerStrategy(hostBuilder);
     }
 
     public CommandFactory(IHostBuilder hostBuilder, HashSet<Type> parseableTypes) : this(hostBuilder)
@@ -79,7 +79,7 @@ public class CommandFactory
         return new(parameter.ParameterType);
     }
 
-    private bool IsParseable(Type type)
+    public bool IsParseable(Type type)
     {
         return _parseableTypes.Contains(type)
                || _parseableTypes.Any(x => x.IsAssignableFrom(type));

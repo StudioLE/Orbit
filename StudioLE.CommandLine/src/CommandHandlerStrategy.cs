@@ -11,12 +11,10 @@ namespace StudioLE.CommandLine;
 public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<InvocationContext>>
 {
     private readonly IHostBuilder _hostBuilder;
-    private readonly Func<Type, bool> _isParseable;
 
-    public CommandHandlerStrategy(IHostBuilder hostBuilder, Func<Type, bool> isParseable)
+    public CommandHandlerStrategy(IHostBuilder hostBuilder)
     {
         _hostBuilder = hostBuilder;
-        _isParseable = isParseable;
     }
 
     public Action<InvocationContext> Execute(CommandFactory commandFactory)
@@ -29,23 +27,24 @@ public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<Invocatio
             throw new("Expected ActivityMethod to be set.");
         return context =>
         {
-            object parameter = GetOptionValue(context.BindingContext, commandFactory.Tree, commandFactory.Options);
+            object parameter = GetOptionValue(context.BindingContext, commandFactory);
             IHost host = _hostBuilder.Build();
             object activity = host.Services.GetRequiredService(commandFactory.ActivityType);
             commandFactory.ActivityMethod.Invoke(activity, new[] { parameter });
         };
     }
 
-    private object GetOptionValue(BindingContext context, ObjectTree tree, IReadOnlyDictionary<string, Option> options)
+    private static object GetOptionValue(BindingContext context, CommandFactory commandFactory)
     {
-        ObjectTreeProperty[] propertyFactories = tree
+        ObjectTreeProperty[] propertyFactories = commandFactory
+            .Tree!
             .FlattenProperties()
             .ToArray();
         foreach (ObjectTreeProperty factory in propertyFactories)
         {
-            if (!_isParseable.Invoke(factory.Type))
+            if (!commandFactory.IsParseable(factory.Type))
                 continue;
-            if (!options.TryGetValue(factory.FullKey.ToLongOption(), out Option? option))
+            if (!commandFactory.Options.TryGetValue(factory.FullKey.ToLongOption(), out Option? option))
                 continue;
             object? value = context.ParseResult.GetValueForOption(option);
             if (value is null)
@@ -54,6 +53,6 @@ public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<Invocatio
                 continue;
             factory.SetValue(value);
         }
-        return tree.Instance;
+        return commandFactory.Tree.Instance;
     }
 }

@@ -9,14 +9,7 @@ namespace StudioLE.CommandLine;
 
 public class CommandOptionsStrategy : IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>>
 {
-    // TODO: We can just use CommandFactory.IsParseable!
-    private readonly Func<Type, bool> _isParseable;
     private readonly HashSet<string> _optionAliases = new();
-
-    public CommandOptionsStrategy(Func<Type,bool> isParseable)
-    {
-        _isParseable = isParseable;
-    }
 
     public IReadOnlyDictionary<string, Option> Execute(CommandFactory commandFactory)
     {
@@ -25,7 +18,7 @@ public class CommandOptionsStrategy : IStrategy<CommandFactory, IReadOnlyDiction
         return commandFactory
             .Tree
             .FlattenProperties()
-            .Where(x => _isParseable.Invoke(x.Type))
+            .Where(x => commandFactory.IsParseable(x.Type))
             .Select(CreateOptionForProperty)
             .ToDictionary(option => option.Aliases.First(), option => option);
     }
