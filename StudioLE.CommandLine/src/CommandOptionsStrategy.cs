@@ -2,21 +2,23 @@ using System.CommandLine;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using StudioLE.CommandLine.Composition;
+using StudioLE.CommandLine.Utils.Patterns;
 using StudioLE.Core.System;
 
 namespace StudioLE.CommandLine;
 
-public class CommandOptionsFactory
+public class CommandOptionsStrategy : IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>>
 {
+    // TODO: We can just use CommandFactory.IsParseable!
     private readonly Func<Type, bool> _isParseable;
     private readonly HashSet<string> _optionAliases = new();
 
-    public CommandOptionsFactory(Func<Type,bool> isParseable)
+    public CommandOptionsStrategy(Func<Type,bool> isParseable)
     {
         _isParseable = isParseable;
     }
 
-    public IReadOnlyDictionary<string, Option> Create(CommandFactory commandFactory)
+    public IReadOnlyDictionary<string, Option> Execute(CommandFactory commandFactory)
     {
         if (commandFactory.Tree is null)
             throw new("Expected tree to be set.");

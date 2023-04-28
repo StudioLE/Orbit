@@ -4,21 +4,22 @@ using System.CommandLine.Invocation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
+using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine;
 
-public class CommandHandlerFactory
+public class CommandHandlerStrategy : IStrategy<CommandFactory, Action<InvocationContext>>
 {
     private readonly IHostBuilder _hostBuilder;
     private readonly Func<Type, bool> _isParseable;
 
-    public CommandHandlerFactory(IHostBuilder hostBuilder, Func<Type, bool> isParseable)
+    public CommandHandlerStrategy(IHostBuilder hostBuilder, Func<Type, bool> isParseable)
     {
         _hostBuilder = hostBuilder;
         _isParseable = isParseable;
     }
 
-    public Action<InvocationContext> Create(CommandFactory commandFactory)
+    public Action<InvocationContext> Execute(CommandFactory commandFactory)
     {
         if (commandFactory.Tree is null)
             throw new("Expected tree to be set.");

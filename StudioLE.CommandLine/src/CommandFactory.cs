@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
 using StudioLE.CommandLine.Utils;
+using StudioLE.CommandLine.Utils.Patterns;
 
 namespace StudioLE.CommandLine;
 
@@ -17,8 +18,8 @@ public class CommandFactory
         typeof(double),
         typeof(Enum)
     };
-    private readonly CommandOptionsFactory _optionsFactory;
-    private readonly CommandHandlerFactory _handlerFactory;
+    private readonly IStrategy<CommandFactory, IReadOnlyDictionary<string, Option>> _optionsStrategy;
+    private readonly IStrategy<CommandFactory, Action<InvocationContext>> _handlerStrategy;
 
     public Type? ActivityType { get; set; }
 
@@ -30,8 +31,8 @@ public class CommandFactory
 
     public CommandFactory(IHostBuilder hostBuilder)
     {
-        _optionsFactory = new(IsParseable);
-        _handlerFactory = new(hostBuilder, IsParseable);
+        _optionsStrategy = new CommandOptionsStrategy(IsParseable);
+        _handlerStrategy = new CommandHandlerStrategy(hostBuilder, IsParseable);
     }
 
     public CommandFactory(IHostBuilder hostBuilder, HashSet<Type> parseableTypes) : this(hostBuilder)
@@ -45,13 +46,13 @@ public class CommandFactory
             throw new("Failed to build Command. ActivityType has not been set.");
         ActivityMethod = ActivityType.GetMethod("Execute") ?? throw new("No Execute method");
         Tree = CreateObjectTree(ActivityMethod);
-        Options = _optionsFactory.Create(this);
+        Options = _optionsStrategy.Execute(this);
         string commandName = GetCommandName();
         string description = GetDescription();
         Command command = new(commandName, description);
         foreach ((string? _, Option? option) in Options)
             command.AddOption(option);
-        Action<InvocationContext> handler = _handlerFactory.Create(this);
+        Action<InvocationContext> handler = _handlerStrategy.Execute(this);
         command.SetHandler(handler);
         return command;
     }
