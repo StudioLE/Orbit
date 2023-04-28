@@ -1,4 +1,4 @@
-using StudioLE.CommandLine.Utils.Patterns;
+using StudioLE.Core.Patterns;
 
 namespace StudioLE.CommandLine;
 

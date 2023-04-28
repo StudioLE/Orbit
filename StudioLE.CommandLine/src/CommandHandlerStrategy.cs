@@ -4,7 +4,7 @@ using System.CommandLine.Invocation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StudioLE.CommandLine.Composition;
-using StudioLE.CommandLine.Utils.Patterns;
+using StudioLE.Core.Patterns;
 
 namespace StudioLE.CommandLine;
 

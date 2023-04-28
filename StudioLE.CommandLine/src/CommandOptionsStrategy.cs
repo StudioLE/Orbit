@@ -2,7 +2,7 @@ using System.CommandLine;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using StudioLE.CommandLine.Composition;
-using StudioLE.CommandLine.Utils.Patterns;
+using StudioLE.Core.Patterns;
 using StudioLE.Core.System;
 
 namespace StudioLE.CommandLine;

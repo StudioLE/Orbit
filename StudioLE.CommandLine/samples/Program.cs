@@ -1,6 +1,6 @@
 using StudioLE.CommandLine.Composition;
 using StudioLE.CommandLine.Tests.Resources;
-using StudioLE.CommandLine.Utils.Converters;
+using StudioLE.Core.Conversion;
 using StudioLE.Core.System;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -40,7 +40,7 @@ internal static class Program
                 Console.WriteLine(errors.Join());
                 string? line = Console.ReadLine();
 
-                dynamic? converter = resolver.ResolveActivated(property.Type);
+                dynamic? converter = resolver.ResolveActivated(typeof(string), property.Type);
                 if (converter is null)
                     throw new("Failed to resolve a converter");
                 object? parsed = converter.Convert(line);

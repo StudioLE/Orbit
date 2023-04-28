@@ -1,6 +1,6 @@
 using System.CommandLine;
 using Microsoft.Extensions.Hosting;
-using StudioLE.CommandLine.Utils.Patterns;
+using StudioLE.Core.Patterns;
 
 namespace StudioLE.CommandLine;
 
