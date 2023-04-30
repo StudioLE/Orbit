@@ -1,21 +1,19 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.ComponentModel;
-using System.Reflection;
+using Cascade.Workflows;
 using StudioLE.CommandLine.Composition;
+using StudioLE.Core.Patterns;
 
 namespace StudioLE.CommandLine;
 
-public class CommandFactory
+public class CommandFactory : IFactory<IActivity, Command>
 {
     private readonly ICommandOptionsStrategy _optionsStrategy;
     private readonly ICommandHandlerStrategy _handlerStrategy;
 
-    public Type? ActivityType { get; set; }
+    public IActivity Activity { get; private set; } = null!;
 
-    public MethodInfo? ActivityMethod { get; private set; }
-
-    public ObjectTree? Tree { get; private set; }
+    public ObjectTree? InputTree { get; private set; }
 
     public IReadOnlyDictionary<string, Option> Options { get; private set; } = new Dictionary<string, Option>();
 
@@ -25,12 +23,10 @@ public class CommandFactory
         _handlerStrategy = handlerStrategy;
     }
 
-    public Command Build()
+    public Command Create(IActivity activity)
     {
-        if (ActivityType is null)
-            throw new("Failed to build Command. ActivityType has not been set.");
-        ActivityMethod = ActivityType.GetMethod("Execute") ?? throw new("No Execute method");
-        Tree = CreateObjectTree(ActivityMethod);
+        Activity = activity;
+        InputTree = CreateObjectTree();
         Options = _optionsStrategy.Execute(this);
         string commandName = GetCommandName();
         string description = GetDescription();
@@ -42,23 +38,19 @@ public class CommandFactory
         return command;
     }
 
+    private ObjectTree CreateObjectTree()
+    {
+        Type inputType = Activity.GetInputType();
+        return new(inputType);
+    }
+
     private string GetCommandName()
     {
-        return ActivityType!.Name.ToLower();
+        return Activity.GetName().ToLower();
     }
 
     private string GetDescription()
     {
-        DescriptionAttribute? descriptionAttribute = ActivityType!.GetCustomAttribute<DescriptionAttribute>();
-        return descriptionAttribute?.Description ?? string.Empty;
-    }
-
-    private static ObjectTree CreateObjectTree(MethodInfo method)
-    {
-        ParameterInfo[] parameters = method.GetParameters();
-        if (parameters.Length != 1)
-            throw new("Only a single parameter is permitted.");
-        ParameterInfo parameter = parameters.First();
-        return new(parameter.ParameterType);
+        return Activity.GetDescription();
     }
 }

@@ -23,10 +23,10 @@ public class CommandOptionsStrategy : ICommandOptionsStrategy
 
     public IReadOnlyDictionary<string, Option> Execute(CommandFactory commandFactory)
     {
-        if (commandFactory.Tree is null)
+        if (commandFactory.InputTree is null)
             throw new("Expected tree to be set.");
         return commandFactory
-            .Tree
+            .InputTree
             .FlattenProperties()
             .Where(x => _isParsableStrategy.Execute(x.Type))
             .Select(CreateOptionForProperty)

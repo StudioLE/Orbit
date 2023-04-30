@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using StudioLE.CommandLine.Logging;
 using StudioLE.CommandLine.Tests.Resources;
-using StudioLE.CommandLine.Utils;
 using StudioLE.CommandLine.Utils.Logging.TestLogger;
 using StudioLE.Verify.NUnit;
 
@@ -13,7 +12,7 @@ namespace StudioLE.CommandLine.Tests;
 
 internal sealed class ExecutionTests
 {
-    private readonly StudioLE.Verify.Verify _verify = new(new NUnitVerifyContext());
+    private readonly Verify.Verify _verify = new(new NUnitVerifyContext());
     private readonly TestLogger _logger = TestLogger.GetInstance();
     private RedirectConsoleToLogger _console = null!;
     private RootCommand _command = null!;
@@ -22,15 +21,16 @@ internal sealed class ExecutionTests
     public void SetUp()
     {
         _console = new(_logger);
-        IHostBuilder hostBuilder = Host
+        IHost host = Host
             .CreateDefaultBuilder()
-            .ConfigureServices(services =>
-            {
-                services.AddSingleton<ExampleActivity>();
-            })
-            .RegisterTestLoggingProviders();
-        IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
-        _command = new CommandBuilder(hostBuilder, isParsableStrategy)
+            .ConfigureServices(services => services
+                .AddCommandBuilderServices()
+                .AddTransient<ExampleActivity>())
+            .Build();
+        CommandBuilder builder = host
+            .Services
+            .GetRequiredService<CommandBuilder>();
+        _command = builder
             .Register<ExampleActivity>()
             .Build();
         _command.Name = "RootCommand";

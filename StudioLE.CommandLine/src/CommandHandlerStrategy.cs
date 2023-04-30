@@ -1,8 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Cascade.Workflows;
 using StudioLE.CommandLine.Composition;
 using StudioLE.Core.Patterns;
 
@@ -14,36 +13,29 @@ public interface ICommandHandlerStrategy : IStrategy<CommandFactory, Action<Invo
 
 public class CommandHandlerStrategy : ICommandHandlerStrategy
 {
-    private readonly IHostBuilder _hostBuilder;
     private readonly IIsParseableStrategy _isParsableStrategy;
 
-    public CommandHandlerStrategy(IHostBuilder hostBuilder, IIsParseableStrategy isParsableStrategy)
+    public CommandHandlerStrategy(IIsParseableStrategy isParsableStrategy)
     {
-        _hostBuilder = hostBuilder;
         _isParsableStrategy = isParsableStrategy;
     }
 
     public Action<InvocationContext> Execute(CommandFactory commandFactory)
     {
-        if (commandFactory.Tree is null)
-            throw new("Expected tree to be set.");
-        if (commandFactory.ActivityType is null)
-            throw new("Expected ActivityType to be set.");
-        if (commandFactory.ActivityMethod is null)
-            throw new("Expected ActivityMethod to be set.");
+        if (commandFactory.InputTree is null)
+            throw new("Expected input tree to be set.");
         return context =>
         {
-            object parameter = GetOptionValue(context.BindingContext, commandFactory);
-            IHost host = _hostBuilder.Build();
-            object activity = host.Services.GetRequiredService(commandFactory.ActivityType);
-            commandFactory.ActivityMethod.Invoke(activity, new[] { parameter });
+            SetInputTreeValueFromOptions(context.BindingContext, commandFactory);
+            object input = commandFactory.InputTree.Instance;
+            commandFactory.Activity.Execute(input);
         };
     }
 
-    private object GetOptionValue(BindingContext context, CommandFactory commandFactory)
+    private void SetInputTreeValueFromOptions(BindingContext context, CommandFactory commandFactory)
     {
         ObjectTreeProperty[] propertyFactories = commandFactory
-            .Tree!
+            .InputTree!
             .FlattenProperties()
             .ToArray();
         foreach (ObjectTreeProperty factory in propertyFactories)
@@ -59,6 +51,5 @@ public class CommandHandlerStrategy : ICommandHandlerStrategy
                 continue;
             factory.SetValue(value);
         }
-        return commandFactory.Tree.Instance;
     }
 }

@@ -1,4 +1,6 @@
 using System.CommandLine;
+using Cascade.Workflows;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using StudioLE.CommandLine.Tests.Resources;
@@ -17,18 +19,22 @@ internal sealed class CommandFactoryTests
     public async Task CommandFactory_Build()
     {
         // Arrange
-        // TODO: This is manual DI
-        IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
-        ICommandOptionsStrategy optionsStrategy = new CommandOptionsStrategy(isParsableStrategy);
-        IHostBuilder activityHostBuilder = Host.CreateDefaultBuilder();
-        ICommandHandlerStrategy handlerStrategy = new CommandHandlerStrategy(activityHostBuilder, isParsableStrategy);
-        CommandFactory factory = new(optionsStrategy, handlerStrategy)
-        {
-            ActivityType = typeof(ExampleActivity)
-        };
+        IHost host = Host
+            .CreateDefaultBuilder()
+            .ConfigureServices(services =>
+            {
+                services.AddTransient<ExampleActivity>();
+                services.AddTransient<CommandFactory>();
+                services.AddTransient<IIsParseableStrategy, IsParseableStrategy>();
+                services.AddTransient<ICommandOptionsStrategy, CommandOptionsStrategy>();
+                services.AddTransient<ICommandHandlerStrategy, CommandHandlerStrategy>();
+            })
+            .Build();
+        CommandFactory factory = host.Services.GetRequiredService<CommandFactory>();
+        IActivity activity = host.Services.GetRequiredService<ExampleActivity>();
 
         // Act
-        Command command = factory.Build();
+        Command command = factory.Create(activity);
 
         // Assert
         await _verify.AsYaml(command

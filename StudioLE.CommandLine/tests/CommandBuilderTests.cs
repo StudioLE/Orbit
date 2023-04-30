@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using StudioLE.CommandLine.Tests.Resources;
@@ -11,11 +12,18 @@ internal sealed class CommandBuilderTests
     public void CommandBuilder_Build()
     {
         // Arrange
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-        IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
+        IHost host = Host
+            .CreateDefaultBuilder()
+            .ConfigureServices(services => services
+                .AddCommandBuilderServices()
+                .AddTransient<ExampleActivity>())
+            .Build();
+        CommandBuilder builder = host
+            .Services
+            .GetRequiredService<CommandBuilder>();
 
         // Act
-        RootCommand command = new CommandBuilder(hostBuilder, isParsableStrategy)
+        RootCommand command = builder
             .Register<ExampleActivity>()
             .Build();
 

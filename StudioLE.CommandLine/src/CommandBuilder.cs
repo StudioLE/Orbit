@@ -1,48 +1,37 @@
 using System.CommandLine;
 using Cascade.Workflows;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using StudioLE.Core.Patterns;
 
 namespace StudioLE.CommandLine;
 
 public class CommandBuilder : IBuilder<RootCommand>
 {
-    private readonly List<CommandFactory> _factories = new();
+    private readonly IServiceProvider _services;
+    private readonly List<IActivity> _activities = new();
 
-    private readonly IHostBuilder _activityHostBuilder;
-    private readonly IIsParseableStrategy _isParsableStrategy;
-
-    public CommandBuilder(IHostBuilder activityHostBuilder, IIsParseableStrategy isParsableStrategy)
+    public CommandBuilder(IServiceProvider services)
     {
-        _activityHostBuilder = activityHostBuilder;
-        _isParsableStrategy = isParsableStrategy;
-    }
-
-    public CommandBuilder Register(Type activity)
-    {
-        // TODO: This is manual DI
-        ICommandOptionsStrategy optionsStrategy = new CommandOptionsStrategy(_isParsableStrategy);
-        ICommandHandlerStrategy handlerStrategy = new CommandHandlerStrategy(_activityHostBuilder, _isParsableStrategy);
-        CommandFactory factory = new(optionsStrategy, handlerStrategy)
-        {
-            ActivityType = activity
-        };
-        _factories.Add(factory);
-        return this;
+        _services = services;
     }
 
     public CommandBuilder Register<TActivity>() where TActivity : IActivity
     {
-        Register(typeof(TActivity));
+        TActivity activity = _services.GetRequiredService<TActivity>();
+        _activities.Add(activity);
         return this;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public RootCommand Build()
     {
         RootCommand root = new();
-        Command[] commands = _factories
-            .Select(factory => factory.Build())
+        Command[] commands = _activities
+            .Select(activity =>
+            {
+                CommandFactory factory = _services.GetRequiredService<CommandFactory>();
+                return factory.Create(activity);
+            })
             .ToArray();
         foreach (Command command in commands)
             root.AddCommand(command);

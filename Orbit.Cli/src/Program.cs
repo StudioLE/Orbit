@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orbit.Core;
 using Orbit.Core.Activities;
@@ -10,12 +11,17 @@ internal static class Program
 {
     public static async Task Main(string[] args)
     {
-        IHostBuilder hostBuilder = Host
+        IHost host = Host
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
-            .RegisterServices();
-        IIsParseableStrategy isParsableStrategy = new IsParseableStrategy();
-        RootCommand command = new CommandBuilder(hostBuilder, isParsableStrategy)
+            .RegisterServices()
+            .ConfigureServices(services => services
+                .AddCommandBuilderServices())
+            .Build();
+        CommandBuilder builder = host
+            .Services
+            .GetRequiredService<CommandBuilder>();
+        RootCommand command = builder
             .Register<Create>()
             // .Register<Launch>()
             .Build();
