@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Cascade.Workflows;
 using Microsoft.Extensions.Hosting;
 using StudioLE.Core.Patterns;
 
@@ -30,7 +31,7 @@ public class CommandBuilder : IBuilder<RootCommand>
         return this;
     }
 
-    public CommandBuilder Register<TActivity>()
+    public CommandBuilder Register<TActivity>() where TActivity : IActivity
     {
         Register(typeof(TActivity));
         return this;

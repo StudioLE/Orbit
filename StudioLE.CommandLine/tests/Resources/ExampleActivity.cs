@@ -1,10 +1,11 @@
+using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace StudioLE.CommandLine.Tests.Resources;
 
-public class ExampleActivity
+public class ExampleActivity : IActivity<ExampleClass, ExampleClass>
 {
     private readonly ILogger<ExampleActivity> _logger;
 
@@ -13,7 +14,7 @@ public class ExampleActivity
         _logger = logger;
     }
 
-    public ExampleClass Execute(ExampleClass example)
+    public Task<ExampleClass> Execute(ExampleClass example)
     {
         ISerializer serializer = new SerializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
@@ -21,6 +22,6 @@ public class ExampleActivity
         string yaml = serializer.Serialize(example);
         _logger.LogInformation(yaml);
 
-        return example;
+        return Task.FromResult(example);
     }
 }
