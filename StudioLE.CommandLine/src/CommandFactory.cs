@@ -3,7 +3,6 @@ using System.CommandLine.Invocation;
 using System.ComponentModel;
 using System.Reflection;
 using StudioLE.CommandLine.Composition;
-using StudioLE.CommandLine.Utils;
 
 namespace StudioLE.CommandLine;
 
@@ -50,10 +49,8 @@ public class CommandFactory
 
     private string GetDescription()
     {
-        DescriptionAttribute? descriptionAttribute = ActivityType!.GetAttribute<DescriptionAttribute>();
-        return descriptionAttribute is null
-            ? string.Empty
-            : descriptionAttribute.Description;
+        DescriptionAttribute? descriptionAttribute = ActivityType!.GetCustomAttribute<DescriptionAttribute>();
+        return descriptionAttribute?.Description ?? string.Empty;
     }
 
     private static ObjectTree CreateObjectTree(MethodInfo method)
