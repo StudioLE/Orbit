@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Activities;
+using Orbit.Core.Hosting;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;
 using StudioLE.Verify;
@@ -22,9 +23,10 @@ internal sealed class CreateTests
         #endif
         _host = Host
             .CreateDefaultBuilder()
-            .RegisterTestLoggingProviders()
-            .RegisterCreateServices()
-            .RegisterTestInstanceProvider()
+            .UseTestLoggingProviders()
+            .ConfigureServices(services => services
+                .AddOrbitServices()
+                .AddTestEntityProvider())
             .Build();
     }
 

@@ -1,9 +1,10 @@
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orbit.Core;
 using Orbit.Core.Activities;
+using Orbit.Core.Hosting;
 using StudioLE.CommandLine;
+using StudioLE.CommandLine.Utils;
 
 namespace Orbit.Cli;
 
@@ -14,8 +15,8 @@ internal static class Program
         IHost host = Host
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
-            .RegisterServices()
             .ConfigureServices(services => services
+                .AddOrbitServices()
                 .AddCommandBuilderServices())
             .Build();
         CommandBuilder builder = host
