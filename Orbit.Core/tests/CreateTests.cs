@@ -40,7 +40,7 @@ internal sealed class CreateTests
         Create create = _host.Services.GetRequiredService<Create>();
 
         // Act
-        Instance? createdInstance = create.Execute(sourceInstance);
+        Instance? createdInstance = await create.Execute(sourceInstance);
 
         // Assert
         if (createdInstance is null)

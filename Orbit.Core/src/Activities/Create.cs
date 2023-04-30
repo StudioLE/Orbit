@@ -1,3 +1,4 @@
+using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
@@ -7,7 +8,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Core.Activities;
 
-public class Create
+public class Create : IActivity<Instance, Instance?>
 {
     private readonly ILogger<Create> _logger;
     private readonly CreateOptions _options;
@@ -21,36 +22,46 @@ public class Create
         _provider = provider;
     }
 
-    public Instance? Execute(Instance instance)
+    public Task<Instance?> Execute(Instance instance)
     {
         _instance = instance;
 
         if (!_provider.IsValid)
-            return null;
+            return Failure();
 
         if (!_options.TryValidate(_logger))
-            return null;
+            return Failure();
 
         if (!GetOrCreateCluster())
-            return null;
+            return Failure();
 
         instance.Review(_provider);
 
         if (!_instance.TryValidate(_logger))
-            return null;
+            return Failure();
 
         if (!CreateInstance())
-            return null;
+            return Failure();
 
         if (!CreateNetworkConfig())
-            return null;
+            return Failure();
 
         if (!CreateUserConfig())
-            return null;
+            return Failure();
 
         _logger.LogInformation($"Created instance {_instance.Name}");
 
-        return _instance;
+        return Success();
+    }
+
+    private Task<Instance?> Success()
+    {
+        return Task.FromResult<Instance?>(_instance);
+    }
+
+    private static Task<Instance?> Failure()
+    {
+        return Task.FromResult<Instance?>(null);
     }
 
     private bool GetOrCreateCluster()
