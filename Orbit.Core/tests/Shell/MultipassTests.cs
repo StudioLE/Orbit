@@ -3,10 +3,11 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
+using Orbit.Core.Shell;
 using Orbit.Core.Utils.Logging;
 using StudioLE.Core.System;
 
-namespace Orbit.Core.Tests;
+namespace Orbit.Core.Tests.Shell;
 
 internal sealed class MultipassTests
 {

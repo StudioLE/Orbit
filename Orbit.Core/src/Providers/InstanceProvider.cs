@@ -30,6 +30,18 @@ public class InstanceProvider
         return file.WriteYamlFile(obj, "#cloud-config" + Environment.NewLine);
     }
 
+    public bool PutResource(string clusterName, string instanceName, string fileName, string content)
+    {
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
+        return file.WriteTextFile(content);
+    }
+
+    public string? GetResource(string clusterName, string instanceName, string fileName)
+    {
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
+        return file.ReadTextFile();
+    }
+
     public IEnumerable<string> GetAllNamesInCluster(string clusterName)
     {
         return _provider.GetDirectoryContents(clusterName)

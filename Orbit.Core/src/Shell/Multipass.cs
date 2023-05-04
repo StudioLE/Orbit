@@ -5,9 +5,10 @@ using Orbit.Core.Utils;
 using Orbit.Core.Utils.Logging;
 using Renci.SshNet;
 using StudioLE.Core.System;
+
 // ReSharper disable CommentTypo
 
-namespace Orbit.Core;
+namespace Orbit.Core.Shell;
 
 public class Multipass : IDisposable
 {

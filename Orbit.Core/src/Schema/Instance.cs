@@ -39,8 +39,13 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     [ValidateComplexType]
     public Hardware Hardware { get; set; } = new();
 
+    [ValidateComplexType]
+    [YamlMember(Alias = "wireguard")]
+    public WireGuard WireGuard { get; set; } = new();
+
     public void Review(EntityProvider provider)
     {
+        WireGuard.Review();
         Hardware.Review();
         OS.Review();
 

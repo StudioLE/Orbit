@@ -20,7 +20,7 @@ internal sealed class InstanceTests
         Instance instance = new();
 
         // Act
-        bool isValid =  instance.TryValidate(out IReadOnlyCollection<string> errors);
+        bool isValid = instance.TryValidate(out IReadOnlyCollection<string> errors);
         Console.WriteLine(errors.Join());
 
         // Assert
@@ -39,12 +39,17 @@ internal sealed class InstanceTests
         Instance instance = new()
         {
             Host = "host-01",
-            Cluster = "cluster-01"
+            Cluster = "cluster-01",
+            WireGuard =
+            {
+                PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
+                PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
+            }
         };
         instance.Review(_provider);
 
         // Act
-        bool isValid =  instance.TryValidate(out IReadOnlyCollection<string> errors);
+        bool isValid = instance.TryValidate(out IReadOnlyCollection<string> errors);
         Console.WriteLine(errors.Join());
 
         // Assert

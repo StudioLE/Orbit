@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Activities;
 using Orbit.Core.Hosting;
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;
 using StudioLE.Verify;
@@ -37,7 +38,12 @@ internal sealed class CreateTests
         TestLogger logger = TestLogger.GetInstance();
         Instance sourceInstance = new()
         {
-            Host = "host-01"
+            Host = "host-01",
+            WireGuard =
+            {
+                PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
+                PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
+            }
         };
         Create create = _host.Services.GetRequiredService<Create>();
 
@@ -52,5 +58,12 @@ internal sealed class CreateTests
 
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
         Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {sourceInstance.Name}"));
+        EntityProvider provider = _host.Services.GetRequiredService<EntityProvider>();
+        Instance storedInstance = provider.Instance.Get(createdInstance!.Cluster, createdInstance.Name) ?? throw new("Failed to get instance.");
+        await _verify.AsYaml(storedInstance, sourceInstance);
+        string? networkConfig = provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "network-config.yml");
+        string? userConfig = provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "user-config.yml");
+        Assert.That(networkConfig, Is.Not.Null);
+        Assert.That(userConfig, Is.Not.Null);
     }
 }

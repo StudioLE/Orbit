@@ -15,3 +15,10 @@ hardware:
   cpus: 1
   memory: 4
   disk: 20
+wireguard:
+  private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+  public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+  addresses: []
+  host_public_key: ''
+  allowed_i_ps: ''
+  endpoint: ''

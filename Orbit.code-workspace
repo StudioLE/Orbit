@@ -1,9 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "/var/lib/vz/snippets"
-		},
-		{
 			"path": "."
 		}
 	],

@@ -26,6 +26,9 @@ users:
     plain_text_passwd: pw
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
 
+wireguard:
+  interfaces:
+
 write_files:
 
   - path: /etc/ssh/sshd_config

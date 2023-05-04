@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
+using StudioLE.Core.System;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
@@ -89,6 +90,27 @@ public class Create : IActivity<Instance, Instance?>
         return false;
     }
 
+    private string CreateWireGuardConfig()
+    {
+        List<string> lines = new()
+        {
+            $"""
+            [Interface]
+            PrivateKey = {_instance.WireGuard.PrivateKey}
+            """
+        };
+        foreach (string address in _instance.WireGuard.Addresses)
+            lines.Add($"Address = {address}");
+        lines.Add($"""
+            [Peer]
+            PublicKey = {_instance.WireGuard.HostPublicKey}
+            AllowedIPs = 10.8.0.0/24, fd0d:86fa:c3bc::/64
+            Endpoint = 203.0.113.1:51820
+            """);
+
+        return lines.Join();
+    }
+
     private bool CreateNetworkConfig()
     {
         YamlNode yaml = EmbeddedResourceHelpers.GetYaml("Resources/Templates/network-config-template.yml");
@@ -112,6 +134,14 @@ public class Create : IActivity<Instance, Instance?>
         yaml["users"][1]["name"].SetValue(_options.User);
         yaml["users"][0].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
         yaml["users"][1].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
+        string wireguardContent = CreateWireGuardConfig();
+        YamlMappingNode wg0 = new()
+        {
+            { "name", "wg0" },
+            { "config_path", "/etc/wireguard/wg0.conf" },
+            { "content", new YamlScalarNode(wireguardContent) { Style = ScalarStyle.Literal } }
+        };
+        yaml["wireguard"].Replace("interfaces", new YamlSequenceNode(wg0));
         // ReSharper disable StringLiteralTypo
         string bootCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/bootcmd.sh");
         yaml["bootcmd"].SetValue(bootCmdContent, ScalarStyle.Literal);

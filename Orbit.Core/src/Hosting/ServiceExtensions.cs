@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Core.Activities;
 using Orbit.Core.Providers;
+using Orbit.Core.Shell;
 
 namespace Orbit.Core.Hosting;
 

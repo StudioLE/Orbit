@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
+using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Activities;

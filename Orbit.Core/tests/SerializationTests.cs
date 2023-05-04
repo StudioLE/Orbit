@@ -28,6 +28,13 @@ internal sealed class SerializationTests
           cpus: 1
           memory: 4
           disk: 20
+        wireguard:
+          private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+          public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+          addresses: []
+          host_public_key: ''
+          allowed_i_ps: ''
+          endpoint: ''
         """;
 
     [Test]
@@ -37,7 +44,12 @@ internal sealed class SerializationTests
         Instance instance = new()
         {
             Host = "host-01",
-            Cluster = "cluster-01"
+            Cluster = "cluster-01",
+            WireGuard =
+            {
+                PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
+                PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
+            }
         };
         instance.Review(_provider);
 
