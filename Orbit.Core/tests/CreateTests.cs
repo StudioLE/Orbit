@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Orbit.Core.Activities;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
+using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.Logging.TestLogger;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
@@ -35,8 +36,8 @@ internal sealed class CreateTests
         {
             WireGuard =
             {
-                PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
-                PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
+                PrivateKey = MockWireGuardFacade.PrivateKey,
+                PublicKey = MockWireGuardFacade.PublicKey
             }
         };
 

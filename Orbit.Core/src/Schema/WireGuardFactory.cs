@@ -6,9 +6,9 @@ namespace Orbit.Core.Schema;
 
 public class WireGuardFactory : IFactory<WireGuard, WireGuard>
 {
-    private readonly WireGuardFacade _wg;
+    private readonly IWireGuardFacade _wg;
 
-    public WireGuardFactory(WireGuardFacade wg)
+    public WireGuardFactory(IWireGuardFacade wg)
     {
         _wg = wg;
     }

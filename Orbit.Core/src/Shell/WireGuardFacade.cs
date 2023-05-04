@@ -4,7 +4,7 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Shell;
 
-public class WireGuardFacade
+public class WireGuardFacade : IWireGuardFacade
 {
     private readonly ILogger<WireGuardFacade> _logger;
 
@@ -16,7 +16,6 @@ public class WireGuardFacade
     public string? GeneratePrivateKey()
     {
         Process cmd = new();
-        // TODO: cmd is specific to windows...
         cmd.StartInfo.FileName = "wg";
         cmd.StartInfo.Arguments = "genkey";
         cmd.StartInfo.RedirectStandardInput = true;

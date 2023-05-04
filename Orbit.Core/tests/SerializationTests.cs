@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Schema;
+using Orbit.Core.Tests.Resources;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
 
@@ -9,7 +10,7 @@ namespace Orbit.Core.Tests;
 
 internal sealed class SerializationTests
 {
-    private const string SourceYaml = """
+    private const string SourceYaml = $"""
         name: cluster-01-01
         number: 1
         role: node
@@ -28,8 +29,8 @@ internal sealed class SerializationTests
           memory: 4
           disk: 20
         wireguard:
-          private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
-          public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+          private_key: {MockWireGuardFacade.PrivateKey}
+          public_key: {MockWireGuardFacade.PublicKey}
           addresses: []
           server_public_key: ''
           allowed_i_ps: ''
@@ -54,8 +55,8 @@ internal sealed class SerializationTests
             Cluster = "cluster-01",
             WireGuard =
             {
-                PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
-                PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
+                PrivateKey = MockWireGuardFacade.PrivateKey,
+                PublicKey = MockWireGuardFacade.PublicKey
             }
         });
 

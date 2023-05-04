@@ -32,14 +32,12 @@ internal sealed class InstanceProviderTests
 
     private void InstanceProvider_Get_Empty()
     {
-        #if DEBUG
         // Arrange
         // Act
         Instance? instance = _provider.Instance.Get(ClusterName, InstanceName);
 
         // Assert
         Assert.That(instance, Is.Null);
-        #endif
     }
 
     private void InstanceProvider_GetAllNamesInCluster_Empty()

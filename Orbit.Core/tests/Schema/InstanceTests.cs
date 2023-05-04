@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Schema;
+using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.System;
 using StudioLE.Verify;
@@ -49,8 +50,8 @@ internal sealed class InstanceTests
             Cluster = "cluster-01",
             WireGuard =
             {
-                PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
-                PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
+                PrivateKey = MockWireGuardFacade.PrivateKey,
+                PublicKey = MockWireGuardFacade.PublicKey
             }
         });
 
