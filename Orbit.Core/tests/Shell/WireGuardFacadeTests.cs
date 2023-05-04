@@ -8,6 +8,8 @@ internal sealed class WireGuardFacadeTests
 {
     private readonly WireGuardFacade _wg = new();
 
+    #if DEBUG
+
     [Test]
     public void WireGuardFacade_GeneratePrivateKey()
     {
@@ -54,4 +56,6 @@ internal sealed class WireGuardFacadeTests
         Assert.That(publicKey?.Length, Is.EqualTo(44));
         Assert.That(publicKey, Does.Match(Base64SchemaAttribute.Base64Regex));
     }
+
+    #endif
 }
