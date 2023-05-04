@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Hosting;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 
@@ -11,20 +10,14 @@ internal sealed class InstanceProviderTests
 {
     private const string ClusterName = "cluster-01";
     private const string InstanceName = $"{ClusterName}-01";
-    private readonly IServiceProvider _services;
+    private readonly InstanceFactory _instanceFactory;
     private readonly EntityProvider _provider;
 
     public InstanceProviderTests()
     {
-        _services = Host
-            .CreateDefaultBuilder()
-            .UseTestLoggingProviders()
-            .ConfigureServices(services => services
-                .AddOrbitServices()
-                .AddTestEntityProvider())
-            .Build()
-            .Services;
-        _provider = _services.GetRequiredService<EntityProvider>();
+        IHost host = TestHelpers.CreateTestHost();
+        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
+        _provider = host.Services.GetRequiredService<EntityProvider>();
     }
 
     [Test]
@@ -62,8 +55,7 @@ internal sealed class InstanceProviderTests
     private void InstanceProvider_Put()
     {
         // Arrange
-        InstanceFactory factory = _services.GetRequiredService<InstanceFactory>();
-        Instance instance = factory.Create(new()
+        Instance instance = _instanceFactory.Create(new()
         {
             Server = "server-01",
             Cluster = "cluster-01"

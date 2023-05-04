@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Hosting;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.System;
@@ -13,18 +12,12 @@ namespace Orbit.Core.Tests.Schema;
 internal sealed class InstanceTests
 {
     private readonly Verify _verify = new(new NUnitVerifyContext());
-    private readonly IServiceProvider _services;
+    private readonly InstanceFactory _instanceFactory;
 
     public InstanceTests()
     {
-        _services = Host
-            .CreateDefaultBuilder()
-            .UseTestLoggingProviders()
-            .ConfigureServices(services => services
-                .AddOrbitServices()
-                .AddTestEntityProvider())
-            .Build()
-            .Services;
+        IHost host = TestHelpers.CreateTestHost();
+        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
     }
 
     [Test]
@@ -50,8 +43,7 @@ internal sealed class InstanceTests
     public async Task Instance_Validate_Review()
     {
         // Arrange
-        InstanceFactory factory = _services.GetRequiredService<InstanceFactory>();
-        Instance instance = factory.Create(new()
+        Instance instance = _instanceFactory.Create(new()
         {
             Server = "server-01",
             Cluster = "cluster-01",

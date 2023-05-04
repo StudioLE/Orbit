@@ -2,34 +2,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Activities;
-using Orbit.Core.Hosting;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
-using Host = Microsoft.Extensions.Hosting.Host;
 
 namespace Orbit.Core.Tests;
 
 internal sealed class CreateTests
 {
     private readonly Verify _verify = new(new NUnitVerifyContext());
-    private readonly IServiceProvider _services;
+    private readonly Create _create;
+    private readonly EntityProvider _provider;
 
     public CreateTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
-        _services = Host
-            .CreateDefaultBuilder()
-            .UseTestLoggingProviders()
-            .ConfigureServices(services => services
-                .AddOrbitServices()
-                .AddTestEntityProvider())
-            .Build()
-            .Services;
+        IHost host = TestHelpers.CreateTestHost();
+        _create = host.Services.GetRequiredService<Create>();
+        _provider = host.Services.GetRequiredService<EntityProvider>();
     }
 
     [Test]
@@ -45,10 +39,9 @@ internal sealed class CreateTests
                 PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
             }
         };
-        Create create = _services.GetRequiredService<Create>();
 
         // Act
-        Instance? createdInstance = await create.Execute(sourceInstance);
+        Instance? createdInstance = await _create.Execute(sourceInstance);
 
         // Assert
         if (createdInstance is null)
@@ -58,11 +51,10 @@ internal sealed class CreateTests
 
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
         Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
-        EntityProvider provider = _services.GetRequiredService<EntityProvider>();
-        Instance storedInstance = provider.Instance.Get(createdInstance.Cluster, createdInstance.Name) ?? throw new("Failed to get instance.");
+        Instance storedInstance = _provider.Instance.Get(createdInstance.Cluster, createdInstance.Name) ?? throw new("Failed to get instance.");
         await _verify.AsYaml(storedInstance, createdInstance);
-        string? networkConfig = provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "network-config.yml");
-        string? userConfig = provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "user-config.yml");
+        string? networkConfig = _provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "network-config.yml");
+        string? userConfig = _provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "user-config.yml");
         Assert.That(networkConfig, Is.Not.Null);
         Assert.That(userConfig, Is.Not.Null);
     }

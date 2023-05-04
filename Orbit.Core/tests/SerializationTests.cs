@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Hosting;
 using Orbit.Core.Schema;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
@@ -37,26 +36,19 @@ internal sealed class SerializationTests
           endpoint: ''
         """;
     private readonly Verify _verify = new(new NUnitVerifyContext());
-    private readonly IServiceProvider _services;
+    private readonly InstanceFactory _instanceFactory;
 
     public SerializationTests()
     {
-        _services = Host
-            .CreateDefaultBuilder()
-            .UseTestLoggingProviders()
-            .ConfigureServices(services => services
-                .AddOrbitServices()
-                .AddTestEntityProvider())
-            .Build()
-            .Services;
+        IHost host = TestHelpers.CreateTestHost();
+        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
     }
 
     [Test]
     public async Task Instance_Serialize()
     {
         // Arrange
-        InstanceFactory factory = _services.GetRequiredService<InstanceFactory>();
-        Instance instance = factory.Create(new()
+        Instance instance = _instanceFactory.Create(new()
         {
             Server = "server-01",
             Cluster = "cluster-01",
