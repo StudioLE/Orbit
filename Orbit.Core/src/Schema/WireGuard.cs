@@ -16,7 +16,7 @@ public sealed class WireGuard
     public string[] Addresses { get; set; } = Array.Empty<string>();
 
     [Base64Schema]
-    public string HostPublicKey { get; set; } = string.Empty;
+    public string ServerPublicKey { get; set; } = string.Empty;
 
     [IPSchema]
     // ReSharper disable once InconsistentNaming

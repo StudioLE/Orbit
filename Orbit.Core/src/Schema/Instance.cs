@@ -26,7 +26,7 @@ public sealed class Instance : IEntity, IHasValidationAttributes
 
     [Required]
     [NameSchema]
-    public string Host { get; set; } = string.Empty;
+    public string Server { get; set; } = string.Empty;
 
     [ValidateComplexType]
     public Network Network { get; set; } = new();
@@ -45,12 +45,12 @@ public sealed class Instance : IEntity, IHasValidationAttributes
 
     public void Review(EntityProvider provider)
     {
-        if (Host.IsNullOrEmpty())
-            Host = provider
-                       .Host
+        if (Server.IsNullOrEmpty())
+            Server = provider
+                       .Server
                        .GetAllNames()
                        .FirstOrDefault()
-                   ?? throw new("Host must be set if more than one exist.");
+                   ?? throw new("Server must be set if more than one exist.");
 
 
         if (Cluster.IsNullOrEmpty())

@@ -38,7 +38,7 @@ internal sealed class InstanceTests
         // Arrange
         Instance instance = new()
         {
-            Host = "host-01",
+            Server = "server-01",
             Cluster = "cluster-01",
             WireGuard =
             {

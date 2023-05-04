@@ -25,14 +25,14 @@ public class Multipass : IDisposable
         _logger = logger;
     }
 
-    public void Connect(Host host)
+    public void Connect(Server server)
     {
         List<AuthenticationMethod> auth = new();
-        if (!string.IsNullOrWhiteSpace(host.Ssh.Password))
-            auth.Add(new PasswordAuthenticationMethod(host.Ssh.User, host.Ssh.Password));
-        if (!string.IsNullOrWhiteSpace(host.Ssh.PrivateKeyFile))
-            auth.Add(new PrivateKeyAuthenticationMethod(host.Ssh.User, new PrivateKeyFile(host.Ssh.PrivateKeyFile)));
-        ConnectionInfo connection = new(host.Address, host.Ssh.Port, host.Ssh.User, auth.ToArray());
+        if (!string.IsNullOrWhiteSpace(server.Ssh.Password))
+            auth.Add(new PasswordAuthenticationMethod(server.Ssh.User, server.Ssh.Password));
+        if (!string.IsNullOrWhiteSpace(server.Ssh.PrivateKeyFile))
+            auth.Add(new PrivateKeyAuthenticationMethod(server.Ssh.User, new PrivateKeyFile(server.Ssh.PrivateKeyFile)));
+        ConnectionInfo connection = new(server.Address, server.Ssh.Port, server.Ssh.User, auth.ToArray());
         _ssh = new(connection);
         _ssh.Connect();
     }

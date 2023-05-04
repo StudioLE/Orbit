@@ -6,9 +6,9 @@ using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Schema;
 
-public sealed class Host : IEntity, IHasValidationAttributes
+public sealed class Server : IEntity, IHasValidationAttributes
 {
-    private const string DefaultName = "host";
+    private const string DefaultName = "server";
     private const int DefaultNumber = 1;
 
     [NameSchema]
@@ -26,16 +26,16 @@ public sealed class Host : IEntity, IHasValidationAttributes
     {
         if (!Name.IsNullOrEmpty())
         {
-            Host? host = provider.Host.Get(Name);
-            if (host is not null)
-                Number = host.Number;
+            Server? server = provider.Server.Get(Name);
+            if (server is not null)
+                Number = server.Number;
         }
 
         if (Number == default)
         {
             // TODO: Change to GetAllClusterIds
             int[] numbers = provider
-                .Host
+                .Server
                 .GetAll()
                 .Select(x => x.Number)
                 .ToArray();

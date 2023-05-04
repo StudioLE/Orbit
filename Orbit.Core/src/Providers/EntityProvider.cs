@@ -13,7 +13,7 @@ public class EntityProvider
 
     public ClusterProvider Cluster { get; } = null!;
 
-    public HostProvider Host { get; } = null!;
+    public ServerProvider Server { get; } = null!;
 
     public EntityProvider(ProviderOptions options, ILogger<EntityProvider> logger)
     {
@@ -23,7 +23,7 @@ public class EntityProvider
         PhysicalFileProvider provider = new(options.Directory);
         Instance = new(provider);
         Cluster = new(provider);
-        Host = new(provider);
+        Server = new(provider);
     }
 
     public static EntityProvider CreateTemp()
@@ -36,9 +36,9 @@ public class EntityProvider
                 Directory = directory
             },
             logger);
-        provider.Host.Put(new()
+        provider.Server.Put(new()
         {
-            Name = "host-01",
+            Name = "server-01",
             Number = 1,
             Address = "localhost",
             Ssh = new()

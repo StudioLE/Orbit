@@ -16,11 +16,11 @@ public sealed class Network
 
     public void Review(Instance instance, EntityProvider provider)
     {
-        Host host = provider.Host.Get(instance.Host) ?? throw new("Failed to get host.");
+        Server server = provider.Server.Get(instance.Server) ?? throw new("Failed to get host.");
         Cluster cluster = provider.Cluster.Get(instance.Cluster) ?? throw new("Failed to get cluster.");
         if (Address.IsNullOrEmpty())
-            Address = $"10.{host.Number}.{cluster.Number}.{instance.Number}";
+            Address = $"10.{server.Number}.{cluster.Number}.{instance.Number}";
         if (Gateway.IsNullOrEmpty())
-            Gateway = $"10.{host.Number}.0.1";
+            Gateway = $"10.{server.Number}.0.1";
     }
 }

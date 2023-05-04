@@ -18,11 +18,11 @@ internal sealed class MultipassTests
     {
         ILogger<EntityProvider> logger = LoggingHelpers.CreateConsoleLogger<EntityProvider>();
         _provider = new(new(), logger);
-        Host host = _provider
-            .Host
+        Server server = _provider
+            .Server
             .GetAll()
-            .FirstOrDefault() ?? throw new("Expected a host");
-        _multipass.Connect(host);
+            .FirstOrDefault() ?? throw new("Expected a server.");
+        _multipass.Connect(server);
     }
 
 #if DEBUG

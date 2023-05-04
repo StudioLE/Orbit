@@ -47,7 +47,7 @@ internal sealed class InstanceProviderTests
         // Arrange
         Instance instance = new()
         {
-            Host = "host-01",
+            Server = "server-01",
             Cluster = "cluster-01"
         };
         instance.Review(_provider);

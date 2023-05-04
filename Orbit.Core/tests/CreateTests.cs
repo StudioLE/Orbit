@@ -38,7 +38,7 @@ internal sealed class CreateTests
         TestLogger logger = TestLogger.GetInstance();
         Instance sourceInstance = new()
         {
-            Host = "host-01",
+            Server = "server-01",
             WireGuard =
             {
                 PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",

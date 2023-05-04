@@ -103,7 +103,7 @@ public class Create : IActivity<Instance, Instance?>
             lines.Add($"Address = {address}");
         lines.Add($"""
             [Peer]
-            PublicKey = {_instance.WireGuard.HostPublicKey}
+            PublicKey = {_instance.WireGuard.ServerPublicKey}
             AllowedIPs = 10.8.0.0/24, fd0d:86fa:c3bc::/64
             Endpoint = 203.0.113.1:51820
             """);

@@ -15,7 +15,7 @@ internal sealed class SerializationTests
         number: 1
         role: node
         cluster: cluster-01
-        host: host-01
+        server: server-01
         network:
           address: 10.1.1.1
           gateway: 10.1.0.1
@@ -32,7 +32,7 @@ internal sealed class SerializationTests
           private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
           public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
           addresses: []
-          host_public_key: ''
+          server_public_key: ''
           allowed_i_ps: ''
           endpoint: ''
         """;
@@ -43,7 +43,7 @@ internal sealed class SerializationTests
         // Arrange
         Instance instance = new()
         {
-            Host = "host-01",
+            Server = "server-01",
             Cluster = "cluster-01",
             WireGuard =
             {

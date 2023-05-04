@@ -1,2 +1,2 @@
 ﻿The field Number must be between 1 and 64.
-The Host field is required.
+The Server field is required.
