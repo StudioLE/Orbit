@@ -7,7 +7,7 @@ namespace Orbit.Core.Providers;
 
 public class EntityProvider
 {
-    public bool IsValid { get; } = false;
+    public bool IsValid { get; }
 
     public InstanceProvider Instance { get; } = null!;
 
@@ -17,10 +17,10 @@ public class EntityProvider
 
     public EntityProvider(ProviderOptions options, ILogger<EntityProvider> logger)
     {
-        if(!options.TryValidate(logger))
+        if (!options.TryValidate(logger))
             return;
         IsValid = true;
-        PhysicalFileProvider provider = new (options.Directory);
+        PhysicalFileProvider provider = new(options.Directory);
         Instance = new(provider);
         Cluster = new(provider);
         Host = new(provider);
@@ -28,14 +28,14 @@ public class EntityProvider
 
     public static EntityProvider CreateTemp()
     {
-
         string directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(directory);
         ILogger<EntityProvider> logger = LoggingHelpers.CreateConsoleLogger<EntityProvider>();
         EntityProvider provider = new(new()
-        {
-            Directory = directory
-        }, logger);
+            {
+                Directory = directory
+            },
+            logger);
         provider.Host.Put(new()
         {
             Name = "host-01",
