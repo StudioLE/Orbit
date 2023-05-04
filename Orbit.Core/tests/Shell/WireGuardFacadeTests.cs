@@ -1,12 +1,20 @@
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Shell;
+using Orbit.Core.Utils.Logging;
 
 namespace Orbit.Core.Tests.Shell;
 
 internal sealed class WireGuardFacadeTests
 {
-    private readonly WireGuardFacade _wg = new();
+    private readonly WireGuardFacade _wg;
+
+    public WireGuardFacadeTests()
+    {
+        ILogger<WireGuardFacade> logger = LoggingHelpers.CreateConsoleLogger<WireGuardFacade>();
+        _wg = new(logger);
+    }
 
     #if DEBUG
 

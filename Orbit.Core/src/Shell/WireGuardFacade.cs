@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Utils.Logging;
 using StudioLE.Core.System;
 
 namespace Orbit.Core.Shell;
@@ -8,11 +7,6 @@ namespace Orbit.Core.Shell;
 public class WireGuardFacade
 {
     private readonly ILogger<WireGuardFacade> _logger;
-
-    public WireGuardFacade()
-    {
-        _logger = LoggingHelpers.CreateConsoleLogger<WireGuardFacade>();
-    }
 
     public WireGuardFacade(ILogger<WireGuardFacade> logger)
     {

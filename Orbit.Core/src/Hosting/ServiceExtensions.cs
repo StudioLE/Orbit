@@ -18,9 +18,10 @@ public static class ServiceExtensions
             .AddTransient<WireGuardFactory>()
             .AddSingleton<ProviderOptions>()
             .AddSingleton<EntityProvider>()
+            .AddSingleton<WireGuardFacade>()
+            .AddSingleton<Multipass>()
             .AddSingleton<CreateOptions>()
             .AddSingleton<Create>()
-            .AddSingleton<Multipass>()
             .AddSingleton<Launch>();
     }
 
