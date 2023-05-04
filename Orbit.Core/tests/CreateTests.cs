@@ -15,20 +15,21 @@ namespace Orbit.Core.Tests;
 internal sealed class CreateTests
 {
     private readonly Verify _verify = new(new NUnitVerifyContext());
-    private readonly IHost _host;
+    private readonly IServiceProvider _services;
 
     public CreateTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
-        _host = Host
+        _services = Host
             .CreateDefaultBuilder()
             .UseTestLoggingProviders()
             .ConfigureServices(services => services
                 .AddOrbitServices()
                 .AddTestEntityProvider())
-            .Build();
+            .Build()
+            .Services;
     }
 
     [Test]
@@ -38,14 +39,13 @@ internal sealed class CreateTests
         TestLogger logger = TestLogger.GetInstance();
         Instance sourceInstance = new()
         {
-            Server = "server-01",
             WireGuard =
             {
                 PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
                 PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
             }
         };
-        Create create = _host.Services.GetRequiredService<Create>();
+        Create create = _services.GetRequiredService<Create>();
 
         // Act
         Instance? createdInstance = await create.Execute(sourceInstance);
@@ -57,10 +57,10 @@ internal sealed class CreateTests
             await _verify.AsYaml(createdInstance);
 
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
-        Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {sourceInstance.Name}"));
-        EntityProvider provider = _host.Services.GetRequiredService<EntityProvider>();
-        Instance storedInstance = provider.Instance.Get(createdInstance!.Cluster, createdInstance.Name) ?? throw new("Failed to get instance.");
-        await _verify.AsYaml(storedInstance, sourceInstance);
+        Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
+        EntityProvider provider = _services.GetRequiredService<EntityProvider>();
+        Instance storedInstance = provider.Instance.Get(createdInstance.Cluster, createdInstance.Name) ?? throw new("Failed to get instance.");
+        await _verify.AsYaml(storedInstance, createdInstance);
         string? networkConfig = provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "network-config.yml");
         string? userConfig = provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "user-config.yml");
         Assert.That(networkConfig, Is.Not.Null);

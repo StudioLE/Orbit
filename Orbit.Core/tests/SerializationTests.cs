@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Providers;
+using Orbit.Core.Hosting;
 using Orbit.Core.Schema;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
@@ -8,8 +10,6 @@ namespace Orbit.Core.Tests;
 
 internal sealed class SerializationTests
 {
-    private readonly EntityProvider _provider = EntityProvider.CreateTemp();
-    private readonly Verify _verify = new(new NUnitVerifyContext());
     private const string SourceYaml = """
         name: cluster-01-01
         number: 1
@@ -36,12 +36,27 @@ internal sealed class SerializationTests
           allowed_i_ps: ''
           endpoint: ''
         """;
+    private readonly Verify _verify = new(new NUnitVerifyContext());
+    private readonly IServiceProvider _services;
+
+    public SerializationTests()
+    {
+        _services = Host
+            .CreateDefaultBuilder()
+            .UseTestLoggingProviders()
+            .ConfigureServices(services => services
+                .AddOrbitServices()
+                .AddTestEntityProvider())
+            .Build()
+            .Services;
+    }
 
     [Test]
     public async Task Instance_Serialize()
     {
         // Arrange
-        Instance instance = new()
+        InstanceFactory factory = _services.GetRequiredService<InstanceFactory>();
+        Instance instance = factory.Create(new()
         {
             Server = "server-01",
             Cluster = "cluster-01",
@@ -50,8 +65,7 @@ internal sealed class SerializationTests
                 PrivateKey = "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
                 PublicKey = "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE="
             }
-        };
-        instance.Review(_provider);
+        });
 
         // Act
         string yaml = Yaml.Serialize(instance);

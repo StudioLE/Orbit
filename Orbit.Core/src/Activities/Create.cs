@@ -14,50 +14,49 @@ public class Create : IActivity<Instance, Instance?>
     private readonly ILogger<Create> _logger;
     private readonly CreateOptions _options;
     private readonly EntityProvider _provider;
-    private Instance _instance = new();
+    private readonly InstanceFactory _factory;
 
-    public Create(ILogger<Create> logger, CreateOptions options, EntityProvider provider)
+    public Create(ILogger<Create> logger, CreateOptions options, EntityProvider provider, InstanceFactory factory)
     {
         _logger = logger;
         _options = options;
         _provider = provider;
+        _factory = factory;
     }
 
     public Task<Instance?> Execute(Instance instance)
     {
-        _instance = instance;
-
         if (!_provider.IsValid)
             return Failure();
 
         if (!_options.TryValidate(_logger))
             return Failure();
 
-        if (!GetOrCreateCluster())
+        if (!GetOrCreateCluster(instance))
             return Failure();
 
-        instance.Review(_provider);
+        instance = _factory.Create(instance);
 
-        if (!_instance.TryValidate(_logger))
+        if (!instance.TryValidate(_logger))
             return Failure();
 
-        if (!CreateInstance())
+        if (!PutInstance(instance))
             return Failure();
 
-        if (!CreateNetworkConfig())
+        if (!CreateNetworkConfig(instance))
             return Failure();
 
-        if (!CreateUserConfig())
+        if (!CreateUserConfig(instance))
             return Failure();
 
-        _logger.LogInformation($"Created instance {_instance.Name}");
+        _logger.LogInformation($"Created instance {instance.Name}");
 
-        return Success();
+        return Success(instance);
     }
 
-    private Task<Instance?> Success()
+    private static Task<Instance?> Success(Instance instance)
     {
-        return Task.FromResult<Instance?>(_instance);
+        return Task.FromResult<Instance?>(instance);
     }
 
     private static Task<Instance?> Failure()
@@ -65,9 +64,9 @@ public class Create : IActivity<Instance, Instance?>
         return Task.FromResult<Instance?>(null);
     }
 
-    private bool GetOrCreateCluster()
+    private bool GetOrCreateCluster(Instance instance)
     {
-        Cluster? cluster = _provider.Cluster.Get(_instance.Cluster);
+        Cluster? cluster = _provider.Cluster.Get(instance.Cluster);
         if (cluster is null)
         {
             cluster = new();
@@ -77,33 +76,33 @@ public class Create : IActivity<Instance, Instance?>
                 _logger.LogError("Failed to write the cluster file.");
                 return false;
             }
-            _instance.Cluster = cluster.Name;
+            instance.Cluster = cluster.Name;
         }
         return cluster.TryValidate(_logger);
     }
 
-    private bool CreateInstance()
+    private bool PutInstance(Instance instance)
     {
-        if (_provider.Instance.Put(_instance))
+        if (_provider.Instance.Put(instance))
             return true;
         _logger.LogError("Failed to write the instance file.");
         return false;
     }
 
-    private string CreateWireGuardConfig()
+    private string CreateWireGuardConfig(Instance instance)
     {
         List<string> lines = new()
         {
             $"""
             [Interface]
-            PrivateKey = {_instance.WireGuard.PrivateKey}
+            PrivateKey = {instance.WireGuard.PrivateKey}
             """
         };
-        foreach (string address in _instance.WireGuard.Addresses)
+        foreach (string address in instance.WireGuard.Addresses)
             lines.Add($"Address = {address}");
         lines.Add($"""
             [Peer]
-            PublicKey = {_instance.WireGuard.ServerPublicKey}
+            PublicKey = {instance.WireGuard.ServerPublicKey}
             AllowedIPs = 10.8.0.0/24, fd0d:86fa:c3bc::/64
             Endpoint = 203.0.113.1:51820
             """);
@@ -111,30 +110,30 @@ public class Create : IActivity<Instance, Instance?>
         return lines.Join();
     }
 
-    private bool CreateNetworkConfig()
+    private bool CreateNetworkConfig(Instance instance)
     {
         YamlNode yaml = EmbeddedResourceHelpers.GetYaml("Resources/Templates/network-config-template.yml");
         YamlNode adapter = yaml["network"]["ethernets"]["eth0"];
 
-        adapter["addresses"][0].SetValue(_instance.Network.Address);
-        adapter["routes"][0]["via"].SetValue(_instance.Network.Gateway);
+        adapter["addresses"][0].SetValue(instance.Network.Address);
+        adapter["routes"][0]["via"].SetValue(instance.Network.Gateway);
 
-        if (_provider.Instance.PutResource(_instance.Cluster, _instance.Name, "network-config.yml", yaml))
+        if (_provider.Instance.PutResource(instance.Cluster, instance.Name, "network-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the network config file.");
         return false;
     }
 
-    private bool CreateUserConfig()
+    private bool CreateUserConfig(Instance instance)
     {
         YamlNode yaml = EmbeddedResourceHelpers.GetYaml("Resources/Templates/user-config-template.yml");
 
-        yaml["hostname"].SetValue(_instance.Name);
+        yaml["hostname"].SetValue(instance.Name);
         yaml["users"][0]["name"].SetValue(_options.SudoUser);
         yaml["users"][1]["name"].SetValue(_options.User);
         yaml["users"][0].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
         yaml["users"][1].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
-        string wireguardContent = CreateWireGuardConfig();
+        string wireguardContent = CreateWireGuardConfig(instance);
         YamlMappingNode wg0 = new()
         {
             { "name", "wg0" },
@@ -165,7 +164,7 @@ public class Create : IActivity<Instance, Instance?>
         }
         // ReSharper restore StringLiteralTypo
 
-        if (_provider.Instance.PutResource(_instance.Cluster, _instance.Name, "user-config.yml", yaml))
+        if (_provider.Instance.PutResource(instance.Cluster, instance.Name, "user-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;

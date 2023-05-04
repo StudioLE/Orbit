@@ -1,10 +1,11 @@
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Orbit.Core.Hosting;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
-using Orbit.Core.Utils.Logging;
 using StudioLE.Core.System;
 
 namespace Orbit.Core.Tests.Shell;
@@ -12,13 +13,23 @@ namespace Orbit.Core.Tests.Shell;
 internal sealed class MultipassTests
 {
     private readonly Multipass _multipass = new();
-    private readonly EntityProvider _provider;
+    private readonly IServiceProvider _services;
 
     public MultipassTests()
     {
-        ILogger<EntityProvider> logger = LoggingHelpers.CreateConsoleLogger<EntityProvider>();
-        _provider = new(new(), logger);
-        Server server = _provider
+        #if DEBUG
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+        #endif
+        _services = Host
+            .CreateDefaultBuilder()
+            .UseTestLoggingProviders()
+            .ConfigureServices(services => services
+                .AddOrbitServices()
+                .AddTestEntityProvider())
+            .Build()
+            .Services;
+        EntityProvider provider = _services.GetRequiredService<EntityProvider>();
+        Server server = provider
             .Server
             .GetAll()
             .FirstOrDefault() ?? throw new("Expected a server.");
@@ -49,9 +60,9 @@ internal sealed class MultipassTests
     public void Multipass_Launch()
     {
         // Arrange
+        InstanceFactory factory = _services.GetRequiredService<InstanceFactory>();
+        Instance instance = factory.Create(new());
         List<string> lines = new();
-        Instance instance = new();
-        instance.Review(_provider);
 
         // Act
         bool result = _multipass.Launch(instance);

@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Providers;
 using Orbit.Core.Schema.DataAnnotations;
-using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
 using YamlDotNet.Serialization;
 
@@ -9,13 +7,10 @@ namespace Orbit.Core.Schema;
 
 public sealed class Instance : IEntity, IHasValidationAttributes
 {
-    private const int DefaultInstanceNumber = 1;
-    private const string DefaultRole = "node";
-
     [NameSchema]
     public string Name { get; set; } = string.Empty;
 
-    [Range(1,64)]
+    [Range(1, 64)]
     public int Number { get; set; }
 
     [NameSchema]
@@ -42,43 +37,4 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     [ValidateComplexType]
     [YamlMember(Alias = "wireguard")]
     public WireGuard WireGuard { get; set; } = new();
-
-    public void Review(EntityProvider provider)
-    {
-        if (Server.IsNullOrEmpty())
-            Server = provider
-                       .Server
-                       .GetAllNames()
-                       .FirstOrDefault()
-                   ?? throw new("Server must be set if more than one exist.");
-
-
-        if (Cluster.IsNullOrEmpty())
-            throw new Exception("Cluster not set");
-
-        WireGuard.Review();
-        Hardware.Review();
-        OS.Review();
-
-        if (Number == default)
-        {
-            int[] numbers = provider
-                .Instance
-                .GetAllInCluster(Cluster)
-                .Select(x => x.Number)
-                .ToArray();
-            int finalNumber = numbers.Any()
-                ? numbers.Max()
-                : DefaultInstanceNumber - 1;
-            Number = finalNumber + 1;
-        }
-
-        if (Role.IsNullOrEmpty())
-            Role = DefaultRole;
-
-        if (Name.IsNullOrEmpty())
-            Name = $"{Cluster}-{Number:00}";
-
-        Network.Review(this, provider);
-    }
 }

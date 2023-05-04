@@ -1,6 +1,4 @@
 using Orbit.Core.Schema.DataAnnotations;
-using Orbit.Core.Shell;
-using Orbit.Core.Utils;
 
 namespace Orbit.Core.Schema;
 
@@ -25,15 +23,4 @@ public sealed class WireGuard
     [IPSchema]
     // ReSharper disable once InconsistentNaming
     public string Endpoint { get; set; } = string.Empty;
-
-    public void Review()
-    {
-        WireGuardFacade wg = new();
-
-        if (PrivateKey.IsNullOrEmpty())
-            PrivateKey = wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
-
-        if (PublicKey.IsNullOrEmpty())
-            PublicKey = wg.GeneratePublicKey(PrivateKey) ?? throw new("Failed to generate WireGuard public key");
-    }
 }
