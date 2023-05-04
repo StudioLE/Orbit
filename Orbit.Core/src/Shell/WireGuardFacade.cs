@@ -5,7 +5,7 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Shell;
 
-public class WireGuardFacade : IDisposable
+public class WireGuardFacade
 {
     private readonly ILogger<WireGuardFacade> _logger;
 
@@ -96,11 +96,5 @@ public class WireGuardFacade : IDisposable
         while ((line = reader.ReadLine()) is not null)
             lines.Add(line);
         return lines;
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        // _ssh.Dispose();
     }
 }
