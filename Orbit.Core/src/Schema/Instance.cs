@@ -45,6 +45,17 @@ public sealed class Instance : IEntity, IHasValidationAttributes
 
     public void Review(EntityProvider provider)
     {
+        if (Host.IsNullOrEmpty())
+            Host = provider
+                       .Host
+                       .GetAllNames()
+                       .FirstOrDefault()
+                   ?? throw new("Host must be set if more than one exist.");
+
+
+        if (Cluster.IsNullOrEmpty())
+            throw new Exception("Cluster not set");
+
         WireGuard.Review();
         Hardware.Review();
         OS.Review();
