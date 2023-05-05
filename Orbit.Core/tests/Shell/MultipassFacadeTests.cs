@@ -9,13 +9,13 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Tests.Shell;
 
-internal sealed class MultipassTests
+internal sealed class MultipassFacadeTests
 {
     private readonly InstanceFactory _instanceFactory;
     private readonly Server _server;
-    private readonly Multipass _multipass;
+    private readonly MultipassFacade _multipass;
 
-    public MultipassTests()
+    public MultipassFacadeTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -24,7 +24,7 @@ internal sealed class MultipassTests
             .AddSingleton<EntityProvider>());
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         EntityProvider provider = host.Services.GetRequiredService<EntityProvider>();
-        _multipass = host.Services.GetRequiredService<Multipass>();
+        _multipass = host.Services.GetRequiredService<MultipassFacade>();
         _server = provider
                             .Server
                             .GetAll()

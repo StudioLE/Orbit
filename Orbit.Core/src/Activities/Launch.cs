@@ -9,11 +9,11 @@ namespace Orbit.Core.Activities;
 public class Launch
 {
     private readonly ILogger<Launch> _logger;
-    private readonly Multipass _multipass;
+    private readonly MultipassFacade _multipass;
     private readonly EntityProvider _provider;
     private Instance _instance = new();
 
-    public Launch(ILogger<Launch> logger, Multipass multipass, EntityProvider provider)
+    public Launch(ILogger<Launch> logger, MultipassFacade multipass, EntityProvider provider)
     {
         _logger = logger;
         _multipass = multipass;

@@ -10,12 +10,12 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Shell;
 
-public class Multipass : IDisposable
+public class MultipassFacade : IDisposable
 {
-    private readonly ILogger<Multipass> _logger;
+    private readonly ILogger<MultipassFacade> _logger;
     private readonly EntityProvider _provider;
 
-    public Multipass(ILogger<Multipass> logger, EntityProvider provider)
+    public MultipassFacade(ILogger<MultipassFacade> logger, EntityProvider provider)
     {
         _logger = logger;
         _provider = provider;
