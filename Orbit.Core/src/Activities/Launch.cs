@@ -76,7 +76,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        _tempFilePath = $"/home/{server.Ssh.User}/.orbit/tmp/{Guid.NewGuid()}.yaml";
+        _tempFilePath = $"/home/{server.Ssh.User}/orbit/tmp/{Guid.NewGuid()}.yaml";
         _connection = server.CreateConnection();
         return true;
     }
