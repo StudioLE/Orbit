@@ -42,6 +42,14 @@ public class InstanceProvider
         return file.ReadTextFile();
     }
 
+    public Stream? GetResourceStream(string clusterName, string instanceName, string fileName)
+    {
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
+        return file.Exists
+            ? file.CreateReadStream()
+            : null;
+    }
+
     public IEnumerable<string> GetAllNamesInCluster(string clusterName)
     {
         return _provider.GetDirectoryContents(clusterName)
