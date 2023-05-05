@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Core.Utils.Pipelines;
 using StudioLE.Core.System;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
@@ -26,40 +27,32 @@ public class Create : IActivity<Instance, Instance?>
 
     public Task<Instance?> Execute(Instance instance)
     {
-        if (!_provider.IsValid)
-            return Failure();
-
-        if (!_options.TryValidate(_logger))
-            return Failure();
-
-        if (!GetOrCreateCluster(instance))
-            return Failure();
-
-        instance = _factory.Create(instance);
-
-        if (!instance.TryValidate(_logger))
-            return Failure();
-
-        if (!PutInstance(instance))
-            return Failure();
-
-        if (!CreateNetworkConfig(instance))
-            return Failure();
-
-        if (!CreateUserConfig(instance))
-            return Failure();
-
-        _logger.LogInformation($"Created instance {instance.Name}");
-
-        return Success(instance);
+        PipelineBuilder<Task<Instance?>> builder = new PipelineBuilder<Task<Instance?>>()
+            .OnSuccess(() => OnSuccess(instance))
+            .OnFailure(OnFailure)
+            .Then(() => _provider.IsValid)
+            .Then(() => _options.TryValidate(_logger))
+            .Then(() => GetOrCreateCluster(instance))
+            .Then(() =>
+            {
+                instance = _factory.Create(instance);
+                return true;
+            })
+            .Then(() => instance.TryValidate(_logger))
+            .Then(() => PutInstance(instance))
+            .Then(() => CreateNetworkConfig(instance))
+            .Then(() => CreateUserConfig(instance));
+        Pipeline<Task<Instance?>> pipeline = builder.Build();
+        return pipeline.Execute();
     }
 
-    private static Task<Instance?> Success(Instance instance)
+    private Task<Instance?> OnSuccess(Instance instance)
     {
+        _logger.LogInformation($"Created instance {instance.Name}");
         return Task.FromResult<Instance?>(instance);
     }
 
-    private static Task<Instance?> Failure()
+    private static Task<Instance?> OnFailure()
     {
         return Task.FromResult<Instance?>(null);
     }
