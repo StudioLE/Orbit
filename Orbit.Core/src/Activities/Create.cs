@@ -156,7 +156,7 @@ public class Create : IActivity<Instance, Instance?>
             string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{installer}");
             KeyValuePair<YamlNode, YamlNode>[] nodes = {
                 new("path", $"/var/lib/cloud/scripts/per-instance/{installer}"),
-                new("permissions", "0500"),
+                new("permissions", "0o500"),
                 new("content", new YamlScalarNode(content) { Style = ScalarStyle.Literal })
             };
             yaml["write_files"].Add(new YamlMappingNode(nodes));
