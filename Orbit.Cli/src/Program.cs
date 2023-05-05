@@ -24,7 +24,7 @@ internal static class Program
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
             .Register<Create>()
-            // .Register<Launch>()
+            .Register<Launch>()
             .Build();
 
         await command.InvokeAsync(args);
