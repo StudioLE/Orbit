@@ -6,6 +6,7 @@ using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Core.Utils.Pipelines;
 using Renci.SshNet;
 using StudioLE.Core.System;
 
@@ -41,16 +42,14 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 
     public Task<Outputs> Execute(Inputs inputs)
     {
-        if (!GetInstance(inputs.Cluster, inputs.Instance))
-            return Failure();
-
-        if (!_instance.TryValidate(_logger))
-            return Failure();
-
-        if (!MultipassLaunch())
-            return Failure();
-
-        return Success();
+        PipelineBuilder<Task<Outputs>> builder = new PipelineBuilder<Task<Outputs>>()
+            .OnSuccess(OnSuccess)
+            .OnFailure(OnFailure)
+            .Then(() => GetInstance(inputs.Cluster, inputs.Instance))
+            .Then(() => _instance.TryValidate(_logger))
+            .Then(MultipassLaunch);
+        Pipeline<Task<Outputs>> pipeline = builder.Build();
+        return pipeline.Execute();
     }
 
     private bool GetInstance(string clusterName, string instanceName)
@@ -86,10 +85,10 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             $"--name {_instance.Name}"
         };
         string? output = ssh.ExecuteToLogger(_logger, command.Join(" "));
-        return output is null;
+        return output is not null;
     }
 
-    private static Task<Outputs> Success()
+    private static Task<Outputs> OnSuccess()
     {
         Outputs outputs = new()
         {
@@ -98,7 +97,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         return Task.FromResult(outputs);
     }
 
-    private static Task<Outputs> Failure()
+    private static Task<Outputs> OnFailure()
     {
         Outputs outputs = new()
         {
