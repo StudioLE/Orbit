@@ -11,23 +11,25 @@ namespace Orbit.Core.Tests.Shell;
 
 internal sealed class MultipassTests
 {
-    private readonly Multipass _multipass = new();
     private readonly InstanceFactory _instanceFactory;
+    private readonly Server _server;
+    private readonly Multipass _multipass;
 
     public MultipassTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = TestHelpers.CreateTestHost(services => services
+            .AddSingleton<EntityProvider>());
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         EntityProvider provider = host.Services.GetRequiredService<EntityProvider>();
-        Server server = provider
+        _multipass = host.Services.GetRequiredService<Multipass>();
+        _server = provider
                             .Server
                             .GetAll()
                             .FirstOrDefault()
                         ?? throw new("Expected a server.");
-        _multipass.Connect(server);
     }
 
 #if DEBUG
@@ -37,9 +39,8 @@ internal sealed class MultipassTests
     public void Multipass_List()
     {
         // Arrange
-
         // Act
-        JObject? json = _multipass.List();
+        JObject? json = _multipass.List(_server);
 
         // Preview
         if (json is not null)

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
-using Orbit.Core.Utils.Logging;
 using Renci.SshNet;
 using StudioLE.Core.System;
 
@@ -13,19 +13,15 @@ namespace Orbit.Core.Shell;
 public class Multipass : IDisposable
 {
     private readonly ILogger<Multipass> _logger;
-    private SshClient? _ssh;
+    private readonly EntityProvider _provider;
 
-    public Multipass()
-    {
-        _logger = LoggingHelpers.CreateConsoleLogger<Multipass>();;
-    }
-
-    public Multipass(ILogger<Multipass> logger)
+    public Multipass(ILogger<Multipass> logger, EntityProvider provider)
     {
         _logger = logger;
+        _provider = provider;
     }
 
-    public void Connect(Server server)
+    private static SshClient CreateSshClient(Server server)
     {
         List<AuthenticationMethod> auth = new();
         if (!string.IsNullOrWhiteSpace(server.Ssh.Password))
@@ -33,18 +29,15 @@ public class Multipass : IDisposable
         if (!string.IsNullOrWhiteSpace(server.Ssh.PrivateKeyFile))
             auth.Add(new PrivateKeyAuthenticationMethod(server.Ssh.User, new PrivateKeyFile(server.Ssh.PrivateKeyFile)));
         ConnectionInfo connection = new(server.Address, server.Ssh.Port, server.Ssh.User, auth.ToArray());
-        _ssh = new(connection);
-        _ssh.Connect();
+        SshClient ssh = new(connection);
+        ssh.Connect();
+        return ssh;
     }
 
-    private string? ExecuteToLogger(string commandText)
+    private string? ExecuteToLogger(Server server, string commandText)
     {
-        if (_ssh is null)
-        {
-            _logger.LogError("Tried to execute before connecting.");
-            return null;
-        }
-        SshCommand command = _ssh.CreateCommand(commandText);
+        using SshClient ssh = CreateSshClient(server);
+        SshCommand command = ssh.CreateCommand(commandText);
         IAsyncResult result = command.BeginExecute();
         using StreamReader reader = new(command.OutputStream);
         while (!result.IsCompleted || !reader.EndOfStream)
@@ -66,38 +59,34 @@ public class Multipass : IDisposable
         }
         command.EndExecute(result);
 
-        if(command.ExitStatus == 0)
+        if (command.ExitStatus == 0)
             return command.Result;
         _logger.LogError("Failed to get multipass info.");
-        if(!command.Error.IsNullOrEmpty())
+        if (!command.Error.IsNullOrEmpty())
             _logger.LogError(command.Error);
-        if(!command.Error.IsNullOrEmpty())
+        if (!command.Error.IsNullOrEmpty())
             _logger.LogError(command.Error);
         return null;
     }
 
-    private string? Execute(string commandText)
+    private string? Execute(Server server, string commandText)
     {
-        if (_ssh is null)
-        {
-            _logger.LogError("Tried to execute before connecting.");
-            return null;
-        }
-        SshCommand command = _ssh.RunCommand(commandText);
-        if(command.ExitStatus == 0)
+        using SshClient ssh = CreateSshClient(server);
+        SshCommand command = ssh.RunCommand(commandText);
+        if (command.ExitStatus == 0)
             return command.Result;
         _logger.LogError("Failed to get multipass info.");
-        if(!command.Error.IsNullOrEmpty())
+        if (!command.Error.IsNullOrEmpty())
             _logger.LogError(command.Error);
-        if(!command.Error.IsNullOrEmpty())
+        if (!command.Error.IsNullOrEmpty())
             _logger.LogError(command.Error);
         return null;
     }
 
 
-    public JObject? Info(string name)
+    public JObject? Info(Server server, string name)
     {
-        string? output = Execute($"multipass info \"{name}\" --format json");
+        string? output = Execute(server, $"multipass info \"{name}\" --format json");
         return output is null
             ? null
             : JObject.Parse(output);
@@ -147,13 +136,14 @@ public class Multipass : IDisposable
             $"--disk {instance.Hardware.Disk}G",
             $"--name {instance.Name}"
         };
-        string? output = ExecuteToLogger(command.Join(" "));
+        Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get server");
+        string? output = ExecuteToLogger(server, command.Join(" "));
         return output is null;
     }
 
-    public JObject? List()
+    public JObject? List(Server server)
     {
-        string? output = Execute("multipass list --format json");
+        string? output = Execute(server, "multipass list --format json");
         return output is null
             ? null
             : JObject.Parse(output);
@@ -171,7 +161,7 @@ public class Multipass : IDisposable
         //     }
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public void Dispose()
     {
         // _ssh.Dispose();

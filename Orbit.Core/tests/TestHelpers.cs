@@ -8,8 +8,9 @@ namespace Orbit.Core.Tests;
 
 public static class TestHelpers
 {
-    public static IHost CreateTestHost()
+    public static IHost CreateTestHost(Action<IServiceCollection>? configureServices = null)
     {
+        configureServices ??= _ => { };
         return Host
             .CreateDefaultBuilder()
             .UseTestLoggingProviders()
@@ -17,6 +18,7 @@ public static class TestHelpers
                 .AddOrbitServices()
                 .AddMockWireGuardFacade()
                 .AddTestEntityProvider())
+            .ConfigureServices(configureServices)
             .Build();
     }
 
