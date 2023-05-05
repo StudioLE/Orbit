@@ -5,14 +5,13 @@ using NUnit.Framework;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
-using StudioLE.Core.System;
 
 namespace Orbit.Core.Tests.Shell;
 
 internal sealed class MultipassFacadeTests
 {
-    private readonly InstanceFactory _instanceFactory;
     private readonly Server _server;
+    private readonly Instance _instance;
     private readonly MultipassFacade _multipass;
 
     public MultipassFacadeTests()
@@ -22,14 +21,23 @@ internal sealed class MultipassFacadeTests
         #endif
         IHost host = TestHelpers.CreateTestHost(services => services
             .AddSingleton<EntityProvider>());
-        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         EntityProvider provider = host.Services.GetRequiredService<EntityProvider>();
         _multipass = host.Services.GetRequiredService<MultipassFacade>();
         _server = provider
-                            .Server
-                            .GetAll()
-                            .FirstOrDefault()
-                        ?? throw new("Expected a server.");
+                      .Server
+                      .GetAll()
+                      .FirstOrDefault()
+                  ?? throw new("Expected a server.");
+        string cluster = provider
+                             .Cluster
+                             .GetAllNames()
+                             .FirstOrDefault()
+                         ?? throw new("Expected a cluster.");
+        _instance = provider
+                        .Instance
+                        .GetAllInCluster(cluster)
+                        .FirstOrDefault()
+                    ?? throw new("Expected an instance.");
     }
 
 #if DEBUG
@@ -50,20 +58,15 @@ internal sealed class MultipassFacadeTests
         Assert.That(json, Is.Not.Null);
     }
 
-    [Test]
+    [TestCase]
     [Explicit("Requires SSH")]
     public void Multipass_Launch()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(new());
-        List<string> lines = new();
-
         // Act
-        bool result = _multipass.Launch(instance);
-        string output = lines.Join();
+        bool result = _multipass.Launch(_instance);
 
         // Assert
-        Assert.That(output, Is.Not.Empty);
         Assert.That(result);
     }
 #endif

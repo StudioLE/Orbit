@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
 using Renci.SshNet;
 using StudioLE.Core.System;
 
@@ -10,7 +9,7 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Shell;
 
-public class MultipassFacade : IDisposable
+public class MultipassFacade
 {
     private readonly ILogger<MultipassFacade> _logger;
     private readonly EntityProvider _provider;
@@ -21,72 +20,12 @@ public class MultipassFacade : IDisposable
         _provider = provider;
     }
 
-    private static SshClient CreateSshClient(Server server)
-    {
-        List<AuthenticationMethod> auth = new();
-        if (!string.IsNullOrWhiteSpace(server.Ssh.Password))
-            auth.Add(new PasswordAuthenticationMethod(server.Ssh.User, server.Ssh.Password));
-        if (!string.IsNullOrWhiteSpace(server.Ssh.PrivateKeyFile))
-            auth.Add(new PrivateKeyAuthenticationMethod(server.Ssh.User, new PrivateKeyFile(server.Ssh.PrivateKeyFile)));
-        ConnectionInfo connection = new(server.Address, server.Ssh.Port, server.Ssh.User, auth.ToArray());
-        SshClient ssh = new(connection);
-        ssh.Connect();
-        return ssh;
-    }
-
-    private string? ExecuteToLogger(Server server, string commandText)
-    {
-        using SshClient ssh = CreateSshClient(server);
-        SshCommand command = ssh.CreateCommand(commandText);
-        IAsyncResult result = command.BeginExecute();
-        using StreamReader reader = new(command.OutputStream);
-        while (!result.IsCompleted || !reader.EndOfStream)
-        {
-            // string output = reader.ReadToEnd();
-            string? line = reader.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(line))
-                continue;
-            line = line
-                .Replace("\u0008/", "")
-                .Replace("\u0008-", "")
-                .Replace("\u0008\\", "")
-                .Replace("\u0008|", "")
-                .Replace("\u0008", "");
-            if (string.IsNullOrWhiteSpace(line))
-                continue;
-            _logger.LogInformation(line);
-        }
-        command.EndExecute(result);
-
-        if (command.ExitStatus == 0)
-            return command.Result;
-        _logger.LogError("Failed to get multipass info.");
-        if (!command.Error.IsNullOrEmpty())
-            _logger.LogError(command.Error);
-        if (!command.Error.IsNullOrEmpty())
-            _logger.LogError(command.Error);
-        return null;
-    }
-
-    private string? Execute(Server server, string commandText)
-    {
-        using SshClient ssh = CreateSshClient(server);
-        SshCommand command = ssh.RunCommand(commandText);
-        if (command.ExitStatus == 0)
-            return command.Result;
-        _logger.LogError("Failed to get multipass info.");
-        if (!command.Error.IsNullOrEmpty())
-            _logger.LogError(command.Error);
-        if (!command.Error.IsNullOrEmpty())
-            _logger.LogError(command.Error);
-        return null;
-    }
-
-
     public JObject? Info(Server server, string name)
     {
-        string? output = Execute(server, $"multipass info \"{name}\" --format json");
+        ConnectionInfo connection = server.CreateConnection();
+        using SshClient ssh = new(connection);
+        ssh.Connect();
+        string? output = ssh.Execute(_logger, $"multipass info \"{name}\" --format json");
         return output is null
             ? null
             : JObject.Parse(output);
@@ -128,6 +67,10 @@ public class MultipassFacade : IDisposable
 
     public bool Launch(Instance instance)
     {
+        Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get server");
+        ConnectionInfo connection = server.CreateConnection();
+        using SshClient ssh = new(connection);
+        ssh.Connect();
         string[] command =
         {
             "multipass launch",
@@ -136,14 +79,16 @@ public class MultipassFacade : IDisposable
             $"--disk {instance.Hardware.Disk}G",
             $"--name {instance.Name}"
         };
-        Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get server");
-        string? output = ExecuteToLogger(server, command.Join(" "));
+        string? output = ssh.ExecuteToLogger(_logger, command.Join(" "));
         return output is null;
     }
 
     public JObject? List(Server server)
     {
-        string? output = Execute(server, "multipass list --format json");
+        ConnectionInfo connection = server.CreateConnection();
+        using SshClient ssh = new(connection);
+        ssh.Connect();
+        string? output = ssh.Execute(_logger, "multipass list --format json");
         return output is null
             ? null
             : JObject.Parse(output);
@@ -159,11 +104,5 @@ public class MultipassFacade : IDisposable
         //             }
         //         ]
         //     }
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        // _ssh.Dispose();
     }
 }
