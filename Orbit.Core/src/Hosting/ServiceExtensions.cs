@@ -19,7 +19,6 @@ public static class ServiceExtensions
             .AddSingleton<ProviderOptions>()
             .AddSingleton<EntityProvider>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
-            .AddSingleton<MultipassFacade>()
             .AddSingleton<CreateOptions>()
             .AddSingleton<Create>()
             .AddSingleton<Launch>();
