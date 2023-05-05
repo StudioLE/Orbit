@@ -38,6 +38,6 @@ write_files:
       PasswordAuthentication no
       Port 22
 
-bootcmd: ${BOOTCMD_CONTENT}
+bootcmd: []
 
-runcmd: ${RUNCMD_CONTENT}
+runcmd: []

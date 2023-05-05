@@ -1,4 +1,5 @@
 using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -43,6 +44,13 @@ public static class Yaml
         node.Value = value;
         if (style is not null)
             node.Style = (ScalarStyle)style;
+    }
+
+    public static void SetSequenceStyle(this YamlNode @this, SequenceStyle style)
+    {
+        if (@this is not YamlSequenceNode node)
+            throw new InvalidCastException($"Failed to set value of {@this.GetType()}. Expected a {nameof(SetSequenceStyle)}");
+        node.Style = style;
     }
 
     public static void AddRange(this YamlNode @this, IEnumerable<string> values)

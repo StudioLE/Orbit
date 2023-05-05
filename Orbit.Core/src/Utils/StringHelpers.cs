@@ -11,4 +11,9 @@ public static class StringHelpers
     {
         return string.IsNullOrWhiteSpace(@this);
     }
+
+    public static IEnumerable<string> SplitIntoLines(this string @this)
+    {
+        return @this.Split("\r\n").SelectMany(x => x.Split("\n"));
+    }
 }

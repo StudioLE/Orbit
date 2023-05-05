@@ -2,10 +2,12 @@ using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
+using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
 using Orbit.Core.Utils.Pipelines;
 using StudioLE.Core.System;
 using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Core.Activities;
@@ -136,9 +138,13 @@ public class Create : IActivity<Instance, Instance?>
         yaml["wireguard"].Replace("interfaces", new YamlSequenceNode(wg0));
         // ReSharper disable StringLiteralTypo
         string bootCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/bootcmd.sh");
-        yaml["bootcmd"].SetValue(bootCmdContent, ScalarStyle.Literal);
+        string[] bootCmdLines = bootCmdContent.SplitIntoLines().ToArray();
+        yaml["bootcmd"].AddRange(bootCmdLines);
+        yaml["bootcmd"].SetSequenceStyle(SequenceStyle.Block);
         string runCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/runcmd.sh");
-        yaml["runcmd"].SetValue(runCmdContent, ScalarStyle.Literal);
+        string[] runCmdLines = runCmdContent.SplitIntoLines().ToArray();
+        yaml["runcmd"].AddRange(runCmdLines);
+        yaml["runcmd"].SetSequenceStyle(SequenceStyle.Block);
         string[] installers =
         {
             "10-install-docker.sh",
