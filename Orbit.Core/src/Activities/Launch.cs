@@ -8,7 +8,6 @@ using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
 using Orbit.Core.Utils.Pipelines;
 using Renci.SshNet;
-using StudioLE.Core.System;
 
 namespace Orbit.Core.Activities;
 
@@ -17,8 +16,12 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     private readonly ILogger<Launch> _logger;
     private readonly EntityProvider _provider;
     private Instance _instance = null!;
-    private ConnectionInfo _connection = null!;
-    private string _tempFilePath = string.Empty;
+
+    public Launch(ILogger<Launch> logger, EntityProvider provider)
+    {
+        _logger = logger;
+        _provider = provider;
+    }
 
     public class Inputs
     {
@@ -36,12 +39,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         public int ExitCode { get; set; }
     }
 
-    public Launch(ILogger<Launch> logger, EntityProvider provider)
-    {
-        _logger = logger;
-        _provider = provider;
-    }
-
     public Task<Outputs> Execute(Inputs inputs)
     {
         PipelineBuilder<Task<Outputs>> builder = new PipelineBuilder<Task<Outputs>>()
@@ -49,8 +46,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             .OnFailure(OnFailure)
             .Then(() => GetInstance(inputs.Cluster, inputs.Instance))
             .Then(() => _instance.TryValidate(_logger))
-            .Then(CreateConnection)
-            .Then(UploadCloudInit)
             .Then(MultipassLaunch);
         Pipeline<Task<Outputs>> pipeline = builder.Build();
         return pipeline.Execute();
@@ -68,55 +63,41 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         return true;
     }
 
-    private bool CreateConnection()
+    private bool MultipassLaunch()
     {
         Server? server = _provider.Server.Get(_instance.Server);
-        if(server is null)
+        if (server is null)
         {
             _logger.LogError("Failed to get server");
             return false;
         }
-        _tempFilePath = $"/home/{server.Ssh.User}/orbit/tmp/{Guid.NewGuid()}.yaml";
-        _connection = server.CreateConnection();
-        return true;
-    }
 
-    private bool UploadCloudInit()
-    {
-        Stream? stream = _provider.Instance.GetResourceStream(_instance.Cluster, _instance.Name, "user-config.yml");
-        if (stream is null)
+        ConnectionInfo connection = server.CreateConnection();
+
+        string? cloudInit = _provider.Instance.GetResource(_instance.Cluster, _instance.Name, "user-config.yml");
+        if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");
             return false;
         }
 
-        // using MemoryStream stream = new();
-        // using StreamWriter writer = new(stream);
-        // writer.Write(stream);
-        // writer.Flush();
-
-        using SftpClient sftp = new(_connection);
-        sftp.Connect();
-        sftp.UploadFile(stream, _tempFilePath);
-        // string blah = sftp.ReadAllText(_tempFilePath);
-
-        return true;
-    }
-
-    private bool MultipassLaunch()
-    {
-        using SshClient ssh = new(_connection);
+        using SshClient ssh = new(connection);
         ssh.Connect();
-        string[] command =
-        {
-            "multipass launch",
-            $"--cpus {_instance.Hardware.Cpus}",
-            $"--memory {_instance.Hardware.Memory}G",
-            $"--disk {_instance.Hardware.Disk}G",
-            $"--name {_instance.Name}",
-            $"--cloud-init {_tempFilePath}"
-        };
-        string? output = ssh.ExecuteToLogger(_logger, command.Join(" "));
+
+        string command = $"""
+            (
+            cat <<EOF
+            {cloudInit}
+            EOF
+            ) | multipass launch \
+                --cpus {_instance.Hardware.Cpus} \
+                --memory {_instance.Hardware.Memory}G \
+                --disk {_instance.Hardware.Disk}G \
+                --name {_instance.Name} \
+                --cloud-init -
+            """;
+
+        string? output = ssh.ExecuteToLogger(_logger, command);
         return output is not null;
     }
 
