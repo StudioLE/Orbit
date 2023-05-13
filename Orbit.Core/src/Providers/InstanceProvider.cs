@@ -3,6 +3,11 @@ using Orbit.Core.Schema;
 
 namespace Orbit.Core.Providers;
 
+
+/// <summary>
+/// A repository of <see cref="Instance"/>.
+/// </summary>
+/// <see href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design">Repository pattern</see>.
 public class InstanceProvider
 {
     private readonly IFileProvider _provider;

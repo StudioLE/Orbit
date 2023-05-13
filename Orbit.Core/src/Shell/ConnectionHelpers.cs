@@ -3,8 +3,14 @@ using Renci.SshNet;
 
 namespace Orbit.Core.Shell;
 
+/// <summary>
+/// Methods to help with <see cref="ConnectionInfo"/>.
+/// </summary>
 public static class ConnectionHelpers
 {
+    /// <summary>
+    /// Create a <see cref="ConnectionInfo"/> to connect to a <see cref="Server"/>.
+    /// </summary>
     public static ConnectionInfo CreateConnection(this Server server)
     {
         List<AuthenticationMethod> auth = new();

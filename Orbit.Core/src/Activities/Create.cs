@@ -12,6 +12,9 @@ using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Core.Activities;
 
+/// <summary>
+/// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine instance.
+/// </summary>
 public class Create : IActivity<Instance, Instance?>
 {
     private readonly ILogger<Create> _logger;
@@ -19,6 +22,9 @@ public class Create : IActivity<Instance, Instance?>
     private readonly EntityProvider _provider;
     private readonly InstanceFactory _factory;
 
+    /// <summary>
+    /// DI constructor for <see cref="Create"/>.
+    /// </summary>
     public Create(ILogger<Create> logger, CreateOptions options, EntityProvider provider, InstanceFactory factory)
     {
         _logger = logger;
@@ -27,6 +33,7 @@ public class Create : IActivity<Instance, Instance?>
         _factory = factory;
     }
 
+    /// <inheritdoc/>
     public Task<Instance?> Execute(Instance instance)
     {
         PipelineBuilder<Task<Instance?>> builder = new PipelineBuilder<Task<Instance?>>()

@@ -4,9 +4,13 @@ using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Schema;
 
+/// <summary>
+/// A factory for creating <see cref="Network"/> with default values.
+/// </summary>
 public class NetworkFactory : IFactory<Instance, Network>
 {
     private readonly EntityProvider _provider;
+
 
     public NetworkFactory(EntityProvider provider)
     {

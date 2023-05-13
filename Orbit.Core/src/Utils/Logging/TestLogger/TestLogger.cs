@@ -2,10 +2,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Orbit.Core.Utils.Logging.TestLogger;
 
+/// <summary>
+/// An <see cref="ILogger"/> which stores a collection of all logs to review later.
+/// </summary>
 public class TestLogger : ILogger
 {
     private readonly List<TestLog> _logs = new();
 
+    /// <summary>
+    /// The logs.
+    /// </summary>
     public IReadOnlyCollection<TestLog> Logs => _logs;
 
     private TestLogger()
@@ -46,6 +52,7 @@ public class TestLogger : ILogger
 
     public static TestLogger GetInstance()
     {
+        // TODO: Replace this with the IHostBuilder singleton.
         if (_instance == null)
             lock (_lock)
                 _instance ??= new();

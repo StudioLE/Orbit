@@ -6,8 +6,15 @@ using Renci.SshNet;
 
 namespace Orbit.Core.Shell;
 
+/// <summary>
+/// Methods to help with <see cref="SshClient"/>.
+/// </summary>
 public static class SshClientHelpers
 {
+    /// <summary>
+    /// Execute <paramref name="commandText"/> on <paramref name="ssh"/> and pass the standard output
+    /// to <paramref name="logger"/>.
+    /// </summary>
     public static string? ExecuteToLogger(this SshClient ssh, ILogger logger, string commandText)
     {
         SshCommand command = ssh.CreateCommand(commandText);
@@ -42,14 +49,16 @@ public static class SshClientHelpers
         return null;
     }
 
+    /// <summary>
+    /// Execute <paramref name="commandText"/> on <paramref name="ssh"/> and return the standard output.
+    /// </summary>
+    /// <returns>The standard output of the command or null if the exit code isn't 0.</returns>
     public static string? Execute(this SshClient ssh, ILogger logger, string commandText)
     {
         SshCommand command = ssh.RunCommand(commandText);
         if (command.ExitStatus == 0)
             return command.Result;
         logger.LogError("Failed to get multipass info.");
-        if (!command.Error.IsNullOrEmpty())
-            logger.LogError(command.Error);
         if (!command.Error.IsNullOrEmpty())
             logger.LogError(command.Error);
         return null;

@@ -3,6 +3,9 @@ using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Schema;
 
+/// <summary>
+/// A factory for creating <see cref="OS"/> with default values.
+/// </summary>
 // ReSharper disable once InconsistentNaming
 public class OSFactory : IFactory<OS, OS>
 {

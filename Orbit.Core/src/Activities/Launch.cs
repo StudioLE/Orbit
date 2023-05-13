@@ -11,34 +11,53 @@ using Renci.SshNet;
 
 namespace Orbit.Core.Activities;
 
+/// <summary>
+/// An <see cref="IActivity"/> to remotely launch an instance with Multipass.
+/// </summary>
 public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 {
     private readonly ILogger<Launch> _logger;
     private readonly EntityProvider _provider;
     private Instance _instance = null!;
 
+    /// <summary>
+    /// DI constructor for <see cref="Launch"/>.
+    /// </summary>
     public Launch(ILogger<Launch> logger, EntityProvider provider)
     {
         _logger = logger;
         _provider = provider;
     }
 
+    /// <summary>
+    /// The inputs for <see cref="Launch"/>.
+    /// </summary>
     public class Inputs
     {
+        /// <summary>
+        /// The name of the cluster the instance to launch belongs to.
+        /// </summary>
         [Required]
         [NameSchema]
         public string Cluster { get; set; } = string.Empty;
 
+        /// <summary>
+        /// THe name of the instance to launch.
+        /// </summary>
         [Required]
         [NameSchema]
         public string Instance { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// The outputs of <see cref="Launch"/>.
+    /// </summary>
     public class Outputs
     {
         public int ExitCode { get; set; }
     }
 
+    /// <inheritdoc/>
     public Task<Outputs> Execute(Inputs inputs)
     {
         PipelineBuilder<Task<Outputs>> builder = new PipelineBuilder<Task<Outputs>>()

@@ -4,6 +4,9 @@ using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Schema;
 
+/// <summary>
+/// A factory for creating <see cref="Instance"/> with default values.
+/// </summary>
 public class InstanceFactory : IFactory<Instance, Instance>
 {
     private const int DefaultInstanceNumber = 1;
@@ -15,6 +18,9 @@ public class InstanceFactory : IFactory<Instance, Instance>
     private readonly OSFactory _osFactory;
     private readonly NetworkFactory _networkFactory;
 
+    /// <summary>
+    /// The DI constructor for <see cref="InstanceFactory"/>.
+    /// </summary>
     public InstanceFactory(
         EntityProvider provider,
         NetworkFactory networkFactory,

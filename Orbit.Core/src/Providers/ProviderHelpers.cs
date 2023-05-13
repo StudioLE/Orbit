@@ -3,8 +3,15 @@ using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Providers;
 
+/// <summary>
+/// Methods to help with <see cref="IFileInfo"/>.
+/// </summary>
 public static class ProviderHelpers
 {
+    /// <summary>
+    /// Deserialize <typeparamref name="T"/> from a YAML file.
+    /// </summary>
+    /// <returns>Returns the deserialized <typeparamref name="T"/> or <see langword="null"/>.</returns>
     public static T? ReadYamlFileAs<T>(this IFileInfo file) where T : class
     {
         if (!file.Exists)
@@ -15,6 +22,10 @@ public static class ProviderHelpers
         return deserializer.Deserialize<T>(reader);
     }
 
+    /// <summary>
+    /// Read a text file.
+    /// </summary>
+    /// <returns>The file content or <see langword="null"/>.</returns>
     public static string? ReadTextFile(this IFileInfo file)
     {
         if (!file.Exists)
@@ -24,6 +35,10 @@ public static class ProviderHelpers
         return reader.ReadToEnd();
     }
 
+    /// <summary>
+    /// Write <paramref name="obj"/> as YAML to the file.
+    /// </summary>
+    /// <returns><see langword="true"/> if successful.</returns>
     public static bool WriteYamlFile(this IFileInfo file, object obj, string? prefixYaml = null)
     {
         if(file.Exists)
@@ -42,6 +57,11 @@ public static class ProviderHelpers
         return true;
     }
 
+
+    /// <summary>
+    /// Write <paramref name="content"/> to the file.
+    /// </summary>
+    /// <returns><see langword="true"/> if successful.</returns>
     public static bool WriteTextFile(this IFileInfo file, string content)
     {
         if(file.Exists)

@@ -6,8 +6,14 @@ using Orbit.Core.Shell;
 
 namespace Orbit.Core.Hosting;
 
+/// <summary>
+/// Extensions to configure services on an <see cref="IServiceCollection"/>.
+/// </summary>
 public static class ServiceExtensions
 {
+    /// <summary>
+    /// Add the DI services required by Orbit
+    /// </summary>
     public static IServiceCollection AddOrbitServices(this IServiceCollection services)
     {
         return services
@@ -24,6 +30,9 @@ public static class ServiceExtensions
             .AddSingleton<Launch>();
     }
 
+    /// <summary>
+    /// Add <see cref="EntityProvider.CreateTemp()"/> as the <see cref="EntityProvider"/>.
+    /// </summary>
     public static IServiceCollection AddTestEntityProvider(this IServiceCollection services)
     {
         return services.AddSingleton<EntityProvider>(_ => EntityProvider.CreateTemp());

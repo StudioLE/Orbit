@@ -4,10 +4,17 @@ using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Schema;
 
+/// <summary>
+/// A factory for creating <see cref="WireGuard"/> with default values.
+/// </summary>
 public class WireGuardFactory : IFactory<WireGuard, WireGuard>
 {
     private readonly IWireGuardFacade _wg;
 
+    /// <summary>
+    /// The DI constructor for <see cref="WireGuardFactory"/>.
+    /// </summary>
+    /// <param name="wg"></param>
     public WireGuardFactory(IWireGuardFacade wg)
     {
         _wg = wg;

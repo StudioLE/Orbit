@@ -3,6 +3,9 @@ using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Schema;
 
+/// <summary>
+/// A factory for creating <see cref="Hardware"/> with default values.
+/// </summary>
 public class HardwareFactory : IFactory<Hardware, Hardware>
 {
     private const string DefaultType = "G1";

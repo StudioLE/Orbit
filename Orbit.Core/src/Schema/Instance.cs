@@ -5,35 +5,65 @@ using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Schema;
 
+/// <summary>
+/// The schema for an instance.
+/// </summary>
 public sealed class Instance : IEntity, IHasValidationAttributes
 {
+    /// <summary>
+    /// The name of the instance.
+    /// </summary>
     [NameSchema]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The number of the instance.
+    /// </summary>
     [Range(1, 64)]
     public int Number { get; set; }
 
+    /// <summary>
+    /// The role of the instance.
+    /// </summary>
     [NameSchema]
     public string Role { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The name of the cluster the instance belongs to.
+    /// </summary>
     [NameSchema]
     public string Cluster { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The name of the server hosting the instance.
+    /// </summary>
     [Required]
     [NameSchema]
     public string Server { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The network configuration of the instance.
+    /// </summary>
     [ValidateComplexType]
     public Network Network { get; set; } = new();
 
-    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// The operating system of the instance.
+    /// </summary>
     [YamlMember(Alias = "os")]
     [ValidateComplexType]
+    // ReSharper disable once InconsistentNaming
     public OS OS { get; set; } = new();
 
+    /// <summary>
+    /// The hardware of the instance.
+    /// </summary>
     [ValidateComplexType]
     public Hardware Hardware { get; set; } = new();
 
+    /// <summary>
+    /// The WireGuard configuration of the instance.
+    /// </summary>
     [ValidateComplexType]
     [YamlMember(Alias = "wireguard")]
     public WireGuard WireGuard { get; set; } = new();

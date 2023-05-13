@@ -4,8 +4,14 @@ using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Core;
 
-public class EmbeddedResourceHelpers
+/// <summary>
+/// Methods to help with <see cref="EmbeddedFileProvider"/>.
+/// </summary>
+public static class EmbeddedResourceHelpers
 {
+    /// <summary>
+    /// Get the content of an embedded yaml file as a <see cref="YamlNode"/>.
+    /// </summary>
     public static YamlNode GetYaml(string path)
     {
         IFileInfo templateFile = GetFile(path);
@@ -17,6 +23,9 @@ public class EmbeddedResourceHelpers
         return document.RootNode;
     }
 
+    /// <summary>
+    /// Get the context of an embedded text file.
+    /// </summary>
     public static string GetText(string path)
     {
         IFileInfo templateFile = GetFile(path);
@@ -25,6 +34,9 @@ public class EmbeddedResourceHelpers
         return reader.ReadToEnd();
     }
 
+    /// <summary>
+    /// Get the embedded resource file.
+    /// </summary>
     private static IFileInfo GetFile(string path)
     {
         Assembly assembly = typeof(EmbeddedResourceHelpers).Assembly;

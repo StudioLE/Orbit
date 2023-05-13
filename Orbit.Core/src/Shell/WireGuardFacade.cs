@@ -4,15 +4,21 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Shell;
 
+/// <inheritdoc cref="IWireGuardFacade"/>
 public class WireGuardFacade : IWireGuardFacade
 {
     private readonly ILogger<WireGuardFacade> _logger;
 
+    /// <summary>
+    /// The DI constructor for <see cref="WireGuardFacade"/>.
+    /// </summary>
+    /// <param name="logger"></param>
     public WireGuardFacade(ILogger<WireGuardFacade> logger)
     {
         _logger = logger;
     }
 
+    /// <inheritdoc/>
     public string? GeneratePrivateKey()
     {
         Process cmd = new();
@@ -46,7 +52,7 @@ public class WireGuardFacade : IWireGuardFacade
         return null;
     }
 
-
+    /// <inheritdoc/>
     public string? GeneratePublicKey(string privateKey)
     {
         Process cmd = new();
