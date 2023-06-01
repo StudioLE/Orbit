@@ -32,7 +32,6 @@ public static class ValidationHelpers
     /// <summary>
     /// Validate an object.
     /// </summary>
-    /// <param name="errors">Any validation errors.</param>
     /// <returns><see langword="true"/> if validation is successful.</returns>
     public static bool TryValidate(
         this IHasValidationAttributes @this,
