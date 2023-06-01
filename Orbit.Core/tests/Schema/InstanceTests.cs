@@ -7,12 +7,13 @@ using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.System;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
+using StudioLE.Verify.Yaml;
 
 namespace Orbit.Core.Tests.Schema;
 
 internal sealed class InstanceTests
 {
-    private readonly Verify _verify = new(new NUnitVerifyContext());
+    private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
 
     public InstanceTests()
@@ -60,7 +61,7 @@ internal sealed class InstanceTests
         Console.WriteLine(errors.Join());
 
         // Assert
-        await _verify.AsYaml(instance);
+        await _verify.AsYaml(instance, Yaml.Serializer());
         Assert.Multiple(() =>
         {
             Assert.That(isValid, Is.True);

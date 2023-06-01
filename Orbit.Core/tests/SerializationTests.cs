@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using StudioLE.Verify;
+using StudioLE.Verify.Json;
 using StudioLE.Verify.NUnit;
 
 namespace Orbit.Core.Tests;
@@ -36,7 +37,7 @@ internal sealed class SerializationTests
           allowed_i_ps: ''
           endpoint: ''
         """;
-    private readonly Verify _verify = new(new NUnitVerifyContext());
+    private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
 
     public SerializationTests()
