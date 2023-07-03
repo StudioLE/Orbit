@@ -38,6 +38,12 @@ public sealed class Server : IEntity, IHasValidationAttributes
     [ValidateComplexType]
     public SshConnection Ssh { get; set; } = new();
 
+    /// <summary>
+    /// The SSH connection details for the server.
+    /// </summary>
+    [ValidateComplexType]
+    public WireGuard WireGuard { get; set; } = new();
+
     // TODO: Replace with ServerFactory
     public void Review(EntityProvider provider)
     {

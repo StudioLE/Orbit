@@ -1,4 +1,5 @@
 using Orbit.Core.Schema.DataAnnotations;
+using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Schema;
 
@@ -20,7 +21,7 @@ public sealed class WireGuard
     public string PublicKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// The private key of the WireGuard peer.
+    /// The addresses of the WireGuard peer.
     /// </summary>
     [IPSchema]
     public string[] Addresses { get; set; } = Array.Empty<string>();
@@ -32,11 +33,12 @@ public sealed class WireGuard
     public string ServerPublicKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// The allowed IPs of the WireGuard peer.
+    /// The destination IP ranges to be routed through the WireGuard server.
     /// </summary>
     [IPSchema]
+    [YamlMember(Alias = "allowed_ips")]
     // ReSharper disable once InconsistentNaming
-    public string AllowedIPs { get; set; } = string.Empty;
+    public string[] AllowedIPs { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// The address of the WireGuard server.

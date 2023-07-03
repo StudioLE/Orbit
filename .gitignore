@@ -2,6 +2,7 @@
 .orbit/
 .host/
 appsettings.Development.json
+appsettings.Production.json
 .azurite
 .env
 .secrets

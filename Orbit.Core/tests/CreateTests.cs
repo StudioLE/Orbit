@@ -59,5 +59,6 @@ internal sealed class CreateTests
         string? userConfig = _provider.Instance.GetResource(createdInstance.Cluster, createdInstance.Name, "user-config.yml");
         Assert.That(networkConfig, Is.Not.Null);
         Assert.That(userConfig, Is.Not.Null);
+        await _verify.String(userConfig!);
     }
 }

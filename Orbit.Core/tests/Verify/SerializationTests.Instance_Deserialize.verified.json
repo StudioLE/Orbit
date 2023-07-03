@@ -22,9 +22,15 @@
   "WireGuard": {
     "PrivateKey": "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
     "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
-    "Addresses": [],
+    "Addresses": [
+      "10.1.1.1/24",
+      "fc00:1:1:1::/32"
+    ],
     "ServerPublicKey": "",
-    "AllowedIPs": "",
-    "Endpoint": ""
+    "AllowedIPs": [
+      "0.0.0.0/0",
+      "::/0"
+    ],
+    "Endpoint": "localhost:51820"
   }
 }

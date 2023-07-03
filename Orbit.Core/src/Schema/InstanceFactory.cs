@@ -48,7 +48,6 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? throw new("Cluster not set")
             : source.Cluster;
 
-        result.WireGuard = _wireGuardFactory.Create(source.WireGuard);
         result.Hardware = _hardwareFactory.Create(source.Hardware);
         result.OS = _osFactory.Create(source.OS);
 
@@ -65,6 +64,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
             : source.Name;
 
         result.Network = _networkFactory.Create(result);
+        result.WireGuard = _wireGuardFactory.Create(result);
 
         return result;
     }

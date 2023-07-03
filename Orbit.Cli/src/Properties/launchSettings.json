@@ -4,14 +4,14 @@
       "commandName": "Project",
       "commandLineArgs": "create --type G1",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "Launch": {
       "commandName": "Project",
       "commandLineArgs": "launch --cluster cluster-01 --instance cluster-01-01",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Production"
       }
     }
   }

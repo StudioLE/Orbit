@@ -18,7 +18,11 @@ hardware:
 wireguard:
   private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
-  addresses: []
+  addresses:
+  - 10.1.2.1/24
+  - fc00:1:2:1::/32
   server_public_key: ''
-  allowed_i_ps: ''
-  endpoint: ''
+  allowed_ips:
+  - 0.0.0.0/0
+  - ::/0
+  endpoint: localhost:51820

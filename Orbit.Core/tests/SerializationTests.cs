@@ -32,10 +32,14 @@ internal sealed class SerializationTests
         wireguard:
           private_key: {MockWireGuardFacade.PrivateKey}
           public_key: {MockWireGuardFacade.PublicKey}
-          addresses: []
+          addresses:
+          - 10.1.1.1/24
+          - fc00:1:1:1::/32
           server_public_key: ''
-          allowed_i_ps: ''
-          endpoint: ''
+          allowed_ips:
+          - 0.0.0.0/0
+          - ::/0
+          endpoint: localhost:51820
         """;
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
