@@ -14,7 +14,8 @@ public static class TestHelpers
         return Host
             .CreateDefaultBuilder()
             .UseTestLoggingProviders()
-            .ConfigureServices(services => services
+            .ConfigureServices((context, services) => services
+                .AddOrbitOptions(context.Configuration)
                 .AddOrbitServices()
                 .AddMockWireGuardFacade()
                 .AddTestEntityProvider())

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Core.Activities;
 using Orbit.Core.Providers;
@@ -22,10 +23,8 @@ public static class ServiceExtensions
             .AddTransient<NetworkFactory>()
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardFactory>()
-            .AddSingleton<ProviderOptions>()
             .AddSingleton<EntityProvider>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
-            .AddSingleton<CreateOptions>()
             .AddSingleton<Create>()
             .AddSingleton<Launch>();
     }
@@ -36,5 +35,26 @@ public static class ServiceExtensions
     public static IServiceCollection AddTestEntityProvider(this IServiceCollection services)
     {
         return services.AddSingleton<EntityProvider>(_ => EntityProvider.CreateTemp());
+    }
+
+    /// <summary>
+    /// Add the options required by Orbit.
+    /// </summary>
+    /// <param name="services">A service collection.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns><paramref name="services"/> for fluent chaining.</returns>
+    public static IServiceCollection AddOrbitOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddOptions<CreateOptions>()
+            .Bind(configuration.GetSection(CreateOptions.SectionKey))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services
+            .AddOptions<ProviderOptions>()
+            .Bind(configuration.GetSection(ProviderOptions.SectionKey))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        return services;
     }
 }

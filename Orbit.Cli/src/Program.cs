@@ -15,7 +15,8 @@ internal static class Program
         IHost host = Host
             .CreateDefaultBuilder()
             .RegisterCustomLoggingProviders()
-            .ConfigureServices(services => services
+            .ConfigureServices((context, services) => services
+                .AddOrbitOptions(context.Configuration)
                 .AddOrbitServices()
                 .AddCommandBuilderServices())
             .Build();

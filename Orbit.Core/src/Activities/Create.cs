@@ -1,5 +1,6 @@
 using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orbit.Core.Providers;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
@@ -25,10 +26,10 @@ public class Create : IActivity<Instance, Instance?>
     /// <summary>
     /// DI constructor for <see cref="Create"/>.
     /// </summary>
-    public Create(ILogger<Create> logger, CreateOptions options, EntityProvider provider, InstanceFactory factory)
+    public Create(ILogger<Create> logger, IOptions<CreateOptions> options, EntityProvider provider, InstanceFactory factory)
     {
         _logger = logger;
-        _options = options;
+        _options = options.Value;
         _provider = provider;
         _factory = factory;
     }
