@@ -121,9 +121,7 @@ public class Create : IActivity<Instance, Instance?>
         yaml["runcmd"].SetSequenceStyle(SequenceStyle.Block);
         string[] installers =
         {
-            "10-install-docker.sh",
-            "20-install-cri-dockerd.sh",
-            "30-install-kubernetes.sh"
+            "10-install-docker.sh"
         };
         foreach (string installer in installers)
         {
