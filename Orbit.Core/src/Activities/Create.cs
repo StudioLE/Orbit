@@ -87,7 +87,7 @@ public class Create : IActivity<Instance, Instance?>
             [Peer]
             PublicKey = {instance.WireGuard.ServerPublicKey}
             AllowedIPs = {instance.WireGuard.AllowedIPs.Join(", ")}
-            Endpoint = 203.0.113.1:51820
+            Endpoint = {instance.WireGuard.Endpoint}
             """);
 
         return lines.Join();
