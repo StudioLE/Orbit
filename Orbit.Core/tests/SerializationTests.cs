@@ -19,7 +19,7 @@ internal sealed class SerializationTests
         Role: node
         Server: server-01
         Network: network-01
-        os:
+        OS:
           Name: ubuntu
           Version: jammy
         Hardware:
@@ -28,7 +28,7 @@ internal sealed class SerializationTests
           Cpus: 1
           Memory: 4
           Disk: 20
-        wireguard:
+        WireGuard:
           PrivateKey: {MockWireGuardFacade.PrivateKey}
           PublicKey: {MockWireGuardFacade.PublicKey}
           Addresses:

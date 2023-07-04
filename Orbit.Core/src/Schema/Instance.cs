@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils.DataAnnotations;
-using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Schema;
 
@@ -45,7 +44,6 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// <summary>
     /// The operating system of the instance.
     /// </summary>
-    [YamlMember(Alias = "os")]
     [ValidateComplexType]
     // ReSharper disable once InconsistentNaming
     public OS OS { get; set; } = new();
@@ -60,6 +58,5 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// The WireGuard configuration of the instance.
     /// </summary>
     [ValidateComplexType]
-    [YamlMember(Alias = "wireguard")]
     public WireGuard WireGuard { get; set; } = new();
 }

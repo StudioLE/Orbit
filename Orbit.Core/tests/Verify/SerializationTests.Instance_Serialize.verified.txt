@@ -3,7 +3,7 @@ Number: 1
 Role: node
 Server: server-01
 Network: network-01
-os:
+OS:
   Name: ubuntu
   Version: jammy
 Hardware:
@@ -12,7 +12,7 @@ Hardware:
   Cpus: 1
   Memory: 4
   Disk: 20
-wireguard:
+WireGuard:
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   Addresses:
