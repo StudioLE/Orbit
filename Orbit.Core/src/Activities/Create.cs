@@ -48,7 +48,6 @@ public class Create : IActivity<Instance, Instance?>
             })
             .Then(() => instance.TryValidate(_logger))
             .Then(() => PutInstance(instance))
-            .Then(() => CreateNetworkConfig(instance))
             .Then(() => CreateUserConfig(instance));
         Pipeline<Task<Instance?>> pipeline = builder.Build();
         return pipeline.Execute();
@@ -92,20 +91,6 @@ public class Create : IActivity<Instance, Instance?>
             """);
 
         return lines.Join();
-    }
-
-    private bool CreateNetworkConfig(Instance instance)
-    {
-        YamlNode yaml = EmbeddedResourceHelpers.GetYaml("Resources/Templates/network-config-template.yml");
-        YamlNode adapter = yaml["network"]["ethernets"]["eth0"];
-
-        adapter["addresses"][0].SetValue(instance.Network.Address);
-        adapter["routes"][0]["via"].SetValue(instance.Network.Gateway);
-
-        if (_instances.PutResource(new InstanceId(instance.Name), "network-config.yml", yaml))
-            return true;
-        _logger.LogError("Failed to write the network config file.");
-        return false;
     }
 
     private bool CreateUserConfig(Instance instance)
