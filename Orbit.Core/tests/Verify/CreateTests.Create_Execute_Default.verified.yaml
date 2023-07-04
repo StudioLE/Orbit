@@ -18,8 +18,8 @@ wireguard:
   Addresses:
   - 10.1.1.0/24
   - fc00:1:1::/32
-  ServerPublicKey: ''
+  ServerPublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   AllowedIPs:
   - 0.0.0.0/0
   - ::/0
-  Endpoint: localhost:51820
+  Endpoint: 203.0.113.1:51820

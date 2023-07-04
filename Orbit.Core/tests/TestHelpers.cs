@@ -43,7 +43,12 @@ public static class TestHelpers
         {
             Name = "network-01",
             Number = 1,
-            Server = "server-01"
+            Server = "server-01",
+            WireGuardPort = MockWireGuardFacade.Port,
+            WireGuardPrivateKey = MockWireGuardFacade.PrivateKey,
+            WireGuardPublicKey = MockWireGuardFacade.PublicKey,
+            ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
+            ExternalIPv6 = MockWireGuardFacade.ExternalIPv6
         });
         return host;
     }

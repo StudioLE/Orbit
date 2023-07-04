@@ -11,7 +11,7 @@ namespace Orbit.Core.Schema;
 public class WireGuardFactory : IFactory<Instance, WireGuard>
 {
     private readonly IWireGuardFacade _wg;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly IEntityProvider<Network> _networks;
     private static readonly string[] _defaultAllowedIPs =
     {
         "0.0.0.0/0",
@@ -21,10 +21,10 @@ public class WireGuardFactory : IFactory<Instance, WireGuard>
     /// <summary>
     /// The DI constructor for <see cref="WireGuardFactory"/>.
     /// </summary>
-    public WireGuardFactory(IWireGuardFacade wg, IEntityProvider<Server> servers)
+    public WireGuardFactory(IWireGuardFacade wg, IEntityProvider<Network> networks)
     {
         _wg = wg;
-        _servers = servers;
+        _networks = networks;
     }
 
     /// <inheritdoc/>
@@ -46,24 +46,23 @@ public class WireGuardFactory : IFactory<Instance, WireGuard>
         if(result.PublicKey.IsNullOrEmpty())
             result.PublicKey = _wg.GeneratePublicKey(result.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
 
-
-        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new("Failed to get server.");
+        Network network = _networks.Get(new NetworkId(instance.Network)) ?? throw new("Failed to get the network.");
 
         if (!result.Addresses.Any())
             result.Addresses = new[]
             {
-                $"10.{server.Number}.{instance.Number}.0/24",
-                $"fc00:{server.Number}:{instance.Number}::/32"
+                network.GetInternalIPv4(instance),
+                network.GetInternalIPv6(instance)
             };
 
         if(result.ServerPublicKey.IsNullOrEmpty())
-            result.ServerPublicKey = server.WireGuard.PublicKey ?? throw new("Failed to get WireGuard public key from server.");
+            result.ServerPublicKey = network.WireGuardPublicKey ?? throw new("Failed to get WireGuard public key from network.");
 
         if (!result.AllowedIPs.Any())
             result.AllowedIPs = _defaultAllowedIPs;
 
         if (result.Endpoint.IsNullOrEmpty())
-            result.Endpoint = server.Address + ":51820";
+            result.Endpoint = network.ExternalIPv4 + ":" + network.WireGuardPort;
 
         return result;
     }
