@@ -13,7 +13,6 @@ public class NetworkFactory : IFactory<Network, Network>
     private const int DefaultNumberValue = 1;
     private readonly IEntityProvider<Network> _networks;
 
-
     public NetworkFactory(IEntityProvider<Network> networks)
     {
         _networks = networks;
@@ -23,6 +22,10 @@ public class NetworkFactory : IFactory<Network, Network>
     public Network Create(Network source)
     {
         Network result = new();
+
+        result.Server = source.Server.IsNullOrEmpty()
+            ? throw new("Can't create a network without a server.")
+            : source.Server;
 
         result.Number = source.Number == default
             ? DefaultNumber()

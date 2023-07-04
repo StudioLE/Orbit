@@ -32,6 +32,10 @@ public class ServerFactory : IFactory<Server, Server>
             ? $"{DefaultName}-{result.Number:00}"
             : source.Name;
 
+        result.Address = source.Address.IsNullOrEmpty()
+            ? throw new("Address is required.")
+            : source.Address;
+
         return result;
     }
 

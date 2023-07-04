@@ -19,4 +19,10 @@ public sealed class Network : IEntity
     /// </summary>
     [Range(1, 64)]
     public int Number { get; set; }
+
+    /// <summary>
+    /// The name of the server hosting the network.
+    /// </summary>
+    [NameSchema]
+    public string Server { get; set; } = string.Empty;
 }

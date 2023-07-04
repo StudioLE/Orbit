@@ -25,12 +25,6 @@ public static class TestHelpers
                 .AddMockWireGuardFacade())
             .ConfigureServices(configureServices)
             .Build();
-        IEntityProvider<Network> networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
-        networks.Put(new()
-        {
-            Name = "network-01",
-            Number = 1
-        });
         IEntityProvider<Server> servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
         servers.Put(new()
         {
@@ -43,6 +37,13 @@ public static class TestHelpers
                 User = "user",
                 PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
             }
+        });
+        IEntityProvider<Network> networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
+        networks.Put(new()
+        {
+            Name = "network-01",
+            Number = 1,
+            Server = "server-01"
         });
         return host;
     }
