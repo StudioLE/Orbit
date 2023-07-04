@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Core.Activities;
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
+using Orbit.Core.Utils.Serialization.Yaml;
+using StudioLE.Core.Serialization;
 
 namespace Orbit.Core.Hosting;
 
@@ -23,18 +25,14 @@ public static class ServiceExtensions
             .AddTransient<NetworkFactory>()
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardFactory>()
-            .AddSingleton<EntityProvider>()
+            .AddTransient<IEntityFileProvider, EntityFileProvider>()
+            .AddTransient<ISerializer, YamlSerializer>()
+            .AddTransient<IDeserializer, YamlDeserializer>()
+            .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
+            .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
             .AddSingleton<Create>()
             .AddSingleton<Launch>();
-    }
-
-    /// <summary>
-    /// Add <see cref="EntityProvider.CreateTemp()"/> as the <see cref="EntityProvider"/>.
-    /// </summary>
-    public static IServiceCollection AddTestEntityProvider(this IServiceCollection services)
-    {
-        return services.AddSingleton<EntityProvider>(_ => EntityProvider.CreateTemp());
     }
 
     /// <summary>

@@ -1,3 +1,5 @@
+using StudioLE.Core.Serialization;
+
 namespace Orbit.Core.Utils.Serialization.Yaml;
 
 /// <summary>

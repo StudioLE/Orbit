@@ -1,5 +1,4 @@
 using Orbit.Core.Schema.DataAnnotations;
-using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Schema;
 
@@ -36,7 +35,6 @@ public sealed class WireGuard
     /// The destination IP ranges to be routed through the WireGuard server.
     /// </summary>
     [IPSchema]
-    [YamlMember(Alias = "allowed_ips")]
     // ReSharper disable once InconsistentNaming
     public string[] AllowedIPs { get; set; } = Array.Empty<string>();
 

@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "cluster-01-01",
+  "Name": "instance-01",
   "Number": 1,
   "Role": "node",
   "Server": "server-01",
   "Network": {
-    "Address": "10.1.1.1",
+    "Address": "10.1.1.0",
     "Gateway": "10.1.0.1"
   },
   "OS": {
@@ -22,8 +22,8 @@
     "PrivateKey": "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
     "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
     "Addresses": [
-      "10.1.1.1/24",
-      "fc00:1:1:1::/32"
+      "10.1.1.0/24",
+      "fc00:1:1::/32"
     ],
     "ServerPublicKey": "",
     "AllowedIPs": [

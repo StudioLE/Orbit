@@ -1,4 +1,4 @@
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Shell;
 using Orbit.Core.Utils;
 using StudioLE.Core.Patterns;
@@ -11,7 +11,7 @@ namespace Orbit.Core.Schema;
 public class WireGuardFactory : IFactory<Instance, WireGuard>
 {
     private readonly IWireGuardFacade _wg;
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Server> _servers;
     private static readonly string[] _defaultAllowedIPs =
     {
         "0.0.0.0/0",
@@ -21,10 +21,10 @@ public class WireGuardFactory : IFactory<Instance, WireGuard>
     /// <summary>
     /// The DI constructor for <see cref="WireGuardFactory"/>.
     /// </summary>
-    public WireGuardFactory(IWireGuardFacade wg, EntityProvider provider)
+    public WireGuardFactory(IWireGuardFacade wg, IEntityProvider<Server> servers)
     {
         _wg = wg;
-        _provider = provider;
+        _servers = servers;
     }
 
     /// <inheritdoc/>
@@ -47,7 +47,7 @@ public class WireGuardFactory : IFactory<Instance, WireGuard>
             result.PublicKey = _wg.GeneratePublicKey(result.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
 
 
-        Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get host.");
+        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new("Failed to get server.");
 
         if (!result.Addresses.Any())
             result.Addresses = new[]
@@ -57,7 +57,7 @@ public class WireGuardFactory : IFactory<Instance, WireGuard>
             };
 
         if(result.ServerPublicKey.IsNullOrEmpty())
-            result.ServerPublicKey = server.WireGuard.PublicKey ?? throw new("Failed to get WireGuard public key from host.");
+            result.ServerPublicKey = server.WireGuard.PublicKey ?? throw new("Failed to get WireGuard public key from server.");
 
         if (!result.AllowedIPs.Any())
             result.AllowedIPs = _defaultAllowedIPs;

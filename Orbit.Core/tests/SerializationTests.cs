@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
+using Orbit.Core.Utils.Serialization;
+using StudioLE.Core.Serialization;
 using StudioLE.Verify;
 using StudioLE.Verify.Json;
 using StudioLE.Verify.NUnit;
@@ -11,42 +13,46 @@ namespace Orbit.Core.Tests;
 
 internal sealed class SerializationTests
 {
-    private const string SourceYaml = $"""
-        name: cluster-01-01
-        number: 1
-        role: node
-        server: server-01
-        network:
-          address: 10.1.1.1
-          gateway: 10.1.0.1
+    private const string Source = $"""
+        Name: instance-01
+        Number: 1
+        Role: node
+        Server: server-01
+        Network:
+          Address: 10.1.1.0
+          Gateway: 10.1.0.1
         os:
-          name: ubuntu
-          version: jammy
-        hardware:
-          platform: Virtual
-          type: G1
-          cpus: 1
-          memory: 4
-          disk: 20
+          Name: ubuntu
+          Version: jammy
+        Hardware:
+          Platform: Virtual
+          Type: G1
+          Cpus: 1
+          Memory: 4
+          Disk: 20
         wireguard:
-          private_key: {MockWireGuardFacade.PrivateKey}
-          public_key: {MockWireGuardFacade.PublicKey}
-          addresses:
-          - 10.1.1.1/24
-          - fc00:1:1:1::/32
-          server_public_key: ''
-          allowed_ips:
+          PrivateKey: {MockWireGuardFacade.PrivateKey}
+          PublicKey: {MockWireGuardFacade.PublicKey}
+          Addresses:
+          - 10.1.1.0/24
+          - fc00:1:1::/32
+          ServerPublicKey: ''
+          AllowedIPs:
           - 0.0.0.0/0
           - ::/0
-          endpoint: localhost:51820
+          Endpoint: localhost:51820
         """;
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
+    private readonly ISerializer _serializer;
+    private readonly IDeserializer _deserializer;
 
     public SerializationTests()
     {
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
+        _serializer = host.Services.GetRequiredService<ISerializer>();
+        _deserializer = host.Services.GetRequiredService<IDeserializer>();
     }
 
     [Test]
@@ -64,10 +70,10 @@ internal sealed class SerializationTests
         });
 
         // Act
-        string yaml = Yaml.Serialize(instance);
+        string serialized = _serializer.Serialize(instance);
 
         // Assert
-        await _verify.String(yaml);
+        await _verify.String(serialized);
     }
 
     [Test]
@@ -75,7 +81,7 @@ internal sealed class SerializationTests
     {
         // Arrange
         // Act
-        Instance instance = Yaml.Deserialize<Instance>(SourceYaml);
+        Instance instance = _deserializer.Deserialize<Instance>(Source) ?? throw new("Failed to deserialize.");
 
         // Assert
         await _verify.AsJson(instance);
@@ -86,10 +92,10 @@ internal sealed class SerializationTests
     {
         // Arrange
         // Act
-        Instance instance = Yaml.Deserialize<Instance>(SourceYaml);
-        string serializedYaml = Yaml.Serialize(instance);
+        Instance instance = _deserializer.Deserialize<Instance>(Source) ?? throw new("Failed to deserialize.");
+        string serialized = _serializer.Serialize(instance);
 
         // Assert
-        await _verify.String(SourceYaml, serializedYaml);
+        await _verify.String(Source, serialized);
     }
 }

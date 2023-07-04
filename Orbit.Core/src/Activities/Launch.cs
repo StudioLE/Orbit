@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Shell;
@@ -17,16 +17,18 @@ namespace Orbit.Core.Activities;
 public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 {
     private readonly ILogger<Launch> _logger;
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Instance> _instances;
+    private readonly IEntityProvider<Server> _servers;
     private Instance _instance = null!;
 
     /// <summary>
     /// DI constructor for <see cref="Launch"/>.
     /// </summary>
-    public Launch(ILogger<Launch> logger, EntityProvider provider)
+    public Launch(ILogger<Launch> logger, IEntityProvider<Instance> instances, IEntityProvider<Server> servers)
     {
         _logger = logger;
-        _provider = provider;
+        _instances = instances;
+        _servers = servers;
     }
 
     /// <summary>
@@ -65,7 +67,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 
     private bool GetInstance(string instanceName)
     {
-        Instance? instance = _provider.Instance.Get(instanceName);
+        Instance? instance = _instances.Get(new InstanceId(instanceName));
         if (instance is null)
         {
             _logger.LogError("The instance does not exist.");
@@ -77,7 +79,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 
     private bool MultipassLaunch()
     {
-        Server? server = _provider.Server.Get(_instance.Server);
+        Server? server = _servers.Get(new ServerId(_instance.Server));
         if (server is null)
         {
             _logger.LogError("Failed to get server");
@@ -86,7 +88,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 
         ConnectionInfo connection = server.CreateConnection();
 
-        string? cloudInit = _provider.Instance.GetResource(_instance.Name, "user-config.yml");
+        string? cloudInit = _instances.GetResource(new InstanceId(_instance.Name), "user-config.yml");
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");

@@ -1,22 +1,22 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 
-namespace Orbit.Core.Tests;
+namespace Orbit.Core.Tests.Provision;
 
 internal sealed class InstanceProviderTests
 {
-    private const string InstanceName = "instance-01";
+    private readonly InstanceId _instanceId = new("instance-01");
     private readonly InstanceFactory _instanceFactory;
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Instance> _instances;
 
     public InstanceProviderTests()
     {
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
-        _provider = host.Services.GetRequiredService<EntityProvider>();
+        _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
     }
 
     [Test]
@@ -33,7 +33,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        Instance? instance = _provider.Instance.Get(InstanceName);
+        Instance? instance = _instances.Get(_instanceId);
 
         // Assert
         Assert.That(instance, Is.Null);
@@ -43,7 +43,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        string[] names = _provider.Instance.GetAllNames().ToArray();
+        string[] names = _instances.GetIndex().ToArray();
 
         // Assert
         Assert.That(names.Count, Is.EqualTo(0));
@@ -58,7 +58,7 @@ internal sealed class InstanceProviderTests
         });
 
         // Act
-        bool result = _provider.Instance.Put(instance);
+        bool result = _instances.Put(instance);
 
         // Assert
         Assert.That(result, Is.True);
@@ -68,7 +68,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        Instance? instance = _provider.Instance.Get(InstanceName);
+        Instance? instance = _instances.Get(_instanceId);
 
         // Assert
         Assert.That(instance, Is.Not.Null);
@@ -78,7 +78,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        string[] ids = _provider.Instance.GetAllNames().ToArray();
+        string[] ids = _instances.GetIndex().ToArray();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(1));

@@ -1,7 +1,7 @@
 using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
@@ -20,17 +20,17 @@ public class Create : IActivity<Instance, Instance?>
 {
     private readonly ILogger<Create> _logger;
     private readonly CreateOptions _options;
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Instance> _instances;
     private readonly InstanceFactory _factory;
 
     /// <summary>
     /// DI constructor for <see cref="Create"/>.
     /// </summary>
-    public Create(ILogger<Create> logger, IOptions<CreateOptions> options, EntityProvider provider, InstanceFactory factory)
+    public Create(ILogger<Create> logger, IOptions<CreateOptions> options, IEntityProvider<Instance> instances, InstanceFactory factory)
     {
         _logger = logger;
         _options = options.Value;
-        _provider = provider;
+        _instances = instances;
         _factory = factory;
     }
 
@@ -40,7 +40,6 @@ public class Create : IActivity<Instance, Instance?>
         PipelineBuilder<Task<Instance?>> builder = new PipelineBuilder<Task<Instance?>>()
             .OnSuccess(() => OnSuccess(instance))
             .OnFailure(OnFailure)
-            .Then(() => _provider.IsValid)
             .Then(() => _options.TryValidate(_logger))
             .Then(() =>
             {
@@ -68,7 +67,7 @@ public class Create : IActivity<Instance, Instance?>
 
     private bool PutInstance(Instance instance)
     {
-        if (_provider.Instance.Put(instance))
+        if (_instances.Put(instance))
             return true;
         _logger.LogError("Failed to write the instance file.");
         return false;
@@ -103,7 +102,7 @@ public class Create : IActivity<Instance, Instance?>
         adapter["addresses"][0].SetValue(instance.Network.Address);
         adapter["routes"][0]["via"].SetValue(instance.Network.Gateway);
 
-        if (_provider.Instance.PutResource(instance.Name, "network-config.yml", yaml))
+        if (_instances.PutResource(new InstanceId(instance.Name), "network-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the network config file.");
         return false;
@@ -153,7 +152,7 @@ public class Create : IActivity<Instance, Instance?>
         }
         // ReSharper restore StringLiteralTypo
 
-        if (_provider.Instance.PutResource(instance.Name, "user-config.yml", yaml))
+        if (_instances.PutResource(new InstanceId(instance.Name), "user-config.yml", yaml, "#cloud-config" + Environment.NewLine))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;

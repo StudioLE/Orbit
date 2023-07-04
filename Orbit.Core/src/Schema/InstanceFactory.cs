@@ -1,4 +1,4 @@
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Utils;
 using StudioLE.Core.Patterns;
 
@@ -12,7 +12,8 @@ public class InstanceFactory : IFactory<Instance, Instance>
     private const int DefaultInstanceNumber = 1;
     private const string DefaultRole = "node";
 
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Server> _servers;
+    private readonly IEntityProvider<Instance> _instances;
     private readonly WireGuardFactory _wireGuardFactory;
     private readonly HardwareFactory _hardwareFactory;
     private readonly OSFactory _osFactory;
@@ -22,13 +23,15 @@ public class InstanceFactory : IFactory<Instance, Instance>
     /// The DI constructor for <see cref="InstanceFactory"/>.
     /// </summary>
     public InstanceFactory(
-        EntityProvider provider,
+        IEntityProvider<Server> servers,
+        IEntityProvider<Instance> instances,
         NetworkFactory networkFactory,
         OSFactory osFactory,
         HardwareFactory hardwareFactory,
         WireGuardFactory wireGuardFactory)
     {
-        _provider = provider;
+        _servers = servers;
+        _instances = instances;
         _networkFactory = networkFactory;
         _osFactory = osFactory;
         _hardwareFactory = hardwareFactory;
@@ -41,7 +44,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
         Instance result = new();
 
         result.Server = source.Server.IsNullOrEmpty()
-            ? DefaultHost()
+            ? DefaultServer()
             : source.Server;
 
         result.Hardware = _hardwareFactory.Create(source.Hardware);
@@ -65,19 +68,17 @@ public class InstanceFactory : IFactory<Instance, Instance>
         return result;
     }
 
-    private string DefaultHost()
+    private string DefaultServer()
     {
-        return _provider
-                   .Server
-                   .GetAllNames()
+        return _servers
+                   .GetIndex()
                    .FirstOrDefault()
-               ?? throw new("Host must be set if more than one exist.");
+               ?? throw new("Server must be set if more than one exist.");
     }
 
     private int DefaultNumber()
     {
-        int[] numbers = _provider
-            .Instance
+        int[] numbers = _instances
             .GetAll()
             .Select(x => x.Number)
             .ToArray();

@@ -4,10 +4,11 @@ using NUnit.Framework;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.DataAnnotations;
+using StudioLE.Core.Serialization;
 using StudioLE.Core.System;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
-using StudioLE.Verify.Yaml;
+using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Schema;
 
@@ -15,11 +16,13 @@ internal sealed class InstanceTests
 {
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
+    private readonly ISerializer _serializer;
 
     public InstanceTests()
     {
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
+        _serializer = host.Services.GetRequiredService<ISerializer>();
     }
 
     [Test]
@@ -60,7 +63,7 @@ internal sealed class InstanceTests
         Console.WriteLine(errors.Join());
 
         // Assert
-        await _verify.AsYaml(instance, Yaml.Serializer());
+        await _verify.AsSerialized(instance, _serializer);
         Assert.Multiple(() =>
         {
             Assert.That(isValid, Is.True);

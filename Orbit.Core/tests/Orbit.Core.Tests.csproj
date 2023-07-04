@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="StudioLE.Verify.Json" Version="0.3.1" />
     <PackageReference Include="StudioLE.Verify.NUnit" Version="0.3.1" />
-    <PackageReference Include="StudioLE.Verify.Yaml" Version="0.3.1" />
+    <PackageReference Include="StudioLE.Verify.Yaml" Version="0.4.0-alpha.2" />
   </ItemGroup>
 
   <ItemGroup>

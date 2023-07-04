@@ -15,14 +15,12 @@ users:
   lock_passwd: false
   plain_text_passwd: pw
   sudo: ALL=(ALL) NOPASSWD:ALL
-  ssh_authorized_keys:
-  - ''
+  ssh_authorized_keys: []
 - name: user
   shell: /bin/bash
   lock_passwd: false
   plain_text_passwd: pw
-  ssh_authorized_keys:
-  - ''
+  ssh_authorized_keys: []
 wireguard:
   interfaces:
   - name: wg0

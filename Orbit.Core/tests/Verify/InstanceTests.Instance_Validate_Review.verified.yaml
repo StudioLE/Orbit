@@ -1,27 +1,27 @@
-﻿name: instance-01
-number: 1
-role: node
-server: server-01
-network:
-  address: 10.1.1.0
-  gateway: 10.1.0.1
+﻿Name: instance-01
+Number: 1
+Role: node
+Server: server-01
+Network:
+  Address: 10.1.1.0
+  Gateway: 10.1.0.1
 os:
-  name: ubuntu
-  version: jammy
-hardware:
-  platform: Virtual
-  type: G1
-  cpus: 1
-  memory: 4
-  disk: 20
+  Name: ubuntu
+  Version: jammy
+Hardware:
+  Platform: Virtual
+  Type: G1
+  Cpus: 1
+  Memory: 4
+  Disk: 20
 wireguard:
-  private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
-  public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
-  addresses:
+  PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+  PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+  Addresses:
   - 10.1.1.0/24
   - fc00:1:1::/32
-  server_public_key: ''
-  allowed_ips:
+  ServerPublicKey: ''
+  AllowedIPs:
   - 0.0.0.0/0
   - ::/0
-  endpoint: localhost:51820
+  Endpoint: localhost:51820

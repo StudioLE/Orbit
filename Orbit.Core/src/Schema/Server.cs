@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
@@ -45,20 +45,18 @@ public sealed class Server : IEntity, IHasValidationAttributes
     public WireGuard WireGuard { get; set; } = new();
 
     // TODO: Replace with ServerFactory
-    public void Review(EntityProvider provider)
+    public void Review(IEntityProvider<Server> servers)
     {
         if (!Name.IsNullOrEmpty())
         {
-            Server? server = provider.Server.Get(Name);
+            Server? server = servers.Get(new ServerId(Name));
             if (server is not null)
                 Number = server.Number;
         }
 
         if (Number == default)
         {
-            // TODO: Change to GetAllClusterIds
-            int[] numbers = provider
-                .Server
+            int[] numbers = servers
                 .GetAll()
                 .Select(x => x.Number)
                 .ToArray();

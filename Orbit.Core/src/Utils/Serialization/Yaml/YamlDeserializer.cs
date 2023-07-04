@@ -1,3 +1,5 @@
+using StudioLE.Core.Serialization;
+
 namespace Orbit.Core.Utils.Serialization.Yaml;
 
 
@@ -32,24 +34,6 @@ public class YamlDeserializer : IDeserializer
             .WithNodeTypeResolver(new ReadOnlyCollectionNodeTypeResolver())
             .IgnoreUnmatchedProperties()
             .Build();
-    }
-
-    /// <inheritdoc />
-    public T Deserialize<T>(string input)
-    {
-        return _deserializer.Deserialize<T>(input);
-    }
-
-    /// <inheritdoc />
-    public T Deserialize<T>(TextReader input)
-    {
-        return _deserializer.Deserialize<T>(input);
-    }
-
-    /// <inheritdoc />
-    public object? Deserialize(string input, Type type)
-    {
-        return _deserializer.Deserialize(input, type);
     }
 
     /// <inheritdoc />

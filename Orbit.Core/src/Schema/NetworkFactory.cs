@@ -1,4 +1,4 @@
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Utils;
 using StudioLE.Core.Patterns;
 
@@ -9,12 +9,12 @@ namespace Orbit.Core.Schema;
 /// </summary>
 public class NetworkFactory : IFactory<Instance, Network>
 {
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Server> _servers;
 
 
-    public NetworkFactory(EntityProvider provider)
+    public NetworkFactory(IEntityProvider<Server> servers)
     {
-        _provider = provider;
+        _servers = servers;
     }
 
     /// <inheritdoc />
@@ -29,7 +29,7 @@ public class NetworkFactory : IFactory<Instance, Network>
         if(!result.Address.IsNullOrEmpty() && !result.Gateway.IsNullOrEmpty())
             return result;
 
-        Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get host.");
+        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new("Failed to get server.");
 
         if (result.Address.IsNullOrEmpty())
             result.Address = $"10.{server.Number}.{instance.Number}.0";

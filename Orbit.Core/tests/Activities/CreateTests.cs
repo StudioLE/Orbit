@@ -2,21 +2,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Activities;
-using Orbit.Core.Providers;
+using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Core.Serialization;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
-using StudioLE.Verify.Yaml;
+using StudioLE.Verify.Serialization;
 
-namespace Orbit.Core.Tests;
+namespace Orbit.Core.Tests.Activities;
 
 internal sealed class CreateTests
 {
     private readonly IVerify _verify = new NUnitVerify();
     private readonly Create _create;
-    private readonly EntityProvider _provider;
+    private readonly IEntityProvider<Instance> _instances;
+    private readonly ISerializer _serializer;
 
     public CreateTests()
     {
@@ -25,7 +27,8 @@ internal sealed class CreateTests
         #endif
         IHost host = TestHelpers.CreateTestHost();
         _create = host.Services.GetRequiredService<Create>();
-        _provider = host.Services.GetRequiredService<EntityProvider>();
+        _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
+        _serializer = host.Services.GetRequiredService<ISerializer>();
     }
 
     [Test]
@@ -49,14 +52,14 @@ internal sealed class CreateTests
         if (createdInstance is null)
             Assert.Fail();
         else
-            await _verify.AsYaml(createdInstance, Yaml.Serializer());
+            await _verify.AsSerialized(createdInstance, _serializer);
 
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
         Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
-        Instance storedInstance = _provider.Instance.Get(createdInstance.Name) ?? throw new("Failed to get instance.");
-        await _verify.AsYaml(storedInstance, createdInstance, Yaml.Serializer());
-        string? networkConfig = _provider.Instance.GetResource(createdInstance.Name, "network-config.yml");
-        string? userConfig = _provider.Instance.GetResource(createdInstance.Name, "user-config.yml");
+        Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
+        await _verify.AsSerialized(storedInstance, createdInstance, _serializer);
+        string? networkConfig = _instances.GetResource(new InstanceId(createdInstance.Name), "network-config.yml");
+        string? userConfig = _instances.GetResource(new InstanceId(createdInstance.Name), "user-config.yml");
         Assert.That(networkConfig, Is.Not.Null);
         Assert.That(userConfig, Is.Not.Null);
         await _verify.String(userConfig!);

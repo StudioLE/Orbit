@@ -1,8 +1,6 @@
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Orbit.Core;
 
@@ -11,44 +9,6 @@ namespace Orbit.Core;
 /// </summary>
 public static class Yaml
 {
-    private static readonly INamingConvention _namingConvention = UnderscoredNamingConvention.Instance;
-
-    /// <summary>
-    /// The default Yaml serializer.
-    /// </summary>
-    public static ISerializer Serializer()
-    {
-        return new SerializerBuilder()
-            .WithNamingConvention(_namingConvention)
-            .Build();
-    }
-
-    /// <summary>
-    /// The default Yaml de-serializer.
-    /// </summary>
-    public static IDeserializer Deserializer()
-    {
-        return new DeserializerBuilder()
-            .WithNamingConvention(_namingConvention)
-            .IgnoreUnmatchedProperties()
-            .Build();
-    }
-
-    /// <inheritdoc cref="ISerializer.Serialize(object)"/>
-    public static string Serialize(object obj)
-    {
-        ISerializer serializer = Serializer();
-        return serializer.Serialize(obj);
-    }
-
-
-    /// <inheritdoc cref="IDeserializer.Deserialize{T}(string)"/>
-    public static T Deserialize<T>(string yaml)
-    {
-        IDeserializer deserializer = Deserializer();
-        return deserializer.Deserialize<T>(yaml);
-    }
-
     /// <summary>
     /// Set the value of a <see cref="YamlScalarNode"/>.
     /// </summary>
