@@ -25,6 +25,12 @@ public static class TestHelpers
                 .AddMockWireGuardFacade())
             .ConfigureServices(configureServices)
             .Build();
+        IEntityProvider<Network> networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
+        networks.Put(new()
+        {
+            Name = "network-01",
+            Number = 1
+        });
         IEntityProvider<Server> servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
         servers.Put(new()
         {

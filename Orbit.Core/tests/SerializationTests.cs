@@ -18,9 +18,7 @@ internal sealed class SerializationTests
         Number: 1
         Role: node
         Server: server-01
-        Network:
-          Address: 10.1.1.0
-          Gateway: 10.1.0.1
+        Network: network-01
         os:
           Name: ubuntu
           Version: jammy

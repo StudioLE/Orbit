@@ -1,2 +1,3 @@
 ﻿The field Number must be between 1 and 64.
 The Server field is required.
+The Network field is required.

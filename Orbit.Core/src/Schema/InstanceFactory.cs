@@ -13,26 +13,26 @@ public class InstanceFactory : IFactory<Instance, Instance>
     private const string DefaultRole = "node";
 
     private readonly IEntityProvider<Server> _servers;
+    private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Instance> _instances;
     private readonly WireGuardFactory _wireGuardFactory;
     private readonly HardwareFactory _hardwareFactory;
     private readonly OSFactory _osFactory;
-    private readonly NetworkFactory _networkFactory;
 
     /// <summary>
     /// The DI constructor for <see cref="InstanceFactory"/>.
     /// </summary>
     public InstanceFactory(
         IEntityProvider<Server> servers,
+        IEntityProvider<Network> networks,
         IEntityProvider<Instance> instances,
-        NetworkFactory networkFactory,
         OSFactory osFactory,
         HardwareFactory hardwareFactory,
         WireGuardFactory wireGuardFactory)
     {
         _servers = servers;
+        _networks = networks;
         _instances = instances;
-        _networkFactory = networkFactory;
         _osFactory = osFactory;
         _hardwareFactory = hardwareFactory;
         _wireGuardFactory = wireGuardFactory;
@@ -46,6 +46,10 @@ public class InstanceFactory : IFactory<Instance, Instance>
         result.Server = source.Server.IsNullOrEmpty()
             ? DefaultServer()
             : source.Server;
+
+        result.Network = source.Network.IsNullOrEmpty()
+            ? DefaultNetwork()
+            : source.Network;
 
         result.Hardware = _hardwareFactory.Create(source.Hardware);
         result.OS = _osFactory.Create(source.OS);
@@ -62,7 +66,6 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? $"instance-{result.Number:00}"
             : source.Name;
 
-        result.Network = _networkFactory.Create(result);
         result.WireGuard = _wireGuardFactory.Create(result);
 
         return result;
@@ -74,6 +77,14 @@ public class InstanceFactory : IFactory<Instance, Instance>
                    .GetIndex()
                    .FirstOrDefault()
                ?? throw new("Server must be set if more than one exist.");
+    }
+
+    private string DefaultNetwork()
+    {
+        return _networks
+                   .GetIndex()
+                   .FirstOrDefault()
+               ?? throw new("Network must be set if more than one exist.");
     }
 
     private int DefaultNumber()

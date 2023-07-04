@@ -36,10 +36,11 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public string Server { get; set; } = string.Empty;
 
     /// <summary>
-    /// The network configuration of the instance.
+    /// The name of the network the instance is connected to.
     /// </summary>
-    [ValidateComplexType]
-    public Network Network { get; set; } = new();
+    [Required]
+    [NameSchema]
+    public string Network { get; set; } = string.Empty;
 
     /// <summary>
     /// The operating system of the instance.

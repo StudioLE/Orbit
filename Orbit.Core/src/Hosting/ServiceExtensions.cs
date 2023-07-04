@@ -29,6 +29,7 @@ public static class ServiceExtensions
             .AddTransient<ISerializer, YamlSerializer>()
             .AddTransient<IDeserializer, YamlDeserializer>()
             .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
+            .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
             .AddSingleton<Create>()

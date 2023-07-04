@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Orbit.Core.Schema.DataAnnotations;
 
 namespace Orbit.Core.Schema;
@@ -5,19 +6,17 @@ namespace Orbit.Core.Schema;
 /// <summary>
 /// The schema for the network configuration of an <see cref="Instance"/>.
 /// </summary>
-public sealed class Network
+public sealed class Network : IEntity
 {
     /// <summary>
-    /// The IPv4 address of the instance.
+    /// The name of the network.
     /// </summary>
-    [IPSchema]
-    // ReSharper disable once InconsistentNaming
-    public string Address { get; set; } = string.Empty;
+    [NameSchema]
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// The IPv4 gateway of the instance.
+    /// The number of the network.
     /// </summary>
-    [IPSchema]
-    // ReSharper disable once InconsistentNaming
-    public string Gateway { get; set; } = string.Empty;
+    [Range(1, 64)]
+    public int Number { get; set; }
 }

@@ -7,36 +7,43 @@ namespace Orbit.Core.Schema;
 /// <summary>
 /// A factory for creating <see cref="Network"/> with default values.
 /// </summary>
-public class NetworkFactory : IFactory<Instance, Network>
+public class NetworkFactory : IFactory<Network, Network>
 {
-    private readonly IEntityProvider<Server> _servers;
+    private const string DefaultName = "network";
+    private const int DefaultNumberValue = 1;
+    private readonly IEntityProvider<Network> _networks;
 
 
-    public NetworkFactory(IEntityProvider<Server> servers)
+    public NetworkFactory(IEntityProvider<Network> networks)
     {
-        _servers = servers;
+        _networks = networks;
     }
 
     /// <inheritdoc />
-    public Network Create(Instance instance)
+    public Network Create(Network source)
     {
-        Network result = new()
-        {
-            Address = instance.Network.Address,
-            Gateway = instance.Network.Gateway
-        };
+        Network result = new();
 
-        if(!result.Address.IsNullOrEmpty() && !result.Gateway.IsNullOrEmpty())
-            return result;
+        result.Number = source.Number == default
+            ? DefaultNumber()
+            : source.Number;
 
-        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new("Failed to get server.");
-
-        if (result.Address.IsNullOrEmpty())
-            result.Address = $"10.{server.Number}.{instance.Number}.0";
-
-        if (result.Gateway.IsNullOrEmpty())
-            result.Gateway = $"10.{server.Number}.0.1";
+        result.Name = source.Name.IsNullOrEmpty()
+            ? $"{DefaultName}-{result.Number:00}"
+            : source.Name;
 
         return result;
+    }
+
+    private int DefaultNumber()
+    {
+        int[] numbers = _networks
+            .GetAll()
+            .Select(x => x.Number)
+            .ToArray();
+        int finalNumber = numbers.Any()
+            ? numbers.Max()
+            : DefaultNumberValue - 1;
+        return finalNumber  + 1;
     }
 }

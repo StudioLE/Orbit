@@ -50,9 +50,11 @@ public class EntityFileProvider : IEntityFileProvider
     {
         Type type = typeof(T);
         if (type == typeof(Instance))
-            return "instances";
+            return InstanceId.Directory;
         if (type == typeof(Server))
-            return "servers";
+            return ServerId.Directory;
+        if (type == typeof(Network))
+            return NetworkId.Directory;
         throw new("Invalid entity type.");
     }
 }
