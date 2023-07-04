@@ -9,7 +9,7 @@
     },
     "Launch": {
       "commandName": "Project",
-      "commandLineArgs": "launch --cluster cluster-01 --instance cluster-01-01",
+      "commandLineArgs": "launch --instance instance-01",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

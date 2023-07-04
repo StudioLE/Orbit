@@ -44,15 +44,11 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? DefaultHost()
             : source.Server;
 
-        result.Cluster = source.Cluster.IsNullOrEmpty()
-            ? throw new("Cluster not set")
-            : source.Cluster;
-
         result.Hardware = _hardwareFactory.Create(source.Hardware);
         result.OS = _osFactory.Create(source.OS);
 
         result.Number = source.Number == default
-            ? DefaultNumber(result)
+            ? DefaultNumber()
             : source.Number;
 
         result.Role = source.Role.IsNullOrEmpty()
@@ -60,7 +56,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
             : source.Role;
 
         result.Name = source.Name.IsNullOrEmpty()
-            ? $"{result.Cluster}-{result.Number:00}"
+            ? $"instance-{result.Number:00}"
             : source.Name;
 
         result.Network = _networkFactory.Create(result);
@@ -78,11 +74,11 @@ public class InstanceFactory : IFactory<Instance, Instance>
                ?? throw new("Host must be set if more than one exist.");
     }
 
-    private int DefaultNumber(Instance instance)
+    private int DefaultNumber()
     {
         int[] numbers = _provider
             .Instance
-            .GetAllInCluster(instance.Cluster)
+            .GetAll()
             .Select(x => x.Number)
             .ToArray();
         int finalNumber = numbers.Any()

@@ -7,7 +7,7 @@ namespace Orbit.Core.Providers;
 
 
 /// <summary>
-/// A repository of <see cref="Cluster"/>, <see cref="Instance"/>, and <see cref="Server"/>.
+/// A repository of <see cref="Instance"/>, and <see cref="Server"/>.
 /// </summary>
 /// <see href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design">Repository pattern</see>.
 public class EntityProvider
@@ -15,8 +15,6 @@ public class EntityProvider
     public bool IsValid { get; }
 
     public InstanceProvider Instance { get; } = null!;
-
-    public ClusterProvider Cluster { get; } = null!;
 
     public ServerProvider Server { get; } = null!;
 
@@ -27,7 +25,6 @@ public class EntityProvider
         IsValid = true;
         PhysicalFileProvider provider = new(options.Directory);
         Instance = new(provider);
-        Cluster = new(provider);
         Server = new(provider);
     }
 
@@ -52,11 +49,6 @@ public class EntityProvider
                 User = "user",
                 PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
             }
-        });
-        provider.Cluster.Put(new()
-        {
-            Name = "cluster-01",
-            Number = 1
         });
         return provider;
     }

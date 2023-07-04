@@ -41,7 +41,6 @@ public class Create : IActivity<Instance, Instance?>
             .OnFailure(OnFailure)
             .Then(() => _provider.IsValid)
             .Then(() => _options.TryValidate(_logger))
-            .Then(() => GetOrCreateCluster(instance))
             .Then(() =>
             {
                 instance = _factory.Create(instance);
@@ -64,23 +63,6 @@ public class Create : IActivity<Instance, Instance?>
     private static Task<Instance?> OnFailure()
     {
         return Task.FromResult<Instance?>(null);
-    }
-
-    private bool GetOrCreateCluster(Instance instance)
-    {
-        Cluster? cluster = _provider.Cluster.Get(instance.Cluster);
-        if (cluster is null)
-        {
-            cluster = new();
-            cluster.Review(_provider);
-            if (!_provider.Cluster.Put(cluster))
-            {
-                _logger.LogError("Failed to write the cluster file.");
-                return false;
-            }
-            instance.Cluster = cluster.Name;
-        }
-        return cluster.TryValidate(_logger);
     }
 
     private bool PutInstance(Instance instance)
@@ -120,7 +102,7 @@ public class Create : IActivity<Instance, Instance?>
         adapter["addresses"][0].SetValue(instance.Network.Address);
         adapter["routes"][0]["via"].SetValue(instance.Network.Gateway);
 
-        if (_provider.Instance.PutResource(instance.Cluster, instance.Name, "network-config.yml", yaml))
+        if (_provider.Instance.PutResource(instance.Name, "network-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the network config file.");
         return false;
@@ -170,7 +152,7 @@ public class Create : IActivity<Instance, Instance?>
         }
         // ReSharper restore StringLiteralTypo
 
-        if (_provider.Instance.PutResource(instance.Cluster, instance.Name, "user-config.yml", yaml))
+        if (_provider.Instance.PutResource(instance.Name, "user-config.yml", yaml))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;

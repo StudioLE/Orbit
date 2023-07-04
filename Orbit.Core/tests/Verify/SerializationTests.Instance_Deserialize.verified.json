@@ -2,7 +2,6 @@
   "Name": "cluster-01-01",
   "Number": 1,
   "Role": "node",
-  "Cluster": "cluster-01",
   "Server": "server-01",
   "Network": {
     "Address": "10.1.1.1",

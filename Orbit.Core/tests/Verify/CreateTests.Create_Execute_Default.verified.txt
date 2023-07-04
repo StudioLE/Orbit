@@ -1,6 +1,6 @@
 ﻿#cloud-config
 
-hostname: cluster-02-01
+hostname: instance-01
 apt:
   preserve_sources_list: true
 package_update: true
@@ -30,8 +30,8 @@ wireguard:
     content: |-
       [Interface]
       PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
-      Address = 10.1.2.1/24
-      Address = fc00:1:2:1::/32
+      Address = 10.1.1.0/24
+      Address = fc00:1:1::/32
       [Peer]
       PublicKey = 
       AllowedIPs = 0.0.0.0/0, ::/0

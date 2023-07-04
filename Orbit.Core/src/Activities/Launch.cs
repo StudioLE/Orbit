@@ -35,14 +35,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     public class Inputs
     {
         /// <summary>
-        /// The name of the cluster the instance to launch belongs to.
-        /// </summary>
-        [Required]
-        [NameSchema]
-        public string Cluster { get; set; } = string.Empty;
-
-        /// <summary>
-        /// THe name of the instance to launch.
+        /// The name of the instance to launch.
         /// </summary>
         [Required]
         [NameSchema]
@@ -63,16 +56,16 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         PipelineBuilder<Task<Outputs>> builder = new PipelineBuilder<Task<Outputs>>()
             .OnSuccess(OnSuccess)
             .OnFailure(OnFailure)
-            .Then(() => GetInstance(inputs.Cluster, inputs.Instance))
+            .Then(() => GetInstance(inputs.Instance))
             .Then(() => _instance.TryValidate(_logger))
             .Then(MultipassLaunch);
         Pipeline<Task<Outputs>> pipeline = builder.Build();
         return pipeline.Execute();
     }
 
-    private bool GetInstance(string clusterName, string instanceName)
+    private bool GetInstance(string instanceName)
     {
-        Instance? instance = _provider.Instance.Get(clusterName, instanceName);
+        Instance? instance = _provider.Instance.Get(instanceName);
         if (instance is null)
         {
             _logger.LogError("The instance does not exist.");
@@ -93,7 +86,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 
         ConnectionInfo connection = server.CreateConnection();
 
-        string? cloudInit = _provider.Instance.GetResource(_instance.Cluster, _instance.Name, "user-config.yml");
+        string? cloudInit = _provider.Instance.GetResource(_instance.Name, "user-config.yml");
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");

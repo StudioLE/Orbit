@@ -3,13 +3,13 @@ using Orbit.Core.Schema;
 
 namespace Orbit.Core.Providers;
 
-
 /// <summary>
 /// A repository of <see cref="Instance"/>.
 /// </summary>
 /// <see href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design">Repository pattern</see>.
 public class InstanceProvider
 {
+    private const string Directory = "instances";
     private readonly IFileProvider _provider;
 
     public InstanceProvider(IFileProvider provider)
@@ -17,55 +17,41 @@ public class InstanceProvider
         _provider = provider;
     }
 
-    public Instance? Get(string clusterName, string instanceName)
+    public Instance? Get(string instanceName)
     {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, instanceName + ".yml"));
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(Directory, instanceName, instanceName + ".yml"));
         return file.ReadYamlFileAs<Instance>();
     }
 
     public bool Put(Instance instance)
     {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(instance.Cluster, instance.Name, instance.Name + ".yml"));
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(Directory, instance.Name, instance.Name + ".yml"));
         return file.WriteYamlFile(instance);
     }
 
-    public bool PutResource(string clusterName, string instanceName, string fileName, object obj)
+    public bool PutResource(string instanceName, string fileName, object obj)
     {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(Directory, instanceName, fileName));
         return file.WriteYamlFile(obj, "#cloud-config" + Environment.NewLine);
     }
 
-    public bool PutResource(string clusterName, string instanceName, string fileName, string content)
+    public string? GetResource(string instanceName, string fileName)
     {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
-        return file.WriteTextFile(content);
-    }
-
-    public string? GetResource(string clusterName, string instanceName, string fileName)
-    {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
+        IFileInfo file = _provider.GetFileInfo(Path.Combine(Directory, instanceName, fileName));
         return file.ReadTextFile();
     }
 
-    public Stream? GetResourceStream(string clusterName, string instanceName, string fileName)
+    public IEnumerable<string> GetAllNames()
     {
-        IFileInfo file = _provider.GetFileInfo(Path.Combine(clusterName, instanceName, fileName));
-        return file.Exists
-            ? file.CreateReadStream()
-            : null;
-    }
-
-    public IEnumerable<string> GetAllNamesInCluster(string clusterName)
-    {
-        return _provider.GetDirectoryContents(clusterName)
+        return _provider.GetDirectoryContents(Directory)
             .Where(x => x.IsDirectory)
             .Select(x => x.Name);
     }
 
-    public IEnumerable<Instance> GetAllInCluster(string clusterName)
+    public IEnumerable<Instance> GetAll()
     {
-        return GetAllNamesInCluster(clusterName)
-            .Select(instanceName => Get(clusterName, instanceName))
+        return GetAllNames()
+            .Select(Get)
             .OfType<Instance>();
     }
 }

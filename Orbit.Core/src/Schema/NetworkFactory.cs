@@ -30,10 +30,9 @@ public class NetworkFactory : IFactory<Instance, Network>
             return result;
 
         Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get host.");
-        Cluster cluster = _provider.Cluster.Get(instance.Cluster) ?? throw new("Failed to get cluster.");
 
         if (result.Address.IsNullOrEmpty())
-            result.Address = $"10.{server.Number}.{cluster.Number}.{instance.Number}";
+            result.Address = $"10.{server.Number}.{instance.Number}.0";
 
         if (result.Gateway.IsNullOrEmpty())
             result.Gateway = $"10.{server.Number}.0.1";

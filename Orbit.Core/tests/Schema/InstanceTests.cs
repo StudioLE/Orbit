@@ -48,7 +48,6 @@ internal sealed class InstanceTests
         Instance instance = _instanceFactory.Create(new()
         {
             Server = "server-01",
-            Cluster = "cluster-01",
             WireGuard =
             {
                 PrivateKey = MockWireGuardFacade.PrivateKey,

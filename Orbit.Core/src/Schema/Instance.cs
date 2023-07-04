@@ -29,12 +29,6 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public string Role { get; set; } = string.Empty;
 
     /// <summary>
-    /// The name of the cluster the instance belongs to.
-    /// </summary>
-    [NameSchema]
-    public string Cluster { get; set; } = string.Empty;
-
-    /// <summary>
     /// The name of the server hosting the instance.
     /// </summary>
     [Required]

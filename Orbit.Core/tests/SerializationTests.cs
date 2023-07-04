@@ -15,7 +15,6 @@ internal sealed class SerializationTests
         name: cluster-01-01
         number: 1
         role: node
-        cluster: cluster-01
         server: server-01
         network:
           address: 10.1.1.1
@@ -57,7 +56,6 @@ internal sealed class SerializationTests
         Instance instance = _instanceFactory.Create(new()
         {
             Server = "server-01",
-            Cluster = "cluster-01",
             WireGuard =
             {
                 PrivateKey = MockWireGuardFacade.PrivateKey,

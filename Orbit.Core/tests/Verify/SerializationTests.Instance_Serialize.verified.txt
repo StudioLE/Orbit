@@ -1,10 +1,9 @@
-﻿name: cluster-01-01
+﻿name: instance-01
 number: 1
 role: node
-cluster: cluster-01
 server: server-01
 network:
-  address: 10.1.1.1
+  address: 10.1.1.0
   gateway: 10.1.0.1
 os:
   name: ubuntu
@@ -19,8 +18,8 @@ wireguard:
   private_key: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   public_key: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   addresses:
-  - 10.1.1.1/24
-  - fc00:1:1:1::/32
+  - 10.1.1.0/24
+  - fc00:1:1::/32
   server_public_key: ''
   allowed_ips:
   - 0.0.0.0/0

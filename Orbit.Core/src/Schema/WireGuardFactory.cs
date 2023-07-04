@@ -48,13 +48,12 @@ public class WireGuardFactory : IFactory<Instance, WireGuard>
 
 
         Server server = _provider.Server.Get(instance.Server) ?? throw new("Failed to get host.");
-        Cluster cluster = _provider.Cluster.Get(instance.Cluster) ?? throw new("Failed to get cluster.");
 
         if (!result.Addresses.Any())
             result.Addresses = new[]
             {
-                $"10.{server.Number}.{cluster.Number}.{instance.Number}/24",
-                $"fc00:{server.Number}:{cluster.Number}:{instance.Number}::/32"
+                $"10.{server.Number}.{instance.Number}.0/24",
+                $"fc00:{server.Number}:{instance.Number}::/32"
             };
 
         if(result.ServerPublicKey.IsNullOrEmpty())

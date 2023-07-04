@@ -8,8 +8,7 @@ namespace Orbit.Core.Tests;
 
 internal sealed class InstanceProviderTests
 {
-    private const string ClusterName = "cluster-01";
-    private const string InstanceName = $"{ClusterName}-01";
+    private const string InstanceName = "instance-01";
     private readonly InstanceFactory _instanceFactory;
     private readonly EntityProvider _provider;
 
@@ -34,7 +33,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        Instance? instance = _provider.Instance.Get(ClusterName, InstanceName);
+        Instance? instance = _provider.Instance.Get(InstanceName);
 
         // Assert
         Assert.That(instance, Is.Null);
@@ -44,7 +43,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        string[] names = _provider.Instance.GetAllNamesInCluster(ClusterName).ToArray();
+        string[] names = _provider.Instance.GetAllNames().ToArray();
 
         // Assert
         Assert.That(names.Count, Is.EqualTo(0));
@@ -55,8 +54,7 @@ internal sealed class InstanceProviderTests
         // Arrange
         Instance instance = _instanceFactory.Create(new()
         {
-            Server = "server-01",
-            Cluster = "cluster-01"
+            Server = "server-01"
         });
 
         // Act
@@ -70,7 +68,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        Instance? instance = _provider.Instance.Get(ClusterName, InstanceName);
+        Instance? instance = _provider.Instance.Get(InstanceName);
 
         // Assert
         Assert.That(instance, Is.Not.Null);
@@ -80,7 +78,7 @@ internal sealed class InstanceProviderTests
     {
         // Arrange
         // Act
-        string[] ids = _provider.Instance.GetAllNamesInCluster(ClusterName).ToArray();
+        string[] ids = _provider.Instance.GetAllNames().ToArray();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(1));
