@@ -8,6 +8,7 @@ using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
 using Orbit.Core.Utils.Pipelines;
 using Renci.SshNet;
+using StudioLE.Core.System;
 
 namespace Orbit.Core.Activities;
 
@@ -60,7 +61,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             .OnFailure(OnFailure)
             .Then(() => GetInstance(inputs.Instance))
             .Then(() => _instance.TryValidate(_logger))
-            .Then(MultipassLaunch);
+            .Then(ExecuteOnServer);
         Pipeline<Task<Outputs>> pipeline = builder.Build();
         return pipeline.Execute();
     }
@@ -77,7 +78,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         return true;
     }
 
-    private bool MultipassLaunch()
+    private bool ExecuteOnServer()
     {
         Server? server = _servers.Get(new ServerId(_instance.Server));
         if (server is null)
@@ -98,6 +99,27 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         using SshClient ssh = new(connection);
         ssh.Connect();
 
+        if (!ExecuteWireGuardSet(ssh))
+        {
+            _logger.LogError("Failed to set WireGuard");
+            return false;
+        }
+        if (!MultipassLaunch(ssh, cloudInit))
+        {
+            _logger.LogError("Failed to launch instance");
+            return false;
+        }
+        return true;
+    }
+
+    private bool ExecuteWireGuardSet(SshClient ssh)
+    {
+        string command = $"sudo wg set wg0 peer {_instance.WireGuard.PublicKey} allowed-ips {_instance.WireGuard.Addresses.Join(",")}";
+        return ssh.ExecuteToLogger(_logger, command);
+    }
+
+    private bool MultipassLaunch(SshClient ssh, string cloudInit)
+    {
         string command = $"""
             (
             cat <<EOF
@@ -110,9 +132,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
                 --name {_instance.Name} \
                 --cloud-init -
             """;
-
-        string? output = ssh.ExecuteToLogger(_logger, command);
-        return output is not null;
+        return ssh.ExecuteToLogger(_logger, command);
     }
 
     private static Task<Outputs> OnSuccess()

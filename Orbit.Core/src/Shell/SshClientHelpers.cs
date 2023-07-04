@@ -15,7 +15,7 @@ public static class SshClientHelpers
     /// Execute <paramref name="commandText"/> on <paramref name="ssh"/> and pass the standard output
     /// to <paramref name="logger"/>.
     /// </summary>
-    public static string? ExecuteToLogger(this SshClient ssh, ILogger logger, string commandText)
+    public static bool ExecuteToLogger(this SshClient ssh, ILogger logger, string commandText)
     {
         SshCommand command = ssh.CreateCommand(commandText);
         IAsyncResult result = command.BeginExecute();
@@ -40,13 +40,13 @@ public static class SshClientHelpers
         command.EndExecute(result);
 
         if (command.ExitStatus == 0)
-            return command.Result;
+            return true;
         logger.LogError("Failed to get multipass info.");
         if (!command.Error.IsNullOrEmpty())
             logger.LogError(command.Error);
         if (!command.Error.IsNullOrEmpty())
             logger.LogError(command.Error);
-        return null;
+        return false;
     }
 
     /// <summary>
