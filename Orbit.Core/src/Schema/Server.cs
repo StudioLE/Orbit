@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Provision;
 using Orbit.Core.Schema.DataAnnotations;
-using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Schema;
@@ -11,9 +9,6 @@ namespace Orbit.Core.Schema;
 /// </summary>
 public sealed class Server : IEntity, IHasValidationAttributes
 {
-    private const string DefaultName = "server";
-    private const int DefaultNumber = 1;
-
     /// <summary>
     /// The name of the server.
     /// </summary>
@@ -23,7 +18,7 @@ public sealed class Server : IEntity, IHasValidationAttributes
     /// <summary>
     /// The number of the server.
     /// </summary>
-    [Range(1,64)]
+    [Range(1, 64)]
     public int Number { get; set; }
 
     /// <summary>
@@ -43,31 +38,4 @@ public sealed class Server : IEntity, IHasValidationAttributes
     /// </summary>
     [ValidateComplexType]
     public WireGuard WireGuard { get; set; } = new();
-
-    // TODO: Replace with ServerFactory
-    public void Review(IEntityProvider<Server> servers)
-    {
-        if (!Name.IsNullOrEmpty())
-        {
-            Server? server = servers.Get(new ServerId(Name));
-            if (server is not null)
-                Number = server.Number;
-        }
-
-        if (Number == default)
-        {
-            int[] numbers = servers
-                .GetAll()
-                .Select(x => x.Number)
-                .ToArray();
-            int finalNumber = numbers.Any()
-                    ? numbers.Max()
-                    : DefaultNumber - 1;
-            Number = finalNumber  + 1;
-        }
-
-        // TODO: GetName from host file!
-        if (Name.IsNullOrEmpty())
-            Name = $"{DefaultName}-{Number:00}";
-    }
 }
