@@ -96,7 +96,7 @@ write_files:
     set -e
 
     echo "➡️  Add user to group"
-    sudo usermod -aG docker "${SUDO_USER}"
+    sudo usermod -aG docker "admin"
 
     echo "➡️  Reload groups"
     newgrp docker

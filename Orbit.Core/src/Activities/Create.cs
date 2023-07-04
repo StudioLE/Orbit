@@ -126,6 +126,7 @@ public class Create : IActivity<Instance, Instance?>
         foreach (string installer in installers)
         {
             string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{installer}");
+            content = content.Replace("${SUDO_USER}", _options.SudoUser);
             KeyValuePair<YamlNode, YamlNode>[] nodes = {
                 new("path", $"/var/lib/cloud/scripts/per-instance/{installer}"),
                 new("permissions", "0o500"),
