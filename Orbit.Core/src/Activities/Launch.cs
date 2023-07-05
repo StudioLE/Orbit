@@ -19,16 +19,18 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 {
     private readonly ILogger<Launch> _logger;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Server> _servers;
     private Instance _instance = null!;
 
     /// <summary>
     /// DI constructor for <see cref="Launch"/>.
     /// </summary>
-    public Launch(ILogger<Launch> logger, IEntityProvider<Instance> instances, IEntityProvider<Server> servers)
+    public Launch(ILogger<Launch> logger, IEntityProvider<Instance> instances, IEntityProvider<Network> networks, IEntityProvider<Server> servers)
     {
         _logger = logger;
         _instances = instances;
+        _networks = networks;
         _servers = servers;
     }
 
@@ -61,7 +63,8 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             .OnFailure(OnFailure)
             .Then(() => GetInstance(inputs.Instance))
             .Then(() => _instance.TryValidate(_logger))
-            .Then(ExecuteOnServer);
+            .Then(WireGuardSetOnServer)
+            .Then(LaunchOnServer);
         Pipeline<Task<Outputs>> pipeline = builder.Build();
         return pipeline.Execute();
     }
@@ -78,7 +81,37 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         return true;
     }
 
-    private bool ExecuteOnServer()
+    private bool WireGuardSetOnServer()
+    {
+        Network? network = _networks.Get(new NetworkId(_instance.Network));
+        if (network is null)
+        {
+            _logger.LogError("Failed to get network");
+            return false;
+        }
+        Server? server = _servers.Get(new ServerId(network.Server));
+        if (server is null)
+        {
+            _logger.LogError("Failed to get server");
+            return false;
+        }
+        ConnectionInfo connection = server.CreateConnection();
+        string? cloudInit = _instances.GetResource(new InstanceId(_instance.Name), "user-config.yml");
+        if (cloudInit is null)
+        {
+            _logger.LogError("Failed to get user-config");
+            return false;
+        }
+        using SshClient ssh = new(connection);
+        ssh.Connect();
+        string command = $"sudo wg set wg0 peer {_instance.WireGuard.PublicKey} allowed-ips {_instance.WireGuard.Addresses.Join(",")}";
+        if (ssh.ExecuteToLogger(_logger, command))
+            return true;
+        _logger.LogError("Failed to launch instance");
+        return false;
+    }
+
+    private bool LaunchOnServer()
     {
         Server? server = _servers.Get(new ServerId(_instance.Server));
         if (server is null)
@@ -86,40 +119,15 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-
         ConnectionInfo connection = server.CreateConnection();
-
         string? cloudInit = _instances.GetResource(new InstanceId(_instance.Name), "user-config.yml");
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");
             return false;
         }
-
         using SshClient ssh = new(connection);
         ssh.Connect();
-
-        if (!ExecuteWireGuardSet(ssh))
-        {
-            _logger.LogError("Failed to set WireGuard");
-            return false;
-        }
-        if (!MultipassLaunch(ssh, cloudInit))
-        {
-            _logger.LogError("Failed to launch instance");
-            return false;
-        }
-        return true;
-    }
-
-    private bool ExecuteWireGuardSet(SshClient ssh)
-    {
-        string command = $"sudo wg set wg0 peer {_instance.WireGuard.PublicKey} allowed-ips {_instance.WireGuard.Addresses.Join(",")}";
-        return ssh.ExecuteToLogger(_logger, command);
-    }
-
-    private bool MultipassLaunch(SshClient ssh, string cloudInit)
-    {
         string command = $"""
             (
             cat <<EOF
@@ -132,7 +140,10 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
                 --name {_instance.Name} \
                 --cloud-init -
             """;
-        return ssh.ExecuteToLogger(_logger, command);
+        if (ssh.ExecuteToLogger(_logger, command))
+            return true;
+        _logger.LogError("Failed to launch instance");
+        return false;
     }
 
     private static Task<Outputs> OnSuccess()
