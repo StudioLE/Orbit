@@ -7,17 +7,17 @@ namespace Orbit.Core.Utils.Logging.TestLogger;
 /// </summary>
 public class TestLogger : ILogger
 {
-    private readonly List<TestLog> _logs = new();
+    private readonly Action<TestLog> _onLog;
 
-    /// <summary>
-    /// The logs.
-    /// </summary>
-    public IReadOnlyCollection<TestLog> Logs => _logs;
+    internal TestLogger(Action<TestLog> onLog)
+    {
+        _onLog = onLog;
+    }
 
     /// <inheritdoc />
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        _logs.Add(new()
+        _onLog.Invoke(new()
         {
             LogLevel = logLevel,
             EventId = eventId,

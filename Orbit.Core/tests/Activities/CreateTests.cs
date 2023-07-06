@@ -19,7 +19,7 @@ internal sealed class CreateTests
     private readonly Create _create;
     private readonly IEntityProvider<Instance> _instances;
     private readonly ISerializer _serializer;
-    private readonly TestLogger _logger;
+    private readonly IReadOnlyCollection<TestLog> _logs;
 
     public CreateTests()
     {
@@ -30,7 +30,7 @@ internal sealed class CreateTests
         _create = host.Services.GetRequiredService<Create>();
         _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
-        _logger = host.Services.GetTestLogger();
+        _logs = host.Services.GetTestLogs();
     }
 
     [Test]
@@ -54,8 +54,8 @@ internal sealed class CreateTests
             Assert.Fail();
         else
             await _verify.AsSerialized(createdInstance, _serializer);
-        Assert.That(_logger.Logs.Count, Is.EqualTo(1));
-        Assert.That(_logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
+        Assert.That(_logs.Count, Is.EqualTo(1));
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
         Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
         await _verify.AsSerialized(storedInstance, createdInstance, _serializer);
     }

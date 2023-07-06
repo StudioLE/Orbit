@@ -18,14 +18,13 @@ public static class TestLoggerExtensions
         return builder;
     }
 
-    public static TestLogger GetTestLogger(this IServiceProvider services, string categoryName = "")
+    public static IReadOnlyCollection<TestLog> GetTestLogs(this IServiceProvider services)
     {
         TestLoggerProvider provider = services
                                           .GetServices<ILoggerProvider>()
                                           .OfType<TestLoggerProvider>()
                                           .FirstOrDefault()
                                       ?? throw new($"Failed to get {nameof(TestLoggerProvider)}.");
-        return provider.CreateLogger(categoryName) as TestLogger
-               ?? throw new($"Failed to get {nameof(TestLogger)}");
+        return provider.Logs;
     }
 }

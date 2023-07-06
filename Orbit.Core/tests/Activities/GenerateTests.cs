@@ -15,7 +15,7 @@ internal sealed class GenerateTests
     private readonly IVerify _verify = new NUnitVerify();
     private readonly Generate _generate;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly TestLogger _logger;
+    private readonly IReadOnlyCollection<TestLog> _logs;
 
     public GenerateTests()
     {
@@ -25,7 +25,7 @@ internal sealed class GenerateTests
         IHost host = TestHelpers.CreateTestHost();
         _generate = host.Services.GetRequiredService<Generate>();
         _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
-        _logger = host.Services.GetTestLogger();
+        _logs = host.Services.GetTestLogs();
     }
 
     [Test]
@@ -42,8 +42,8 @@ internal sealed class GenerateTests
 
         // Assert
         Assert.That(outputs.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logger.Logs.Count, Is.EqualTo(1), "Logs Count");
-        Assert.That(_logger.Logs.ElementAt(0).Message, Is.EqualTo($"Generated cloud-init for instance {inputs.Instance}"));
+        Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Generated cloud-init for instance {inputs.Instance}"));
         string? userConfig = _instances.GetResource(new InstanceId(inputs.Instance), "user-config.yml");
         Assert.That(userConfig, Is.Not.Null);
         await _verify.String(userConfig!);
