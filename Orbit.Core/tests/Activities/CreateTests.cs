@@ -53,13 +53,9 @@ internal sealed class CreateTests
             Assert.Fail();
         else
             await _verify.AsSerialized(createdInstance, _serializer);
-
         Assert.That(logger.Logs.Count, Is.EqualTo(1));
         Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
         Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
         await _verify.AsSerialized(storedInstance, createdInstance, _serializer);
-        string? userConfig = _instances.GetResource(new InstanceId(createdInstance.Name), "user-config.yml");
-        Assert.That(userConfig, Is.Not.Null);
-        await _verify.String(userConfig!);
     }
 }

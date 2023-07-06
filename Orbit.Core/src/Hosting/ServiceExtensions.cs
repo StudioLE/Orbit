@@ -33,6 +33,7 @@ public static class ServiceExtensions
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
             .AddSingleton<Create>()
+            .AddSingleton<Generate>()
             .AddSingleton<Launch>();
     }
 

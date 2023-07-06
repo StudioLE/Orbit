@@ -64,14 +64,10 @@ public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
     {
         string path = Path.Combine(id.GetFilePath(), "..", fileName);
         IFileInfo file = _fileProvider.GetFileInfo(path);
-        if(file.Exists)
-            return false;
         FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
         DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
         if(!directory.Exists)
             directory.Create();
-        if(file.Exists)
-            return false;
         using StreamWriter writer = physicalFile.CreateText();
         if (!string.IsNullOrEmpty(prefixYaml))
             writer.WriteLine(prefixYaml);

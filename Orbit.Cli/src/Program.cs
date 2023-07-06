@@ -25,6 +25,7 @@ internal static class Program
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
             .Register<Create>()
+            .Register<Generate>()
             .Register<Launch>()
             .Build();
 

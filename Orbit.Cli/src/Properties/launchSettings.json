@@ -7,6 +7,13 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
+    "Generate": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --instance instance-01",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
     "Launch": {
       "commandName": "Project",
       "commandLineArgs": "launch --instance instance-01",
