@@ -7,7 +7,7 @@ jobs:
 
   analysis:
     name: Analysis
-    uses: StudioLE/Actions/.github/workflows/01-analysis.yml@main
+    uses: StudioLE/Actions/.github/workflows/01-semantic-release.yml@main
     secrets: inherit
 
   build-and-test-ubuntu:
@@ -22,7 +22,7 @@ jobs:
 
   build-and-test-windows:
     name: Windows
-    if: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/alpha", "refs/heads/beta"]'), github.ref) }}
+    if: ${{ needs.analysis.outputs.version != '0.0.0' }}
     needs: analysis
     uses: StudioLE/Actions/.github/workflows/02-build-and-test.yml@main
     with:
