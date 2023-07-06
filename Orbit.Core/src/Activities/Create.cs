@@ -5,7 +5,6 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
-using Orbit.Core.Utils.Pipelines;
 using StudioLE.Core.System;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -37,30 +36,25 @@ public class Create : IActivity<Instance, Instance?>
     /// <inheritdoc/>
     public Task<Instance?> Execute(Instance instance)
     {
-        PipelineBuilder<Task<Instance?>> builder = new PipelineBuilder<Task<Instance?>>()
-            .OnSuccess(() => OnSuccess(instance))
-            .OnFailure(OnFailure)
-            .Then(() => _options.TryValidate(_logger))
-            .Then(() =>
+        Func<bool>[] steps =
+        {
+            () => _options.TryValidate(_logger),
+            () =>
             {
                 instance = _factory.Create(instance);
                 return true;
-            })
-            .Then(() => instance.TryValidate(_logger))
-            .Then(() => PutInstance(instance))
-            .Then(() => CreateUserConfig(instance));
-        Pipeline<Task<Instance?>> pipeline = builder.Build();
-        return pipeline.Execute();
-    }
-
-    private Task<Instance?> OnSuccess(Instance instance)
-    {
-        _logger.LogInformation($"Created instance {instance.Name}");
-        return Task.FromResult<Instance?>(instance);
-    }
-
-    private static Task<Instance?> OnFailure()
-    {
+            },
+            () => instance.TryValidate(_logger),
+            () => PutInstance(instance),
+            () => CreateUserConfig(instance)
+        };
+        bool isSuccess = steps.All(step => step.Invoke());
+        if (isSuccess)
+        {
+            _logger.LogInformation($"Created instance {instance.Name}");
+            return Task.FromResult<Instance?>(instance);
+        }
+        _logger.LogError("Failed to create instance.");
         return Task.FromResult<Instance?>(null);
     }
 
@@ -127,7 +121,8 @@ public class Create : IActivity<Instance, Instance?>
         {
             string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{installer}");
             content = content.Replace("${SUDO_USER}", _options.SudoUser);
-            KeyValuePair<YamlNode, YamlNode>[] nodes = {
+            KeyValuePair<YamlNode, YamlNode>[] nodes =
+            {
                 new("path", $"/var/lib/cloud/scripts/per-instance/{installer}"),
                 new("permissions", "0o500"),
                 new("content", new YamlScalarNode(content) { Style = ScalarStyle.Literal })

@@ -6,7 +6,6 @@ using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
-using Orbit.Core.Utils.Pipelines;
 using Renci.SshNet;
 using StudioLE.Core.System;
 
@@ -58,15 +57,21 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     /// <inheritdoc/>
     public Task<Outputs> Execute(Inputs inputs)
     {
-        PipelineBuilder<Task<Outputs>> builder = new PipelineBuilder<Task<Outputs>>()
-            .OnSuccess(OnSuccess)
-            .OnFailure(OnFailure)
-            .Then(() => GetInstance(inputs.Instance))
-            .Then(() => _instance.TryValidate(_logger))
-            .Then(WireGuardSetOnServer)
-            .Then(LaunchOnServer);
-        Pipeline<Task<Outputs>> pipeline = builder.Build();
-        return pipeline.Execute();
+        Func<bool>[] steps =
+        {
+            () => GetInstance(inputs.Instance),
+            () => _instance.TryValidate(_logger),
+            WireGuardSetOnServer,
+            LaunchOnServer
+        };
+        bool isSuccess = steps.All(step => step.Invoke());
+        if (isSuccess)
+        {
+            _logger.LogInformation($"Launched instance {_instance.Name}");
+            return Task.FromResult(new Outputs { ExitCode = 0 });
+        }
+        _logger.LogError("Failed to launch instance.");
+        return Task.FromResult(new Outputs { ExitCode = 1 });
     }
 
     private bool GetInstance(string instanceName)
@@ -144,23 +149,5 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             return true;
         _logger.LogError("Failed to launch instance");
         return false;
-    }
-
-    private static Task<Outputs> OnSuccess()
-    {
-        Outputs outputs = new()
-        {
-            ExitCode = 0
-        };
-        return Task.FromResult(outputs);
-    }
-
-    private static Task<Outputs> OnFailure()
-    {
-        Outputs outputs = new()
-        {
-            ExitCode = 1
-        };
-        return Task.FromResult(outputs);
     }
 }
