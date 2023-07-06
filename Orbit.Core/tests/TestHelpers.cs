@@ -50,6 +50,10 @@ public static class TestHelpers
             ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
             ExternalIPv6 = MockWireGuardFacade.ExternalIPv6
         });
+        IEntityProvider<Instance> instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
+        InstanceFactory instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
+        Instance instance = instanceFactory.Create(new());
+        instances.Put(instance);
         return host;
     }
 

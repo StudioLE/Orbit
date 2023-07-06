@@ -8,7 +8,7 @@ namespace Orbit.Core.Tests.Provision;
 
 internal sealed class InstanceProviderTests
 {
-    private readonly InstanceId _instanceId = new("instance-01");
+    private readonly InstanceId _instanceId = new("instance-02");
     private readonly InstanceFactory _instanceFactory;
     private readonly IEntityProvider<Instance> _instances;
 
@@ -22,14 +22,14 @@ internal sealed class InstanceProviderTests
     [Test]
     public void InstanceProvider_In_Sequence()
     {
-        InstanceProvider_Get_Empty();
-        InstanceProvider_GetAllNamesInCluster_Empty();
+        InstanceProvider_Get_Before();
+        InstanceProvider_GetIndex_Before();
         InstanceProvider_Put();
-        InstanceProvider_Get();
-        InstanceProvider_GetAllNamesInCluster();
+        InstanceProvider_Get_After();
+        InstanceProvider_GetIndex_After();
     }
 
-    private void InstanceProvider_Get_Empty()
+    private void InstanceProvider_Get_Before()
     {
         // Arrange
         // Act
@@ -39,14 +39,14 @@ internal sealed class InstanceProviderTests
         Assert.That(instance, Is.Null);
     }
 
-    private void InstanceProvider_GetAllNamesInCluster_Empty()
+    private void InstanceProvider_GetIndex_Before()
     {
         // Arrange
         // Act
-        string[] names = _instances.GetIndex().ToArray();
+        string[] ids = _instances.GetIndex().ToArray();
 
         // Assert
-        Assert.That(names.Count, Is.EqualTo(0));
+        Assert.That(ids.Count, Is.EqualTo(1));
     }
 
     private void InstanceProvider_Put()
@@ -64,7 +64,7 @@ internal sealed class InstanceProviderTests
         Assert.That(result, Is.True);
     }
 
-    private void InstanceProvider_Get()
+    private void InstanceProvider_Get_After()
     {
         // Arrange
         // Act
@@ -74,13 +74,13 @@ internal sealed class InstanceProviderTests
         Assert.That(instance, Is.Not.Null);
     }
 
-    private void InstanceProvider_GetAllNamesInCluster()
+    private void InstanceProvider_GetIndex_After()
     {
         // Arrange
         // Act
         string[] ids = _instances.GetIndex().ToArray();
 
         // Assert
-        Assert.That(ids.Count, Is.EqualTo(1));
+        Assert.That(ids.Count, Is.EqualTo(2));
     }
 }
