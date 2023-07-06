@@ -20,7 +20,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Server> _servers;
-    private Instance _instance = null!;
 
     /// <summary>
     /// DI constructor for <see cref="Launch"/>.
@@ -57,43 +56,44 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     /// <inheritdoc/>
     public Task<Outputs> Execute(Inputs inputs)
     {
+        Instance instance = new();
         Func<bool>[] steps =
         {
-            () => GetInstance(inputs.Instance),
-            () => ValidateInstance(),
-            () => WireGuardSetOnServer(),
-            () => LaunchOnServer()
+            () => GetInstance(inputs.Instance, out instance),
+            () => ValidateInstance(instance),
+            () => WireGuardSetOnServer(instance),
+            () => LaunchOnServer(instance)
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
         {
-            _logger.LogInformation($"Launched instance {_instance.Name}");
+            _logger.LogInformation($"Launched instance {instance.Name}");
             return Task.FromResult(new Outputs { ExitCode = 0 });
         }
         _logger.LogError("Failed to launch instance.");
         return Task.FromResult(new Outputs { ExitCode = 1 });
     }
 
-    private bool ValidateInstance()
+    private bool GetInstance(string instanceName, out Instance instance)
     {
-        return _instance.TryValidate(_logger);
-    }
-
-    private bool GetInstance(string instanceName)
-    {
-        Instance? instance = _instances.Get(new InstanceId(instanceName));
-        if (instance is null)
+        Instance? result = _instances.Get(new InstanceId(instanceName));
+        instance = result!;
+        if (result is null)
         {
             _logger.LogError("The instance does not exist.");
             return false;
         }
-        _instance = instance;
         return true;
     }
 
-    private bool WireGuardSetOnServer()
+    private bool ValidateInstance(Instance instance)
     {
-        Network? network = _networks.Get(new NetworkId(_instance.Network));
+        return instance.TryValidate(_logger);
+    }
+
+    private bool WireGuardSetOnServer(Instance instance)
+    {
+        Network? network = _networks.Get(new NetworkId(instance.Network));
         if (network is null)
         {
             _logger.LogError("Failed to get network");
@@ -106,7 +106,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             return false;
         }
         ConnectionInfo connection = server.CreateConnection();
-        string? cloudInit = _instances.GetResource(new InstanceId(_instance.Name), "user-config.yml");
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), "user-config.yml");
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");
@@ -114,23 +114,23 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         }
         using SshClient ssh = new(connection);
         ssh.Connect();
-        string command = $"sudo wg set wg0 peer {_instance.WireGuard.PublicKey} allowed-ips {_instance.WireGuard.Addresses.Join(",")}";
+        string command = $"sudo wg set wg0 peer {instance.WireGuard.PublicKey} allowed-ips {instance.WireGuard.Addresses.Join(",")}";
         if (ssh.ExecuteToLogger(_logger, command))
             return true;
         _logger.LogError("Failed to launch instance");
         return false;
     }
 
-    private bool LaunchOnServer()
+    private bool LaunchOnServer(Instance instance)
     {
-        Server? server = _servers.Get(new ServerId(_instance.Server));
+        Server? server = _servers.Get(new ServerId(instance.Server));
         if (server is null)
         {
             _logger.LogError("Failed to get server");
             return false;
         }
         ConnectionInfo connection = server.CreateConnection();
-        string? cloudInit = _instances.GetResource(new InstanceId(_instance.Name), "user-config.yml");
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), "user-config.yml");
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");
@@ -144,10 +144,10 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             {cloudInit}
             EOF
             ) | multipass launch \
-                --cpus {_instance.Hardware.Cpus} \
-                --memory {_instance.Hardware.Memory}G \
-                --disk {_instance.Hardware.Disk}G \
-                --name {_instance.Name} \
+                --cpus {instance.Hardware.Cpus} \
+                --memory {instance.Hardware.Memory}G \
+                --disk {instance.Hardware.Disk}G \
+                --name {instance.Name} \
                 --cloud-init -
             """;
         if (ssh.ExecuteToLogger(_logger, command))
