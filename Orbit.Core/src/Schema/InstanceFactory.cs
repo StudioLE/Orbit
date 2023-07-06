@@ -75,7 +75,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
     {
         return _servers
                    .GetIndex()
-                   .FirstOrDefault()
+                   .LastOrDefault()
                ?? throw new("Server must be set if more than one exist.");
     }
 

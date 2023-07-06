@@ -2,21 +2,21 @@
   "profiles": {
     "Create": {
       "commandName": "Project",
-      "commandLineArgs": "create --type G1",
+      "commandLineArgs": "create --type G1 --name test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "Generate": {
       "commandName": "Project",
-      "commandLineArgs": "generate --instance instance-01",
+      "commandLineArgs": "generate --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "Launch": {
       "commandName": "Project",
-      "commandLineArgs": "launch --instance instance-01",
+      "commandLineArgs": "launch --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
