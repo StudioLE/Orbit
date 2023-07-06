@@ -8,6 +8,11 @@ namespace Orbit.Core.Utils.Logging.TestLogger;
 public class TestLog
 {
     /// <summary>
+    /// The log category name.
+    /// </summary>
+    public string Category { get; set; } = string.Empty;
+
+    /// <summary>
     /// The log level.
     /// </summary>
     public LogLevel LogLevel { get; set; }

@@ -18,7 +18,7 @@ public class TestLoggerProvider : ILoggerProvider
     /// <inheritdoc />
     public ILogger CreateLogger(string categoryName)
     {
-        return new TestLogger(_logs.Add);
+        return new TestLogger(categoryName, _logs.Add);
     }
 
     /// <inheritdoc />

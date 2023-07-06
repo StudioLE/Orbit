@@ -7,10 +7,12 @@ namespace Orbit.Core.Utils.Logging.TestLogger;
 /// </summary>
 public class TestLogger : ILogger
 {
+    private readonly string _categoryName;
     private readonly Action<TestLog> _onLog;
 
-    internal TestLogger(Action<TestLog> onLog)
+    internal TestLogger(string categoryName, Action<TestLog> onLog)
     {
+        _categoryName = categoryName;
         _onLog = onLog;
     }
 
@@ -19,6 +21,7 @@ public class TestLogger : ILogger
     {
         _onLog.Invoke(new()
         {
+            Category = _categoryName,
             LogLevel = logLevel,
             EventId = eventId,
             State = typeof(TState),
