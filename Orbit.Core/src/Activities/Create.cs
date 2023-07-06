@@ -18,14 +18,14 @@ namespace Orbit.Core.Activities;
 public class Create : IActivity<Instance, Instance?>
 {
     private readonly ILogger<Create> _logger;
-    private readonly CreateOptions _options;
+    private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
     private readonly InstanceFactory _factory;
 
     /// <summary>
     /// DI constructor for <see cref="Create"/>.
     /// </summary>
-    public Create(ILogger<Create> logger, IOptions<CreateOptions> options, IEntityProvider<Instance> instances, InstanceFactory factory)
+    public Create(ILogger<Create> logger, IOptions<CloudInitOptions> options, IEntityProvider<Instance> instances, InstanceFactory factory)
     {
         _logger = logger;
         _options = options.Value;

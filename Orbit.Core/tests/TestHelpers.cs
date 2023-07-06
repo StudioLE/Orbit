@@ -58,7 +58,7 @@ public static class TestHelpers
         string directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(directory);
         return services
-            .AddSingleton<IOptions<CreateOptions>>(_ => Options.Create<CreateOptions>(new()
+            .AddSingleton<IOptions<CloudInitOptions>>(_ => Options.Create<CloudInitOptions>(new()
             {
                 SudoUser = "admin",
                 User = "user"

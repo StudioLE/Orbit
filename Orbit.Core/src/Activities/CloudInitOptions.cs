@@ -7,13 +7,13 @@ namespace Orbit.Core.Activities;
 /// Configuration options for <see cref="Create"/>.
 /// </summary>
 /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#bind-hierarchical-configuration-data-using-the-options-pattern">Options pattern</see>
-public class CreateOptions : IHasValidationAttributes
+public class CloudInitOptions : IHasValidationAttributes
 {
     /// <summary>
     /// The
     /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#bind-hierarchical-configuration-data-using-the-options-pattern">options pattern</see> key.
     /// </summary>
-    public const string SectionKey = "Create";
+    public const string SectionKey = "CloudInit";
 
     /// <summary>
     /// The name to give the user with sudo privileges.

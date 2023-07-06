@@ -45,8 +45,8 @@ public static class ServiceExtensions
     public static IServiceCollection AddOrbitOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddOptions<CreateOptions>()
-            .Bind(configuration.GetSection(CreateOptions.SectionKey))
+            .AddOptions<CloudInitOptions>()
+            .Bind(configuration.GetSection(CloudInitOptions.SectionKey))
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services
