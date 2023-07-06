@@ -9,7 +9,6 @@ namespace Orbit.Core.Utils.Logging.TestLogger;
 public class TestLoggerProvider : ILoggerProvider
 {
     private readonly List<TestLog> _logs = new();
-    private ILogger? _logger;
 
     /// <summary>
     /// The logs.
@@ -19,8 +18,7 @@ public class TestLoggerProvider : ILoggerProvider
     /// <inheritdoc />
     public ILogger CreateLogger(string categoryName)
     {
-        _logger ??= new TestLogger(_logs.Add);
-        return _logger;
+        return new TestLogger(_logs.Add);
     }
 
     /// <inheritdoc />
