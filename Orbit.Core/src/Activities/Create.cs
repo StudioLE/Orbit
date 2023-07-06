@@ -38,13 +38,9 @@ public class Create : IActivity<Instance, Instance?>
     {
         Func<bool>[] steps =
         {
-            () => _options.TryValidate(_logger),
-            () =>
-            {
-                instance = _factory.Create(instance);
-                return true;
-            },
-            () => instance.TryValidate(_logger),
+            () => ValidateOptions(),
+            () => UpdateInstanceProperties(ref instance),
+            () => ValidateInstance(instance),
             () => PutInstance(instance),
             () => CreateUserConfig(instance)
         };
@@ -56,6 +52,22 @@ public class Create : IActivity<Instance, Instance?>
         }
         _logger.LogError("Failed to create instance.");
         return Task.FromResult<Instance?>(null);
+    }
+
+    private bool ValidateInstance(Instance instance)
+    {
+        return instance.TryValidate(_logger);
+    }
+
+    private bool UpdateInstanceProperties(ref Instance instance)
+    {
+        instance = _factory.Create(instance);
+        return true;
+    }
+
+    private bool ValidateOptions()
+    {
+        return _options.TryValidate(_logger);
     }
 
     private bool PutInstance(Instance instance)
