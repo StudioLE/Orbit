@@ -146,7 +146,9 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         yaml["runcmd"].SetSequenceStyle(SequenceStyle.Block);
         string[] installers =
         {
-            "10-install-docker.sh"
+            "00-log.sh",
+            "10-install-docker.sh",
+            "99-log.sh"
         };
         foreach (string installer in installers)
         {
