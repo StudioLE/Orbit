@@ -60,9 +60,9 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         Func<bool>[] steps =
         {
             () => GetInstance(inputs.Instance),
-            () => _instance.TryValidate(_logger),
-            WireGuardSetOnServer,
-            LaunchOnServer
+            () => ValidateInstance(),
+            () => WireGuardSetOnServer(),
+            () => LaunchOnServer()
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
@@ -72,6 +72,11 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         }
         _logger.LogError("Failed to launch instance.");
         return Task.FromResult(new Outputs { ExitCode = 1 });
+    }
+
+    private bool ValidateInstance()
+    {
+        return _instance.TryValidate(_logger);
     }
 
     private bool GetInstance(string instanceName)
