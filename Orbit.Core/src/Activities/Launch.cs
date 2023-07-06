@@ -117,7 +117,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         string command = $"sudo wg set wg0 peer {instance.WireGuard.PublicKey} allowed-ips {instance.WireGuard.Addresses.Join(",")}";
         if (ssh.ExecuteToLogger(_logger, command))
             return true;
-        _logger.LogError("Failed to launch instance");
+        _logger.LogError("Failed to add WireGuard peer to server.");
         return false;
     }
 
@@ -152,7 +152,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             """;
         if (ssh.ExecuteToLogger(_logger, command))
             return true;
-        _logger.LogError("Failed to launch instance");
+        _logger.LogError("Failed to run multipass launch on server.");
         return false;
     }
 }

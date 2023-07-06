@@ -41,9 +41,6 @@ public static class SshClientHelpers
 
         if (command.ExitStatus == 0)
             return true;
-        logger.LogError("Failed to get multipass info.");
-        if (!command.Error.IsNullOrEmpty())
-            logger.LogError(command.Error);
         if (!command.Error.IsNullOrEmpty())
             logger.LogError(command.Error);
         return false;
