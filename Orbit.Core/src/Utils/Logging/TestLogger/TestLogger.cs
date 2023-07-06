@@ -14,10 +14,6 @@ public class TestLogger : ILogger
     /// </summary>
     public IReadOnlyCollection<TestLog> Logs => _logs;
 
-    private TestLogger()
-    {
-    }
-
     /// <inheritdoc />
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
@@ -41,21 +37,5 @@ public class TestLogger : ILogger
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
     {
         return default;
-    }
-
-    // Singleton pattern
-    // https://refactoring.guru/design-patterns/singleton/csharp/example#example-1
-
-    private static TestLogger? _instance;
-    private static readonly object _lock = new();
-
-
-    public static TestLogger GetInstance()
-    {
-        // TODO: Replace this with the IHostBuilder singleton.
-        if (_instance == null)
-            lock (_lock)
-                _instance ??= new();
-        return _instance;
     }
 }

@@ -17,4 +17,15 @@ public static class TestLoggerExtensions
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TestLoggerProvider>());
         return builder;
     }
+
+    public static TestLogger GetTestLogger(this IServiceProvider services, string categoryName = "")
+    {
+        TestLoggerProvider provider = services
+                                          .GetServices<ILoggerProvider>()
+                                          .OfType<TestLoggerProvider>()
+                                          .FirstOrDefault()
+                                      ?? throw new($"Failed to get {nameof(TestLoggerProvider)}.");
+        return provider.CreateLogger(categoryName) as TestLogger
+               ?? throw new($"Failed to get {nameof(TestLogger)}");
+    }
 }

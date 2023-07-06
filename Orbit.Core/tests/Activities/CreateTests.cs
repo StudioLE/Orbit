@@ -19,6 +19,7 @@ internal sealed class CreateTests
     private readonly Create _create;
     private readonly IEntityProvider<Instance> _instances;
     private readonly ISerializer _serializer;
+    private readonly TestLogger _logger;
 
     public CreateTests()
     {
@@ -29,13 +30,13 @@ internal sealed class CreateTests
         _create = host.Services.GetRequiredService<Create>();
         _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
+        _logger = host.Services.GetTestLogger();
     }
 
     [Test]
     public async Task Create_Execute_Default()
     {
         // Arrange
-        TestLogger logger = TestLogger.GetInstance();
         Instance sourceInstance = new()
         {
             WireGuard =
@@ -53,8 +54,8 @@ internal sealed class CreateTests
             Assert.Fail();
         else
             await _verify.AsSerialized(createdInstance, _serializer);
-        Assert.That(logger.Logs.Count, Is.EqualTo(1));
-        Assert.That(logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
+        Assert.That(_logger.Logs.Count, Is.EqualTo(1));
+        Assert.That(_logger.Logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
         Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
         await _verify.AsSerialized(storedInstance, createdInstance, _serializer);
     }

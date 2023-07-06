@@ -8,10 +8,13 @@ namespace Orbit.Core.Utils.Logging.TestLogger;
 [ProviderAlias("Test")]
 public class TestLoggerProvider : ILoggerProvider
 {
+    private ILogger? _logger;
+
     /// <inheritdoc />
     public ILogger CreateLogger(string categoryName)
     {
-        return TestLogger.GetInstance();
+        _logger ??= new TestLogger();
+        return _logger;
     }
 
     /// <inheritdoc />
