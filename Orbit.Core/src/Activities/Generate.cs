@@ -148,6 +148,7 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         {
             "00-log.sh",
             "10-install-docker.sh",
+            "15-install-docker-compose.sh",
             "99-log.sh"
         };
         foreach (string installer in installers)
