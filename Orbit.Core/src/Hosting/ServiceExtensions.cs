@@ -34,7 +34,8 @@ public static class ServiceExtensions
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
             .AddSingleton<Create>()
             .AddSingleton<Generate>()
-            .AddSingleton<Launch>();
+            .AddSingleton<Launch>()
+            .AddSingleton<Activities.Mount>();
     }
 
     /// <summary>

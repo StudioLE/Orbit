@@ -62,7 +62,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             () => GetInstance(inputs.Instance, out instance),
             () => ValidateInstance(instance),
             () => WireGuardSetOnServer(instance),
-            () => CreateMountsOnServer(instance),
             () => LaunchOnServer(instance)
         };
         bool isSuccess = steps.All(step => step.Invoke());
@@ -122,36 +121,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         return false;
     }
 
-    private bool CreateMountsOnServer(Instance instance)
-    {
-        if (!instance.Mounts.Any())
-            return true;
-        Server? server = _servers.Get(new ServerId(instance.Server));
-        if (server is null)
-        {
-            _logger.LogError("Failed to get server");
-            return false;
-        }
-        ConnectionInfo connection = server.CreateConnection();
-        using SshClient ssh = new(connection);
-        ssh.Connect();
-        foreach (Mount mount in instance.Mounts)
-        {
-            if(!mount.Source.StartsWith("/mnt"))
-            {
-                _logger.LogError($"Mount source path is invalid: {mount.Source}");
-                return false;
-            }
-            string command = $"mkdir -p {mount.Source}";
-            if (!ssh.ExecuteToLogger(_logger, command))
-            {
-                _logger.LogError("Failed to create mount on server.");
-                return false;
-            }
-        }
-        return true;
-    }
-
     private bool LaunchOnServer(Instance instance)
     {
         Server? server = _servers.Get(new ServerId(instance.Server));
@@ -169,10 +138,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         }
         using SshClient ssh = new(connection);
         ssh.Connect();
-        string mounts = instance
-            .Mounts
-            .Select(mount => $@"--mount {mount.Source}:{mount.Target}")
-            .Join(@" \" + Environment.NewLine);
         string command = $"""
             (
             cat <<EOF
@@ -183,7 +148,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
                 --memory {instance.Hardware.Memory}G \
                 --disk {instance.Hardware.Disk}G \
                 --name {instance.Name} \
-                {mounts} \
                 --cloud-init -
             """;
         if (ssh.ExecuteToLogger(_logger, command))
