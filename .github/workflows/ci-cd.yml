@@ -31,13 +31,13 @@ jobs:
       version: ${{ needs.analysis.outputs.version }}
     secrets: inherit
 
-#  publish-nuget:
-#    name: Publish NuGet
-#    if: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/alpha", "refs/heads/beta"]'), github.ref) }}
-#    needs:
-#      - analysis
-#      - build-and-test-ubuntu
-#    uses: StudioLE/Actions/.github/workflows/03-publish-nuget.yml@main
-#    with:
-#      version: ${{ needs.analysis.outputs.version }}
-#    secrets: inherit
+  publish-nuget:
+    name: Publish NuGet
+    if: ${{ needs.analysis.outputs.version != '0.0.0' }}
+    needs:
+      - analysis
+      - build-and-test-ubuntu
+    uses: StudioLE/Actions/.github/workflows/03-publish-nuget.yml@main
+    with:
+      version: ${{ needs.analysis.outputs.version }}
+    secrets: inherit

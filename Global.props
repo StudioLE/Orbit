@@ -29,6 +29,7 @@
 
   <PropertyGroup Condition="$(IsExecutable)">
     <TargetFramework>net7.0</TargetFramework>
+    <PackAsTool>true</PackAsTool>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsTestLibrary)">
