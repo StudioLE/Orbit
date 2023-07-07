@@ -67,6 +67,9 @@ public class InstanceFactory : IFactory<Instance, Instance>
             : source.Name;
 
         result.WireGuard = _wireGuardFactory.Create(result);
+        result.Mounts = source.Mounts.Any()
+            ? source.Mounts
+            : DefaultMounts(result);
 
         return result;
     }
@@ -97,5 +100,22 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? numbers.Max()
             : DefaultInstanceNumber - 1;
         return finalNumber + 1;
+    }
+
+    private static Mount[] DefaultMounts(Instance instance)
+    {
+        return new[]
+        {
+            new Mount
+            {
+                Source = $"/mnt/{instance.Name}/srv",
+                Target = "/srv"
+            },
+            new Mount
+            {
+                Source = $"/mnt/{instance.Name}/config",
+                Target = "/config"
+            }
+        };
     }
 }

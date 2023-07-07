@@ -59,4 +59,9 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// </summary>
     [ValidateComplexType]
     public WireGuard WireGuard { get; set; } = new();
+
+    /// <summary>
+    /// The mounted directories of the instance.
+    /// </summary>
+    public Mount[] Mounts { get; set; } = Array.Empty<Mount>();
 }

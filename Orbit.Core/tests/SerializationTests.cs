@@ -39,6 +39,11 @@ internal sealed class SerializationTests
           - 0.0.0.0/0
           - ::/0
           Endpoint: localhost:51820
+        Mounts:
+        - Source: /mnt/instance-01/srv
+          Target: /srv
+        - Source: /mnt/instance-01/config
+          Target: /config
         """;
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
