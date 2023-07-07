@@ -44,6 +44,7 @@ internal sealed class SerializationTests
           Target: /srv
         - Source: /mnt/instance-01/config
           Target: /config
+        Repo:
         """;
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
@@ -99,6 +100,7 @@ internal sealed class SerializationTests
         string serialized = _serializer.Serialize(instance);
 
         // Assert
-        await _verify.String(Source, serialized);
+        const string expected = Source + " ";
+        await _verify.String(expected, serialized);
     }
 }

@@ -27,6 +27,13 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
+    },
+    "Pull": {
+      "commandName": "Project",
+      "commandLineArgs": "pull --instance test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
     }
   }
 }

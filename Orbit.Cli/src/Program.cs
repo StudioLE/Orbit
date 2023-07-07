@@ -28,6 +28,7 @@ internal static class Program
             .Register<Generate>()
             .Register<Launch>()
             .Register<Mount>()
+            .Register<Pull>()
             .Build();
 
         await command.InvokeAsync(args);

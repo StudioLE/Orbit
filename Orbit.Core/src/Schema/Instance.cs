@@ -64,4 +64,9 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// The mounted directories of the instance.
     /// </summary>
     public Mount[] Mounts { get; set; } = Array.Empty<Mount>();
+
+    /// <summary>
+    /// The repo to pull into the instance.
+    /// </summary>
+    public Repo? Repo { get; set; }
 }

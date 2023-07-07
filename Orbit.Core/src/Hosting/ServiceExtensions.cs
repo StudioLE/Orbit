@@ -35,7 +35,8 @@ public static class ServiceExtensions
             .AddSingleton<Create>()
             .AddSingleton<Generate>()
             .AddSingleton<Launch>()
-            .AddSingleton<Activities.Mount>();
+            .AddSingleton<Activities.Mount>()
+            .AddSingleton<Pull>();
     }
 
     /// <summary>
