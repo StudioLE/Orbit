@@ -39,6 +39,14 @@ write_files:
     PermitRootLogin no
     PasswordAuthentication no
     Port 22
+- path: /var/lib/cloud/scripts/per-instance/00-log.sh
+  permissions: 0o500
+  content: |
+    #!/bin/bash
+    set -euo pipefail
+
+    date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
+    echo "Executing installers" | sudo tee -a /var/log/orbit.log
 - path: /var/lib/cloud/scripts/per-instance/10-install-docker.sh
   permissions: 0o500
   content: |
@@ -101,6 +109,26 @@ write_files:
 
     # TODO: Change docker logging provider
     # Source: https://docs.docker.com/engine/install/linux-postinstall/#configure-default-logging-driver
+- path: /var/lib/cloud/scripts/per-instance/15-install-docker-compose.sh
+  permissions: 0o500
+  content: |
+    #!/bin/bash
+    set -euo pipefail
+
+    # Install docker-compose-plugin
+    # Source: https://docs.docker.com/compose/install/linux/#install-using-the-repository
+
+    echo "➡️  Install docker compose"
+    sudo apt-get update
+    sudo apt-get install docker-compose-plugin
+- path: /var/lib/cloud/scripts/per-instance/99-log.sh
+  permissions: 0o500
+  content: |
+    #!/bin/bash
+    set -euo pipefail
+
+    date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
+    echo "Executed installers" | sudo tee -a /var/log/orbit.log
 bootcmd:
 - echo "*********************************"
 - echo "Executing bootcmd"
@@ -109,10 +137,14 @@ bootcmd:
 - ip -br addr
 - echo "###### IP Routes"
 - ip route
+- date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
+- echo "Executed bootcmd" | sudo tee -a /var/log/orbit.log
 - ''
 runcmd:
 - echo "*********************************"
 - echo "Executing runcmd"
 - echo "*********************************"
 - systemctl restart ssh
+- date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
+- echo "Executed runcmd" | sudo tee -a /var/log/orbit.log
 - ''
