@@ -32,8 +32,8 @@ internal sealed class SerializationTests
           PrivateKey: {MockWireGuardFacade.PrivateKey}
           PublicKey: {MockWireGuardFacade.PublicKey}
           Addresses:
-          - 10.1.1.0/24
-          - fc00:1:1::/32
+          - 10.1.1.0
+          - 'fc00:1:1::'
           ServerPublicKey: ''
           AllowedIPs:
           - 0.0.0.0/0

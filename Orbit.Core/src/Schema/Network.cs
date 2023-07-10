@@ -57,11 +57,11 @@ public sealed class Network : IEntity
 
     public string GetInternalIPv4(Instance instance)
     {
-        return $"10.{Number}.{instance.Number}.0/24";
+        return $"10.{Number}.{instance.Number}.0";
     }
 
     public string GetInternalIPv6(Instance instance)
     {
-        return $"fc00:{Number}:{instance.Number}::/32";
+        return $"fc00:{Number}:{instance.Number}::";
     }
 }

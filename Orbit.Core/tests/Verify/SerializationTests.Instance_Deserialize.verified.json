@@ -19,8 +19,8 @@
     "PrivateKey": "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
     "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
     "Addresses": [
-      "10.1.1.0/24",
-      "fc00:1:1::/32"
+      "10.1.1.0",
+      "fc00:1:1::"
     ],
     "ServerPublicKey": "",
     "AllowedIPs": [

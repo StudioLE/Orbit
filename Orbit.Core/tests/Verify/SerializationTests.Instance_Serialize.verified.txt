@@ -16,8 +16,8 @@ WireGuard:
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   Addresses:
-  - 10.1.2.0/24
-  - fc00:1:2::/32
+  - 10.1.2.0
+  - 'fc00:1:2::'
   ServerPublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   AllowedIPs:
   - 0.0.0.0/0
