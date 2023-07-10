@@ -62,6 +62,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             () => GetInstance(inputs.Instance, out instance),
             () => ValidateInstance(instance),
             () => WireGuardSetOnServer(instance),
+            () => ConfigureCaddyOnServer(instance),
             () => LaunchOnServer(instance)
         };
         bool isSuccess = steps.All(step => step.Invoke());
@@ -115,10 +116,49 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         using SshClient ssh = new(connection);
         ssh.Connect();
         string command = $"sudo wg set wg0 peer {instance.WireGuard.PublicKey} allowed-ips {instance.WireGuard.Addresses.Join(",")}";
-        if (ssh.ExecuteToLogger(_logger, command))
-            return true;
-        _logger.LogError("Failed to add WireGuard peer to server.");
-        return false;
+        if (!ssh.ExecuteToLogger(_logger, command))
+        {
+            _logger.LogError("Failed to add WireGuard peer to server.");
+            return false;
+        }
+        return true;
+    }
+
+    private bool ConfigureCaddyOnServer(Instance instance)
+    {
+        Server? server = _servers.Get(new ServerId(instance.Server));
+        if (server is null)
+        {
+            _logger.LogError("Failed to get server");
+            return false;
+        }
+        ConnectionInfo connection = server.CreateConnection();
+        string? caddyfile = _instances.GetResource(new InstanceId(instance.Name), "Caddyfile");
+        if (caddyfile is null)
+        {
+            _logger.LogError("Failed to get Caddyfile");
+            return false;
+        }
+        using SshClient ssh = new(connection);
+        ssh.Connect();
+        string command = $"""
+            (
+            cat <<EOF
+            {caddyfile}
+            EOF
+            ) | tee /caddy/{instance.Name}.caddy
+            """;
+        if (!ssh.ExecuteToLogger(_logger, command))
+        {
+            _logger.LogError("Failed to copy Caddyfile to server.");
+            return false;
+        }
+        if (!ssh.ExecuteToLogger(_logger, "cd /caddy && sudo caddy reload"))
+        {
+            _logger.LogError("Failed to reload caddy on server.");
+            return false;
+        }
+        return true;
     }
 
     private bool LaunchOnServer(Instance instance)
