@@ -24,6 +24,7 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
     private readonly ILogger<Generate> _logger;
     private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly IEntityProvider<Network> _networks;
     private readonly ISerializer _serializer;
 
     /// <summary>
@@ -33,12 +34,14 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         ILogger<Generate> logger,
         IOptions<CloudInitOptions> options,
         IEntityProvider<Instance> instances,
+        IEntityProvider<Network> networks,
         ISerializer serializer)
     {
         _logger = logger;
         _options = options.Value;
         _instances = instances;
         _serializer = serializer;
+        _networks = networks;
     }
 
     /// <summary>
@@ -71,7 +74,8 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
             () => ValidateOptions(),
             () => GetInstance(inputs.Instance, out instance),
             () => ValidateInstance(instance),
-            () => CreateUserConfig(instance)
+            () => CreateUserConfig(instance),
+            () => CreateCaddyfile(instance)
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
@@ -180,5 +184,28 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;
+    }
+
+    private bool CreateCaddyfile(Instance instance)
+    {
+        if(!instance.Domains.Any())
+            return true;
+        Network? network = _networks.Get(new NetworkId(instance.Network));
+        if (network is null)
+        {
+            _logger.LogError("The network does not exist.");
+            return false;
+        }
+        string domains = instance.Domains.Join(", ");
+        string address = network.GetInternalIPv4(instance) + ":80";
+        string result = $$"""
+            {{domains}} {
+                reverse_proxy {{address}}
+            }
+            """;
+        bool isWritten = _instances.PutResource(new InstanceId(instance.Name), "Caddyfile", result);
+        if (!isWritten)
+            _logger.LogError("Failed to write the Caddyfile.");
+        return isWritten;
     }
 }

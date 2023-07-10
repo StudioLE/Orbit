@@ -42,6 +42,12 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public string Network { get; set; } = string.Empty;
 
     /// <summary>
+    /// The domain names to be reverse proxied to the instance.
+    /// </summary>
+    [Required]
+    public string[] Domains { get; set; } = Array.Empty<string>();
+
+    /// <summary>
     /// The operating system of the instance.
     /// </summary>
     [ValidateComplexType]

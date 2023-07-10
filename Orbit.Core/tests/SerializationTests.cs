@@ -19,6 +19,7 @@ internal sealed class SerializationTests
         Role: node
         Server: server-01
         Network: network-01
+        Domains: []
         OS:
           Name: ubuntu
           Version: jammy

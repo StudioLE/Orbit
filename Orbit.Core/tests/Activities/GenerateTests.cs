@@ -47,5 +47,8 @@ internal sealed class GenerateTests
         string? userConfig = _instances.GetResource(new InstanceId(inputs.Instance), "user-config.yml");
         Assert.That(userConfig, Is.Not.Null);
         await _verify.String(userConfig!);
+        string? caddyFile = _instances.GetResource(new InstanceId(inputs.Instance), "Caddyfile");
+        Assert.That(caddyFile, Is.Null);
+        // await _verify.String(caddyFile!);
     }
 }
