@@ -60,7 +60,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
             .Select(x => x.Name);
     }
 
-    public bool PutResource(IEntityId<T> id, string fileName, object obj, string? prefixYaml = null)
+    public bool PutResource(IEntityId<T> id, string fileName, string content)
     {
         string path = Path.Combine(id.GetFilePath(), "..", fileName);
         IFileInfo file = _fileProvider.GetFileInfo(path);
@@ -69,9 +69,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
         if(!directory.Exists)
             directory.Create();
         using StreamWriter writer = physicalFile.CreateText();
-        if (!string.IsNullOrEmpty(prefixYaml))
-            writer.WriteLine(prefixYaml);
-        _serializer.Serialize(writer, obj);
+        writer.Write(content);
         return true;
     }
 

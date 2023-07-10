@@ -7,6 +7,8 @@ using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Core.Utils.Serialization;
+using StudioLE.Core.Serialization;
 using StudioLE.Core.System;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -22,15 +24,21 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
     private readonly ILogger<Generate> _logger;
     private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly ISerializer _serializer;
 
     /// <summary>
     /// DI constructor for <see cref="Generate"/>.
     /// </summary>
-    public Generate(ILogger<Generate> logger, IOptions<CloudInitOptions> options, IEntityProvider<Instance> instances)
+    public Generate(
+        ILogger<Generate> logger,
+        IOptions<CloudInitOptions> options,
+        IEntityProvider<Instance> instances,
+        ISerializer serializer)
     {
         _logger = logger;
         _options = options.Value;
         _instances = instances;
+        _serializer = serializer;
     }
 
     /// <summary>
@@ -165,7 +173,10 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         }
         // ReSharper restore StringLiteralTypo
 
-        if (_instances.PutResource(new InstanceId(instance.Name), "user-config.yml", yaml, "#cloud-config" + Environment.NewLine))
+        // TODO: Serialize
+        string serialized = "#cloud-config" + Environment.NewLine + Environment.NewLine;
+        serialized += _serializer.Serialize(yaml);
+        if (_instances.PutResource(new InstanceId(instance.Name), "user-config.yml", serialized))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;

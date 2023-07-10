@@ -14,7 +14,7 @@ public interface IEntityProvider<T> : IProvider<IEntityId<T>, T?> where T : clas
 
     public IEnumerable<string> GetIndex();
 
-    bool PutResource(IEntityId<T> id, string fileName, object obj, string? prefixYaml = null);
+    bool PutResource(IEntityId<T> id, string fileName, string content);
 
     string? GetResource(IEntityId<T> id, string fileName);
 }
