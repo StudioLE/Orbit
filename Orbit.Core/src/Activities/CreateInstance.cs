@@ -9,16 +9,16 @@ namespace Orbit.Core.Activities;
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine instance.
 /// </summary>
-public class Create : IActivity<Instance, Instance?>
+public class CreateInstance : IActivity<Instance, Instance?>
 {
-    private readonly ILogger<Create> _logger;
+    private readonly ILogger<CreateInstance> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly InstanceFactory _factory;
 
     /// <summary>
-    /// DI constructor for <see cref="Create"/>.
+    /// DI constructor for <see cref="CreateInstance"/>.
     /// </summary>
-    public Create(ILogger<Create> logger, IEntityProvider<Instance> instances, InstanceFactory factory)
+    public CreateInstance(ILogger<CreateInstance> logger, IEntityProvider<Instance> instances, InstanceFactory factory)
     {
         _logger = logger;
         _instances = instances;

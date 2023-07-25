@@ -13,28 +13,28 @@ using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Activities;
 
-internal sealed class CreateTests
+internal sealed class CreateInstanceTests
 {
     private readonly IVerify _verify = new NUnitVerify();
-    private readonly Create _create;
+    private readonly CreateInstance _activity;
     private readonly IEntityProvider<Instance> _instances;
     private readonly ISerializer _serializer;
     private readonly IReadOnlyCollection<TestLog> _logs;
 
-    public CreateTests()
+    public CreateInstanceTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
-        _create = host.Services.GetRequiredService<Create>();
+        _activity = host.Services.GetRequiredService<CreateInstance>();
         _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
         _logs = host.Services.GetTestLogs();
     }
 
     [Test]
-    public async Task Create_Execute_Default()
+    public async Task CreateInstance_Execute_Default()
     {
         // Arrange
         Instance sourceInstance = new()
@@ -47,7 +47,7 @@ internal sealed class CreateTests
         };
 
         // Act
-        Instance? createdInstance = await _create.Execute(sourceInstance);
+        Instance? createdInstance = await _activity.Execute(sourceInstance);
 
         // Assert
         if (createdInstance is null)
