@@ -2,7 +2,7 @@
   "profiles": {
     "Create": {
       "commandName": "Project",
-      "commandLineArgs": "create --type G1 --name test",
+      "commandLineArgs": "create instance --type G1 --name test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

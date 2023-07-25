@@ -24,7 +24,7 @@ internal static class Program
             .Services
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
-            .Register<CreateInstance>("create")
+            .Register<CreateInstance>("create", "instance")
             .Register<Generate>("generate")
             .Register<Launch>("launch")
             .Register<Mount>("mount")
