@@ -24,11 +24,11 @@ internal static class Program
             .Services
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
-            .Register<Create>()
-            .Register<Generate>()
-            .Register<Launch>()
-            .Register<Mount>()
-            .Register<Pull>()
+            .Register<Create>("create")
+            .Register<Generate>("generate")
+            .Register<Launch>("launch")
+            .Register<Mount>("mount")
+            .Register<Pull>("pull")
             .Build();
 
         await command.InvokeAsync(args);
