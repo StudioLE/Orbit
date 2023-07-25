@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Orbit.Core.Activities;
+using Orbit.Core.Generation;
 using Orbit.Core.Hosting;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
@@ -53,6 +53,7 @@ public static class TestHelpers
         IEntityProvider<Instance> instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
         InstanceFactory instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         Instance instance = instanceFactory.Create(new());
+        instance.Domains = new[] { "example.com", "example.org" };
         instances.Put(instance);
         return host;
     }

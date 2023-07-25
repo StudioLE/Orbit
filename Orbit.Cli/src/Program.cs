@@ -4,6 +4,7 @@ using Cascade.Workflows.CommandLine.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orbit.Core.Activities;
+using Orbit.Core.Generation;
 using Orbit.Core.Hosting;
 
 namespace Orbit.Cli;
@@ -25,7 +26,9 @@ internal static class Program
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
             .Register<CreateInstance>("create", "instance")
-            .Register<Generate>("generate")
+            .Register<GenerateWireGuard>("generate", "wireguard")
+            .Register<GenerateCloudInit>("generate", "cloud-init")
+            .Register<GenerateCaddyfile>("generate", "caddy")
             .Register<Launch>("launch")
             .Register<Mount>("mount")
             .Register<Pull>("pull")

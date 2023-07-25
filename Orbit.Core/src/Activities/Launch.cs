@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
+using Orbit.Core.Generation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
@@ -107,7 +108,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             return false;
         }
         ConnectionInfo connection = server.CreateConnection();
-        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), "user-config.yml");
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");
@@ -133,7 +134,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             return false;
         }
         ConnectionInfo connection = server.CreateConnection();
-        string? caddyfile = _instances.GetResource(new InstanceId(instance.Name), "Caddyfile");
+        string? caddyfile = _instances.GetResource(new InstanceId(instance.Name), GenerateCaddyfile.FileName);
         if (caddyfile is null)
         {
             _logger.LogError("Failed to get Caddyfile");
@@ -170,7 +171,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             return false;
         }
         ConnectionInfo connection = server.CreateConnection();
-        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), "user-config.yml");
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
         if (cloudInit is null)
         {
             _logger.LogError("Failed to get user-config");

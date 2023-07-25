@@ -1,6 +1,8 @@
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Core.Activities;
+using Orbit.Core.Generation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
@@ -32,8 +34,11 @@ public static class ServiceExtensions
             .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
+            .AddSingleton<CommandContext>()
             .AddSingleton<CreateInstance>()
-            .AddSingleton<Generate>()
+            .AddSingleton<GenerateWireGuard>()
+            .AddSingleton<GenerateCloudInit>()
+            .AddSingleton<GenerateCaddyfile>()
             .AddSingleton<Launch>()
             .AddSingleton<Activities.Mount>()
             .AddSingleton<Pull>();

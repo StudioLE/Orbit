@@ -1,15 +1,29 @@
 {
   "profiles": {
-    "Create": {
+    "CreateInstance": {
       "commandName": "Project",
       "commandLineArgs": "create instance --type G1 --name test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "Generate": {
+    "GenerateWireGuard": {
       "commandName": "Project",
-      "commandLineArgs": "generate --instance test",
+      "commandLineArgs": "generate wireguard --instance test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
+    "GenerateCloudInit": {
+      "commandName": "Project",
+      "commandLineArgs": "generate cloud-init --instance test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
+    "GenerateCaddy": {
+      "commandName": "Project",
+      "commandLineArgs": "generate caddy --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

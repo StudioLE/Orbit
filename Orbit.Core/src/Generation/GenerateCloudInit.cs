@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orbit.Core.Provision;
@@ -9,43 +10,43 @@ using Orbit.Core.Utils;
 using Orbit.Core.Utils.DataAnnotations;
 using Orbit.Core.Utils.Serialization;
 using StudioLE.Core.Serialization;
-using StudioLE.Core.System;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 
-namespace Orbit.Core.Activities;
+namespace Orbit.Core.Generation;
 
 /// <summary>
 /// An <see cref="IActivity"/> to generate the cloud init user-data yaml for a virtual machine instance.
 /// </summary>
-public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
+public class GenerateCloudInit : IActivity<GenerateCloudInit.Inputs, string>
 {
-    private readonly ILogger<Generate> _logger;
+    public const string FileName = "user-config.yml";
+    private readonly ILogger<GenerateCloudInit> _logger;
     private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly IEntityProvider<Network> _networks;
     private readonly ISerializer _serializer;
+    private readonly CommandContext _context;
 
     /// <summary>
-    /// DI constructor for <see cref="Generate"/>.
+    /// DI constructor for <see cref="GenerateCloudInit"/>.
     /// </summary>
-    public Generate(
-        ILogger<Generate> logger,
+    public GenerateCloudInit(
+        ILogger<GenerateCloudInit> logger,
         IOptions<CloudInitOptions> options,
         IEntityProvider<Instance> instances,
-        IEntityProvider<Network> networks,
-        ISerializer serializer)
+        ISerializer serializer,
+        CommandContext context)
     {
         _logger = logger;
         _options = options.Value;
         _instances = instances;
         _serializer = serializer;
-        _networks = networks;
+        _context = context;
     }
 
     /// <summary>
-    /// The inputs for <see cref="Generate"/>.
+    /// The inputs for <see cref="GenerateCloudInit"/>.
     /// </summary>
     public class Inputs
     {
@@ -57,34 +58,42 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         public string Instance { get; set; } = string.Empty;
     }
 
-    /// <summary>
-    /// The outputs of <see cref="Generate"/>.
-    /// </summary>
-    public class Outputs
-    {
-        public int ExitCode { get; set; }
-    }
-
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public Task<string> Execute(Inputs inputs)
     {
         Instance instance = new();
+        string output = string.Empty;
+        string wireGuardConfig = string.Empty;
         Func<bool>[] steps =
         {
             () => ValidateOptions(),
             () => GetInstance(inputs.Instance, out instance),
             () => ValidateInstance(instance),
-            () => CreateUserConfig(instance),
-            () => CreateCaddyfile(instance)
+            () => GetWireGuardConfig(instance, out wireGuardConfig),
+            () => CreateUserConfig(instance, wireGuardConfig, out output)
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
         {
             _logger.LogInformation($"Generated cloud-init for instance {instance.Name}");
-            return Task.FromResult(new Outputs { ExitCode = 0 });
+            return Task.FromResult(output);
         }
         _logger.LogError("Failed to generate cloud-init.");
-        return Task.FromResult(new Outputs { ExitCode = 1 });
+        _context.ExitCode = 1;
+        return Task.FromResult(output);
+    }
+
+    private bool GetWireGuardConfig(Instance instance, out string output)
+    {
+        string? result = _instances.GetResource(new InstanceId(instance.Name), GenerateWireGuard.FileName);
+        if(result is not null)
+        {
+            output = result;
+            return true;
+        }
+        _logger.LogError("Failed to retrieve WireGuard config.");
+        output = string.Empty;
+        return false;
     }
 
     private bool ValidateOptions()
@@ -109,28 +118,7 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         return instance.TryValidate(_logger);
     }
 
-    private static string CreateWireGuardConfig(Instance instance)
-    {
-        List<string> lines = new()
-        {
-            $"""
-            [Interface]
-            PrivateKey = {instance.WireGuard.PrivateKey}
-            """
-        };
-        foreach (string address in instance.WireGuard.Addresses)
-            lines.Add($"Address = {address}");
-        lines.Add($"""
-            [Peer]
-            PublicKey = {instance.WireGuard.ServerPublicKey}
-            AllowedIPs = {instance.WireGuard.AllowedIPs.Join(", ")}
-            Endpoint = {instance.WireGuard.Endpoint}
-            """);
-
-        return lines.Join();
-    }
-
-    private bool CreateUserConfig(Instance instance)
+    private bool CreateUserConfig(Instance instance, string wireGuardConfig, out string output)
     {
         YamlNode yaml = EmbeddedResourceHelpers.GetYaml("Resources/Templates/user-config-template.yml");
 
@@ -139,12 +127,11 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         yaml["users"][1]["name"].SetValue(_options.User);
         yaml["users"][0].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
         yaml["users"][1].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
-        string wireguardContent = CreateWireGuardConfig(instance);
         YamlMappingNode wg0 = new()
         {
             { "name", "wg0" },
             { "config_path", "/etc/wireguard/wg0.conf" },
-            { "content", new YamlScalarNode(wireguardContent) { Style = ScalarStyle.Literal } }
+            { "content", new YamlScalarNode(wireGuardConfig) { Style = ScalarStyle.Literal } }
         };
         yaml["wireguard"].Replace("interfaces", new YamlSequenceNode(wg0));
         // ReSharper disable StringLiteralTypo
@@ -177,35 +164,11 @@ public class Generate : IActivity<Generate.Inputs, Generate.Outputs>
         }
         // ReSharper restore StringLiteralTypo
 
-        // TODO: Serialize
-        string serialized = "#cloud-config" + Environment.NewLine + Environment.NewLine;
-        serialized += _serializer.Serialize(yaml);
-        if (_instances.PutResource(new InstanceId(instance.Name), "user-config.yml", serialized))
+        output = "#cloud-config" + Environment.NewLine + Environment.NewLine;
+        output += _serializer.Serialize(yaml);
+        if (_instances.PutResource(new InstanceId(instance.Name), GenerateCloudInit.FileName, output))
             return true;
         _logger.LogError("Failed to write the user config file.");
         return false;
-    }
-
-    private bool CreateCaddyfile(Instance instance)
-    {
-        if(!instance.Domains.Any())
-            return true;
-        Network? network = _networks.Get(new NetworkId(instance.Network));
-        if (network is null)
-        {
-            _logger.LogError("The network does not exist.");
-            return false;
-        }
-        string domains = instance.Domains.Join(", ");
-        string address = network.GetInternalIPv4(instance) + ":80";
-        string result = $$"""
-            {{domains}} {
-                reverse_proxy {{address}}
-            }
-            """;
-        bool isWritten = _instances.PutResource(new InstanceId(instance.Name), "Caddyfile", result);
-        if (!isWritten)
-            _logger.LogError("Failed to write the Caddyfile.");
-        return isWritten;
     }
 }
