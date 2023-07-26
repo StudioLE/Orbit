@@ -6,7 +6,6 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils.DataAnnotations;
-using StudioLE.Core.System;
 
 namespace Orbit.Core.Generation;
 
@@ -18,6 +17,7 @@ public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
     private readonly ILogger<GenerateWireGuard> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly CommandContext _context;
+    private readonly WireGuardConfigFactory _factory;
 
     /// <summary>
     /// DI constructor for <see cref="GenerateWireGuard"/>.
@@ -25,11 +25,13 @@ public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
     public GenerateWireGuard(
         ILogger<GenerateWireGuard> logger,
         IEntityProvider<Instance> instances,
-        CommandContext context)
+        CommandContext context,
+        WireGuardConfigFactory factory)
     {
         _logger = logger;
         _instances = instances;
         _context = context;
+        _factory = factory;
     }
 
     /// <summary>
@@ -109,22 +111,8 @@ public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
 
     private bool CreateWireGuardConfig(Instance instance, WireGuard wg, out string output)
     {
-        List<string> lines = new()
-        {
-            $"""
-            [Interface]
-            PrivateKey = {wg.PrivateKey}
-            """
-        };
-        foreach (string address in wg.Addresses)
-            lines.Add($"Address = {address}");
-        lines.Add($"""
-            [Peer]
-            PublicKey = {wg.ServerPublicKey}
-            AllowedIPs = {wg.AllowedIPs.Join(", ")}
-            Endpoint = {wg.Endpoint}
-            """);
-        output = lines.Join();
+        output = _factory.Create(wg);
+        // TODO: Make save optional
         string fileName = wg.GetConfigFileName();
         if (_instances.PutResource(new InstanceId(instance.Name), fileName, output))
             return true;
