@@ -12,6 +12,53 @@ namespace Orbit.Core.Tests;
 
 public static class TestHelpers
 {
+    public static Instance ExampleInstance()
+    {
+        return new()
+        {
+            Server = "server-01",
+            WireGuard = new[]
+            {
+                new WireGuard
+                {
+                    PrivateKey = MockWireGuardFacade.PrivateKey,
+                    PublicKey = MockWireGuardFacade.PublicKey
+                }
+            }
+        };
+    }
+
+    private static Server ExampleServer()
+    {
+        return new()
+        {
+            Name = "server-01",
+            Number = 1,
+            Address = "localhost",
+            Ssh = new()
+            {
+                Port = 22,
+                User = "user",
+                PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
+            }
+        };
+    }
+
+    private static Network ExampleNetwork()
+    {
+        return new()
+        {
+            Name = "network-01",
+            Number = 1,
+            Server = "server-01",
+            WireGuardPort = MockWireGuardFacade.Port,
+            WireGuardPrivateKey = MockWireGuardFacade.PrivateKey,
+            WireGuardPublicKey = MockWireGuardFacade.PublicKey,
+            ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
+            ExternalIPv6 = MockWireGuardFacade.ExternalIPv6
+        };
+    }
+
     public static IHost CreateTestHost(Action<IServiceCollection>? configureServices = null)
     {
         configureServices ??= _ => { };
@@ -26,30 +73,9 @@ public static class TestHelpers
             .ConfigureServices(configureServices)
             .Build();
         IEntityProvider<Server> servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
-        servers.Put(new()
-        {
-            Name = "server-01",
-            Number = 1,
-            Address = "localhost",
-            Ssh = new()
-            {
-                Port = 22,
-                User = "user",
-                PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
-            }
-        });
+        servers.Put(ExampleServer());
         IEntityProvider<Network> networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
-        networks.Put(new()
-        {
-            Name = "network-01",
-            Number = 1,
-            Server = "server-01",
-            WireGuardPort = MockWireGuardFacade.Port,
-            WireGuardPrivateKey = MockWireGuardFacade.PrivateKey,
-            WireGuardPublicKey = MockWireGuardFacade.PublicKey,
-            ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
-            ExternalIPv6 = MockWireGuardFacade.ExternalIPv6
-        });
+        networks.Put(ExampleNetwork());
         IEntityProvider<Instance> instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
         InstanceFactory instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         Instance instance = instanceFactory.Create(new());

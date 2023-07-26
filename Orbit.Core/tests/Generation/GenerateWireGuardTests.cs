@@ -37,7 +37,8 @@ internal sealed class GenerateWireGuardTests
         // Arrange
         GenerateWireGuard.Inputs inputs = new()
         {
-            Instance = "instance-01"
+            Instance = "instance-01",
+            Interface = "wg1"
         };
 
         // Act
@@ -47,7 +48,8 @@ internal sealed class GenerateWireGuardTests
         Assert.That(_context.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Generated WireGuard config for instance {inputs.Instance}"));
-        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateWireGuard.FileName);
+        string fileName = inputs.Interface + ".conf";
+        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), fileName);
         Assert.That(resource, Is.Not.Null);
         Assert.That(resource, Is.EqualTo(output));
         await _verify.String(resource!);

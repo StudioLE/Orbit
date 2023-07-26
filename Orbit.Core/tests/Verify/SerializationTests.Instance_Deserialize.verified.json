@@ -3,7 +3,9 @@
   "Number": 1,
   "Role": "node",
   "Server": "server-01",
-  "Network": "network-01",
+  "Networks": [
+    "network-01"
+  ],
   "Domains": [],
   "OS": {
     "Name": "ubuntu",
@@ -16,20 +18,24 @@
     "Memory": 4,
     "Disk": 20
   },
-  "WireGuard": {
-    "PrivateKey": "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
-    "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
-    "Addresses": [
-      "10.1.1.0",
-      "fc00:1:1::"
-    ],
-    "ServerPublicKey": "",
-    "AllowedIPs": [
-      "0.0.0.0/0",
-      "::/0"
-    ],
-    "Endpoint": "localhost:51820"
-  },
+  "WireGuard": [
+    {
+      "Name": "wg1",
+      "Network": "network-01",
+      "PrivateKey": "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
+      "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
+      "Addresses": [
+        "10.1.1.0",
+        "fc00:1:1::"
+      ],
+      "ServerPublicKey": "",
+      "AllowedIPs": [
+        "0.0.0.0/0",
+        "::/0"
+      ],
+      "Endpoint": "localhost:51820"
+    }
+  ],
   "Mounts": [
     {
       "Source": "/mnt/instance-01/srv",

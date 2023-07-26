@@ -4,7 +4,6 @@ using NUnit.Framework;
 using Orbit.Core.Activities;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
-using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.Logging.TestLogger;
 using StudioLE.Core.Serialization;
 using StudioLE.Verify;
@@ -37,14 +36,7 @@ internal sealed class CreateInstanceTests
     public async Task CreateInstance_Execute_Default()
     {
         // Arrange
-        Instance sourceInstance = new()
-        {
-            WireGuard =
-            {
-                PrivateKey = MockWireGuardFacade.PrivateKey,
-                PublicKey = MockWireGuardFacade.PublicKey
-            }
-        };
+        Instance sourceInstance = TestHelpers.ExampleInstance();
 
         // Act
         Instance? createdInstance = await _activity.Execute(sourceInstance);

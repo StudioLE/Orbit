@@ -60,7 +60,8 @@ internal sealed class GenerateCloudInitTests
     {
         GenerateWireGuard.Inputs inputs = new()
         {
-            Instance = "instance-01"
+            Instance = "instance-01",
+            Interface = "wg1"
         };
         await _wireguard.Execute(inputs);
     }

@@ -95,32 +95,30 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
 
     private bool WireGuardSetOnServer(Instance instance)
     {
-        Network? network = _networks.Get(new NetworkId(instance.Network));
-        if (network is null)
+        foreach (WireGuard wg in instance.WireGuard)
         {
-            _logger.LogError("Failed to get network");
-            return false;
-        }
-        Server? server = _servers.Get(new ServerId(network.Server));
-        if (server is null)
-        {
-            _logger.LogError("Failed to get server");
-            return false;
-        }
-        ConnectionInfo connection = server.CreateConnection();
-        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
-        if (cloudInit is null)
-        {
-            _logger.LogError("Failed to get user-config");
-            return false;
-        }
-        using SshClient ssh = new(connection);
-        ssh.Connect();
-        string command = $"sudo wg set wg0 peer {instance.WireGuard.PublicKey} allowed-ips {instance.WireGuard.Addresses.Join(",")}";
-        if (!ssh.ExecuteToLogger(_logger, command))
-        {
-            _logger.LogError("Failed to add WireGuard peer to server.");
-            return false;
+            Network? network = _networks.Get(new NetworkId(wg.Network));
+            if (network is null)
+            {
+                _logger.LogError("Failed to get network");
+                return false;
+            }
+            Server? server = _servers.Get(new ServerId(network.Server));
+            if (server is null)
+            {
+                _logger.LogError("Failed to get server");
+                return false;
+            }
+            ConnectionInfo connection = server.CreateConnection();
+            using SshClient ssh = new(connection);
+            ssh.Connect();
+            // TODO: Server interface may not be wg0!
+            string command = $"sudo wg set wg0 peer {wg.PublicKey} allowed-ips {wg.Addresses.Join(",")}";
+            if (!ssh.ExecuteToLogger(_logger, command))
+            {
+                _logger.LogError("Failed to add WireGuard peer to server.");
+                return false;
+            }
         }
         return true;
     }

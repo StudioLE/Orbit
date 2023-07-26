@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using StudioLE.Core.Serialization;
 
 namespace Orbit.Core.Utils.Serialization.Yaml;
@@ -8,6 +9,7 @@ namespace Orbit.Core.Utils.Serialization.Yaml;
 /// </summary>
 public class YamlDeserializer : IDeserializer
 {
+    private readonly ILogger<YamlDeserializer> _logger;
     private readonly YamlDotNet.Serialization.IDeserializer _deserializer;
 
     /// <inheritdoc/>
@@ -16,9 +18,11 @@ public class YamlDeserializer : IDeserializer
     /// <summary>
     /// Create a new <see cref="YamlDeserializer"/>.
     /// </summary>
+    /// <param name="logger">The Logger.</param>
     /// <param name="deserializer">The YAML deserializer to use.</param>
-    public YamlDeserializer(YamlDotNet.Serialization.IDeserializer deserializer)
+    public YamlDeserializer(ILogger<YamlDeserializer> logger, YamlDotNet.Serialization.IDeserializer deserializer)
     {
+        _logger = logger;
         _deserializer = deserializer;
     }
 
@@ -28,8 +32,9 @@ public class YamlDeserializer : IDeserializer
     /// <remarks>
     /// The default deserializer ignores unmatched properties.
     /// </remarks>
-    public YamlDeserializer()
+    public YamlDeserializer(ILogger<YamlDeserializer> logger)
     {
+        _logger = logger;
         _deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
             .WithNodeTypeResolver(new ReadOnlyCollectionNodeTypeResolver())
             .IgnoreUnmatchedProperties()
@@ -39,6 +44,14 @@ public class YamlDeserializer : IDeserializer
     /// <inheritdoc />
     public object? Deserialize(TextReader input, Type type)
     {
-        return _deserializer.Deserialize(input, type);
+        try
+        {
+            return _deserializer.Deserialize(input, type);
+        }
+        catch (YamlDotNet.Core.YamlException e)
+        {
+            _logger.LogError(e, $"Failed to de-serialize {type}. {e.Message}");
+            return null;
+        }
     }
 }

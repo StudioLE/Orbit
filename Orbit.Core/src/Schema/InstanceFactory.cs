@@ -47,9 +47,9 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? DefaultServer()
             : source.Server;
 
-        result.Network = source.Network.IsNullOrEmpty()
-            ? DefaultNetwork()
-            : source.Network;
+        result.Networks = source.Networks.Any()
+            ? source.Networks
+            : new []{ DefaultNetwork() };
 
         result.Hardware = _hardwareFactory.Create(source.Hardware);
         result.OS = _osFactory.Create(source.OS);

@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Schema;
-using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.Serialization;
 using StudioLE.Core.System;
@@ -48,15 +47,7 @@ internal sealed class InstanceTests
     public async Task Instance_Validate_Review()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(new()
-        {
-            Server = "server-01",
-            WireGuard =
-            {
-                PrivateKey = MockWireGuardFacade.PrivateKey,
-                PublicKey = MockWireGuardFacade.PublicKey
-            }
-        });
+        Instance instance = _instanceFactory.Create(TestHelpers.ExampleInstance());
 
         // Act
         bool isValid = instance.TryValidate(out IReadOnlyCollection<string> errors);

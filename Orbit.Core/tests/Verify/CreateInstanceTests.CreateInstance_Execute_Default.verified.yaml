@@ -2,7 +2,8 @@
 Number: 2
 Role: node
 Server: server-01
-Network: network-01
+Networks:
+- network-01
 Domains: []
 OS:
   Name: ubuntu
@@ -14,6 +15,8 @@ Hardware:
   Memory: 4
   Disk: 20
 WireGuard:
+- Name: wg1
+  Network: network-01
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   Addresses:

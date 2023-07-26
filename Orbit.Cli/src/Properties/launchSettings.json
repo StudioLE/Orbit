@@ -9,7 +9,7 @@
     },
     "GenerateWireGuard": {
       "commandName": "Project",
-      "commandLineArgs": "generate wireguard --instance test",
+      "commandLineArgs": "generate wireguard --instance test --interface wg1",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

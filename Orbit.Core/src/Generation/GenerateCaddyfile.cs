@@ -89,7 +89,7 @@ public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
             _logger.LogWarning("Tried to generate Caddyfile but no domains are set.");
             return true;
         }
-        Network? network = _networks.Get(new NetworkId(instance.Network));
+        Network? network = _networks.Get(new NetworkId(instance.Networks.First()));
         if (network is null)
         {
             _logger.LogError("The network does not exist.");

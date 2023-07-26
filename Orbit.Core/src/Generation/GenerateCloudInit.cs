@@ -85,7 +85,10 @@ public class GenerateCloudInit : IActivity<GenerateCloudInit.Inputs, string>
 
     private bool GetWireGuardConfig(Instance instance, out string output)
     {
-        string? result = _instances.GetResource(new InstanceId(instance.Name), GenerateWireGuard.FileName);
+        // TODO: Revise this to work with multiple interfaces
+        WireGuard wg = instance.WireGuard.FirstOrDefault() ?? throw new("WireGuard interface must not be empty.");
+        string fileName = wg.GetConfigFileName();
+        string? result = _instances.GetResource(new InstanceId(instance.Name), fileName);
         if(result is not null)
         {
             output = result;

@@ -15,7 +15,6 @@ namespace Orbit.Core.Generation;
 /// </summary>
 public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
 {
-    public const string FileName = "wg0.conf";
     private readonly ILogger<GenerateWireGuard> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly CommandContext _context;
@@ -39,11 +38,18 @@ public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
     public class Inputs
     {
         /// <summary>
-        /// The name of the instance to launch.
+        /// The name of the instance.
         /// </summary>
         [Required]
         [NameSchema]
         public string Instance { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The name of the wireguard interface to generate.
+        /// </summary>
+        [Required]
+        [NameSchema]
+        public string Interface { get; set; } = string.Empty;
     }
 
     /// <inheritdoc/>
@@ -51,11 +57,13 @@ public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
     {
         Instance instance = new();
         string output = string.Empty;
+        WireGuard wg = null!;
         Func<bool>[] steps =
         {
             () => GetInstance(inputs.Instance, out instance),
             () => ValidateInstance(instance),
-            () => CreateWireGuardConfig(instance, out output)
+            () => GetWireGuard(instance, inputs.Interface, out wg),
+            () => CreateWireGuardConfig(instance, wg, out output)
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
@@ -85,25 +93,40 @@ public class GenerateWireGuard : IActivity<GenerateWireGuard.Inputs, string>
         return instance.TryValidate(_logger);
     }
 
-    private bool CreateWireGuardConfig(Instance instance, out string output)
+    private bool GetWireGuard(Instance instance, string interfaceName, out WireGuard wg)
+    {
+        WireGuard? result = instance
+            .WireGuard
+            .FirstOrDefault(x => x.Name == interfaceName);
+        wg = result!;
+        if (result is null)
+        {
+            _logger.LogError("The interface does not exist.");
+            return false;
+        }
+        return true;
+    }
+
+    private bool CreateWireGuardConfig(Instance instance, WireGuard wg, out string output)
     {
         List<string> lines = new()
         {
             $"""
             [Interface]
-            PrivateKey = {instance.WireGuard.PrivateKey}
+            PrivateKey = {wg.PrivateKey}
             """
         };
-        foreach (string address in instance.WireGuard.Addresses)
+        foreach (string address in wg.Addresses)
             lines.Add($"Address = {address}");
         lines.Add($"""
             [Peer]
-            PublicKey = {instance.WireGuard.ServerPublicKey}
-            AllowedIPs = {instance.WireGuard.AllowedIPs.Join(", ")}
-            Endpoint = {instance.WireGuard.Endpoint}
+            PublicKey = {wg.ServerPublicKey}
+            AllowedIPs = {wg.AllowedIPs.Join(", ")}
+            Endpoint = {wg.Endpoint}
             """);
         output = lines.Join();
-        if (_instances.PutResource(new InstanceId(instance.Name), FileName, output))
+        string fileName = wg.GetConfigFileName();
+        if (_instances.PutResource(new InstanceId(instance.Name), fileName, output))
             return true;
         _logger.LogError("Failed to write the WireGuard config file.");
         return false;

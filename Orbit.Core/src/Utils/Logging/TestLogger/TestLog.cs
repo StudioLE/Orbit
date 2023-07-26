@@ -36,4 +36,10 @@ public class TestLog
     /// The log message.
     /// </summary>
     public string Message { get; set; } = string.Empty;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{LogLevel}: {Message}";
+    }
 }

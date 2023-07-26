@@ -18,7 +18,8 @@ internal sealed class SerializationTests
         Number: 1
         Role: node
         Server: server-01
-        Network: network-01
+        Networks:
+        - network-01
         Domains: []
         OS:
           Name: ubuntu
@@ -30,6 +31,8 @@ internal sealed class SerializationTests
           Memory: 4
           Disk: 20
         WireGuard:
+        - Name: wg1
+          Network: network-01
           PrivateKey: {MockWireGuardFacade.PrivateKey}
           PublicKey: {MockWireGuardFacade.PublicKey}
           Addresses:
@@ -64,15 +67,7 @@ internal sealed class SerializationTests
     public async Task Instance_Serialize()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(new()
-        {
-            Server = "server-01",
-            WireGuard =
-            {
-                PrivateKey = MockWireGuardFacade.PrivateKey,
-                PublicKey = MockWireGuardFacade.PublicKey
-            }
-        });
+        Instance instance = _instanceFactory.Create(TestHelpers.ExampleInstance());
 
         // Act
         string serialized = _serializer.Serialize(instance);

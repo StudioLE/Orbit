@@ -35,11 +35,10 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public string Server { get; set; } = string.Empty;
 
     /// <summary>
-    /// The name of the network the instance is connected to.
+    /// The names of the network the instance is connected to.
     /// </summary>
     [Required]
-    [NameSchema]
-    public string Network { get; set; } = string.Empty;
+    public string[] Networks { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// The domain names to be reverse proxied to the instance.
@@ -64,7 +63,7 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// The WireGuard configuration of the instance.
     /// </summary>
     [ValidateComplexType]
-    public WireGuard WireGuard { get; set; } = new();
+    public WireGuard[] WireGuard { get; set; } = Array.Empty<WireGuard>();
 
     /// <summary>
     /// The mounted directories of the instance.
