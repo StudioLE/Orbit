@@ -26,9 +26,8 @@ internal static class Program
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
             .Register<CreateInstance>("create", "instance")
-            .Register<GenerateWireGuard>("generate", "wireguard")
-            .Register<GenerateCloudInit>("generate", "cloud-init")
-            .Register<GenerateCaddyfile>("generate", "caddy")
+            .Register<GenerateInstanceConfiguration>("generate", "instance")
+            .Register<GenerateServerConfiguration>("generate", "server")
             .Register<Launch>("launch")
             .Register<Mount>("mount")
             .Register<Pull>("pull")

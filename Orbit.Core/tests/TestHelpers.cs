@@ -17,10 +17,12 @@ public static class TestHelpers
         return new()
         {
             Server = "server-01",
+            Networks = new [] { "network-01" },
             WireGuard = new[]
             {
                 new WireGuard
                 {
+                    Network = "network-01",
                     PrivateKey = MockWireGuardFacade.PrivateKey,
                     PublicKey = MockWireGuardFacade.PublicKey
                 }

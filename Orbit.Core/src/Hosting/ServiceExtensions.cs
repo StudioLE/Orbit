@@ -22,27 +22,37 @@ public static class ServiceExtensions
     public static IServiceCollection AddOrbitServices(this IServiceCollection services)
     {
         return services
+
+            .AddTransient<ISerializer, YamlSerializer>()
+            .AddTransient<IDeserializer, YamlDeserializer>()
+
+            .AddTransient<IEntityFileProvider, EntityFileProvider>()
+            .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
+            .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
+            .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
+
+            .AddSingleton<CommandContext>()
+
+            .AddSingleton<CreateInstance>()
             .AddTransient<InstanceFactory>()
             .AddTransient<HardwareFactory>()
             .AddTransient<NetworkFactory>()
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardFactory>()
-            .AddTransient<IEntityFileProvider, EntityFileProvider>()
-            .AddTransient<ISerializer, YamlSerializer>()
-            .AddTransient<IDeserializer, YamlDeserializer>()
-            .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
-            .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
-            .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
-            .AddSingleton<CommandContext>()
-            .AddSingleton<CreateInstance>()
-            .AddSingleton<GenerateWireGuard>()
-            .AddSingleton<GenerateCloudInit>()
-            .AddSingleton<GenerateCaddyfile>()
-            .AddTransient<CaddyfileFactory>()
-            .AddTransient<WireGuardConfigFactory>()
+
+            .AddSingleton<GenerateInstanceConfiguration>()
             .AddTransient<CloudInitFactory>()
+
+            .AddSingleton<GenerateServerConfiguration>()
+            .AddTransient<CaddyfileFactory>()
+            .AddTransient<WriteCaddyfileCommandFactory>()
+            .AddTransient<WireGuardConfigFactory>()
+            .AddTransient<WireGuardSetCommandFactory>()
+
             .AddSingleton<Launch>()
+            .AddTransient<LaunchCommandFactory>()
+
             .AddSingleton<Activities.Mount>()
             .AddSingleton<Pull>();
     }

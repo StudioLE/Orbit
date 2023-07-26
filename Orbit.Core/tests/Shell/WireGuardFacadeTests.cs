@@ -19,6 +19,7 @@ internal sealed class WireGuardFacadeTests
     #if DEBUG
 
     [Test]
+    [Category("Misc")]
     public void WireGuardFacade_GeneratePrivateKey()
     {
         // Arrange
@@ -33,6 +34,7 @@ internal sealed class WireGuardFacadeTests
     }
 
     [Test]
+    [Category("Misc")]
     public void WireGuardFacade_GeneratePublicKey()
     {
         // Arrange
@@ -46,6 +48,7 @@ internal sealed class WireGuardFacadeTests
     }
 
     [Test]
+    [Category("Misc")]
     public void WireGuardFacade_GeneratePublicAndPrivate()
     {
         // Arrange

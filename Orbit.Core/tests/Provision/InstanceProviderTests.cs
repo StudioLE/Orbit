@@ -20,6 +20,7 @@ internal sealed class InstanceProviderTests
     }
 
     [Test]
+    [Category("Misc")]
     public void InstanceProvider_In_Sequence()
     {
         InstanceProvider_Get_Before();

@@ -25,6 +25,7 @@ internal sealed class InstanceTests
     }
 
     [Test]
+    [Category("Misc")]
     public async Task Instance_Validate_Default()
     {
         // Arrange
@@ -44,6 +45,7 @@ internal sealed class InstanceTests
     }
 
     [Test]
+    [Category("Misc")]
     public async Task Instance_Validate_Review()
     {
         // Arrange

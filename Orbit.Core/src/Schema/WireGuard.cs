@@ -56,9 +56,4 @@ public sealed class WireGuard
     [IPSchema]
     // ReSharper disable once InconsistentNaming
     public string Endpoint { get; set; } = string.Empty;
-
-    public string GetConfigFileName()
-    {
-        return Name + ".conf";
-    }
 }

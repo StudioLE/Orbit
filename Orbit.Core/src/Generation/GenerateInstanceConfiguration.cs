@@ -2,40 +2,45 @@ using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
+using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Generation;
 
 /// <summary>
-/// An <see cref="IActivity"/> to generate the Caddyfile for a virtual machine instance.
+/// An <see cref="IActivity"/> to generate the cloud init user-data yaml for a virtual machine instance.
 /// </summary>
-public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
+public class GenerateInstanceConfiguration : IActivity<GenerateInstanceConfiguration.Inputs, string>
 {
-    public const string FileName = "Caddyfile";
-    private readonly ILogger<GenerateCaddyfile> _logger;
+    public const string FileName = "user-config.yml";
+    private readonly ILogger<GenerateInstanceConfiguration> _logger;
+    private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
     private readonly CommandContext _context;
-    private readonly CaddyfileFactory _factory;
+    private readonly CloudInitFactory _factory;
 
     /// <summary>
-    /// DI constructor for <see cref="GenerateCaddyfile"/>.
+    /// DI constructor for <see cref="GenerateInstanceConfiguration"/>.
     /// </summary>
-    public GenerateCaddyfile(
-        ILogger<GenerateCaddyfile> logger,
+    public GenerateInstanceConfiguration(
+        ILogger<GenerateInstanceConfiguration> logger,
+        IOptions<CloudInitOptions> options,
         IEntityProvider<Instance> instances,
         CommandContext context,
-        CaddyfileFactory factory)
+        CloudInitFactory factory)
     {
         _logger = logger;
+        _options = options.Value;
         _instances = instances;
         _context = context;
         _factory = factory;
     }
 
     /// <summary>
-    /// The inputs for <see cref="GenerateCaddyfile"/>.
+    /// The inputs for <see cref="GenerateInstanceConfiguration"/>.
     /// </summary>
     public class Inputs
     {
@@ -54,18 +59,25 @@ public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
         string output = string.Empty;
         Func<bool>[] steps =
         {
+            () => ValidateOptions(),
             () => GetInstance(inputs.Instance, out instance),
-            () => CreateCaddyfile(instance, out output)
+            () => ValidateInstance(instance),
+            () => CreateUserConfig(instance, out output)
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
         {
-            _logger.LogInformation($"Generated Caddyfile for instance {instance.Name}");
+            _logger.LogInformation("Generated instance configuration");
             return Task.FromResult(output);
         }
-        _logger.LogError("Failed to generate Caddyfile.");
+        _logger.LogError("Failed to generate instance configuration.");
         _context.ExitCode = 1;
         return Task.FromResult(output);
+    }
+
+    private bool ValidateOptions()
+    {
+        return _options.TryValidate(_logger);
     }
 
     private bool GetInstance(string instanceName, out Instance instance)
@@ -80,19 +92,18 @@ public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
         return true;
     }
 
-    private bool CreateCaddyfile(Instance instance, out string output)
+    private bool ValidateInstance(Instance instance)
     {
-        string? result = _factory.Create(instance);
-        if (result is null)
-        {
-            output = string.Empty;
-            return false;
-        }
-        output = result;
+        return instance.TryValidate(_logger);
+    }
+
+    private bool CreateUserConfig(Instance instance, out string output)
+    {
+        output = _factory.Create(instance);
         // TODO: Make save optional
-        bool isWritten = _instances.PutResource(new InstanceId(instance.Name), FileName, output);
-        if (!isWritten)
-            _logger.LogError("Failed to write the Caddyfile.");
-        return isWritten;
+        if (_instances.PutResource(new InstanceId(instance.Name), FileName, output))
+            return true;
+        _logger.LogError("Failed to write the user config file.");
+        return false;
     }
 }

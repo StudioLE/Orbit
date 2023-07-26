@@ -7,23 +7,16 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateWireGuard": {
+    "GenerateInstanceInit": {
       "commandName": "Project",
-      "commandLineArgs": "generate wireguard --instance test --interface wg1",
+      "commandLineArgs": "generate instance --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateCloudInit": {
+    "GenerateServerInit": {
       "commandName": "Project",
-      "commandLineArgs": "generate cloud-init --instance test",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
-    },
-    "GenerateCaddy": {
-      "commandName": "Project",
-      "commandLineArgs": "generate caddy --instance test",
+      "commandLineArgs": "generate server --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

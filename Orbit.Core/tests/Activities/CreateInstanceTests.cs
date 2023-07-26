@@ -33,6 +33,7 @@ internal sealed class CreateInstanceTests
     }
 
     [Test]
+    [Category("Activity")]
     public async Task CreateInstance_Execute_Default()
     {
         // Arrange

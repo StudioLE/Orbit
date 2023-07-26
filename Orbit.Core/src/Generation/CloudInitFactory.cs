@@ -47,7 +47,7 @@ public class CloudInitFactory : IFactory<Instance, string>
                 return new YamlMappingNode
                 {
                     { "name", wg.Name },
-                    { "config_path", "/etc/wireguard/" + wg.GetConfigFileName() },
+                    { "config_path", $"/etc/wireguard/{wg.Name}.conf" },
                     { "content", new YamlScalarNode(config) { Style = ScalarStyle.Literal } }
                 };
             })

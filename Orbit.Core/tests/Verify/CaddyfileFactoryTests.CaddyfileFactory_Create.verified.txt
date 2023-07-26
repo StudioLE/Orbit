@@ -1,3 +1,3 @@
 ﻿example.com, example.org {
-    reverse_proxy 10.1.1.0:80
+    reverse_proxy 10.1.0.0:80
 }

@@ -64,6 +64,7 @@ internal sealed class SerializationTests
     }
 
     [Test]
+    [Category("Serialization")]
     public async Task Instance_Serialize()
     {
         // Arrange
@@ -77,6 +78,7 @@ internal sealed class SerializationTests
     }
 
     [Test]
+    [Category("Serialization")]
     public async Task Instance_Deserialize()
     {
         // Arrange
@@ -88,6 +90,7 @@ internal sealed class SerializationTests
     }
 
     [Test]
+    [Category("Serialization")]
     public async Task Instance_Serialization_RoundTrip()
     {
         // Arrange
