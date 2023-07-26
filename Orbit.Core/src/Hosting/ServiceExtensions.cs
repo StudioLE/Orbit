@@ -51,11 +51,10 @@ public static class ServiceExtensions
             .AddTransient<WireGuardConfigFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
             .AddTransient<MountCommandFactory>()
+            .AddTransient<CloneRepoCommandFactory>()
 
             .AddSingleton<Launch>()
-            .AddTransient<LaunchCommandFactory>()
-
-            .AddSingleton<Pull>();
+            .AddTransient<LaunchCommandFactory>();
     }
 
     /// <summary>

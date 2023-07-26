@@ -22,6 +22,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
     private readonly MountCommandFactory _mountCommandFactory;
+    private readonly CloneRepoCommandFactory _cloneRepoCommandFactory;
 
     /// <summary>
     /// DI constructor for <see cref="GenerateServerConfiguration"/>.
@@ -33,7 +34,8 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
-        MountCommandFactory mountCommandFactory)
+        MountCommandFactory mountCommandFactory,
+        CloneRepoCommandFactory cloneRepoCommandFactory)
     {
         _logger = logger;
         _instances = instances;
@@ -42,6 +44,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
         _mountCommandFactory = mountCommandFactory;
+        _cloneRepoCommandFactory = cloneRepoCommandFactory;
     }
 
     /// <summary>
@@ -76,6 +79,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
             () => SetWireGuardPeer(instance, commands),
             () => WriteCaddyfile(instance, commands),
             () => Mount(instance, commands),
+            () => CloneRepo(instance, commands),
             () => WriteBash(instance, commands)
         };
         bool isSuccess = steps.All(step => step.Invoke());
@@ -134,6 +138,15 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
     private bool Mount(Instance instance, List<KeyValuePair<string, string>> commands)
     {
         string command = _mountCommandFactory.Create(instance);
+        commands.Add(new(instance.Server, command));
+        return true;
+    }
+
+    private bool CloneRepo(Instance instance, List<KeyValuePair<string, string>> commands)
+    {
+        string? command = _cloneRepoCommandFactory.Create(instance);
+        if (command is null)
+            return true;
         commands.Add(new(instance.Server, command));
         return true;
     }

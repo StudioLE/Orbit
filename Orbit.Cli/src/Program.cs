@@ -30,7 +30,6 @@ internal static class Program
             .Register<GenerateInstanceConfiguration>("generate", "instance")
             .Register<GenerateServerConfiguration>("generate", "server")
             .Register<Launch>("launch")
-            .Register<Pull>("pull")
             .Build();
 
         await command.InvokeAsync(args);
