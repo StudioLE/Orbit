@@ -18,7 +18,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
     private readonly ILogger<GenerateServerConfiguration> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Network> _networks;
-    private readonly IEntityProvider<Server> _servers;
     private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
@@ -30,7 +29,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         ILogger<GenerateServerConfiguration> logger,
         IEntityProvider<Instance> instances,
         IEntityProvider<Network> networks,
-        IEntityProvider<Server> servers,
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory)
@@ -38,7 +36,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         _logger = logger;
         _instances = instances;
         _networks = networks;
-        _servers = servers;
         _context = context;
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
@@ -115,30 +112,18 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
                 _logger.LogError("Failed to get network");
                 return false;
             }
-            Server? server = _servers.Get(new ServerId(network.Server));
-            if (server is null)
-            {
-                _logger.LogError("Failed to get server");
-                return false;
-            }
             string command = _wireGuardSetCommandFactory.Create(wg);
-            commands.Add(new(server.Name, command));
+            commands.Add(new(network.Server, command));
         }
         return true;
     }
 
     private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, string>> commands)
     {
-        Server? server = _servers.Get(new ServerId(instance.Server));
-        if (server is null)
-        {
-            _logger.LogError("Failed to get server");
-            return false;
-        }
         string? command = _writeCaddyfileCommandFactory.Create(instance);
         if (command is null)
             return false;
-        commands.Add(new(server.Name, command));
+        commands.Add(new(instance.Server, command));
         return true;
     }
 
