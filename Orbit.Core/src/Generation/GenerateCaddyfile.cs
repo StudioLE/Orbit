@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
-using StudioLE.Core.System;
 
 namespace Orbit.Core.Generation;
 
@@ -17,8 +16,8 @@ public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
     public const string FileName = "Caddyfile";
     private readonly ILogger<GenerateCaddyfile> _logger;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly IEntityProvider<Network> _networks;
     private readonly CommandContext _context;
+    private readonly CaddyfileFactory _factory;
 
     /// <summary>
     /// DI constructor for <see cref="GenerateCaddyfile"/>.
@@ -26,13 +25,13 @@ public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
     public GenerateCaddyfile(
         ILogger<GenerateCaddyfile> logger,
         IEntityProvider<Instance> instances,
-        IEntityProvider<Network> networks,
-        CommandContext context)
+        CommandContext context,
+        CaddyfileFactory factory)
     {
         _logger = logger;
         _instances = instances;
-        _networks = networks;
         _context = context;
+        _factory = factory;
     }
 
     /// <summary>
@@ -83,25 +82,14 @@ public class GenerateCaddyfile : IActivity<GenerateCaddyfile.Inputs, string>
 
     private bool CreateCaddyfile(Instance instance, out string output)
     {
-        output = string.Empty;
-        if (!instance.Domains.Any())
+        string? result = _factory.Create(instance);
+        if (result is null)
         {
-            _logger.LogWarning("Tried to generate Caddyfile but no domains are set.");
-            return true;
-        }
-        Network? network = _networks.Get(new NetworkId(instance.Networks.First()));
-        if (network is null)
-        {
-            _logger.LogError("The network does not exist.");
+            output = string.Empty;
             return false;
         }
-        string domains = instance.Domains.Join(", ");
-        string address = network.GetInternalIPv4(instance) + ":80";
-        output = $$"""
-            {{domains}} {
-                reverse_proxy {{address}}
-            }
-            """;
+        output = result;
+        // TODO: Make save optional
         bool isWritten = _instances.PutResource(new InstanceId(instance.Name), FileName, output);
         if (!isWritten)
             _logger.LogError("Failed to write the Caddyfile.");
