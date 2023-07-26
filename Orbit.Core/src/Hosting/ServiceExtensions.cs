@@ -40,6 +40,8 @@ public static class ServiceExtensions
             .AddSingleton<GenerateCloudInit>()
             .AddSingleton<GenerateCaddyfile>()
             .AddTransient<CaddyfileFactory>()
+            .AddTransient<WireGuardConfigFactory>()
+            .AddTransient<CloudInitFactory>()
             .AddSingleton<Launch>()
             .AddSingleton<Activities.Mount>()
             .AddSingleton<Pull>();
