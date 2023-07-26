@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Activities;
+using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;
@@ -10,7 +10,7 @@ using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
 using StudioLE.Verify.Serialization;
 
-namespace Orbit.Core.Tests.Activities;
+namespace Orbit.Core.Tests.Creation;
 
 internal sealed class CreateInstanceTests
 {

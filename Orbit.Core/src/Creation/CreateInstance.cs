@@ -4,7 +4,7 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.DataAnnotations;
 
-namespace Orbit.Core.Activities;
+namespace Orbit.Core.Creation;
 
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine instance.

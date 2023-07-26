@@ -1,8 +1,9 @@
 using Orbit.Core.Provision;
+using Orbit.Core.Schema;
 using Orbit.Core.Utils;
 using StudioLE.Core.Patterns;
 
-namespace Orbit.Core.Schema;
+namespace Orbit.Core.Creation;
 
 /// <summary>
 /// A factory for creating <see cref="Instance"/> with default values.
