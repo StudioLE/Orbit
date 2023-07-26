@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Generation;
 using Orbit.Core.Provision;
@@ -21,16 +22,23 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Server> _servers;
+    private readonly CommandContext _context;
 
     /// <summary>
     /// DI constructor for <see cref="Launch"/>.
     /// </summary>
-    public Launch(ILogger<Launch> logger, IEntityProvider<Instance> instances, IEntityProvider<Network> networks, IEntityProvider<Server> servers)
+    public Launch(
+        ILogger<Launch> logger,
+        IEntityProvider<Instance> instances,
+        IEntityProvider<Network> networks,
+        IEntityProvider<Server> servers,
+        CommandContext context)
     {
         _logger = logger;
         _instances = instances;
         _networks = networks;
         _servers = servers;
+        _context = context;
     }
 
     /// <summary>
@@ -51,7 +59,6 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     /// </summary>
     public class Outputs
     {
-        public int ExitCode { get; set; }
     }
 
     /// <inheritdoc/>
@@ -70,10 +77,11 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         if (isSuccess)
         {
             _logger.LogInformation($"Launched instance {instance.Name}");
-            return Task.FromResult(new Outputs { ExitCode = 0 });
+            return Task.FromResult(new Outputs());
         }
         _logger.LogError("Failed to launch instance.");
-        return Task.FromResult(new Outputs { ExitCode = 1 });
+        _context.ExitCode = 1;
+        return Task.FromResult(new Outputs());
     }
 
     private bool GetInstance(string instanceName, out Instance instance)
