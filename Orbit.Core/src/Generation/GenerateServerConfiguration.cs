@@ -21,7 +21,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
     private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
-    private readonly MountCommandFactory _mountCommandFactory;
     private readonly CloneRepoCommandFactory _cloneRepoCommandFactory;
 
     /// <summary>
@@ -34,7 +33,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
-        MountCommandFactory mountCommandFactory,
         CloneRepoCommandFactory cloneRepoCommandFactory)
     {
         _logger = logger;
@@ -43,7 +41,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         _context = context;
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
-        _mountCommandFactory = mountCommandFactory;
         _cloneRepoCommandFactory = cloneRepoCommandFactory;
     }
 
@@ -78,7 +75,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
             () => ValidateInstance(instance),
             () => SetWireGuardPeer(instance, commands),
             () => WriteCaddyfile(instance, commands),
-            () => Mount(instance, commands),
             () => CloneRepo(instance, commands),
             () => WriteBash(instance, commands)
         };
@@ -131,13 +127,6 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         string? command = _writeCaddyfileCommandFactory.Create(instance);
         if (command is null)
             return false;
-        commands.Add(new(instance.Server, command));
-        return true;
-    }
-
-    private bool Mount(Instance instance, List<KeyValuePair<string, string>> commands)
-    {
-        string command = _mountCommandFactory.Create(instance);
         commands.Add(new(instance.Server, command));
         return true;
     }

@@ -54,7 +54,9 @@ public static class ServiceExtensions
             .AddTransient<CloneRepoCommandFactory>()
 
             .AddSingleton<Launch>()
-            .AddTransient<LaunchCommandFactory>();
+            .AddTransient<LaunchCommandFactory>()
+
+            .AddSingleton<Activities.Mount>();
     }
 
     /// <summary>

@@ -9,6 +9,3 @@ EOF
 ) | tee /caddy/instance-01.caddy
 
 cd /caddy && sudo caddy reload
-
-mkdir -p /mnt/example
-multipass mount /mnt/example instance-01:/example
