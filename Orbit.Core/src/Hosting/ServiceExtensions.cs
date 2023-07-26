@@ -50,11 +50,11 @@ public static class ServiceExtensions
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardConfigFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
+            .AddTransient<MountCommandFactory>()
 
             .AddSingleton<Launch>()
             .AddTransient<LaunchCommandFactory>()
 
-            .AddSingleton<Activities.Mount>()
             .AddSingleton<Pull>();
     }
 

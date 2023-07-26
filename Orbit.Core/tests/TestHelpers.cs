@@ -83,6 +83,14 @@ public static class TestHelpers
         InstanceFactory instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         Instance instance = instanceFactory.Create(new());
         instance.Domains = new[] { "example.com", "example.org" };
+        instance.Mounts = new Mount[]
+        {
+            new()
+            {
+                Source = "/mnt/example",
+                Target = "/example"
+            }
+        };
         instances.Put(instance);
         return host;
     }
