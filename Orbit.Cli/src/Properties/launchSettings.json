@@ -21,6 +21,13 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
+    "InitializeServer": {
+      "commandName": "Project",
+      "commandLineArgs": "initialize --instance test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
     "Launch": {
       "commandName": "Project",
       "commandLineArgs": "launch --instance test",

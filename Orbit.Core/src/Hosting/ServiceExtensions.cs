@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orbit.Core.Activities;
 using Orbit.Core.Creation;
 using Orbit.Core.Generation;
+using Orbit.Core.Initialization;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
@@ -52,6 +53,8 @@ public static class ServiceExtensions
             .AddTransient<WireGuardSetCommandFactory>()
             .AddTransient<MountCommandFactory>()
             .AddTransient<CloneRepoCommandFactory>()
+
+            .AddSingleton<Initialize>()
 
             .AddSingleton<Launch>()
             .AddTransient<LaunchCommandFactory>()

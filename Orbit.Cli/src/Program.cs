@@ -7,6 +7,7 @@ using Orbit.Core.Activities;
 using Orbit.Core.Creation;
 using Orbit.Core.Generation;
 using Orbit.Core.Hosting;
+using Orbit.Core.Initialization;
 
 namespace Orbit.Cli;
 
@@ -29,6 +30,7 @@ internal static class Program
             .Register<CreateInstance>("create", "instance")
             .Register<GenerateInstanceConfiguration>("generate", "instance")
             .Register<GenerateServerConfiguration>("generate", "server")
+            .Register<Initialize>("initialize")
             .Register<Launch>("launch")
             .Register<Mount>("mount")
             .Build();
