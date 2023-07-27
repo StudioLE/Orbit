@@ -31,6 +31,7 @@ public class YamlSerializer : ISerializer
     {
         _serializer = new YamlDotNet.Serialization.SerializerBuilder()
             .DisableAliases()
+            .WithLiteralMultilineStrings()
             .Build();
     }
 

@@ -2,17 +2,13 @@
 - Command: 'sudo wg set wg0 peer Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE= allowed-ips 10.1.1.0,fc00:1:1::'
   SuccessMessage: 
   ErrorMessage: Failed to set WireGuard peer
-- Command: >-
+- Command: |-
     (
-
     cat <<EOF
-
     example.com, example.org {
         reverse_proxy 10.1.1.0:80
     }
-
     EOF
-
     ) | tee /caddy/instance-01.caddy
   SuccessMessage: 
   ErrorMessage: Failed to write Caddyfile
