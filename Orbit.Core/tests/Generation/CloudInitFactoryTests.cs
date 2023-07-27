@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
+using Orbit.Core.Creation;
 using Orbit.Core.Generation;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils.Logging.TestLogger;
@@ -12,6 +13,7 @@ namespace Orbit.Core.Tests.Generation;
 internal sealed class CloudInitFactoryTests
 {
     private readonly IVerify _verify = new NUnitVerify();
+    private readonly InstanceFactory _instanceFactory;
     private readonly CloudInitFactory _factory;
     private readonly IReadOnlyCollection<TestLog> _logs;
 
@@ -21,6 +23,7 @@ internal sealed class CloudInitFactoryTests
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
+        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _factory = host.Services.GetRequiredService<CloudInitFactory>();
         _logs = host.Services.GetTestLogs();
     }
@@ -30,7 +33,7 @@ internal sealed class CloudInitFactoryTests
     public async Task CloudInitFactory_Create()
     {
         // Arrange
-        Instance instance = TestHelpers.ExampleInstance();
+        Instance instance = _instanceFactory.Create(TestHelpers.ExampleInstance());
 
         // Act
         string output = _factory.Create(instance);

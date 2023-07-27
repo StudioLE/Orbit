@@ -20,10 +20,9 @@ public static class StringHelpers
     /// <summary>
     /// Split a string into separate lines by either \r\n or \n.
     /// </summary>
-    /// <param name="this"></param>
-    /// <returns></returns>
-    public static IEnumerable<string> SplitIntoLines(this string @this)
+    public static IEnumerable<string> SplitIntoLines(this string @this, StringSplitOptions options = StringSplitOptions.RemoveEmptyEntries)
     {
-        return @this.Split("\r\n").SelectMany(x => x.Split("\n"));
+        return @this.Split("\r\n", options)
+            .SelectMany(x => x.Split("\n", options));
     }
 }

@@ -5,7 +5,6 @@ using Orbit.Core.Utils.Serialization;
 using StudioLE.Core.Patterns;
 using StudioLE.Core.Serialization;
 using YamlDotNet.Core;
-using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Core.Generation;
@@ -32,14 +31,40 @@ public class CloudInitFactory : IFactory<Instance, string>
     /// <inheritdoc/>
     public string Create(Instance instance)
     {
-        YamlNode yaml = EmbeddedResourceHelpers.GetYaml("Resources/Templates/user-config-template.yml");
+        YamlNode resource = EmbeddedResourceHelpers.GetYaml("Resources/Templates/user-config-template.yml");
+        if (resource is not YamlMappingNode yaml)
+            throw new($"Expected a {nameof(YamlMappingNode)}");
 
-        yaml["hostname"].SetValue(instance.Name);
-        yaml["users"][0]["name"].SetValue(_options.SudoUser);
-        yaml["users"][1]["name"].SetValue(_options.User);
-        yaml["users"][0].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
-        yaml["users"][1].Replace("ssh_authorized_keys", _options.SshAuthorizedKeys);
-        YamlMappingNode[] interfaces = instance
+        // Hostname
+        yaml.SetValue("hostname", instance.Name, false);
+
+        // Groups
+        yaml.SetValue("groups", new[] { "docker" }, false);
+
+        // Users
+        YamlSequenceNode users = new()
+        {
+            new YamlMappingNode
+            {
+                { "name", _options.SudoUser },
+                { "groups", "sudo, docker" },
+                { "shell", "/bin/bash" },
+                { "sudo", "ALL=(ALL) NOPASSWD:ALL" },
+                { "lock_passwd", "true" },
+                { "ssh_authorized_keys", _options.SshAuthorizedKeys }
+            },
+            new YamlMappingNode
+            {
+                { "name", _options.User },
+                { "shell", "/bin/bash" },
+                { "lock_passwd", "true" },
+                { "ssh_authorized_keys", _options.SshAuthorizedKeys }
+            }
+        };
+        yaml.SetValue("users", users, false);
+
+        // WireGuard
+        YamlMappingNode[] wgNodes = instance
             .WireGuard
             .Select(wg =>
             {
@@ -52,37 +77,65 @@ public class CloudInitFactory : IFactory<Instance, string>
                 };
             })
             .ToArray();
-        yaml["wireguard"].Replace("interfaces", new YamlSequenceNode(interfaces));
-        // ReSharper disable StringLiteralTypo
-        string bootCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/bootcmd.sh");
-        string[] bootCmdLines = bootCmdContent.SplitIntoLines().ToArray();
-        yaml["bootcmd"].AddRange(bootCmdLines);
-        yaml["bootcmd"].SetSequenceStyle(SequenceStyle.Block);
-        string runCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/runcmd.sh");
-        string[] runCmdLines = runCmdContent.SplitIntoLines().ToArray();
-        yaml["runcmd"].AddRange(runCmdLines);
-        yaml["runcmd"].SetSequenceStyle(SequenceStyle.Block);
-        string[] installers =
+        YamlMappingNode wgInterfaces = new()
+        {
+            { "interfaces", new YamlSequenceNode(wgNodes) }
+        };
+        yaml.SetValue("wireguard", wgInterfaces, false);
+
+        // Write files
+        YamlSequenceNode? writeFiles = yaml.GetValue<YamlSequenceNode>("write_files");
+        if (writeFiles is null)
+        {
+            writeFiles = new();
+            yaml.SetValue("write_files", writeFiles);
+        }
+
+        // Write sshd_config
+
+        string sshdConfigContent = EmbeddedResourceHelpers.GetText("Resources/Templates/sshd_config");
+        YamlMappingNode sshdConfigNode = new()
+        {
+            { "path", "/etc/ssh/sshd_config" },
+            { "append", "true" },
+            { "content", new YamlScalarNode(sshdConfigContent) { Style = ScalarStyle.Literal } }
+        };
+        writeFiles.Add(sshdConfigNode);
+
+        // Write per-instance files
+        string[] installerFiles =
         {
             "00-log.sh",
             "10-install-docker.sh",
             "90-install-network-test.sh",
             "99-log.sh"
         };
-        foreach (string installer in installers)
-        {
-            string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{installer}");
-            content = content.Replace("${SUDO_USER}", _options.SudoUser);
-            KeyValuePair<YamlNode, YamlNode>[] nodes =
+        YamlMappingNode[] installerNodes = installerFiles
+            .Select(fileName =>
             {
-                new("path", $"/var/lib/cloud/scripts/per-instance/{installer}"),
-                new("permissions", "0o500"),
-                new("content", new YamlScalarNode(content) { Style = ScalarStyle.Literal })
-            };
-            yaml["write_files"].Add(new YamlMappingNode(nodes));
-        }
-        // ReSharper restore StringLiteralTypo
+                string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{fileName}");
+                content = content.Replace("${SUDO_USER}", _options.SudoUser);
+                return new YamlMappingNode
+                {
+                    { "path", $"/var/lib/cloud/scripts/per-instance/{fileName}" },
+                    { "permissions", "0o500" },
+                    { "content", new YamlScalarNode(content) { Style = ScalarStyle.Literal } }
+                };
+            })
+            .ToArray();
+        writeFiles.AddRange(installerNodes);
 
+        // Boot Command
+        string bootCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/bootcmd.sh");
+        string[] bootCmdLines = bootCmdContent.SplitIntoLines().ToArray();
+        yaml.SetValue("bootcmd", bootCmdLines, false);
+
+        // Run Command
+        string runCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/runcmd.sh");
+        string[] runCmdLines = runCmdContent.SplitIntoLines().ToArray();
+        yaml.SetValue("runcmd", runCmdLines, false);
+
+        // Serialize
         string output = "#cloud-config" + Environment.NewLine + Environment.NewLine;
         output += _serializer.Serialize(yaml);
         return output;

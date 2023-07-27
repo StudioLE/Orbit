@@ -1,11 +1,11 @@
 ﻿#cloud-config
 
-hostname: instance-01
 apt:
   preserve_sources_list: true
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
+hostname: instance-01
 groups:
 - docker
 users:
@@ -85,7 +85,6 @@ bootcmd:
 - ip route
 - date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
 - echo "Executed bootcmd" | sudo tee -a /var/log/orbit.log
-- ''
 runcmd:
 - echo "*********************************"
 - echo "Executing runcmd"
@@ -93,4 +92,3 @@ runcmd:
 - systemctl restart ssh
 - date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
 - echo "Executed runcmd" | sudo tee -a /var/log/orbit.log
-- ''
