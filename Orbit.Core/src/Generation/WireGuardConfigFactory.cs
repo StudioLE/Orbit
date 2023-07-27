@@ -9,21 +9,21 @@ public class WireGuardConfigFactory : IFactory<WireGuard, string>
     /// <inheritdoc/>
     public string Create(WireGuard wg)
     {
-        List<string> lines = new()
-        {
-            $"""
+        string addresses = wg
+            .Addresses
+            .Select(address => "Address = " + address)
+            .Join();
+        return $"""
             [Interface]
             PrivateKey = {wg.PrivateKey}
-            """
-        };
-        foreach (string address in wg.Addresses)
-            lines.Add($"Address = {address}");
-        lines.Add($"""
+            {addresses}
+            DNS = {wg.Dns}
+
             [Peer]
             PublicKey = {wg.ServerPublicKey}
             AllowedIPs = {wg.AllowedIPs.Join(", ")}
             Endpoint = {wg.Endpoint}
-            """);
-        return lines.Join();
+
+            """;
     }
 }

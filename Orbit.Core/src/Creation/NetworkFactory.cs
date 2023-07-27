@@ -32,6 +32,10 @@ public class NetworkFactory : IFactory<Network, Network>
             ? DefaultNumber()
             : source.Number;
 
+        result.Dns = source.Dns.IsNullOrEmpty()
+            ? $"10.{result.Number}.1.0"
+            : source.Dns;
+
         result.Name = source.Name.IsNullOrEmpty()
             ? $"{DefaultName}-{result.Number:00}"
             : source.Name;

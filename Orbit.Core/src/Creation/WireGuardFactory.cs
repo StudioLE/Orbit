@@ -54,6 +54,7 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
             PrivateKey = wg.PrivateKey,
             PublicKey = wg.PublicKey,
             Addresses = wg.Addresses,
+            Dns = wg.Dns,
             ServerPublicKey = wg.ServerPublicKey,
             AllowedIPs = wg.AllowedIPs,
             Endpoint = wg.Endpoint
@@ -82,6 +83,9 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
                 network.GetInternalIPv4(instance),
                 network.GetInternalIPv6(instance)
             };
+
+        if(result.Dns.IsNullOrEmpty())
+            result.Dns = network.Dns;
 
         if (result.ServerPublicKey.IsNullOrEmpty())
             result.ServerPublicKey = network.WireGuardPublicKey ?? throw new("Failed to get WireGuard public key from network.");

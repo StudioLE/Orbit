@@ -39,6 +39,7 @@ internal sealed class SerializationTests
           Addresses:
           - 10.1.1.0
           - 'fc00:1:1::'
+          Dns: 10.1.1.0
           ServerPublicKey: ''
           AllowedIPs:
           - 0.0.0.0/0

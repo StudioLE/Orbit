@@ -5,6 +5,8 @@ apt:
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
+packages:
+- resolvconf
 ssh_genkeytypes:
-  - rsa
-  - ed25519
+- rsa
+- ed25519

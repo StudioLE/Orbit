@@ -38,6 +38,12 @@ public sealed class WireGuard
     public string[] Addresses { get; set; } = Array.Empty<string>();
 
     /// <summary>
+    /// The address of the WireGuard interface DNS resolver.
+    /// </summary>
+    [IPSchema]
+    public string Dns { get; set; } = string.Empty;
+
+    /// <summary>
     /// The public key of the WireGuard server peer.
     /// </summary>
     [Base64Schema]

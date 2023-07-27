@@ -58,7 +58,8 @@ public static class TestHelpers
             WireGuardPrivateKey = MockWireGuardFacade.PrivateKey,
             WireGuardPublicKey = MockWireGuardFacade.PublicKey,
             ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
-            ExternalIPv6 = MockWireGuardFacade.ExternalIPv6
+            ExternalIPv6 = MockWireGuardFacade.ExternalIPv6,
+            Dns = "10.1.1.0"
         };
     }
 

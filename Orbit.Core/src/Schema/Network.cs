@@ -38,6 +38,12 @@ public sealed class Network : IEntity
     public string ExternalIPv6 { get; set; } = string.Empty;
 
     /// <summary>
+    /// The address of the DNS resolver for the network.
+    /// </summary>
+    [IPSchema]
+    public string Dns { get; set; } = string.Empty;
+
+    /// <summary>
     /// The WireGuard private key.
     /// </summary>
     [Base64Schema]

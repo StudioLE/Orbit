@@ -5,6 +5,8 @@ apt:
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
+packages:
+- resolvconf
 ssh_genkeytypes:
 - rsa
 - ed25519
@@ -26,11 +28,13 @@ wireguard:
   interfaces:
   - name: wg1
     config_path: /etc/wireguard/wg1.conf
-    content: |-
+    content: |
       [Interface]
       PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
       Address = 10.1.2.0
       Address = fc00:1:2::
+      DNS = 10.1.1.0
+
       [Peer]
       PublicKey = Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
       AllowedIPs = 0.0.0.0/0, ::/0
