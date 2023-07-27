@@ -129,6 +129,11 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
 
     private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
+        if (!instance.Domains.Any())
+        {
+            _logger.LogWarning("Domains are required for Caddyfile generation.");
+            return true;
+        }
         ShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
         if (!results.Any())
             return false;
