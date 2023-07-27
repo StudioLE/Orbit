@@ -32,6 +32,12 @@ public sealed class WireGuard
     public string PublicKey { get; set; } = string.Empty;
 
     /// <summary>
+    /// The pre-shared key of the WireGuard interface.
+    /// </summary>
+    [Base64Schema]
+    public string PreSharedKey { get; set; } = string.Empty;
+
+    /// <summary>
     /// The addresses of the WireGuard interface.
     /// </summary>
     [IPSchema]

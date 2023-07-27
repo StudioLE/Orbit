@@ -19,6 +19,7 @@ WireGuard:
   Network: network-01
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+  PreSharedKey: C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
   Addresses:
   - 10.1.2.0
   - 'fc00:1:2::'

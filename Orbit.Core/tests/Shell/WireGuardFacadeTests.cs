@@ -68,5 +68,20 @@ internal sealed class WireGuardFacadeTests
         Assert.That(publicKey, Does.Match(Base64SchemaAttribute.Base64Regex));
     }
 
+    [Test]
+    [Category("Misc")]
+    public void WireGuardFacade_GeneratePreSharedKey()
+    {
+        // Arrange
+        // Act
+        string? preSharedKey = _wg.GeneratePreSharedKey();
+
+        // Assert
+        Assert.That(preSharedKey, Is.Not.Null);
+        Assert.That(preSharedKey, Is.Not.Empty);
+        Assert.That(preSharedKey?.Length, Is.EqualTo(44));
+        Assert.That(preSharedKey, Does.Match(Base64SchemaAttribute.Base64Regex));
+    }
+
     #endif
 }

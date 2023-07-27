@@ -1,5 +1,9 @@
 ﻿server-01:
-- Command: 'sudo wg set wg0 peer Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE= allowed-ips 10.1.1.0,fc00:1:1::'
+- Command: |-
+    echo C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY= | sudo wg set wg0 \
+        peer Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE= \
+        preshared-key /dev/fd/0 \
+        allowed-ips 10.1.1.0,fc00:1:1::
   SuccessMessage: 
   ErrorMessage: Failed to set WireGuard peer
 - Command: |-

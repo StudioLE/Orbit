@@ -25,7 +25,8 @@ public static class TestHelpers
                 {
                     Network = "network-01",
                     PrivateKey = MockWireGuardFacade.PrivateKey,
-                    PublicKey = MockWireGuardFacade.PublicKey
+                    PublicKey = MockWireGuardFacade.PublicKey,
+                    PreSharedKey = MockWireGuardFacade.PreSharedKey
                 }
             }
         };

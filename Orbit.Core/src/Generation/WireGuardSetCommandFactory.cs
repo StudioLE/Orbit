@@ -12,7 +12,12 @@ public class WireGuardSetCommandFactory : IFactory<WireGuard, ShellCommand>
         // TODO: Server interface may not be wg0!
         return new()
         {
-            Command = $"sudo wg set wg0 peer {wg.PublicKey} allowed-ips {wg.Addresses.Join(",")}",
+            Command = $"""
+                echo {wg.PreSharedKey} | sudo wg set wg0 \
+                    peer {wg.PublicKey} \
+                    preshared-key /dev/fd/0 \
+                    allowed-ips {wg.Addresses.Join(",")}
+                """,
             ErrorMessage = "Failed to set WireGuard peer"
         };
     }

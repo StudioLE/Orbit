@@ -36,6 +36,7 @@ internal sealed class SerializationTests
           Network: network-01
           PrivateKey: {MockWireGuardFacade.PrivateKey}
           PublicKey: {MockWireGuardFacade.PublicKey}
+          PreSharedKey: {MockWireGuardFacade.PreSharedKey}
           Addresses:
           - 10.1.1.0
           - 'fc00:1:1::'

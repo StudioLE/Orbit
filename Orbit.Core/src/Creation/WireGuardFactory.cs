@@ -53,6 +53,7 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
             Network = wg.Network,
             PrivateKey = wg.PrivateKey,
             PublicKey = wg.PublicKey,
+            PreSharedKey = wg.PreSharedKey,
             Addresses = wg.Addresses,
             Dns = wg.Dns,
             ServerPublicKey = wg.ServerPublicKey,
@@ -71,11 +72,11 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
         if (result.PrivateKey.IsNullOrEmpty())
             result.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
 
-        if (result.PrivateKey.IsNullOrEmpty())
-            result.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
-
         if (result.PublicKey.IsNullOrEmpty())
             result.PublicKey = _wg.GeneratePublicKey(result.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
+
+        if (result.PreSharedKey.IsNullOrEmpty())
+            result.PreSharedKey = _wg.GeneratePreSharedKey() ?? throw new("Failed to generate WireGuard pre-shared key");
 
         if (!result.Addresses.Any())
             result.Addresses = new[]

@@ -14,4 +14,9 @@ public interface IWireGuardFacade
     /// Generate a public key for the specified <paramref name="privateKey"/>.
     /// </summary>
     string? GeneratePublicKey(string privateKey);
+
+    /// <summary>
+    /// Generate a new pre-shared key.
+    /// </summary>
+    string? GeneratePreSharedKey();
 }
