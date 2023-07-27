@@ -8,7 +8,7 @@ using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
 using Renci.SshNet;
 
-namespace Orbit.Core.Activities;
+namespace Orbit.Core.Initialization;
 
 /// <summary>
 /// An <see cref="IActivity"/> to remotely launch an instance with Multipass.

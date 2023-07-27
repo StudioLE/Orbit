@@ -4,7 +4,7 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using StudioLE.Core.Patterns;
 
-namespace Orbit.Core.Activities;
+namespace Orbit.Core.Initialization;
 
 public class LaunchCommandFactory : IFactory<Instance, string?>
 {

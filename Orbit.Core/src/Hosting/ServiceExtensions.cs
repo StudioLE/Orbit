@@ -1,7 +1,6 @@
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Orbit.Core.Activities;
 using Orbit.Core.Creation;
 using Orbit.Core.Generation;
 using Orbit.Core.Initialization;
@@ -10,6 +9,7 @@ using Orbit.Core.Schema;
 using Orbit.Core.Shell;
 using Orbit.Core.Utils.Serialization.Yaml;
 using StudioLE.Core.Serialization;
+using Mount = Orbit.Core.Initialization.Mount;
 
 namespace Orbit.Core.Hosting;
 
@@ -59,7 +59,7 @@ public static class ServiceExtensions
             .AddSingleton<Launch>()
             .AddTransient<LaunchCommandFactory>()
 
-            .AddSingleton<Activities.Mount>();
+            .AddSingleton<Mount>();
     }
 
     /// <summary>
