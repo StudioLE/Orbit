@@ -66,7 +66,7 @@ public class CloudInitFactory : IFactory<Instance, string>
         {
             "00-log.sh",
             "10-install-docker.sh",
-            "15-install-docker-compose.sh",
+            "90-install-network-test.sh",
             "99-log.sh"
         };
         foreach (string installer in installers)
