@@ -23,6 +23,7 @@ public class WireGuardConfigFactory : IFactory<WireGuard, string>
             PublicKey = {wg.ServerPublicKey}
             AllowedIPs = {wg.AllowedIPs.Join(", ")}
             Endpoint = {wg.Endpoint}
+            PersistentKeepalive = 25
 
             """;
     }
