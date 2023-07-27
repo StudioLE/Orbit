@@ -8,20 +8,19 @@ package_update: true
 package_upgrade: true
 package_reboot_if_required: true
 
+groups:
+  - docker
+
 users:
   - name: ${SUDO_USER}
-    groups: sudo
+    groups: sudo, docker
     shell: /bin/bash
-    # TODO: Remove password
-    lock_passwd: false
-    plain_text_passwd: pw
     sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
   - name: ${USER}
     shell: /bin/bash
-    # TODO: Remove password
-    lock_passwd: false
-    plain_text_passwd: pw
+    lock_passwd: true
     ssh_authorized_keys: ${SSH_AUTHORIZED_KEYS}
 
 wireguard:

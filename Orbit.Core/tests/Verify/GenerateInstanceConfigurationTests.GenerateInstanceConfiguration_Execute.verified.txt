@@ -6,18 +6,18 @@ apt:
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
+groups:
+- docker
 users:
 - name: admin
-  groups: sudo
+  groups: sudo, docker
   shell: /bin/bash
-  lock_passwd: false
-  plain_text_passwd: pw
   sudo: ALL=(ALL) NOPASSWD:ALL
+  lock_passwd: true
   ssh_authorized_keys: []
 - name: user
   shell: /bin/bash
-  lock_passwd: false
-  plain_text_passwd: pw
+  lock_passwd: true
   ssh_authorized_keys: []
 wireguard:
   interfaces:
