@@ -1,6 +1,6 @@
 using YamlDotNet.RepresentationModel;
 
-namespace Orbit.Core;
+namespace Orbit.Core.Utils.Serialization.Yaml;
 
 /// <summary>
 /// Methods to help with <see cref="YamlNode"/>.
