@@ -2,7 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using YamlDotNet.RepresentationModel;
 
-namespace Orbit.Core;
+namespace Orbit.Core.Provision;
 
 /// <summary>
 /// Methods to help with <see cref="EmbeddedFileProvider"/>.
