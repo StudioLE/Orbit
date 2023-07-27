@@ -48,7 +48,7 @@ internal sealed class GenerateServerConfigurationTests
         Assert.That(_context.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
-        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), "server-01.sh");
+        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfiguration.FileName);
         Assert.That(resource, Is.Not.Null);
         await _verify.String(resource!);
     }

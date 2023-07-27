@@ -4,7 +4,7 @@ using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Generation;
 
-public class WriteCaddyfileCommandFactory : IFactory<Instance, string?>
+public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
 {
     private readonly ILogger<WriteCaddyfileCommandFactory> _logger;
     private readonly CaddyfileFactory _factory;
@@ -15,23 +15,32 @@ public class WriteCaddyfileCommandFactory : IFactory<Instance, string?>
         _factory = factory;
     }
 
-    public string? Create(Instance instance)
+    public ShellCommand[] Create(Instance instance)
     {
         string? caddyfile = _factory.Create(instance);
         if (caddyfile is null)
         {
             _logger.LogError("Failed to create Caddyfile");
-            return null;
+            return Array.Empty<ShellCommand>();
         }
-        // TODO: Wrap in bash if
-        return $$"""
-            (
-            cat <<EOF
-            {{caddyfile}}
-            EOF
-            ) | tee /caddy/{{instance.Name}}.caddy
-
-            cd /caddy && sudo caddy reload
-            """;
+        return new ShellCommand[]
+        {
+            new()
+            {
+                Command = $$"""
+                    (
+                    cat <<EOF
+                    {{caddyfile}}
+                    EOF
+                    ) | tee /caddy/{{instance.Name}}.caddy
+                    """,
+                ErrorMessage = "Failed to write Caddyfile"
+            },
+            new()
+            {
+                Command = "cd /caddy && sudo caddy reload",
+                ErrorMessage = "Failed to reload Caddy"
+            }
+        };
     }
 }

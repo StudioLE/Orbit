@@ -6,7 +6,8 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils.DataAnnotations;
-using StudioLE.Core.System;
+using Orbit.Core.Utils.Serialization;
+using StudioLE.Core.Serialization;
 
 namespace Orbit.Core.Generation;
 
@@ -15,6 +16,7 @@ namespace Orbit.Core.Generation;
 /// </summary>
 public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration.Inputs, GenerateServerConfiguration.Outputs>
 {
+    public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfiguration> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Network> _networks;
@@ -22,6 +24,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
     private readonly CloneRepoCommandFactory _cloneRepoCommandFactory;
+    private readonly ISerializer _serializer;
 
     /// <summary>
     /// DI constructor for <see cref="GenerateServerConfiguration"/>.
@@ -33,7 +36,8 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
-        CloneRepoCommandFactory cloneRepoCommandFactory)
+        CloneRepoCommandFactory cloneRepoCommandFactory,
+        ISerializer serializer)
     {
         _logger = logger;
         _instances = instances;
@@ -42,6 +46,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
         _cloneRepoCommandFactory = cloneRepoCommandFactory;
+        _serializer = serializer;
     }
 
     /// <summary>
@@ -68,7 +73,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
     public Task<Outputs> Execute(Inputs inputs)
     {
         Instance instance = new();
-        List<KeyValuePair<string, string>> commands = new();
+        List<KeyValuePair<string, ShellCommand>> commands = new();
         Func<bool>[] steps =
         {
             () => GetInstance(inputs.Instance, out instance),
@@ -76,7 +81,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
             () => SetWireGuardPeer(instance, commands),
             () => WriteCaddyfile(instance, commands),
             () => CloneRepo(instance, commands),
-            () => WriteBash(instance, commands)
+            () => WriteConfiguration(instance, commands)
         };
         bool isSuccess = steps.All(step => step.Invoke());
         if (isSuccess)
@@ -106,7 +111,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
         return instance.TryValidate(_logger);
     }
 
-    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, string>> commands)
+    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
         foreach (WireGuard wg in instance.WireGuard)
         {
@@ -116,42 +121,42 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
                 _logger.LogError("Failed to get network");
                 return false;
             }
-            string command = _wireGuardSetCommandFactory.Create(wg);
+            ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
             commands.Add(new(network.Server, command));
         }
         return true;
     }
 
-    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, string>> commands)
+    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        string? command = _writeCaddyfileCommandFactory.Create(instance);
-        if (command is null)
+        ShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
+        if (!results.Any())
             return false;
-        commands.Add(new(instance.Server, command));
+        commands.AddRange(results
+            .Select(x => new KeyValuePair<string, ShellCommand>(instance.Server, x)));
         return true;
     }
 
-    private bool CloneRepo(Instance instance, List<KeyValuePair<string, string>> commands)
+    private bool CloneRepo(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        string? command = _cloneRepoCommandFactory.Create(instance);
+        ShellCommand? command = _cloneRepoCommandFactory.Create(instance);
         if (command is null)
             return true;
         commands.Add(new(instance.Server, command));
         return true;
     }
 
-    private bool WriteBash(Instance instance, List<KeyValuePair<string, string>> commands)
+    private bool WriteConfiguration(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        IEnumerable<IGrouping<string, string>> groupings = commands.GroupBy(x => x.Key, x => x.Value);
-        foreach (IGrouping<string,string> grouping in groupings)
+        Dictionary<string, ShellCommand[]> dictionary = commands
+            .GroupBy(x => x.Key, x => x.Value)
+            .ToDictionary(x => x.Key, x => x.ToArray());
+
+        string serialized = _serializer.Serialize(dictionary);
+        if (!_instances.PutResource(new InstanceId(instance.Name), FileName, serialized))
         {
-            string script = grouping.Join(Environment.NewLine + Environment.NewLine);
-            string fileName = grouping.Key + ".sh";
-            if (!_instances.PutResource(new InstanceId(instance.Name), fileName, script))
-            {
-                _logger.LogError("Failed to write bash script.");
-                return false;
-            }
+            _logger.LogError("Failed to write server configuration.");
+            return false;
         }
         return true;
     }

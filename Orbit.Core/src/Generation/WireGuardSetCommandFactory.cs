@@ -4,12 +4,16 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Generation;
 
-public class WireGuardSetCommandFactory : IFactory<WireGuard, string>
+public class WireGuardSetCommandFactory : IFactory<WireGuard, ShellCommand>
 {
     /// <inheritdoc />
-    public string Create(WireGuard wg)
+    public ShellCommand Create(WireGuard wg)
     {
         // TODO: Server interface may not be wg0!
-        return $"sudo wg set wg0 peer {wg.PublicKey} allowed-ips {wg.Addresses.Join(",")}";
+        return new()
+        {
+            Command = $"sudo wg set wg0 peer {wg.PublicKey} allowed-ips {wg.Addresses.Join(",")}",
+            ErrorMessage = "Failed to set WireGuard peer"
+        };
     }
 }
