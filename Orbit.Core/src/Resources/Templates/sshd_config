@@ -1,3 +1,59 @@
-PermitRootLogin no
-PasswordAuthentication no
 Port 22
+
+# Sources:
+# https://www.digitalocean.com/community/tutorials/how-to-harden-openssh-on-ubuntu-20-04
+# https://blog.stribik.technology/2015/01/04/secure-secure-shell.html
+
+# Prevent a potential attacker from logging into your server directly as root. It also encourages good operational security practices on your part, such as operating as a non-privileged user and using sudo to escalate privileges only when absolutely needed.
+PermitRootLogin no
+
+# Limit the maximum number of authentication attempts for a particular login session by configuring the MaxAuthTries option:
+MaxAuthTries 3
+
+# Reduce the amount of time a user has to complete authentication after initially connecting to your SSH server. Setting this to a lower value helps to prevent certain denial-of-service attacks where multiple authentication sessions are kept open for a prolonged period of time.
+LoginGraceTime 20
+
+# If you have configured SSH keys for authentication, rather than using passwords, disable SSH password authentication to prevent leaked user passwords from allowing an attacker to log in:
+PasswordAuthentication no
+
+# As a further hardening measure related to passwords, you may also wish to disable authentication with empty passwords. This will prevent logins if a user’s password is set to a blank or empty value:
+PermitEmptyPasswords no
+
+# In the majority of use cases, SSH will be configured with public key authentication as the only in-use authentication method. However, OpenSSH server also supports many other authentication methods, some of which are enabled by default. If these are not required, you can disable them to further reduce the attack surface of your SSH server:
+ChallengeResponseAuthentication no
+KerberosAuthentication no
+GSSAPIAuthentication no
+
+# X11 forwarding allows for the display of remote graphical applications over an SSH connection, but this is rarely used in practice. Disable it if you are not running a graphical environment on your server:
+X11Forwarding no
+
+# OpenSSH server allows connecting clients to pass custom environment variables. For example, a client can attempt to set its own $PATH or to configure terminal settings. However, like X11 forwarding, these are not commonly used, so you can disable the option in most cases:
+PermitUserEnvironment no
+
+# Disable several miscellaneous options related to tunneling and forwarding if you won’t be using these on your server:
+AllowAgentForwarding no
+AllowTcpForwarding no
+PermitTunnel no
+
+# Disable the verbose SSH banner that is enabled by default, as it shows various information about your system, such as the operating system version:
+DebianBanner no
+
+# Restrict all users by IP
+AllowUsers *@10.0.0.0/8
+
+# Disable weak key exchange
+# Provide forward secrecy. The server and the client will end up with a shared secret number at the end without a passive eavesdropper learning anything about this number. After we have a shared secret we have to derive a cryptographic key from this using a key derivation function.
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+
+# Disable weak server authentication
+# The server proves its identity to the client by signing the key resulting from the key exchange.
+Protocol 2
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+
+# Disable weak symmetric ciphers
+# Symmetric ciphers are used to encrypt the data after the initial key exchange and authentication is complete.
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+
+# Encryption provides confidentiality, message authentication code provides integrity.
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
