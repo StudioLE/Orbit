@@ -1,0 +1,31 @@
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
+using YamlDotNet.Serialization;
+
+namespace Orbit.Core.Utils.Networking;
+
+// ReSharper disable once InconsistentNaming
+public class IPv6YamlConverter : IYamlTypeConverter
+{
+    /// <inheritdoc />
+    public bool Accepts(Type type)
+    {
+        return type == typeof(IPv6);
+    }
+
+    /// <inheritdoc />
+    public object ReadYaml(IParser parser, Type type)
+    {
+        string value = parser.Consume<Scalar>().Value;
+        IPv6 ip = new(value);
+        return ip;
+    }
+
+    /// <inheritdoc />
+    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    {
+        string serialized = value?.ToString() ?? string.Empty;
+        Scalar scalar = new(serialized);
+        emitter.Emit(scalar);
+    }
+}
