@@ -29,7 +29,8 @@ public static class TestHelpers
 
     private static void CreateExampleServer(IServiceProvider services)
     {
-        Server server = new()
+        ServerFactory factory = services.GetRequiredService<ServerFactory>();
+        Server server = factory.Create(new()
         {
             Name = ExampleServerName,
             Number = ExampleServerNumber,
@@ -40,14 +41,15 @@ public static class TestHelpers
                 User = "user",
                 PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
             }
-        };
+        });
         IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
         servers.Put(server);
     }
 
     private static void CreateExampleNetwork(IServiceProvider services)
     {
-        Network network = new()
+        NetworkFactory factory = services.GetRequiredService<NetworkFactory>();
+        Network network = factory.Create(new()
         {
             Name = ExampleNetworkName,
             Number = ExampleNetworkNumber,
@@ -58,15 +60,16 @@ public static class TestHelpers
             ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
             ExternalIPv6 = MockWireGuardFacade.ExternalIPv6,
             Dns = MockWireGuardFacade.Dns
-        };
+        });
+
         IEntityProvider<Network> networks = services.GetRequiredService<IEntityProvider<Network>>();
         networks.Put(network);
     }
 
     private static void CreateExampleInstance(IServiceProvider services)
     {
-        InstanceFactory instanceFactory = services.GetRequiredService<InstanceFactory>();
-        Instance instance = instanceFactory.Create(new()
+        InstanceFactory factory = services.GetRequiredService<InstanceFactory>();
+        Instance instance = factory.Create(new()
         {
             Name = ExampleInstanceName,
             Number = ExampleInstanceNumber,
