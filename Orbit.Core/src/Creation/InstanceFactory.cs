@@ -16,7 +16,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
     private readonly IEntityProvider<Server> _servers;
     private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly WireGuardFactory _wireGuardFactory;
+    private readonly WireGuardClientFactory _wireGuardClientFactory;
     private readonly HardwareFactory _hardwareFactory;
     private readonly OSFactory _osFactory;
 
@@ -29,14 +29,14 @@ public class InstanceFactory : IFactory<Instance, Instance>
         IEntityProvider<Instance> instances,
         OSFactory osFactory,
         HardwareFactory hardwareFactory,
-        WireGuardFactory wireGuardFactory)
+        WireGuardClientFactory wireGuardClientFactory)
     {
         _servers = servers;
         _networks = networks;
         _instances = instances;
         _osFactory = osFactory;
         _hardwareFactory = hardwareFactory;
-        _wireGuardFactory = wireGuardFactory;
+        _wireGuardClientFactory = wireGuardClientFactory;
     }
 
     /// <inheritdoc />
@@ -67,7 +67,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? $"instance-{result.Number:00}"
             : source.Name;
 
-        result.WireGuard = _wireGuardFactory.Create(result);
+        result.WireGuard = _wireGuardClientFactory.Create(result);
         result.Mounts = source.Mounts.Any()
             ? source.Mounts
             : Array.Empty<Mount>();

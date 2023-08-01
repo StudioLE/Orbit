@@ -40,12 +40,9 @@ internal sealed class SerializationTests
           Addresses:
           - 10.1.1.1
           - fc00::1:1:1
-          Dns: 10.1.1.0
-          ServerPublicKey: ''
           AllowedIPs:
           - 0.0.0.0/0
           - ::/0
-          Endpoint: localhost:51820
         Mounts:
         - Source: /mnt/instance-01/srv
           Target: /srv

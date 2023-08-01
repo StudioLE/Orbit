@@ -40,13 +40,14 @@ public static class ServiceExtensions
 
             .AddSingleton<CreateNetwork>()
             .AddTransient<NetworkFactory>()
+            .AddTransient<WireGuardServerFactory>()
 
             .AddSingleton<CreateInstance>()
             .AddTransient<InstanceFactory>()
             .AddTransient<HardwareFactory>()
             .AddTransient<NetworkFactory>()
             .AddTransient<OSFactory>()
-            .AddTransient<WireGuardFactory>()
+            .AddTransient<WireGuardClientFactory>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
 
             .AddSingleton<GenerateInstanceConfiguration>()

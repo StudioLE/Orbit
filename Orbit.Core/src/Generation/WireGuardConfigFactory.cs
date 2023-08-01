@@ -1,29 +1,38 @@
+using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using StudioLE.Core.Patterns;
 using StudioLE.Core.System;
 
 namespace Orbit.Core.Generation;
 
-public class WireGuardConfigFactory : IFactory<WireGuard, string>
+public class WireGuardConfigFactory : IFactory<WireGuardClient, string>
 {
-    /// <inheritdoc/>
-    public string Create(WireGuard wg)
+    private readonly IEntityProvider<Network> _networks;
+
+    public WireGuardConfigFactory(IEntityProvider<Network> networks)
     {
-        string addresses = wg
+        _networks = networks;
+    }
+
+    /// <inheritdoc/>
+    public string Create(WireGuardClient client)
+    {
+        Network network = _networks.Get(new NetworkId(client.Network)) ?? throw new("Failed to get network.");
+        string addresses = client
             .Addresses
             .Select(address => "Address = " + address)
             .Join();
         return $"""
             [Interface]
-            PrivateKey = {wg.PrivateKey}
+            PrivateKey = {client.PrivateKey}
             {addresses}
-            DNS = {wg.Dns}
+            DNS = {network.Dns}
 
             [Peer]
-            PublicKey = {wg.ServerPublicKey}
-            PreSharedKey = {wg.PreSharedKey}
-            AllowedIPs = {wg.AllowedIPs.Join(", ")}
-            Endpoint = {wg.Endpoint}
+            PublicKey = {network.WireGuard.PublicKey}
+            PreSharedKey = {client.PreSharedKey}
+            AllowedIPs = {client.AllowedIPs.Join(", ")}
+            Endpoint = {network.ExternalIPv4}:{network.WireGuard.Port}
             PersistentKeepalive = 25
 
             """;

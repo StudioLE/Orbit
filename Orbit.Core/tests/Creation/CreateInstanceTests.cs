@@ -43,7 +43,7 @@ internal sealed class CreateInstanceTests
             Server = TestHelpers.ExampleServerName,
             WireGuard = new[]
             {
-                new WireGuard
+                new WireGuardClient
                 {
                     PrivateKey = MockWireGuardFacade.PrivateKey,
                     PublicKey = MockWireGuardFacade.PublicKey,

@@ -113,7 +113,7 @@ public class GenerateServerConfiguration : IActivity<GenerateServerConfiguration
 
     private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        foreach (WireGuard wg in instance.WireGuard)
+        foreach (WireGuardClient wg in instance.WireGuard)
         {
             Network? network = _networks.Get(new NetworkId(wg.Network));
             if (network is null)

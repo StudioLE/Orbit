@@ -63,7 +63,7 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// The WireGuard configuration of the instance.
     /// </summary>
     [ValidateComplexType]
-    public WireGuard[] WireGuard { get; set; } = Array.Empty<WireGuard>();
+    public WireGuardClient[] WireGuard { get; set; } = Array.Empty<WireGuardClient>();
 
     /// <summary>
     /// The mounted directories of the instance.

@@ -4,10 +4,10 @@ using StudioLE.Core.System;
 
 namespace Orbit.Core.Generation;
 
-public class WireGuardSetCommandFactory : IFactory<WireGuard, ShellCommand>
+public class WireGuardSetCommandFactory : IFactory<WireGuardClient, ShellCommand>
 {
     /// <inheritdoc />
-    public ShellCommand Create(WireGuard wg)
+    public ShellCommand Create(WireGuardClient wg)
     {
         // TODO: Server interface may not be wg0!
         return new()

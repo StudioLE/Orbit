@@ -54,12 +54,14 @@ public static class TestHelpers
             Name = ExampleNetworkName,
             Number = ExampleNetworkNumber,
             Server = ExampleServerName,
-            WireGuardPort = MockWireGuardFacade.Port,
-            WireGuardPrivateKey = MockWireGuardFacade.PrivateKey,
-            WireGuardPublicKey = MockWireGuardFacade.PublicKey,
             ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
             ExternalIPv6 = MockWireGuardFacade.ExternalIPv6,
-            Dns = MockWireGuardFacade.Dns
+            Dns = MockWireGuardFacade.Dns,
+            WireGuard = new()
+            {
+                PrivateKey = MockWireGuardFacade.PrivateKey,
+                PublicKey = MockWireGuardFacade.PublicKey
+            }
         });
 
         IEntityProvider<Network> networks = services.GetRequiredService<IEntityProvider<Network>>();
@@ -75,9 +77,9 @@ public static class TestHelpers
             Number = ExampleInstanceNumber,
             WireGuard = new[]
             {
-                new WireGuard
+                new WireGuardClient
                 {
-                    Network = ExampleServerName,
+                    Network = ExampleNetworkName,
                     PrivateKey = MockWireGuardFacade.PrivateKey,
                     PublicKey = MockWireGuardFacade.PublicKey,
                     PreSharedKey = MockWireGuardFacade.PreSharedKey

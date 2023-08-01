@@ -44,23 +44,8 @@ public sealed class Network : IEntity, IHasValidationAttributes
     [IPSchema]
     public string Dns { get; set; } = string.Empty;
 
-    /// <summary>
-    /// The WireGuard private key.
-    /// </summary>
-    [Base64Schema]
-    public string WireGuardPrivateKey { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The WireGuard public key.
-    /// </summary>
-    [Base64Schema]
-    public string WireGuardPublicKey { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The WireGuard listen port.
-    /// </summary>
-    [Range(1, 65535)]
-    public int WireGuardPort { get; set; }
+    [ValidateComplexType]
+    public WireGuardServer WireGuard { get; set; } = new();
 
     public string GetInternalIPv4(Instance instance)
     {

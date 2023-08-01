@@ -1,6 +1,5 @@
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
-using Orbit.Core.Shell;
 using Orbit.Core.Utils;
 using StudioLE.Core.Patterns;
 
@@ -14,15 +13,15 @@ public class NetworkFactory : IFactory<Network, Network>
     private const string DefaultName = "network";
     private const int DefaultNumberValue = 1;
     private readonly IEntityProvider<Network> _networks;
-    private readonly IWireGuardFacade _wg;
+    private readonly WireGuardServerFactory _wireGuardServerFactory;
 
-    public NetworkFactory(IEntityProvider<Network> networks, IWireGuardFacade wg)
+    public NetworkFactory(IEntityProvider<Network> networks, WireGuardServerFactory wireGuardServerFactory)
     {
         _networks = networks;
-        _wg = wg;
+        _wireGuardServerFactory = wireGuardServerFactory;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public Network Create(Network source)
     {
         Network result = new();
@@ -51,15 +50,8 @@ public class NetworkFactory : IFactory<Network, Network>
             ? "::1"
             : source.ExternalIPv6;
 
-        if (result.WireGuardPrivateKey.IsNullOrEmpty())
-            result.WireGuardPrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
 
-        if (result.WireGuardPublicKey.IsNullOrEmpty())
-            result.WireGuardPublicKey = _wg.GeneratePublicKey(result.WireGuardPrivateKey) ?? throw new("Failed to generate WireGuard public key");
-
-        result.WireGuardPort = source.WireGuardPort == default
-            ? 51820
-            : source.WireGuardPort;
+        result.WireGuard = _wireGuardServerFactory.Create(result);
 
         return result;
     }
@@ -73,6 +65,6 @@ public class NetworkFactory : IFactory<Network, Network>
         int finalNumber = numbers.Any()
             ? numbers.Max()
             : DefaultNumberValue - 1;
-        return finalNumber  + 1;
+        return finalNumber + 1;
     }
 }

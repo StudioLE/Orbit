@@ -4,6 +4,8 @@ Server: example-server
 ExternalIPv4: 127.0.0.1
 ExternalIPv6: ::1
 Dns: 10.7.1.0
-WireGuardPrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
-WireGuardPublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
-WireGuardPort: 51820
+WireGuard:
+  Name: wg7
+  Port: 51820
+  PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+  PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=

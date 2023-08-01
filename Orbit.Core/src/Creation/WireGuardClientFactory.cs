@@ -7,9 +7,9 @@ using StudioLE.Core.Patterns;
 namespace Orbit.Core.Creation;
 
 /// <summary>
-/// A factory for creating <see cref="WireGuard"/> with default values.
+/// A factory for creating <see cref="WireGuardClient"/> with default values.
 /// </summary>
-public class WireGuardFactory : IFactory<Instance, WireGuard[]>
+public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
 {
     private static readonly string[] _defaultAllowedIPs =
     {
@@ -20,21 +20,21 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
     private readonly IEntityProvider<Network> _networks;
 
     /// <summary>
-    /// The DI constructor for <see cref="WireGuardFactory"/>.
+    /// The DI constructor for <see cref="WireGuardClientFactory"/>.
     /// </summary>
-    public WireGuardFactory(IWireGuardFacade wg, IEntityProvider<Network> networks)
+    public WireGuardClientFactory(IWireGuardFacade wg, IEntityProvider<Network> networks)
     {
         _wg = wg;
         _networks = networks;
     }
 
     /// <inheritdoc/>
-    public WireGuard[] Create(Instance instance)
+    public WireGuardClient[] Create(Instance instance)
     {
         if (!instance.WireGuard.Any())
             instance.WireGuard = instance
                 .Networks
-                .Select(network => new WireGuard
+                .Select(network => new WireGuardClient
                 {
                     Network = network
                 })
@@ -45,9 +45,9 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
             .ToArray();
     }
 
-    private WireGuard Create(WireGuard wg, Instance instance)
+    private WireGuardClient Create(WireGuardClient wg, Instance instance)
     {
-        WireGuard result = new()
+        WireGuardClient result = new()
         {
             Name = wg.Name,
             Network = wg.Network,
@@ -55,10 +55,7 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
             PublicKey = wg.PublicKey,
             PreSharedKey = wg.PreSharedKey,
             Addresses = wg.Addresses,
-            Dns = wg.Dns,
-            ServerPublicKey = wg.ServerPublicKey,
-            AllowedIPs = wg.AllowedIPs,
-            Endpoint = wg.Endpoint
+            AllowedIPs = wg.AllowedIPs
         };
 
         if (result.Network.IsNullOrEmpty())
@@ -85,17 +82,8 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
                 network.GetWireGuardIPv6(instance)
             };
 
-        if(result.Dns.IsNullOrEmpty())
-            result.Dns = network.Dns;
-
-        if (result.ServerPublicKey.IsNullOrEmpty())
-            result.ServerPublicKey = network.WireGuardPublicKey ?? throw new("Failed to get WireGuard public key from network.");
-
         if (!result.AllowedIPs.Any())
             result.AllowedIPs = _defaultAllowedIPs;
-
-        if (result.Endpoint.IsNullOrEmpty())
-            result.Endpoint = network.ExternalIPv4 + ":" + network.WireGuardPort;
 
         return result;
     }

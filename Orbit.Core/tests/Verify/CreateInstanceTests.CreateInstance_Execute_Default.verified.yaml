@@ -23,11 +23,8 @@ WireGuard:
   Addresses:
   - 10.1.6.10
   - fc00::1:6:10
-  Dns: 10.1.6.1
-  ServerPublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   AllowedIPs:
   - 0.0.0.0/0
   - ::/0
-  Endpoint: 203.0.113.1:51820
 Mounts: []
 Repo: 
