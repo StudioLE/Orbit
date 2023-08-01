@@ -12,6 +12,7 @@ public class ServerFactory : IFactory<Server, Server>
 {
     private const string DefaultName = "server";
     private const int DefaultNumberValue = 1;
+    private const string DefaultAddress = "localhost";
     private readonly IEntityProvider<Server> _servers;
 
 
@@ -34,8 +35,10 @@ public class ServerFactory : IFactory<Server, Server>
             : source.Name;
 
         result.Address = source.Address.IsNullOrEmpty()
-            ? throw new("Address is required.")
+            ? DefaultAddress
             : source.Address;
+
+        result.Ssh = source.Ssh;
 
         return result;
     }

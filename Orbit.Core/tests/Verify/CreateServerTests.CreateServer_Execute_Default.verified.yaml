@@ -1,0 +1,8 @@
+﻿Name: new-server
+Number: 4
+Address: localhost
+Ssh:
+  Port: 22
+  User: ''
+  Password: ''
+  PrivateKeyFile: ''
