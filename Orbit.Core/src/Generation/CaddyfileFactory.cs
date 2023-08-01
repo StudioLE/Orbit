@@ -35,7 +35,7 @@ public class CaddyfileFactory : IFactory<Instance, string?>
             return null;
         }
         string domains = instance.Domains.Join(", ");
-        string address = network.GetInternalIPv4(instance) + ":80";
+        string address = network.GetWireGuardIPv4(instance) + ":80";
         return $$"""
             {{domains}} {
                 reverse_proxy {{address}}

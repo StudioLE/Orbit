@@ -26,8 +26,8 @@
       "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
       "PreSharedKey": "C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=",
       "Addresses": [
-        "10.1.1.0",
-        "fc00:1:1::"
+        "10.1.1.1",
+        "fc00::1:1:1"
       ],
       "Dns": "10.1.1.0",
       "ServerPublicKey": "",

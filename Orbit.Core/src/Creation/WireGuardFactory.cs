@@ -81,8 +81,8 @@ public class WireGuardFactory : IFactory<Instance, WireGuard[]>
         if (!result.Addresses.Any())
             result.Addresses = new[]
             {
-                network.GetInternalIPv4(instance),
-                network.GetInternalIPv6(instance)
+                network.GetWireGuardIPv4(instance),
+                network.GetWireGuardIPv6(instance)
             };
 
         if(result.Dns.IsNullOrEmpty())

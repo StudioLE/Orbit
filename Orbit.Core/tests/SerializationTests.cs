@@ -38,8 +38,8 @@ internal sealed class SerializationTests
           PublicKey: {MockWireGuardFacade.PublicKey}
           PreSharedKey: {MockWireGuardFacade.PreSharedKey}
           Addresses:
-          - 10.1.1.0
-          - 'fc00:1:1::'
+          - 10.1.1.1
+          - fc00::1:1:1
           Dns: 10.1.1.0
           ServerPublicKey: ''
           AllowedIPs:

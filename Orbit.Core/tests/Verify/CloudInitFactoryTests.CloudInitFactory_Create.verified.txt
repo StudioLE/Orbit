@@ -31,8 +31,8 @@ wireguard:
     content: |
       [Interface]
       PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
-      Address = 10.1.2.0
-      Address = fc00:1:2::
+      Address = 10.1.1.2
+      Address = fc00::1:1:2
       DNS = 10.1.1.0
 
       [Peer]

@@ -21,8 +21,8 @@ WireGuard:
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   PreSharedKey: C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
   Addresses:
-  - 10.1.2.0
-  - 'fc00:1:2::'
+  - 10.1.1.2
+  - fc00::1:1:2
   Dns: 10.1.1.0
   ServerPublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   AllowedIPs:
