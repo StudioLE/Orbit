@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using Orbit.Core.Schema.DataAnnotations;
+using Orbit.Core.Utils.DataAnnotations;
 
 namespace Orbit.Core.Schema;
 
 /// <summary>
 /// The schema for the network configuration of an <see cref="Instance"/>.
 /// </summary>
-public sealed class Network : IEntity
+public sealed class Network : IEntity, IHasValidationAttributes
 {
     /// <summary>
     /// The name of the network.

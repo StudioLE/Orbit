@@ -38,6 +38,9 @@ public static class ServiceExtensions
             .AddSingleton<CreateServer>()
             .AddTransient<ServerFactory>()
 
+            .AddSingleton<CreateNetwork>()
+            .AddTransient<NetworkFactory>()
+
             .AddSingleton<CreateInstance>()
             .AddTransient<InstanceFactory>()
             .AddTransient<HardwareFactory>()
