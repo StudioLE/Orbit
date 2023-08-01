@@ -31,7 +31,7 @@ internal sealed class GenerateInstanceConfigurationTests
         _logs = host.Services.GetTestLogs();
     }
 
-    #if _WIN32
+    #if WINDOWS
     [Ignore("Yaml serialization differs on windows")]
     #endif
     [Test]
