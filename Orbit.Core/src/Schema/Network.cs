@@ -63,21 +63,21 @@ public sealed class Network : IEntity
 
     public string GetInternalIPv4(Instance instance)
     {
-        return $"10.{Number}.0.{instance.Number}";
+        return $"10.0.{Number}.{instance.Number}";
     }
 
     public string GetInternalIPv6(Instance instance)
     {
-        return $"fc00::{Number}:0:{instance.Number}";
+        return $"fc00::0:{Number}:{instance.Number}";
     }
 
     public string GetWireGuardIPv4(Instance instance)
     {
-        return $"10.{Number}.1.{instance.Number}";
+        return $"10.1.{Number}.{instance.Number}";
     }
 
     public string GetWireGuardIPv6(Instance instance)
     {
-        return $"fc00::{Number}:1:{instance.Number}";
+        return $"fc00::1:{Number}:{instance.Number}";
     }
 }
