@@ -50,7 +50,7 @@ internal sealed class InstanceTests
     public async Task Instance_Validate_Review()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(TestHelpers.ExampleInstance());
+        Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
 
         // Act
         bool isValid = instance.TryValidate(out IReadOnlyCollection<string> errors);

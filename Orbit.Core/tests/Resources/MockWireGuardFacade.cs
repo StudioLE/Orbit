@@ -9,6 +9,7 @@ public class MockWireGuardFacade : IWireGuardFacade
     public const string PreSharedKey = "C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=";
     public const string ExternalIPv4 = "203.0.113.1";
     public const string ExternalIPv6 = "2001:db8::";
+    public const string Dns = "10.1.6.1";
     public const int Port = 51820;
 
     public string GeneratePrivateKey()

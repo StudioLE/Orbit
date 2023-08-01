@@ -30,7 +30,7 @@ internal sealed class CaddyfileFactoryTests
     public async Task CaddyfileFactory_Create()
     {
         // Arrange
-        Instance instance = TestHelpers.ExampleInstance();
+        Instance instance = TestHelpers.GetExampleInstance();
         instance.Domains = new[]
         {
             "example.com",

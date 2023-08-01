@@ -9,7 +9,7 @@ namespace Orbit.Core.Tests.Provision;
 
 internal sealed class InstanceProviderTests
 {
-    private readonly InstanceId _instanceId = new("instance-02");
+    private readonly InstanceId _instanceId = new("instance-10");
     private readonly InstanceFactory _instanceFactory;
     private readonly IEntityProvider<Instance> _instances;
 
@@ -54,10 +54,7 @@ internal sealed class InstanceProviderTests
     private void InstanceProvider_Put()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(new()
-        {
-            Server = "server-01"
-        });
+        Instance instance = _instanceFactory.Create(new());
 
         // Act
         bool result = _instances.Put(instance);

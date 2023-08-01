@@ -1,10 +1,12 @@
-﻿Name: instance-02
-Number: 2
+﻿Name: example-instance
+Number: 9
 Role: node
-Server: server-01
+Server: example-server
 Networks:
-- network-01
-Domains: []
+- example-network
+Domains:
+- example.com
+- example.org
 OS:
   Name: ubuntu
   Version: jammy
@@ -15,15 +17,15 @@ Hardware:
   Memory: 4
   Disk: 20
 WireGuard:
-- Name: wg1
-  Network: network-01
+- Name: wg6
+  Network: example-network
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   PreSharedKey: C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
   Addresses:
-  - 10.1.1.2
-  - fc00::1:1:2
-  Dns: 10.1.1.0
+  - 10.1.6.9
+  - fc00::1:6:9
+  Dns: 10.1.6.1
   ServerPublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   AllowedIPs:
   - 0.0.0.0/0

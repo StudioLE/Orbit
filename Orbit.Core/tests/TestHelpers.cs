@@ -13,31 +13,26 @@ namespace Orbit.Core.Tests;
 
 public static class TestHelpers
 {
-    public static Instance ExampleInstance()
+    public const string ExampleServerName = "example-server";
+    public const int ExampleServerNumber = 3;
+    public const string ExampleNetworkName = "example-network";
+    public const int ExampleNetworkNumber = 6;
+    public const string ExampleInstanceName = "example-instance";
+    public const int ExampleInstanceNumber = 9;
+
+    private static Instance? _exampleInstance;
+
+    public static Instance GetExampleInstance()
     {
-        return new()
-        {
-            Server = "server-01",
-            Networks = new [] { "network-01" },
-            WireGuard = new[]
-            {
-                new WireGuard
-                {
-                    Network = "network-01",
-                    PrivateKey = MockWireGuardFacade.PrivateKey,
-                    PublicKey = MockWireGuardFacade.PublicKey,
-                    PreSharedKey = MockWireGuardFacade.PreSharedKey
-                }
-            }
-        };
+        return _exampleInstance ?? throw new("Example instance must be created using TestHelpers.CreateTestHost()");
     }
 
-    private static Server ExampleServer()
+    private static void CreateExampleServer(IServiceProvider services)
     {
-        return new()
+        Server server = new()
         {
-            Name = "server-01",
-            Number = 1,
+            Name = ExampleServerName,
+            Number = ExampleServerNumber,
             Address = "localhost",
             Ssh = new()
             {
@@ -46,22 +41,50 @@ public static class TestHelpers
                 PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
             }
         };
+        IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
+        servers.Put(server);
     }
 
-    private static Network ExampleNetwork()
+    private static void CreateExampleNetwork(IServiceProvider services)
     {
-        return new()
+        Network network = new()
         {
-            Name = "network-01",
-            Number = 1,
-            Server = "server-01",
+            Name = ExampleNetworkName,
+            Number = ExampleNetworkNumber,
+            Server = ExampleServerName,
             WireGuardPort = MockWireGuardFacade.Port,
             WireGuardPrivateKey = MockWireGuardFacade.PrivateKey,
             WireGuardPublicKey = MockWireGuardFacade.PublicKey,
             ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
             ExternalIPv6 = MockWireGuardFacade.ExternalIPv6,
-            Dns = "10.1.1.0"
+            Dns = MockWireGuardFacade.Dns
         };
+        IEntityProvider<Network> networks = services.GetRequiredService<IEntityProvider<Network>>();
+        networks.Put(network);
+    }
+
+    private static void CreateExampleInstance(IServiceProvider services)
+    {
+        InstanceFactory instanceFactory = services.GetRequiredService<InstanceFactory>();
+        Instance instance = instanceFactory.Create(new()
+        {
+            Name = ExampleInstanceName,
+            Number = ExampleInstanceNumber,
+            WireGuard = new[]
+            {
+                new WireGuard
+                {
+                    Network = ExampleServerName,
+                    PrivateKey = MockWireGuardFacade.PrivateKey,
+                    PublicKey = MockWireGuardFacade.PublicKey,
+                    PreSharedKey = MockWireGuardFacade.PreSharedKey
+                }
+            },
+            Domains = new[] { "example.com", "example.org" }
+        });
+        IEntityProvider<Instance> instances = services.GetRequiredService<IEntityProvider<Instance>>();
+        instances.Put(instance);
+        _exampleInstance = instance;
     }
 
     public static IHost CreateTestHost(Action<IServiceCollection>? configureServices = null)
@@ -77,15 +100,9 @@ public static class TestHelpers
                 .AddMockWireGuardFacade())
             .ConfigureServices(configureServices)
             .Build();
-        IEntityProvider<Server> servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
-        servers.Put(ExampleServer());
-        IEntityProvider<Network> networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
-        networks.Put(ExampleNetwork());
-        IEntityProvider<Instance> instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
-        InstanceFactory instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
-        Instance instance = instanceFactory.Create(new());
-        instance.Domains = new[] { "example.com", "example.org" };
-        instances.Put(instance);
+        CreateExampleServer(host.Services);
+        CreateExampleNetwork(host.Services);
+        CreateExampleInstance(host.Services);
         return host;
     }
 

@@ -33,7 +33,7 @@ internal sealed class CloudInitFactoryTests
     public async Task CloudInitFactory_Create()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(TestHelpers.ExampleInstance());
+        Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
 
         // Act
         string output = _factory.Create(instance);

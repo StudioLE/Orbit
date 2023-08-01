@@ -10,7 +10,7 @@ packages:
 ssh_genkeytypes:
 - rsa
 - ed25519
-hostname: instance-01
+hostname: example-instance
 groups:
 - docker
 users:
@@ -26,14 +26,14 @@ users:
   ssh_authorized_keys: []
 wireguard:
   interfaces:
-  - name: wg1
-    config_path: /etc/wireguard/wg1.conf
+  - name: wg6
+    config_path: /etc/wireguard/wg6.conf
     content: |
       [Interface]
       PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
-      Address = 10.1.1.1
-      Address = fc00::1:1:1
-      DNS = 10.1.1.0
+      Address = 10.1.6.9
+      Address = fc00::1:6:9
+      DNS = 10.1.6.1
 
       [Peer]
       PublicKey = Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=

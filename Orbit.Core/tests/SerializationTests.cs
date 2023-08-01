@@ -71,7 +71,7 @@ internal sealed class SerializationTests
     public async Task Instance_Serialize()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(TestHelpers.ExampleInstance());
+        Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
 
         // Act
         string serialized = _serializer.Serialize(instance);

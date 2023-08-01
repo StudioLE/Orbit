@@ -38,7 +38,7 @@ internal sealed class GenerateInstanceConfigurationTests
         // Arrange
         GenerateInstanceConfiguration.Inputs inputs = new()
         {
-            Instance = "instance-01"
+            Instance = TestHelpers.ExampleInstanceName
         };
 
         // Act
@@ -47,7 +47,7 @@ internal sealed class GenerateInstanceConfigurationTests
         // Assert
         Assert.That(_context.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Generated instance configuration"));
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated instance configuration"));
         string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateInstanceConfiguration.FileName);
         Assert.That(resource, Is.Not.Null);
         Assert.That(resource, Is.EqualTo(output));

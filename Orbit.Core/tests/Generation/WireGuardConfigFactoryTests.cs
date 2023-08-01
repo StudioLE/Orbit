@@ -30,7 +30,7 @@ internal sealed class WireGuardConfigFactoryTests
     public async Task WireGuardConfigFactory_Create()
     {
         // Arrange
-        Instance instance = TestHelpers.ExampleInstance();
+        Instance instance = TestHelpers.GetExampleInstance();
         WireGuard[] interfaces = _wireGuardFactory.Create(instance);
         WireGuard wg = interfaces.FirstOrDefault() ?? throw new("Failed to create WireGuard");
 
