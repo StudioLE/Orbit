@@ -72,6 +72,10 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? source.Mounts
             : Array.Empty<Mount>();
 
+        result.Domains = source.Domains.Any()
+            ? source.Domains
+            : Array.Empty<string>();
+
         return result;
     }
 
