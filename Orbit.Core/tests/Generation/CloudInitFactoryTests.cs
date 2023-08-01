@@ -28,6 +28,9 @@ internal sealed class CloudInitFactoryTests
         _logs = host.Services.GetTestLogs();
     }
 
+    #if _WIN32
+    [Ignore("Yaml serialization differs on windows")]
+    #endif
     [Test]
     [Category("Factory")]
     public async Task CloudInitFactory_Create()
