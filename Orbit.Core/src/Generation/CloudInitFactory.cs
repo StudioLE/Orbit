@@ -138,11 +138,6 @@ public class CloudInitFactory : IFactory<Instance, string>
             .ToArray();
         writeFiles.AddRange(installerNodes);
 
-        // Boot Command
-        string bootCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/bootcmd.sh");
-        string[] bootCmdLines = bootCmdContent.SplitIntoLines().ToArray();
-        yaml.SetValue("bootcmd", bootCmdLines, false);
-
         // Run Command
         string runCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/runcmd.sh");
         string[] runCmdLines = runCmdContent.SplitIntoLines().ToArray();
