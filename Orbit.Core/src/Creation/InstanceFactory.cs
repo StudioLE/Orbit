@@ -13,7 +13,8 @@ public class InstanceFactory : IFactory<Instance, Instance>
 {
     private const int DefaultInstanceNumber = 1;
     private const string DefaultRole = "node";
-    private static readonly string[] _defaultInstall = {
+    private static readonly string[] _defaultInstall =
+    {
         "bat",
         "micro",
         "figlet",
@@ -22,7 +23,8 @@ public class InstanceFactory : IFactory<Instance, Instance>
         "network-test",
         "upgrade-packages"
     };
-    private static readonly string[] _defaultRun = {
+    private static readonly string[] _defaultRun =
+    {
         "disable-motd",
         "network-test",
         "upgrade-packages"
@@ -54,7 +56,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
         _wireGuardClientFactory = wireGuardClientFactory;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public Instance Create(Instance source)
     {
         Instance result = new();
@@ -65,7 +67,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
 
         result.Networks = source.Networks.Any()
             ? source.Networks
-            : new []{ DefaultNetwork() };
+            : new[] { DefaultNetwork(result.Server) };
 
         result.MacAddress = source.MacAddress.IsNullOrEmpty()
             ? MacAddressHelpers.Generate()
@@ -109,16 +111,21 @@ public class InstanceFactory : IFactory<Instance, Instance>
     private string DefaultServer()
     {
         return _servers
-                   .GetIndex()
-                   .LastOrDefault()
+                   .GetAll()
+                   .OrderBy(x => x.Number)
+                   .FirstOrDefault()
+                   ?.Name
                ?? throw new("Server must be set if more than one exist.");
     }
 
-    private string DefaultNetwork()
+    private string DefaultNetwork(string server)
     {
         return _networks
-                   .GetIndex()
+                   .GetAll()
+                   .Where(x => x.Server == server)
+                   .OrderBy(x => x.Number)
                    .FirstOrDefault()
+                   ?.Name
                ?? throw new("Network must be set if more than one exist.");
     }
 
