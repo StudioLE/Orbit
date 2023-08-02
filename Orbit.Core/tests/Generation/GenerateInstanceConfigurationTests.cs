@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,7 +32,6 @@ internal sealed class GenerateInstanceConfigurationTests
         _logs = host.Services.GetTestLogs();
     }
 
-    #if !WINDOWS
     [Test]
     [Category("Activity")]
     public async Task GenerateInstanceConfiguration_Execute()
@@ -52,7 +52,10 @@ internal sealed class GenerateInstanceConfigurationTests
         string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateInstanceConfiguration.FileName);
         Assert.That(resource, Is.Not.Null);
         Assert.That(resource, Is.EqualTo(output));
+
+        // Yaml serialization is inconsistent on Windows
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
         await _verify.String(resource!);
     }
-    #endif
 }

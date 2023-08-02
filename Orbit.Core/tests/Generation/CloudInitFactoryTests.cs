@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
@@ -28,7 +29,6 @@ internal sealed class CloudInitFactoryTests
         _logs = host.Services.GetTestLogs();
     }
 
-    #if !WINDOWS
     [Test]
     [Category("Factory")]
     public async Task CloudInitFactory_Create()
@@ -41,7 +41,10 @@ internal sealed class CloudInitFactoryTests
 
         // Assert
         Assert.That(_logs.Count, Is.EqualTo(0), "Logs Count");
+
+        // Yaml serialization is inconsistent on Windows
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
         await _verify.String(output);
     }
-    #endif
 }
