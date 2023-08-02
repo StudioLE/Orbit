@@ -52,11 +52,12 @@ public static class ServiceExtensions
 
             .AddSingleton<GenerateInstanceConfiguration>()
             .AddTransient<CloudInitFactory>()
+            .AddTransient<NetplanFactory>()
+            .AddTransient<WireGuardConfigFactory>()
 
             .AddSingleton<GenerateServerConfiguration>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()
-            .AddTransient<WireGuardConfigFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
             .AddTransient<MountCommandFactory>()
             .AddTransient<CloneRepoCommandFactory>()

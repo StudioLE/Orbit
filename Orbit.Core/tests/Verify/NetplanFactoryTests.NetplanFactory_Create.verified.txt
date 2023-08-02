@@ -1,0 +1,14 @@
+﻿network:
+  version: 2
+  ethernets:
+    extra0:
+      dhcp4: no
+      match:
+        macaddress: 7C:62:7E:63:55:E5
+      addresses:
+      - 10.0.6.9/24
+      #- fc00::0:6:9/112
+      routes:
+      - to: 0.0.0.0/0
+        via: 10.0.6.1
+        metric: 50

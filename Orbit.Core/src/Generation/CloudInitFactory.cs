@@ -16,6 +16,7 @@ public class CloudInitFactory : IFactory<Instance, string>
     private readonly CloudInitOptions _options;
     private readonly ISerializer _serializer;
     private readonly WireGuardConfigFactory _wireGuardConfigFactory;
+    private readonly NetplanFactory _netplanFactory;
 
     /// <summary>
     /// DI constructor for <see cref="CloudInitFactory"/>.
@@ -23,11 +24,13 @@ public class CloudInitFactory : IFactory<Instance, string>
     public CloudInitFactory(
         IOptions<CloudInitOptions> options,
         ISerializer serializer,
-        WireGuardConfigFactory wireGuardConfigFactory)
+        WireGuardConfigFactory wireGuardConfigFactory,
+        NetplanFactory netplanFactory)
     {
         _options = options.Value;
         _serializer = serializer;
         _wireGuardConfigFactory = wireGuardConfigFactory;
+        _netplanFactory = netplanFactory;
     }
 
     /// <inheritdoc/>
@@ -94,7 +97,6 @@ public class CloudInitFactory : IFactory<Instance, string>
         }
 
         // Write sshd_config
-
         string sshdConfigContent = EmbeddedResourceHelpers.GetText("Resources/Templates/sshd_config");
         YamlMappingNode sshdConfigNode = new()
         {
@@ -103,6 +105,15 @@ public class CloudInitFactory : IFactory<Instance, string>
             { "content", new YamlScalarNode(sshdConfigContent) { Style = ScalarStyle.Literal } }
         };
         writeFiles.Add(sshdConfigNode);
+
+        // Write netplan config
+        string netplanContent = _netplanFactory.Create(instance);
+        YamlMappingNode netplanNode = new()
+        {
+            { "path", "/etc/netplan/10-custom.yaml" },
+            { "content", new YamlScalarNode(netplanContent) { Style = ScalarStyle.Literal } }
+        };
+        writeFiles.Add(netplanNode);
 
         // Write per-instance files
         string[] installerFiles =

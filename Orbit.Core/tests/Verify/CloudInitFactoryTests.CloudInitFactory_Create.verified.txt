@@ -104,6 +104,22 @@ write_files:
 
     # Encryption provides confidentiality, message authentication code provides integrity.
     MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+- path: /etc/netplan/10-custom.yaml
+  content: |
+    network:
+      version: 2
+      ethernets:
+        extra0:
+          dhcp4: no
+          match:
+            macaddress: 7C:62:7E:63:55:E5
+          addresses:
+          - 10.0.6.9/24
+          #- fc00::0:6:9/112
+          routes:
+          - to: 0.0.0.0/0
+            via: 10.0.6.1
+            metric: 50
 - path: /var/lib/cloud/scripts/per-instance/00-log.sh
   permissions: 0o500
   content: |
@@ -155,5 +171,6 @@ runcmd:
 - echo "Executing runcmd"
 - echo "*********************************"
 - systemctl restart ssh
+- netplan apply
 - date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
 - echo "Executed runcmd" | sudo tee -a /var/log/orbit.log
