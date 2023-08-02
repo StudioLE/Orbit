@@ -26,7 +26,7 @@ public class NetworkFactory : IFactory<Network, Network>
         Network result = new();
 
         result.Server = source.Server.IsNullOrEmpty()
-            ? throw new("Can't create a network without a server.")
+            ? DefaultServer()
             : source.Server;
 
         Server server = _servers.Get(new ServerId(source.Server)) ?? throw new("Failed to get server.");
@@ -54,5 +54,13 @@ public class NetworkFactory : IFactory<Network, Network>
         result.WireGuard = _wireGuardServerFactory.Create(result);
 
         return result;
+    }
+
+    private string DefaultServer()
+    {
+        return _servers
+                   .GetIndex()
+                   .LastOrDefault()
+               ?? throw new("Server must be set if more than one exist.");
     }
 }
