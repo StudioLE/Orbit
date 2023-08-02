@@ -21,6 +21,7 @@ internal sealed class SerializationTests
         Server: server-01
         Networks:
         - network-01
+        MacAddress: {MockWireGuardFacade.MacAddress}
         Domains: []
         OS:
           Name: ubuntu

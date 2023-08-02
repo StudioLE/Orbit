@@ -75,6 +75,7 @@ public static class TestHelpers
         {
             Name = ExampleInstanceName,
             Number = ExampleInstanceNumber,
+            MacAddress = MockWireGuardFacade.MacAddress,
             WireGuard = new[]
             {
                 new WireGuardClient

@@ -1,6 +1,7 @@
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
+using Orbit.Core.Utils.Networking;
 using StudioLE.Core.Patterns;
 
 namespace Orbit.Core.Creation;
@@ -51,6 +52,10 @@ public class InstanceFactory : IFactory<Instance, Instance>
         result.Networks = source.Networks.Any()
             ? source.Networks
             : new []{ DefaultNetwork() };
+
+        result.MacAddress = source.MacAddress.IsNullOrEmpty()
+            ? MacAddressHelpers.Generate()
+            : source.MacAddress;
 
         result.Hardware = _hardwareFactory.Create(source.Hardware);
         result.OS = _osFactory.Create(source.OS);

@@ -11,6 +11,7 @@ public class MockWireGuardFacade : IWireGuardFacade
     public const string ExternalIPv6 = "2001:db8::";
     public const string Dns = "10.1.6.1";
     public const int Port = 51820;
+    public const string MacAddress = "7C:62:7E:63:55:E5";
 
     public string GeneratePrivateKey()
     {

@@ -6,6 +6,7 @@
   "Networks": [
     "network-01"
   ],
+  "MacAddress": "7C:62:7E:63:55:E5",
   "Domains": [],
   "OS": {
     "Name": "ubuntu",

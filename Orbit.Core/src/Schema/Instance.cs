@@ -41,6 +41,11 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public string[] Networks { get; set; } = Array.Empty<string>();
 
     /// <summary>
+    /// The mac address of the primary network interface.
+    /// </summary>
+    public string MacAddress { get; set; } = string.Empty;
+
+    /// <summary>
     /// The domain names to be reverse proxied to the instance.
     /// </summary>
     [Required]

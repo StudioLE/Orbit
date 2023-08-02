@@ -41,6 +41,7 @@ internal sealed class CreateInstanceTests
         Instance sourceInstance = new()
         {
             Server = TestHelpers.ExampleServerName,
+            MacAddress = MockWireGuardFacade.MacAddress,
             WireGuard = new[]
             {
                 new WireGuardClient

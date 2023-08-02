@@ -4,6 +4,7 @@ Role: node
 Server: example-server
 Networks:
 - example-network
+MacAddress: 7C:62:7E:63:55:E5
 Domains:
 - example.com
 - example.org
