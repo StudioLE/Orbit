@@ -41,14 +41,14 @@ internal sealed class CreateInstanceTests
         Instance sourceInstance = new()
         {
             Server = TestHelpers.ExampleServerName,
-            MacAddress = MockWireGuardFacade.MacAddress,
+            MacAddress = MockConstants.MacAddress,
             WireGuard = new[]
             {
                 new WireGuardClient
                 {
-                    PrivateKey = MockWireGuardFacade.PrivateKey,
-                    PublicKey = MockWireGuardFacade.PublicKey,
-                    PreSharedKey = MockWireGuardFacade.PreSharedKey
+                    PrivateKey = MockConstants.PrivateKey,
+                    PublicKey = MockConstants.PublicKey,
+                    PreSharedKey = MockConstants.PreSharedKey
                 }
             }
         };

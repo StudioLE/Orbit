@@ -54,13 +54,13 @@ public static class TestHelpers
             Name = ExampleNetworkName,
             Number = ExampleNetworkNumber,
             Server = ExampleServerName,
-            ExternalIPv4 = MockWireGuardFacade.ExternalIPv4,
-            ExternalIPv6 = MockWireGuardFacade.ExternalIPv6,
-            Dns = MockWireGuardFacade.Dns,
+            ExternalIPv4 = MockConstants.ExternalIPv4,
+            ExternalIPv6 = MockConstants.ExternalIPv6,
+            Dns = MockConstants.Dns,
             WireGuard = new()
             {
-                PrivateKey = MockWireGuardFacade.PrivateKey,
-                PublicKey = MockWireGuardFacade.PublicKey
+                PrivateKey = MockConstants.PrivateKey,
+                PublicKey = MockConstants.PublicKey
             }
         });
 
@@ -75,15 +75,15 @@ public static class TestHelpers
         {
             Name = ExampleInstanceName,
             Number = ExampleInstanceNumber,
-            MacAddress = MockWireGuardFacade.MacAddress,
+            MacAddress = MockConstants.MacAddress,
             WireGuard = new[]
             {
                 new WireGuardClient
                 {
                     Network = ExampleNetworkName,
-                    PrivateKey = MockWireGuardFacade.PrivateKey,
-                    PublicKey = MockWireGuardFacade.PublicKey,
-                    PreSharedKey = MockWireGuardFacade.PreSharedKey
+                    PrivateKey = MockConstants.PrivateKey,
+                    PublicKey = MockConstants.PublicKey,
+                    PreSharedKey = MockConstants.PreSharedKey
                 }
             },
             Domains = new[] { "example.com", "example.org" }

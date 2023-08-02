@@ -21,7 +21,7 @@ internal sealed class SerializationTests
         Server: server-01
         Networks:
         - network-01
-        MacAddress: {MockWireGuardFacade.MacAddress}
+        MacAddress: {MockConstants.MacAddress}
         Domains: []
         OS:
           Name: ubuntu
@@ -35,9 +35,9 @@ internal sealed class SerializationTests
         WireGuard:
         - Name: wg1
           Network: network-01
-          PrivateKey: {MockWireGuardFacade.PrivateKey}
-          PublicKey: {MockWireGuardFacade.PublicKey}
-          PreSharedKey: {MockWireGuardFacade.PreSharedKey}
+          PrivateKey: {MockConstants.PrivateKey}
+          PublicKey: {MockConstants.PublicKey}
+          PreSharedKey: {MockConstants.PreSharedKey}
           Addresses:
           - 10.1.1.1
           - fc00::1:1:1
