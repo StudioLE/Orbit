@@ -17,6 +17,7 @@ public class CloudInitFactory : IFactory<Instance, string>
     private readonly WireGuardConfigFactory _wireGuardConfigFactory;
     private readonly NetplanFactory _netplanFactory;
     private readonly InstallFactory _installFactory;
+    private readonly RunFactory _runFactory;
 
     /// <summary>
     /// DI constructor for <see cref="CloudInitFactory"/>.
@@ -26,13 +27,15 @@ public class CloudInitFactory : IFactory<Instance, string>
         ISerializer serializer,
         WireGuardConfigFactory wireGuardConfigFactory,
         NetplanFactory netplanFactory,
-        InstallFactory installFactory)
+        InstallFactory installFactory,
+        RunFactory runFactory)
     {
         _options = options.Value;
         _serializer = serializer;
         _wireGuardConfigFactory = wireGuardConfigFactory;
         _netplanFactory = netplanFactory;
         _installFactory = installFactory;
+        _runFactory = runFactory;
     }
 
     /// <inheritdoc/>
@@ -117,17 +120,17 @@ public class CloudInitFactory : IFactory<Instance, string>
         };
         writeFiles.Add(netplanNode);
 
-        // Write 50-orbit-configure
+        // Write 30-orbit-configure
         string configureContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/50-orbit-configure");
         YamlMappingNode configureNode = new()
         {
-            { "path", "/var/lib/cloud/scripts/per-instance/50-orbit-configure" },
+            { "path", "/var/lib/cloud/scripts/per-instance/30-orbit-configure" },
             { "permissions", "0o500" },
             { "content", new YamlScalarNode(configureContent) { Style = ScalarStyle.Literal } }
         };
         writeFiles.Add(configureNode);
 
-        // Write 60-orbit-install
+        // Write 50-orbit-install
         string installContent = _installFactory.Create(instance);
         YamlMappingNode installNode = new()
         {
@@ -136,6 +139,16 @@ public class CloudInitFactory : IFactory<Instance, string>
             { "content", new YamlScalarNode(installContent) { Style = ScalarStyle.Literal } }
         };
         writeFiles.Add(installNode);
+
+        // Write 70-orbit-run
+        string runContent = _runFactory.Create(instance);
+        YamlMappingNode runNode = new()
+        {
+            { "path", "/var/lib/cloud/scripts/per-instance/70-orbit-run" },
+            { "permissions", "0o500" },
+            { "content", new YamlScalarNode(runContent) { Style = ScalarStyle.Literal } }
+        };
+        writeFiles.Add(runNode);
 
         // Serialize
         string output = "#cloud-config" + Environment.NewLine + Environment.NewLine;

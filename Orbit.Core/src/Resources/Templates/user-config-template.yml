@@ -1,10 +1,5 @@
 #cloud-config
 
-apt:
-  preserve_sources_list: true
-package_update: true
-package_upgrade: true
-package_reboot_if_required: true
 packages:
 - resolvconf
 ssh_genkeytypes:

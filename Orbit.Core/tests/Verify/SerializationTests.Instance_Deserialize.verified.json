@@ -55,5 +55,10 @@
     "motd-system",
     "network-test",
     "upgrade-packages"
+  ],
+  "Run": [
+    "disable-motd",
+    "network-test",
+    "upgrade-packages"
   ]
 }

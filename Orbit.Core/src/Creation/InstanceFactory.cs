@@ -22,6 +22,11 @@ public class InstanceFactory : IFactory<Instance, Instance>
         "network-test",
         "upgrade-packages"
     };
+    private static readonly string[] _defaultRun = {
+        "disable-motd",
+        "network-test",
+        "upgrade-packages"
+    };
 
     private readonly IEntityProvider<Server> _servers;
     private readonly IEntityProvider<Network> _networks;
@@ -93,6 +98,10 @@ public class InstanceFactory : IFactory<Instance, Instance>
         result.Install = source.Install.Any()
             ? source.Install
             : _defaultInstall;
+
+        result.Run = source.Run.Any()
+            ? source.Run
+            : _defaultRun;
 
         return result;
     }

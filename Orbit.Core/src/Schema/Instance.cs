@@ -84,4 +84,9 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// The packages to install.
     /// </summary>
     public string[] Install { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// The packages to run.
+    /// </summary>
+    public string[] Run { get; set; } = Array.Empty<string>();
 }

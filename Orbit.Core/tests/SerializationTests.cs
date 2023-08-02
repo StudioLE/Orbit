@@ -58,6 +58,10 @@ internal sealed class SerializationTests
         - motd-system
         - network-test
         - upgrade-packages
+        Run:
+        - disable-motd
+        - network-test
+        - upgrade-packages
 
         """;
     private readonly IVerify _verify = new NUnitVerify();
