@@ -7,8 +7,11 @@
         macaddress: 7C:62:7E:63:55:E5
       addresses:
       - 10.0.6.9/24
-      #- fc00::0:6:9/112
+      - fc00::0:6:9/112
       routes:
-      - to: 0.0.0.0/0
+      - to: default
         via: 10.0.6.1
+        metric: 50
+      - to: default
+        via: fc00::0.6.1
         metric: 50

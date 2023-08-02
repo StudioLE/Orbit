@@ -28,10 +28,13 @@ public class NetplanFactory : IFactory<Instance, string>
                     macaddress: {instance.MacAddress}
                   addresses:
                   - {network.GetInternalIPv4(instance)}/24
-                  #- {network.GetInternalIPv6(instance)}/112
+                  - {network.GetInternalIPv6(instance)}/112
                   routes:
-                  - to: 0.0.0.0/0
+                  - to: default
                     via: 10.0.{network.Number}.1
+                    metric: 50
+                  - to: default
+                    via: fc00::0.{network.Number}.1
                     metric: 50
 
             """;
