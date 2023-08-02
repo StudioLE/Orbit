@@ -3,7 +3,7 @@ Number: 3
 Server: example-server
 ExternalIPv4: 127.0.0.1
 ExternalIPv6: ::1
-Dns: 10.3.1.0
+Dns: 10.3.1.2
 WireGuard:
   Name: wg3
   Port: 51820

@@ -35,7 +35,7 @@ public class NetworkFactory : IFactory<Network, Network>
             : source.Number;
 
         result.Dns = source.Dns.IsNullOrEmpty()
-            ? $"10.{result.Number}.1.0"
+            ? $"10.{result.Number}.1.2"
             : source.Dns;
 
         result.Name = source.Name.IsNullOrEmpty()
