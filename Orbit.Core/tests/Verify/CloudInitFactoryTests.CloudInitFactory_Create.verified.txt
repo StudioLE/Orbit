@@ -28,7 +28,7 @@ wireguard:
       PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
       Address = 10.1.6.9
       Address = fc00::1:6:9
-      DNS = 10.1.6.1
+      DNS = 10.1.6.2, fc00::1:6:2
 
       [Peer]
       PublicKey = Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
@@ -116,7 +116,7 @@ write_files:
             via: 10.0.6.1
             metric: 50
           - to: default
-            via: fc00::0.6.1
+            via: fc00::0:6:1
             metric: 50
 - path: /var/lib/cloud/scripts/per-instance/30-orbit-configure
   permissions: 0o500

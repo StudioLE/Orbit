@@ -13,5 +13,5 @@
         via: 10.0.6.1
         metric: 50
       - to: default
-        via: fc00::0.6.1
+        via: fc00::0:6:1
         metric: 50

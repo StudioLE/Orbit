@@ -11,13 +11,15 @@ namespace Orbit.Core.Creation;
 public class WireGuardServerFactory : IFactory<Network, WireGuardServer>
 {
     private readonly IWireGuardFacade _wg;
+    private readonly IIPAddressStrategy _ip;
 
     /// <summary>
     /// The DI constructor for <see cref="WireGuardServerFactory"/>.
     /// </summary>
-    public WireGuardServerFactory(IWireGuardFacade wg)
+    public WireGuardServerFactory(IWireGuardFacade wg, IIPAddressStrategy ip)
     {
         _wg = wg;
+        _ip = ip;
     }
 
     /// <inheritdoc/>
@@ -26,8 +28,10 @@ public class WireGuardServerFactory : IFactory<Network, WireGuardServer>
         WireGuardServer result = new()
         {
             Name = network.WireGuard.Name,
+            Port = network.WireGuard.Port,
             PrivateKey = network.WireGuard.PrivateKey,
-            PublicKey = network.WireGuard.PublicKey
+            PublicKey = network.WireGuard.PublicKey,
+            Dns = network.WireGuard.Dns
         };
 
         if (result.Name.IsNullOrEmpty())
@@ -41,6 +45,13 @@ public class WireGuardServerFactory : IFactory<Network, WireGuardServer>
 
         if (result.PublicKey.IsNullOrEmpty())
             result.PublicKey = _wg.GeneratePublicKey(result.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
+
+        if (!result.Dns.Any())
+            result.Dns = new[]
+            {
+                _ip.GetWireGuardDnsIPv4(network),
+                _ip.GetWireGuardDnsIPv6(network)
+            };
 
         return result;
     }

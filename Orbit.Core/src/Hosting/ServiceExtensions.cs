@@ -49,6 +49,7 @@ public static class ServiceExtensions
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardClientFactory>()
             .AddSingleton<IWireGuardFacade, WireGuardFacade>()
+            .AddSingleton<IIPAddressStrategy, IPAddressStrategy>()
 
             .AddSingleton<GenerateInstanceConfiguration>()
             .AddTransient<CloudInitFactory>()

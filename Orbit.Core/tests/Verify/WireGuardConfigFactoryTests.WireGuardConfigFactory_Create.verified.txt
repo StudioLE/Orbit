@@ -2,7 +2,7 @@
 PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
 Address = 10.1.6.9
 Address = fc00::1:6:9
-DNS = 10.1.6.1
+DNS = 10.1.6.2, fc00::1:6:2
 
 [Peer]
 PublicKey = Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=

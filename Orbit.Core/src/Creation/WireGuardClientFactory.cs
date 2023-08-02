@@ -18,14 +18,16 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
     };
     private readonly IWireGuardFacade _wg;
     private readonly IEntityProvider<Network> _networks;
+    private readonly IIPAddressStrategy _ip;
 
     /// <summary>
     /// The DI constructor for <see cref="WireGuardClientFactory"/>.
     /// </summary>
-    public WireGuardClientFactory(IWireGuardFacade wg, IEntityProvider<Network> networks)
+    public WireGuardClientFactory(IWireGuardFacade wg, IEntityProvider<Network> networks, IIPAddressStrategy ip)
     {
         _wg = wg;
         _networks = networks;
+        _ip = ip;
     }
 
     /// <inheritdoc/>
@@ -78,8 +80,8 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
         if (!result.Addresses.Any())
             result.Addresses = new[]
             {
-                network.GetWireGuardIPv4(instance),
-                network.GetWireGuardIPv6(instance)
+                _ip.GetWireGuardIPv4(instance, network),
+                _ip.GetWireGuardIPv6(instance, network)
             };
 
         if (!result.AllowedIPs.Any())

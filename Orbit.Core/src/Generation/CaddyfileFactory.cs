@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using StudioLE.Core.Patterns;
@@ -10,14 +11,16 @@ public class CaddyfileFactory : IFactory<Instance, string?>
 {
     private readonly ILogger<CaddyfileFactory> _logger;
     private readonly IEntityProvider<Network> _networks;
+    private readonly IIPAddressStrategy _ip;
 
     /// <summary>
     /// DI constructor for <see cref="CaddyfileFactory"/>.
     /// </summary>
-    public CaddyfileFactory(ILogger<CaddyfileFactory> logger, IEntityProvider<Network> networks)
+    public CaddyfileFactory(ILogger<CaddyfileFactory> logger, IEntityProvider<Network> networks, IIPAddressStrategy ip)
     {
         _logger = logger;
         _networks = networks;
+        _ip = ip;
     }
 
     /// <inheritdoc />
@@ -35,7 +38,9 @@ public class CaddyfileFactory : IFactory<Instance, string?>
             return null;
         }
         string domains = instance.Domains.Join(", ");
-        string address = network.GetWireGuardIPv4(instance) + ":80";
+        string address = instance.Server == network.Server
+            ? _ip.GetInternalIPv4(instance, network) + ":80"
+            : _ip.GetWireGuardIPv4(instance, network) + ":80";
         return $$"""
             {{domains}} {
                 reverse_proxy {{address}}

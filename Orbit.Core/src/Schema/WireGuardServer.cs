@@ -31,4 +31,9 @@ public class WireGuardServer
     /// </summary>
     [Base64Schema]
     public string PublicKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The address of the DNS resolver for the network.
+    /// </summary>
+    public string[] Dns { get; set; } = Array.Empty<string>();
 }

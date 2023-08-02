@@ -26,7 +26,7 @@ public class WireGuardConfigFactory : IFactory<WireGuardClient, string>
             [Interface]
             PrivateKey = {client.PrivateKey}
             {addresses}
-            DNS = {network.Dns}
+            DNS = {network.WireGuard.Dns.Join(", ")}
 
             [Peer]
             PublicKey = {network.WireGuard.PublicKey}

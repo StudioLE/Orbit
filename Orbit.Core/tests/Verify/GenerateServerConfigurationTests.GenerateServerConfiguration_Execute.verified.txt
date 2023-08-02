@@ -10,7 +10,7 @@
     (
     cat <<'EOF'
     example.com, example.org {
-        reverse_proxy 10.1.6.9:80
+        reverse_proxy 10.0.6.9:80
     }
     EOF
     ) | tee "/caddy/example-instance.caddy" > /dev/null

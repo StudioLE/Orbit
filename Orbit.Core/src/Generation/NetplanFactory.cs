@@ -1,3 +1,4 @@
+using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using StudioLE.Core.Patterns;
@@ -7,10 +8,12 @@ namespace Orbit.Core.Generation;
 public class NetplanFactory : IFactory<Instance, string>
 {
     private readonly IEntityProvider<Network> _networks;
+    private readonly IIPAddressStrategy _ip;
 
-    public NetplanFactory(IEntityProvider<Network> networks)
+    public NetplanFactory(IEntityProvider<Network> networks, IIPAddressStrategy ip)
     {
         _networks = networks;
+        _ip = ip;
     }
 
     /// <inheritdoc/>
@@ -27,14 +30,14 @@ public class NetplanFactory : IFactory<Instance, string>
                   match:
                     macaddress: {instance.MacAddress}
                   addresses:
-                  - {network.GetInternalIPv4(instance)}/24
-                  - {network.GetInternalIPv6(instance)}/112
+                  - {_ip.GetInternalIPv4(instance, network)}/24
+                  - {_ip.GetInternalIPv6(instance, network)}/112
                   routes:
                   - to: default
-                    via: 10.0.{network.Number}.1
+                    via: {_ip.GetInternalGatewayIPv4(network)}
                     metric: 50
                   - to: default
-                    via: fc00::0.{network.Number}.1
+                    via: {_ip.GetInternalGatewayIPv6(network)}
                     metric: 50
 
             """;

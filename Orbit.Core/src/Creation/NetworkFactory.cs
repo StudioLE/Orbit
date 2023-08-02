@@ -34,10 +34,6 @@ public class NetworkFactory : IFactory<Network, Network>
             ? server.Number
             : source.Number;
 
-        result.Dns = source.Dns.IsNullOrEmpty()
-            ? $"10.{result.Number}.1.2"
-            : source.Dns;
-
         result.Name = source.Name.IsNullOrEmpty()
             ? $"{DefaultName}-{result.Number:00}"
             : source.Name;
@@ -49,7 +45,6 @@ public class NetworkFactory : IFactory<Network, Network>
         result.ExternalIPv6 = source.ExternalIPv6.IsNullOrEmpty()
             ? "::1"
             : source.ExternalIPv6;
-
 
         result.WireGuard = _wireGuardServerFactory.Create(result);
 

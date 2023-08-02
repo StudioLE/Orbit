@@ -38,32 +38,6 @@ public sealed class Network : IEntity, IHasValidationAttributes
     /// </summary>
     public string ExternalIPv6 { get; set; } = string.Empty;
 
-    /// <summary>
-    /// The address of the DNS resolver for the network.
-    /// </summary>
-    [IPSchema]
-    public string Dns { get; set; } = string.Empty;
-
     [ValidateComplexType]
     public WireGuardServer WireGuard { get; set; } = new();
-
-    public string GetInternalIPv4(Instance instance)
-    {
-        return $"10.0.{Number}.{instance.Number}";
-    }
-
-    public string GetInternalIPv6(Instance instance)
-    {
-        return $"fc00::0:{Number}:{instance.Number}";
-    }
-
-    public string GetWireGuardIPv4(Instance instance)
-    {
-        return $"10.1.{Number}.{instance.Number}";
-    }
-
-    public string GetWireGuardIPv6(Instance instance)
-    {
-        return $"fc00::1:{Number}:{instance.Number}";
-    }
 }

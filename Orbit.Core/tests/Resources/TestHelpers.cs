@@ -48,7 +48,6 @@ public static class TestHelpers
             Server = MockConstants.ServerName,
             ExternalIPv4 = MockConstants.ExternalIPv4,
             ExternalIPv6 = MockConstants.ExternalIPv6,
-            Dns = MockConstants.Dns,
             WireGuard = new()
             {
                 PrivateKey = MockConstants.PrivateKey,
