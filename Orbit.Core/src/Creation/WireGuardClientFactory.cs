@@ -11,11 +11,6 @@ namespace Orbit.Core.Creation;
 /// </summary>
 public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
 {
-    private static readonly string[] _defaultAllowedIPs =
-    {
-        "0.0.0.0/0",
-        "::/0"
-    };
     private readonly IWireGuardFacade _wg;
     private readonly IEntityProvider<Network> _networks;
     private readonly IIPAddressStrategy _ip;
@@ -85,7 +80,11 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
             };
 
         if (!result.AllowedIPs.Any())
-            result.AllowedIPs = _defaultAllowedIPs;
+            result.AllowedIPs = new []
+            {
+                _ip.GetWireGuardSubnetIPv4(network),
+                _ip.GetWireGuardSubnetIPv6(network)
+            };
 
         return result;
     }

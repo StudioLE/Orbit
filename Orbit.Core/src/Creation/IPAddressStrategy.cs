@@ -55,4 +55,14 @@ public class IPAddressStrategy : IIPAddressStrategy
     {
         return $"fc00::1:{network.Number}:1";
     }
+
+    public string GetWireGuardSubnetIPv4(Network network)
+    {
+        return $"10.1.{network.Number}.0/24";
+    }
+
+    public string GetWireGuardSubnetIPv6(Network network)
+    {
+        return $"fc00::1:{network.Number}:0/112";
+    }
 }

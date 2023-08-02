@@ -24,8 +24,8 @@ WireGuard:
   - 10.1.6.10
   - fc00::1:6:10
   AllowedIPs:
-  - 0.0.0.0/0
-  - ::/0
+  - 10.1.6.0/24
+  - fc00::1:6:0/112
 Domains: []
 Mounts: []
 Repo: 
