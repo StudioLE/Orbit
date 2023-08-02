@@ -11,13 +11,12 @@ namespace Orbit.Core.Creation;
 public class NetworkFactory : IFactory<Network, Network>
 {
     private const string DefaultName = "network";
-    private const int DefaultNumberValue = 1;
-    private readonly IEntityProvider<Network> _networks;
+    private readonly IEntityProvider<Server> _servers;
     private readonly WireGuardServerFactory _wireGuardServerFactory;
 
-    public NetworkFactory(IEntityProvider<Network> networks, WireGuardServerFactory wireGuardServerFactory)
+    public NetworkFactory(IEntityProvider<Server> servers, WireGuardServerFactory wireGuardServerFactory)
     {
-        _networks = networks;
+        _servers = servers;
         _wireGuardServerFactory = wireGuardServerFactory;
     }
 
@@ -30,8 +29,9 @@ public class NetworkFactory : IFactory<Network, Network>
             ? throw new("Can't create a network without a server.")
             : source.Server;
 
+        Server server = _servers.Get(new ServerId(source.Server)) ?? throw new("Failed to get server.");
         result.Number = source.Number == default
-            ? DefaultNumber()
+            ? server.Number
             : source.Number;
 
         result.Dns = source.Dns.IsNullOrEmpty()
@@ -54,17 +54,5 @@ public class NetworkFactory : IFactory<Network, Network>
         result.WireGuard = _wireGuardServerFactory.Create(result);
 
         return result;
-    }
-
-    private int DefaultNumber()
-    {
-        int[] numbers = _networks
-            .GetAll()
-            .Select(x => x.Number)
-            .ToArray();
-        int finalNumber = numbers.Any()
-            ? numbers.Max()
-            : DefaultNumberValue - 1;
-        return finalNumber + 1;
     }
 }
