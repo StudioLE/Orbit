@@ -1,6 +1,7 @@
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
 using StudioLE.Core.Patterns;
+using StudioLE.Core.System;
 
 namespace Orbit.Core.Creation;
 
@@ -9,7 +10,7 @@ namespace Orbit.Core.Creation;
 /// </summary>
 public class HardwareFactory : IFactory<Hardware, Hardware>
 {
-    private const string DefaultType = "G1";
+    private const string DefaultType = "G2";
     private const Platform DefaultPlatform = Platform.Virtual;
     private const int DefaultDisk = 20;
 
@@ -43,24 +44,25 @@ public class HardwareFactory : IFactory<Hardware, Hardware>
 
     private static int DefaultCpus(Hardware hardware)
     {
-        string cpusStr = hardware.Type.Substring(1);
-        return int.Parse(cpusStr);
+        string cpus = hardware.Type.Substring(1);
+        return int.Parse(cpus);
     }
 
     private static int DefaultMemory(Hardware hardware)
     {
         char category = hardware.Type.First();
-        int multiplier = GetTypeMultiplier(category);
-        return hardware.Cpus * multiplier;
+        double multiplier = GetTypeMultiplier(category);
+        double memory = hardware.Cpus * multiplier;
+        return memory.CeilingToInt();
     }
 
-    private static int GetTypeMultiplier(char category)
+    private static double GetTypeMultiplier(char category)
     {
         return category switch
         {
-            'C' => 2,
-            'G' => 4,
-            'M' => 8,
+            'C' => 0.5,
+            'G' => 1,
+            'M' => 2,
             _ => throw new("Invalid type")
         };
     }

@@ -10,9 +10,9 @@ OS:
   Version: jammy
 Hardware:
   Platform: Virtual
-  Type: G1
-  Cpus: 1
-  Memory: 4
+  Type: G2
+  Cpus: 2
+  Memory: 2
   Disk: 20
 WireGuard:
 - Name: wg6
