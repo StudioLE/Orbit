@@ -7,7 +7,6 @@
     "network-01"
   ],
   "MacAddress": "7C:62:7E:63:55:E5",
-  "Domains": [],
   "OS": {
     "Name": "ubuntu",
     "Version": "jammy"
@@ -36,6 +35,7 @@
       ]
     }
   ],
+  "Domains": [],
   "Mounts": [
     {
       "Source": "/mnt/instance-01/srv",
@@ -46,5 +46,14 @@
       "Target": "/config"
     }
   ],
-  "Repo": null
+  "Repo": null,
+  "Install": [
+    "bat",
+    "micro",
+    "figlet",
+    "motd-hostname",
+    "motd-system",
+    "network-test",
+    "upgrade-packages"
+  ]
 }

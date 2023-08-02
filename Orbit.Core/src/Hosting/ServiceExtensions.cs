@@ -52,6 +52,7 @@ public static class ServiceExtensions
 
             .AddSingleton<GenerateInstanceConfiguration>()
             .AddTransient<CloudInitFactory>()
+            .AddTransient<InstallFactory>()
             .AddTransient<NetplanFactory>()
             .AddTransient<WireGuardConfigFactory>()
 

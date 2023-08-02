@@ -5,7 +5,6 @@ Server: example-server
 Networks:
 - example-network
 MacAddress: 7C:62:7E:63:55:E5
-Domains: []
 OS:
   Name: ubuntu
   Version: jammy
@@ -27,5 +26,14 @@ WireGuard:
   AllowedIPs:
   - 0.0.0.0/0
   - ::/0
+Domains: []
 Mounts: []
 Repo: 
+Install:
+- bat
+- micro
+- figlet
+- motd-hostname
+- motd-system
+- network-test
+- upgrade-packages

@@ -126,7 +126,7 @@ write_files:
     #!/bin/bash
     set -uo pipefail
 
-    LOG_FILE=/var/log/orbit.log
+    LOG_FILE="/var/log/orbit.log"
 
     log () {
       date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a "${LOG_FILE}"
@@ -181,39 +181,64 @@ write_files:
     fi
 
     echo-information "Completed Orbit configuration"
-- path: /var/lib/cloud/scripts/per-instance/00-log.sh
+- path: /var/lib/cloud/scripts/per-instance/50-orbit-install
   permissions: 0o500
   content: |
     #!/bin/bash
-    set -euo pipefail
+    set -uo pipefail
 
-    date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
-    echo "Executing installers" | sudo tee -a /var/log/orbit.log
-- path: /var/lib/cloud/scripts/per-instance/10-install-docker.sh
-  permissions: 0o500
-  content: |
-    #!/bin/bash
-    set -euo pipefail
+    LOG_FILE="/var/log/orbit.log"
 
-    date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
-    echo "Installing docker" | sudo tee -a /var/log/orbit.log
+    log () {
+      date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a "${LOG_FILE}"
+      echo "$1" | sudo tee -a "${LOG_FILE}"
+    }
 
-    curl -fsS https://install.studiole.uk/docker | sudo bash
-- path: /var/lib/cloud/scripts/per-instance/90-install-network-test.sh
-  permissions: 0o500
-  content: |
-    #!/bin/bash
-    set -euo pipefail
+    echo-success () {
+      echo -e "\e[32m ✔  $1\e[0m" >&2
+    }
 
-    date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
-    echo "Installing network-test" | sudo tee -a /var/log/orbit.log
+    echo-information () {
+      echo -e "\e[34m ⓘ  $1\e[0m" >&2
+    }
 
+    echo-error () {
+      echo -e "\e[31m !  $1\e[0m" >&2
+    }
+
+    echo-warning () {
+      echo -e "\e[33m ⚠  $1\e[0m" >&2
+    }
+
+    echo-subsidiary () {
+      echo -e "\e[37m    $1\e[0m" >&2
+    }
+
+    echo-step () {
+      echo -e "\e[0m »  $1\e[0m" >&2
+    }
+
+    echo-break () {
+      echo ""
+    }
+
+    log "Installing bat"
+    curl -fsS https://install.studiole.uk/bat | sudo bash
+
+    log "Installing micro"
+    curl -fsS https://install.studiole.uk/micro | sudo bash
+
+    log "Installing figlet"
+    curl -fsS https://install.studiole.uk/figlet | sudo bash
+
+    log "Installing motd-hostname"
+    curl -fsS https://install.studiole.uk/motd-hostname | sudo bash
+
+    log "Installing motd-system"
+    curl -fsS https://install.studiole.uk/motd-system | sudo bash
+
+    log "Installing network-test"
     curl -fsS https://install.studiole.uk/network-test | sudo bash
-- path: /var/lib/cloud/scripts/per-instance/99-log.sh
-  permissions: 0o500
-  content: |
-    #!/bin/bash
-    set -euo pipefail
 
-    date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
-    echo "Executed installers" | sudo tee -a /var/log/orbit.log
+    log "Installing upgrade-packages"
+    curl -fsS https://install.studiole.uk/upgrade-packages | sudo bash

@@ -13,6 +13,15 @@ public class InstanceFactory : IFactory<Instance, Instance>
 {
     private const int DefaultInstanceNumber = 1;
     private const string DefaultRole = "node";
+    private static readonly string[] _defaultInstall = {
+        "bat",
+        "micro",
+        "figlet",
+        "motd-hostname",
+        "motd-system",
+        "network-test",
+        "upgrade-packages"
+    };
 
     private readonly IEntityProvider<Server> _servers;
     private readonly IEntityProvider<Network> _networks;
@@ -80,6 +89,10 @@ public class InstanceFactory : IFactory<Instance, Instance>
         result.Domains = source.Domains.Any()
             ? source.Domains
             : Array.Empty<string>();
+
+        result.Install = source.Install.Any()
+            ? source.Install
+            : _defaultInstall;
 
         return result;
     }

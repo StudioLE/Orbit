@@ -22,7 +22,6 @@ internal sealed class SerializationTests
         Networks:
         - network-01
         MacAddress: {MockConstants.MacAddress}
-        Domains: []
         OS:
           Name: ubuntu
           Version: jammy
@@ -44,12 +43,22 @@ internal sealed class SerializationTests
           AllowedIPs:
           - 0.0.0.0/0
           - ::/0
+        Domains: []
         Mounts:
         - Source: /mnt/instance-01/srv
           Target: /srv
         - Source: /mnt/instance-01/config
           Target: /config
         Repo:
+        Install:
+        - bat
+        - micro
+        - figlet
+        - motd-hostname
+        - motd-system
+        - network-test
+        - upgrade-packages
+
         """;
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
@@ -100,7 +109,7 @@ internal sealed class SerializationTests
         string serialized = _serializer.Serialize(instance);
 
         // Assert
-        const string expected = Source + " ";
+        string expected = Source.Replace("Repo:", "Repo: ");
         await _verify.String(expected, serialized);
     }
 }

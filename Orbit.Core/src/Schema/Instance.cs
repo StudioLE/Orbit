@@ -46,12 +46,6 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public string MacAddress { get; set; } = string.Empty;
 
     /// <summary>
-    /// The domain names to be reverse proxied to the instance.
-    /// </summary>
-    [Required]
-    public string[] Domains { get; set; } = Array.Empty<string>();
-
-    /// <summary>
     /// The operating system of the instance.
     /// </summary>
     [ValidateComplexType]
@@ -71,6 +65,12 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     public WireGuardClient[] WireGuard { get; set; } = Array.Empty<WireGuardClient>();
 
     /// <summary>
+    /// The domain names to be reverse proxied to the instance.
+    /// </summary>
+    [Required]
+    public string[] Domains { get; set; } = Array.Empty<string>();
+
+    /// <summary>
     /// The mounted directories of the instance.
     /// </summary>
     public Mount[] Mounts { get; set; } = Array.Empty<Mount>();
@@ -79,4 +79,9 @@ public sealed class Instance : IEntity, IHasValidationAttributes
     /// The repo to pull into the instance.
     /// </summary>
     public Repo? Repo { get; set; }
+
+    /// <summary>
+    /// The packages to install.
+    /// </summary>
+    public string[] Install { get; set; } = Array.Empty<string>();
 }

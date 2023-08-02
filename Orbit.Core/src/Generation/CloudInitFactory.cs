@@ -16,6 +16,7 @@ public class CloudInitFactory : IFactory<Instance, string>
     private readonly ISerializer _serializer;
     private readonly WireGuardConfigFactory _wireGuardConfigFactory;
     private readonly NetplanFactory _netplanFactory;
+    private readonly InstallFactory _installFactory;
 
     /// <summary>
     /// DI constructor for <see cref="CloudInitFactory"/>.
@@ -24,12 +25,14 @@ public class CloudInitFactory : IFactory<Instance, string>
         IOptions<CloudInitOptions> options,
         ISerializer serializer,
         WireGuardConfigFactory wireGuardConfigFactory,
-        NetplanFactory netplanFactory)
+        NetplanFactory netplanFactory,
+        InstallFactory installFactory)
     {
         _options = options.Value;
         _serializer = serializer;
         _wireGuardConfigFactory = wireGuardConfigFactory;
         _netplanFactory = netplanFactory;
+        _installFactory = installFactory;
     }
 
     /// <inheritdoc/>
@@ -114,29 +117,25 @@ public class CloudInitFactory : IFactory<Instance, string>
         };
         writeFiles.Add(netplanNode);
 
-        // Write per-instance files
-        string[] perInstanceFiles =
+        // Write 50-orbit-configure
+        string configureContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/50-orbit-configure");
+        YamlMappingNode configureNode = new()
         {
-            "50-orbit-configure",
-            "00-log.sh",
-            "10-install-docker.sh",
-            "90-install-network-test.sh",
-            "99-log.sh"
+            { "path", "/var/lib/cloud/scripts/per-instance/50-orbit-configure" },
+            { "permissions", "0o500" },
+            { "content", new YamlScalarNode(configureContent) { Style = ScalarStyle.Literal } }
         };
-        YamlMappingNode[] perInstanceNodes = perInstanceFiles
-            .Select(fileName =>
-            {
-                string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{fileName}");
-                content = content.Replace("${SUDO_USER}", _options.SudoUser);
-                return new YamlMappingNode
-                {
-                    { "path", $"/var/lib/cloud/scripts/per-instance/{fileName}" },
-                    { "permissions", "0o500" },
-                    { "content", new YamlScalarNode(content) { Style = ScalarStyle.Literal } }
-                };
-            })
-            .ToArray();
-        writeFiles.AddRange(perInstanceNodes);
+        writeFiles.Add(configureNode);
+
+        // Write 60-orbit-install
+        string installContent = _installFactory.Create(instance);
+        YamlMappingNode installNode = new()
+        {
+            { "path", "/var/lib/cloud/scripts/per-instance/50-orbit-install" },
+            { "permissions", "0o500" },
+            { "content", new YamlScalarNode(installContent) { Style = ScalarStyle.Literal } }
+        };
+        writeFiles.Add(installNode);
 
         // Serialize
         string output = "#cloud-config" + Environment.NewLine + Environment.NewLine;
