@@ -31,9 +31,7 @@ internal sealed class GenerateInstanceConfigurationTests
         _logs = host.Services.GetTestLogs();
     }
 
-    #if WINDOWS
-    [Ignore("Yaml serialization differs on windows")]
-    #endif
+    #if !WINDOWS
     [Test]
     [Category("Activity")]
     public async Task GenerateInstanceConfiguration_Execute()
@@ -56,4 +54,5 @@ internal sealed class GenerateInstanceConfigurationTests
         Assert.That(resource, Is.EqualTo(output));
         await _verify.String(resource!);
     }
+    #endif
 }

@@ -28,9 +28,7 @@ internal sealed class CloudInitFactoryTests
         _logs = host.Services.GetTestLogs();
     }
 
-    #if WINDOWS
-    [Ignore("Yaml serialization differs on windows")]
-    #endif
+    #if !WINDOWS
     [Test]
     [Category("Factory")]
     public async Task CloudInitFactory_Create()
@@ -45,4 +43,5 @@ internal sealed class CloudInitFactoryTests
         Assert.That(_logs.Count, Is.EqualTo(0), "Logs Count");
         await _verify.String(output);
     }
+    #endif
 }
