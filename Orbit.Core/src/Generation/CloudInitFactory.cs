@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Options;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
-using Orbit.Core.Utils;
 using Orbit.Core.Utils.Serialization;
 using Orbit.Core.Utils.Serialization.Yaml;
 using StudioLE.Core.Patterns;
@@ -116,14 +115,15 @@ public class CloudInitFactory : IFactory<Instance, string>
         writeFiles.Add(netplanNode);
 
         // Write per-instance files
-        string[] installerFiles =
+        string[] perInstanceFiles =
         {
+            "50-orbit-configure",
             "00-log.sh",
             "10-install-docker.sh",
             "90-install-network-test.sh",
             "99-log.sh"
         };
-        YamlMappingNode[] installerNodes = installerFiles
+        YamlMappingNode[] perInstanceNodes = perInstanceFiles
             .Select(fileName =>
             {
                 string content = EmbeddedResourceHelpers.GetText($"Resources/Scripts/{fileName}");
@@ -136,12 +136,7 @@ public class CloudInitFactory : IFactory<Instance, string>
                 };
             })
             .ToArray();
-        writeFiles.AddRange(installerNodes);
-
-        // Run Command
-        string runCmdContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/runcmd.sh");
-        string[] runCmdLines = runCmdContent.SplitIntoLines().ToArray();
-        yaml.SetValue("runcmd", runCmdLines, false);
+        writeFiles.AddRange(perInstanceNodes);
 
         // Serialize
         string output = "#cloud-config" + Environment.NewLine + Environment.NewLine;

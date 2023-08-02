@@ -120,6 +120,67 @@ write_files:
           - to: 0.0.0.0/0
             via: 10.0.6.1
             metric: 50
+- path: /var/lib/cloud/scripts/per-instance/50-orbit-configure
+  permissions: 0o500
+  content: |
+    #!/bin/bash
+    set -uo pipefail
+
+    LOG_FILE=/var/log/orbit.log
+
+    log () {
+      date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a "${LOG_FILE}"
+      echo "$1" | sudo tee -a "${LOG_FILE}"
+    }
+
+    echo-success () {
+      echo -e "\e[32m ✔  $1\e[0m" >&2
+    }
+
+    echo-information () {
+      echo -e "\e[34m ⓘ  $1\e[0m" >&2
+    }
+
+    echo-error () {
+      echo -e "\e[31m !  $1\e[0m" >&2
+    }
+
+    echo-warning () {
+      echo -e "\e[33m ⚠  $1\e[0m" >&2
+    }
+
+    echo-subsidiary () {
+      echo -e "\e[37m    $1\e[0m" >&2
+    }
+
+    echo-step () {
+      echo -e "\e[0m »  $1\e[0m" >&2
+    }
+
+    echo-break () {
+      echo ""
+    }
+
+    echo-information "Starting Orbit configuration"
+    log "Starting Orbit configuration"
+
+    echo-step "Restarting SSH"
+    if systemctl restart ssh
+    then
+      echo-success "Restarted SSH"
+    else
+      echo-error "Failed to restart SSH"
+    fi
+
+    echo-step "Applying Netplan configuration"
+    if netplan apply
+    then
+      echo-success "Applied Netplan configuration"
+    else
+      echo-error "Failed to apply netplan configuration"
+    fi
+
+    echo-information "Completed Orbit configuration"
 - path: /var/lib/cloud/scripts/per-instance/00-log.sh
   permissions: 0o500
   content: |
@@ -156,11 +217,3 @@ write_files:
 
     date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
     echo "Executed installers" | sudo tee -a /var/log/orbit.log
-runcmd:
-- echo "*********************************"
-- echo "Executing runcmd"
-- echo "*********************************"
-- systemctl restart ssh
-- netplan apply
-- date --rfc-3339 ns | tr '\n' ' ' | sudo tee -a /var/log/orbit.log
-- echo "Executed runcmd" | sudo tee -a /var/log/orbit.log
