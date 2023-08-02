@@ -41,7 +41,7 @@ internal sealed class CreateNetworkTests
         Network sourceNetwork = new()
         {
             Name = "new-network",
-            Server = TestHelpers.ExampleServerName
+            Server = MockConstants.ServerName
         };
 
         // Act

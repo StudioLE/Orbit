@@ -40,7 +40,7 @@ internal sealed class GenerateInstanceConfigurationTests
         // Arrange
         GenerateInstanceConfiguration.Inputs inputs = new()
         {
-            Instance = TestHelpers.ExampleInstanceName
+            Instance = MockConstants.InstanceName
         };
 
         // Act

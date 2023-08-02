@@ -12,13 +12,6 @@ namespace Orbit.Core.Tests.Resources;
 
 public static class TestHelpers
 {
-    public const string ExampleServerName = "example-server";
-    public const int ExampleServerNumber = 3;
-    public const string ExampleNetworkName = "example-network";
-    public const int ExampleNetworkNumber = 6;
-    public const string ExampleInstanceName = "example-instance";
-    public const int ExampleInstanceNumber = 9;
-
     private static Instance? _exampleInstance;
 
     public static Instance GetExampleInstance()
@@ -31,8 +24,8 @@ public static class TestHelpers
         ServerFactory factory = services.GetRequiredService<ServerFactory>();
         Server server = factory.Create(new()
         {
-            Name = ExampleServerName,
-            Number = ExampleServerNumber,
+            Name = MockConstants.ServerName,
+            Number = MockConstants.ServerNumber,
             Address = "localhost",
             Ssh = new()
             {
@@ -50,9 +43,9 @@ public static class TestHelpers
         NetworkFactory factory = services.GetRequiredService<NetworkFactory>();
         Network network = factory.Create(new()
         {
-            Name = ExampleNetworkName,
-            Number = ExampleNetworkNumber,
-            Server = ExampleServerName,
+            Name = MockConstants.NetworkName,
+            Number = MockConstants.NetworkNumber,
+            Server = MockConstants.ServerName,
             ExternalIPv4 = MockConstants.ExternalIPv4,
             ExternalIPv6 = MockConstants.ExternalIPv6,
             Dns = MockConstants.Dns,
@@ -72,14 +65,14 @@ public static class TestHelpers
         InstanceFactory factory = services.GetRequiredService<InstanceFactory>();
         Instance instance = factory.Create(new()
         {
-            Name = ExampleInstanceName,
-            Number = ExampleInstanceNumber,
+            Name = MockConstants.InstanceName,
+            Number = MockConstants.InstanceNumber,
             MacAddress = MockConstants.MacAddress,
             WireGuard = new[]
             {
                 new WireGuardClient
                 {
-                    Network = ExampleNetworkName,
+                    Network = MockConstants.NetworkName,
                     PrivateKey = MockConstants.PrivateKey,
                     PublicKey = MockConstants.PublicKey,
                     PreSharedKey = MockConstants.PreSharedKey

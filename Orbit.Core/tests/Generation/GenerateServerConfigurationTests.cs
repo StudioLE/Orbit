@@ -39,7 +39,7 @@ internal sealed class GenerateServerConfigurationTests
         // Arrange
         GenerateServerConfiguration.Inputs inputs = new()
         {
-            Instance = TestHelpers.ExampleInstanceName
+            Instance = MockConstants.InstanceName
         };
 
         // Act

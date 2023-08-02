@@ -40,7 +40,7 @@ internal sealed class CreateInstanceTests
         // Arrange
         Instance sourceInstance = new()
         {
-            Server = TestHelpers.ExampleServerName,
+            Server = MockConstants.ServerName,
             MacAddress = MockConstants.MacAddress,
             WireGuard = new[]
             {
