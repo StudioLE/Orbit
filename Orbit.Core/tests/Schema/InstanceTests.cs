@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Creation;
 using Orbit.Core.Schema;
+using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Core.Serialization;
 using StudioLE.Core.System;

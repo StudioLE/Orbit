@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
+using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.Logging.TestLogger;
 using StudioLE.Core.Serialization;
 using StudioLE.Verify;

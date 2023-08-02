@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
+using Orbit.Core.Tests.Resources;
 
 namespace Orbit.Core.Tests.Provision;
 

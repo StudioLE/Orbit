@@ -7,9 +7,8 @@ using Orbit.Core.Hosting;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
-using Orbit.Core.Tests.Resources;
 
-namespace Orbit.Core.Tests;
+namespace Orbit.Core.Tests.Resources;
 
 public static class TestHelpers
 {
