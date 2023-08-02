@@ -8,12 +8,12 @@
   ErrorMessage: Failed to set WireGuard peer
 - Command: |-
     (
-    cat <<EOF
+    cat <<'EOF'
     example.com, example.org {
         reverse_proxy 10.1.6.9:80
     }
     EOF
-    ) | tee /caddy/example-instance.caddy
+    ) | tee "/caddy/example-instance.caddy" > /dev/null
   SuccessMessage: 
   ErrorMessage: Failed to write Caddyfile
 - Command: cd /caddy && sudo caddy reload

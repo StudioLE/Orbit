@@ -35,7 +35,7 @@ public class LaunchCommandFactory : IFactory<Instance, string?>
         }
         return $"""
             (
-            cat <<EOF
+            cat <<'EOF'
             {cloudInit}
             EOF
             ) | multipass launch \

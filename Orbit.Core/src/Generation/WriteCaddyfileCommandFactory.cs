@@ -29,10 +29,10 @@ public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
             {
                 Command = $$"""
                     (
-                    cat <<EOF
+                    cat <<'EOF'
                     {{caddyfile}}
                     EOF
-                    ) | tee /caddy/{{instance.Name}}.caddy
+                    ) | tee "/caddy/{{instance.Name}}.caddy" > /dev/null
                     """,
                 ErrorMessage = "Failed to write Caddyfile"
             },
