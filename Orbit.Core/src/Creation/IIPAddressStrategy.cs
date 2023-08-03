@@ -21,10 +21,6 @@ public interface IIPAddressStrategy
 
     public string GetWireGuardDnsIPv6(Network network);
 
-    public string GetWireGuardGatewayIPv4(Network network);
-
-    public string GetWireGuardGatewayIPv6(Network network);
-
     public string GetWireGuardSubnetIPv4(Network network);
 
     public string GetWireGuardSubnetIPv6(Network network);
