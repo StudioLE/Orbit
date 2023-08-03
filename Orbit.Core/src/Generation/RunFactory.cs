@@ -30,7 +30,7 @@ public class RunFactory : IFactory<Instance, string>
             """
             : $"""
             log "Running remote {package}"
-            curl -fsS https://install.studiole.uk/src/{package} | sudo bash
+            curl -fsS https://bash.studiole.uk/{package} | sudo bash
 
             """;
     }

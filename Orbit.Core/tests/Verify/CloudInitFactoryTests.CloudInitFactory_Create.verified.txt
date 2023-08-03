@@ -284,7 +284,7 @@ write_files:
     }
 
     log "Running remote disable-motd"
-    curl -fsS https://install.studiole.uk/src/disable-motd | sudo bash
+    curl -fsS https://bash.studiole.uk/disable-motd | sudo bash
 
     log "Running local network-test"
     network-test
