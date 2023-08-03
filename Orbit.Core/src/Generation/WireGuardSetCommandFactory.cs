@@ -6,14 +6,13 @@ namespace Orbit.Core.Generation;
 
 public class WireGuardSetCommandFactory : IFactory<WireGuardClient, ShellCommand>
 {
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public ShellCommand Create(WireGuardClient wg)
     {
-        // TODO: Server interface may not be wg0!
         return new()
         {
             Command = $"""
-                echo {wg.PreSharedKey} | sudo wg set wg0 \
+                echo {wg.PreSharedKey} | sudo wg set {wg.Name} \
                     peer {wg.PublicKey} \
                     preshared-key /dev/fd/0 \
                     allowed-ips {wg.Addresses.Join(",")}
