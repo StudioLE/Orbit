@@ -1,6 +1,7 @@
 ﻿Name: new-network
 Number: 3
 Server: example-server
+Interface: eno1
 ExternalIPv4: 127.0.0.1
 ExternalIPv6: ::1
 WireGuard:

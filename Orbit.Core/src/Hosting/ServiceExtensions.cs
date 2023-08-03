@@ -65,6 +65,7 @@ public static class ServiceExtensions
             .AddTransient<WireGuardSetCommandFactory>()
             .AddTransient<MountCommandFactory>()
             .AddTransient<CloneRepoCommandFactory>()
+            .AddTransient<WireGuardServerConfigFactory>()
 
             .AddSingleton<Initialize>()
 

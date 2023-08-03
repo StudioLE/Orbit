@@ -28,6 +28,12 @@ public sealed class Network : IEntity, IHasValidationAttributes
     public string Server { get; set; } = string.Empty;
 
     /// <summary>
+    /// The name of the server network interface.
+    /// </summary>
+    [NameSchema]
+    public string Interface { get; set; } = string.Empty;
+
+    /// <summary>
     /// The external IPv4 of the network.
     /// </summary>
     [IPSchema]

@@ -38,6 +38,10 @@ public class NetworkFactory : IFactory<Network, Network>
             ? $"{DefaultName}-{result.Number:00}"
             : source.Name;
 
+        result.Interface = source.Interface.IsNullOrEmpty()
+            ? "eno1"
+            : source.Interface;
+
         result.ExternalIPv4 = source.ExternalIPv4.IsNullOrEmpty()
             ? "127.0.0.1"
             : source.ExternalIPv4;
