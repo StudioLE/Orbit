@@ -22,7 +22,7 @@ public class WireGuardServerConfigFactory : IFactory<Network, string>
             Address = {_ip.GetWireGuardSubnetIPv4(network)}
             Address = {_ip.GetWireGuardSubnetIPv6(network)}
             ListenPort = {network.WireGuard.Port}
-            PrivateKey = {network.WireGuard.PublicKey}
+            PrivateKey = {network.WireGuard.PrivateKey}
             PostUp = ufw route allow in on {network.WireGuard.Name} out on {network.Interface}
             PostUp = iptables -t nat -I POSTROUTING -o {network.Interface} -j MASQUERADE
             PostUp = ip6tables -t nat -I POSTROUTING -o {network.Interface} -j MASQUERADE
