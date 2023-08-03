@@ -19,8 +19,8 @@ public class WireGuardServerConfigFactory : IFactory<Network, string>
         return $"""
             [Interface]
             SaveConfig = true
-            Address = {_ip.GetWireGuardSubnetIPv4(network)}
-            Address = {_ip.GetWireGuardSubnetIPv6(network)}
+            Address = {_ip.GetWireGuardGatewayIPv4(network)}
+            Address = {_ip.GetWireGuardGatewayIPv6(network)}
             ListenPort = {network.WireGuard.Port}
             PrivateKey = {network.WireGuard.PrivateKey}
             PostUp = ufw route allow in on {network.WireGuard.Name} out on {network.Interface}

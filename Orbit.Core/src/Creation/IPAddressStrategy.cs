@@ -48,12 +48,12 @@ public class IPAddressStrategy : IIPAddressStrategy
 
     public string GetWireGuardGatewayIPv4(Network network)
     {
-        return $"10.1.{network.Number}.1";
+        return $"10.1.{network.Number}.1/24";
     }
 
     public string GetWireGuardGatewayIPv6(Network network)
     {
-        return $"fc00::1:{network.Number}:1";
+        return $"fc00::1:{network.Number}:1/112";
     }
 
     public string GetWireGuardSubnetIPv4(Network network)
