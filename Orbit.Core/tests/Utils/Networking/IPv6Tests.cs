@@ -70,7 +70,7 @@ internal sealed class IPv6Tests
     [TestCase("10:0:0:1/3/2")]
     [TestCase("10:0:0:1/32")]
     [TestCase("1:2:3:4:5:6:7:8:9/32")]
-    [TestCase("ff:fccg::/32")]
+    [TestCase("ff:race::/32")]
     [TestCase("1:2:3:4:5::6:7:8:9/32")]
     [Category("Misc")]
     public void IPv6_Constructor_String_Throws(string str)
