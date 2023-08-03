@@ -40,7 +40,7 @@ public readonly struct IPv4
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not IPv4 ip)
             return false;

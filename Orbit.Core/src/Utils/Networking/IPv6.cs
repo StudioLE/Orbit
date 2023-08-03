@@ -49,7 +49,7 @@ public readonly struct IPv6
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not IPv6 ip)
             return false;
