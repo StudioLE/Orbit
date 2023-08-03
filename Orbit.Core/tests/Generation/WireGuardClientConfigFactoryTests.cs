@@ -10,13 +10,13 @@ using StudioLE.Verify.NUnit;
 
 namespace Orbit.Core.Tests.Generation;
 
-internal sealed class WireGuardConfigFactoryTests
+internal sealed class WireGuardClientConfigFactoryTests
 {
     private readonly IVerify _verify = new NUnitVerify();
     private readonly WireGuardClientFactory _wireGuardClientFactory;
     private readonly WireGuardClientConfigFactory _wgConfigFactory;
 
-    public WireGuardConfigFactoryTests()
+    public WireGuardClientConfigFactoryTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -28,7 +28,7 @@ internal sealed class WireGuardConfigFactoryTests
 
     [Test]
     [Category("Factory")]
-    public async Task WireGuardConfigFactory_Create()
+    public async Task WireGuardClientConfigFactory_Create()
     {
         // Arrange
         Instance instance = TestHelpers.GetExampleInstance();

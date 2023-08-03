@@ -28,14 +28,16 @@ wireguard:
       PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
       Address = 10.1.6.9
       Address = fc00::1:6:9
-      DNS = 10.1.6.2, fc00::1:6:2
+      DNS = 10.1.6.2
+      DNS = fc00::1:6:2
 
       [Peer]
       PublicKey = Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
       PreSharedKey = C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
-      AllowedIPs = 10.1.6.0/24, fc00::1:6:0/112
+      AllowedIPs = 10.1.6.0/24
+      AllowedIPs = fc00::1:6:0/112
       Endpoint = 203.0.113.1:51820
-      PersistentKeepalive = 25
+      PersistentKeepAlive = 25
 write_files:
 - path: /etc/ssh/sshd_config
   append: true
