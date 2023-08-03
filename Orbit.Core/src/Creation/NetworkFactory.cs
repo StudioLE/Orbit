@@ -29,7 +29,7 @@ public class NetworkFactory : IFactory<Network, Network>
             ? DefaultServer()
             : source.Server;
 
-        Server server = _servers.Get(new ServerId(source.Server)) ?? throw new("Failed to get server.");
+        Server server = _servers.Get(new ServerId(result.Server)) ?? throw new("Failed to get server.");
         result.Number = source.Number == default
             ? server.Number
             : source.Number;
