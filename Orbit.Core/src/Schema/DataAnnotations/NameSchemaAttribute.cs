@@ -10,7 +10,7 @@ namespace Orbit.Core.Schema.DataAnnotations;
 public class NameSchemaAttribute : RegularExpressionAttribute
 {
     /// <inheritdoc cref="NameSchemaAttribute" />
-    public NameSchemaAttribute() : base(@"^[a-z0-9][a-z0-9-]{0,14}[a-z0-9]$")
+    public NameSchemaAttribute() : base("^[a-z0-9][a-z0-9-]{0,14}[a-z0-9]$")
     {
     }
 }
