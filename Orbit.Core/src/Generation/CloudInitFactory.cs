@@ -14,7 +14,7 @@ public class CloudInitFactory : IFactory<Instance, string>
 {
     private readonly CloudInitOptions _options;
     private readonly ISerializer _serializer;
-    private readonly WireGuardConfigFactory _wireGuardConfigFactory;
+    private readonly WireGuardClientConfigFactory _wgConfigFactory;
     private readonly NetplanFactory _netplanFactory;
     private readonly InstallFactory _installFactory;
     private readonly RunFactory _runFactory;
@@ -25,14 +25,14 @@ public class CloudInitFactory : IFactory<Instance, string>
     public CloudInitFactory(
         IOptions<CloudInitOptions> options,
         ISerializer serializer,
-        WireGuardConfigFactory wireGuardConfigFactory,
+        WireGuardClientConfigFactory wgConfigFactory,
         NetplanFactory netplanFactory,
         InstallFactory installFactory,
         RunFactory runFactory)
     {
         _options = options.Value;
         _serializer = serializer;
-        _wireGuardConfigFactory = wireGuardConfigFactory;
+        _wgConfigFactory = wgConfigFactory;
         _netplanFactory = netplanFactory;
         _installFactory = installFactory;
         _runFactory = runFactory;
@@ -78,7 +78,7 @@ public class CloudInitFactory : IFactory<Instance, string>
             .WireGuard
             .Select(wg =>
             {
-                string config = _wireGuardConfigFactory.Create(wg);
+                string config = _wgConfigFactory.Create(wg);
                 return new YamlMappingNode
                 {
                     { "name", wg.Name },

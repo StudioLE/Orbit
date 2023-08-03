@@ -24,6 +24,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddOrbitServices(this IServiceCollection services)
     {
         return services
+        // @formatter:off
 
             .AddTransient<ISerializer, YamlSerializer>()
             .AddTransient<IDeserializer, YamlDeserializer>()
@@ -56,7 +57,7 @@ public static class ServiceExtensions
             .AddTransient<InstallFactory>()
             .AddTransient<RunFactory>()
             .AddTransient<NetplanFactory>()
-            .AddTransient<WireGuardConfigFactory>()
+            .AddTransient<WireGuardClientConfigFactory>()
 
             .AddSingleton<GenerateServerConfiguration>()
             .AddTransient<CaddyfileFactory>()
@@ -71,6 +72,8 @@ public static class ServiceExtensions
             .AddTransient<LaunchCommandFactory>()
 
             .AddSingleton<Mount>();
+
+        // @formatter:on
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ internal sealed class WireGuardConfigFactoryTests
 {
     private readonly IVerify _verify = new NUnitVerify();
     private readonly WireGuardClientFactory _wireGuardClientFactory;
-    private readonly WireGuardConfigFactory _wireGuardConfigFactory;
+    private readonly WireGuardClientConfigFactory _wgConfigFactory;
 
     public WireGuardConfigFactoryTests()
     {
@@ -23,7 +23,7 @@ internal sealed class WireGuardConfigFactoryTests
         #endif
         IHost host = TestHelpers.CreateTestHost();
         _wireGuardClientFactory = host.Services.GetRequiredService<WireGuardClientFactory>();
-        _wireGuardConfigFactory = host.Services.GetRequiredService<WireGuardConfigFactory>();
+        _wgConfigFactory = host.Services.GetRequiredService<WireGuardClientConfigFactory>();
     }
 
     [Test]
@@ -36,7 +36,7 @@ internal sealed class WireGuardConfigFactoryTests
         WireGuardClient wg = interfaces.FirstOrDefault() ?? throw new("Failed to create WireGuard");
 
         // Act
-        string output = _wireGuardConfigFactory.Create(wg);
+        string output = _wgConfigFactory.Create(wg);
 
         // Assert
         await _verify.String(output);
