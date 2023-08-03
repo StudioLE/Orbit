@@ -34,7 +34,7 @@ public class WireGuardFacade : IWireGuardFacade
         // cmd.StandardInput.Flush();
         // cmd.StandardInput.Close();
         cmd.WaitForExit();
-        if(cmd.ExitCode == 0)
+        if (cmd.ExitCode == 0)
         {
             IReadOnlyCollection<string> lines = ReadAllLines(cmd.StandardOutput);
             if (lines.Count != 1)
@@ -104,7 +104,7 @@ public class WireGuardFacade : IWireGuardFacade
         // cmd.StandardInput.Flush();
         // cmd.StandardInput.Close();
         cmd.WaitForExit();
-        if(cmd.ExitCode == 0)
+        if (cmd.ExitCode == 0)
         {
             IReadOnlyCollection<string> lines = ReadAllLines(cmd.StandardOutput);
             if (lines.Count != 1)

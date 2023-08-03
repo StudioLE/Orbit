@@ -18,13 +18,13 @@ public static class IPv6Helpers
         int zerosAtStart = ip._hextets
             .TakeWhile(x => x == 0)
             .Count();
-        if(zerosAtStart == 0)
+        if (zerosAtStart == 0)
             return ip.ToFullString();
         string result = ip._hextets
             .Skip(zerosAtStart)
             .Select(x => x.ToHexString(condensed))
             .Join(":");
-        return "::" + result +  ip.GetCidrSuffix();
+        return "::" + result + ip.GetCidrSuffix();
     }
 
     public static string ShortenFromEnd(this IPv6 ip, bool condensed = true)
@@ -33,7 +33,7 @@ public static class IPv6Helpers
             .Reverse()
             .TakeWhile(x => x == 0)
             .Count();
-        if(zerosAtEnd == 0)
+        if (zerosAtEnd == 0)
             return ip.ToFullString();
         string result = ip._hextets
             .Take(ip._hextets.Length - zerosAtEnd)
@@ -52,7 +52,7 @@ public static class IPv6Helpers
                 .Count())
             .ToArray();
         int zeroCount = counts.Max();
-        if(zeroCount == 0)
+        if (zeroCount == 0)
             return ip.ToFullString();
         int startIndex = counts
             .Select((x, i) => x == zeroCount

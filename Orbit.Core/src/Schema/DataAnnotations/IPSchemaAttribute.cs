@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Orbit.Core.Schema.DataAnnotations;
 
-
 /// <summary>
 /// Specifies that the value must be a valid IPv4.
 /// </summary>

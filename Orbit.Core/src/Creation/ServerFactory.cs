@@ -52,6 +52,6 @@ public class ServerFactory : IFactory<Server, Server>
         int finalNumber = numbers.Any()
             ? numbers.Max()
             : DefaultNumberValue - 1;
-        return finalNumber  + 1;
+        return finalNumber + 1;
     }
 }

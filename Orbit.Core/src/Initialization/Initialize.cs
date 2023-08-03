@@ -136,7 +136,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
                 _logger.LogError(errorMessage);
                 return false;
             }
-            if(command.SuccessMessage is not null)
+            if (command.SuccessMessage is not null)
                 _logger.LogInformation(command.SuccessMessage);
         }
         ssh.Disconnect();

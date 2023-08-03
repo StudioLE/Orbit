@@ -24,7 +24,7 @@ public class LiteralStyleMultilineStringEmitter : ChainedEventEmitter
 
     private static bool IsMultiLineString(IObjectDescriptor descriptor)
     {
-        if(descriptor.Type != typeof(string))
+        if (descriptor.Type != typeof(string))
             return false;
         string? value = descriptor.Value as string;
         if (string.IsNullOrEmpty(value))

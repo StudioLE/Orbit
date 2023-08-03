@@ -11,9 +11,9 @@ public sealed class ReadOnlyCollectionNodeTypeResolver : INodeTypeResolver
 {
     private static readonly IReadOnlyDictionary<Type, Type> _customGenericInterfaceImplementations = new Dictionary<Type, Type>
     {
-        {typeof(IReadOnlyCollection<>), typeof(List<>)},
-        {typeof(IReadOnlyList<>), typeof(List<>)},
-        {typeof(IReadOnlyDictionary<,>), typeof(Dictionary<,>)}
+        { typeof(IReadOnlyCollection<>), typeof(List<>) },
+        { typeof(IReadOnlyList<>), typeof(List<>) },
+        { typeof(IReadOnlyDictionary<,>), typeof(Dictionary<,>) }
     };
 
     /// <inheritdoc/>

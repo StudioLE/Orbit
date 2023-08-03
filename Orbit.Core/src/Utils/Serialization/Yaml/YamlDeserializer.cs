@@ -3,7 +3,6 @@ using StudioLE.Core.Serialization;
 
 namespace Orbit.Core.Utils.Serialization.Yaml;
 
-
 /// <summary>
 /// Deserialize objects from YAML.
 /// </summary>

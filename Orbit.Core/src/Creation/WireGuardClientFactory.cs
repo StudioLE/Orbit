@@ -80,7 +80,7 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
             };
 
         if (!result.AllowedIPs.Any())
-            result.AllowedIPs = new []
+            result.AllowedIPs = new[]
             {
                 _ip.GetWireGuardSubnetIPv4(network),
                 _ip.GetWireGuardSubnetIPv6(network)

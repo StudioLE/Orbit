@@ -7,7 +7,6 @@ namespace Orbit.Core.Utils.Logging;
 /// </summary>
 public static class LoggingHelpers
 {
-
     /// <summary>
     /// Create a <see cref="ILogger{T}"/> that logs to the console.
     /// </summary>

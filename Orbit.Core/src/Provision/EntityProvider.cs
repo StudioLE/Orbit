@@ -36,13 +36,13 @@ public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
     public bool Put(IEntityId<T> id, T value)
     {
         IFileInfo file = _fileProvider.GetFileInfo(id.GetFilePath());
-        if(file.Exists)
+        if (file.Exists)
             return false;
         FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
         DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if(!directory.Exists)
+        if (!directory.Exists)
             directory.Create();
-        if(file.Exists)
+        if (file.Exists)
             return false;
         using StreamWriter writer = physicalFile.CreateText();
         _serializer.Serialize(writer, value);
@@ -66,7 +66,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
         IFileInfo file = _fileProvider.GetFileInfo(path);
         FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
         DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if(!directory.Exists)
+        if (!directory.Exists)
             directory.Create();
         using StreamWriter writer = physicalFile.CreateText();
         writer.Write(content);

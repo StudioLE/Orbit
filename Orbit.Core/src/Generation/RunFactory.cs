@@ -24,14 +24,14 @@ public class RunFactory : IFactory<Instance, string>
             .Install
             .Contains(package)
             ? $"""
-                log "Running local {package}"
-                {package}
+            log "Running local {package}"
+            {package}
 
-                """
+            """
             : $"""
-                log "Running remote {package}"
-                curl -fsS https://install.studiole.uk/src/{package} | sudo bash
+            log "Running remote {package}"
+            curl -fsS https://install.studiole.uk/src/{package} | sudo bash
 
-                """;
+            """;
     }
 }
