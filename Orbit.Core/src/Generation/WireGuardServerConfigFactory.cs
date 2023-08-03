@@ -32,4 +32,9 @@ public class WireGuardServerConfigFactory : IFactory<Network, string>
 
             """;
     }
+
+    public static string GetFileName(Network network)
+    {
+        return $"{network.WireGuard.Name}.conf";
+    }
 }

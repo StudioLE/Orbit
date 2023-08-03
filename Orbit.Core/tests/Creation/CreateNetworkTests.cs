@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Creation;
+using Orbit.Core.Generation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
@@ -18,6 +19,7 @@ internal sealed class CreateNetworkTests
     private readonly IVerify _verify = new NUnitVerify();
     private readonly CreateNetwork _activity;
     private readonly IEntityProvider<Network> _networks;
+    private readonly IEntityProvider<Server> _servers;
     private readonly ISerializer _serializer;
     private readonly IReadOnlyCollection<TestLog> _logs;
 
@@ -29,6 +31,7 @@ internal sealed class CreateNetworkTests
         IHost host = TestHelpers.CreateTestHost();
         _activity = host.Services.GetRequiredService<CreateNetwork>();
         _networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
+        _servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
         _logs = host.Services.GetTestLogs();
     }
@@ -56,5 +59,9 @@ internal sealed class CreateNetworkTests
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created network {createdNetwork!.Name}"));
         Network storedNetwork = _networks.Get(new NetworkId(createdNetwork.Name)) ?? throw new("Failed to get network.");
         await _verify.AsSerialized(storedNetwork, createdNetwork, _serializer);
+        string fileName = WireGuardServerConfigFactory.GetFileName(createdNetwork);
+        string? wgConfig = _servers.GetResource(new ServerId(createdNetwork.Server), fileName);
+        Assert.That(wgConfig, Is.Not.Null);
+        await _verify.String(wgConfig!);
     }
 }
