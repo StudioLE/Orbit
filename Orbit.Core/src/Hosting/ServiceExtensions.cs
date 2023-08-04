@@ -34,32 +34,32 @@ public static class ServiceExtensions
             .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
 
-            .AddSingleton<CommandContext>()
+            .AddScoped<CommandContext>()
 
-            .AddSingleton<CreateServer>()
+            .AddTransient<CreateServer>()
             .AddTransient<ServerFactory>()
 
-            .AddSingleton<CreateNetwork>()
+            .AddTransient<CreateNetwork>()
             .AddTransient<NetworkFactory>()
             .AddTransient<WireGuardServerFactory>()
 
-            .AddSingleton<CreateInstance>()
+            .AddTransient<CreateInstance>()
             .AddTransient<InstanceFactory>()
             .AddTransient<HardwareFactory>()
             .AddTransient<NetworkFactory>()
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardClientFactory>()
-            .AddSingleton<IWireGuardFacade, WireGuardFacade>()
-            .AddSingleton<IIPAddressStrategy, IPAddressStrategy>()
+            .AddTransient<IWireGuardFacade, WireGuardFacade>()
+            .AddTransient<IIPAddressStrategy, IPAddressStrategy>()
 
-            .AddSingleton<GenerateInstanceConfiguration>()
+            .AddTransient<GenerateInstanceConfiguration>()
             .AddTransient<CloudInitFactory>()
             .AddTransient<InstallFactory>()
             .AddTransient<RunFactory>()
             .AddTransient<NetplanFactory>()
             .AddTransient<WireGuardClientConfigFactory>()
 
-            .AddSingleton<GenerateServerConfiguration>()
+            .AddTransient<GenerateServerConfiguration>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
@@ -67,12 +67,12 @@ public static class ServiceExtensions
             .AddTransient<CloneRepoCommandFactory>()
             .AddTransient<WireGuardServerConfigFactory>()
 
-            .AddSingleton<Initialize>()
+            .AddTransient<Initialize>()
 
-            .AddSingleton<Launch>()
+            .AddTransient<Launch>()
             .AddTransient<LaunchCommandFactory>()
 
-            .AddSingleton<Mount>();
+            .AddTransient<Mount>();
 
         // @formatter:on
     }

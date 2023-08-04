@@ -27,10 +27,12 @@ internal sealed class GenerateInstanceConfigurationTests
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
-        _context = host.Services.GetRequiredService<CommandContext>();
-        _activity = host.Services.GetRequiredService<GenerateInstanceConfiguration>();
-        _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
-        _logs = host.Services.GetTestLogs();
+        using IServiceScope serviceScope = host.Services.CreateScope();
+        IServiceProvider provider = serviceScope.ServiceProvider;
+        _context = provider.GetRequiredService<CommandContext>();
+        _activity = provider.GetRequiredService<GenerateInstanceConfiguration>();
+        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _logs = provider.GetTestLogs();
     }
 
     [Test]
