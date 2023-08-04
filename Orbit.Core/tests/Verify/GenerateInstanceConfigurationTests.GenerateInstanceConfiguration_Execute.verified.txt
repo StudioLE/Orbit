@@ -113,6 +113,10 @@ write_files:
           addresses:
           - 10.0.6.9/24
           - fc00::0:6:9/112
+          nameservers:
+            addresses:
+            - 10.0.6.2
+            - fc00::0:6:2
           routes:
           - to: default
             via: 10.0.6.1

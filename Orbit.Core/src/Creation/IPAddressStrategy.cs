@@ -25,6 +25,16 @@ public class IPAddressStrategy : IIPAddressStrategy
         return $"fc00::0:{network.Number}:1";
     }
 
+    public string GetInternalDnsIPv4(Network network)
+    {
+        return $"10.0.{network.Number}.2";
+    }
+
+    public string GetInternalDnsIPv6(Network network)
+    {
+        return $"fc00::0:{network.Number}:2";
+    }
+
     public string GetWireGuardIPv4(Instance instance, Network network)
     {
         return $"10.1.{network.Number}.{instance.Number}";
@@ -35,15 +45,14 @@ public class IPAddressStrategy : IIPAddressStrategy
         return $"fc00::1:{network.Number}:{instance.Number}";
     }
 
-    public string GetWireGuardDnsIPv4(Network network)
+    public string GetWireGuardSubnetIPv4(Network network)
     {
-        return $"10.1.{network.Number}.2";
+        return $"10.1.{network.Number}.0/24";
     }
 
-    /// <inheritdoc />
-    public string GetWireGuardDnsIPv6(Network network)
+    public string GetWireGuardSubnetIPv6(Network network)
     {
-        return $"fc00::1:{network.Number}:2";
+        return $"fc00::1:{network.Number}:0/112";
     }
 
     public string GetWireGuardGatewayIPv4(Network network)
@@ -56,13 +65,14 @@ public class IPAddressStrategy : IIPAddressStrategy
         return $"fc00::1:{network.Number}:1/112";
     }
 
-    public string GetWireGuardSubnetIPv4(Network network)
+    public string GetWireGuardDnsIPv4(Network network)
     {
-        return $"10.1.{network.Number}.0/24";
+        return $"10.1.{network.Number}.2";
     }
 
-    public string GetWireGuardSubnetIPv6(Network network)
+    /// <inheritdoc />
+    public string GetWireGuardDnsIPv6(Network network)
     {
-        return $"fc00::1:{network.Number}:0/112";
+        return $"fc00::1:{network.Number}:2";
     }
 }

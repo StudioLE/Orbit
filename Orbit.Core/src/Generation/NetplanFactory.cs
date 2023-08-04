@@ -32,6 +32,10 @@ public class NetplanFactory : IFactory<Instance, string>
                   addresses:
                   - {_ip.GetInternalIPv4(instance, network)}/24
                   - {_ip.GetInternalIPv6(instance, network)}/112
+                  nameservers:
+                    addresses:
+                    - {_ip.GetInternalDnsIPv4(network)}
+                    - {_ip.GetInternalDnsIPv6(network)}
                   routes:
                   - to: default
                     via: {_ip.GetInternalGatewayIPv4(network)}
