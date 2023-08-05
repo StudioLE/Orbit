@@ -20,6 +20,11 @@ public sealed class WireGuardClient
     public string Network { get; set; } = string.Empty;
 
     /// <summary>
+    /// Is the WireGuard peer external?
+    /// </summary>
+    public bool IsExternal { get; set; } = false;
+
+    /// <summary>
     /// The private key of the WireGuard interface.
     /// </summary>
     [Base64Schema]

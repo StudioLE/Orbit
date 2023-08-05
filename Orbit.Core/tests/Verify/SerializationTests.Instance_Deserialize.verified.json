@@ -22,6 +22,7 @@
     {
       "Name": "wg1",
       "Network": "network-01",
+      "IsExternal": false,
       "PrivateKey": "8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=",
       "PublicKey": "Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=",
       "PreSharedKey": "C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=",
