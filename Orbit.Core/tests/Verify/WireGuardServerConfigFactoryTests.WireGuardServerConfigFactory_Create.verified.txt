@@ -2,7 +2,7 @@
 SaveConfig = true
 Address = 10.1.6.1/24
 Address = fc00::1:6:1/112
-ListenPort = 51820
+ListenPort = 61006
 PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
 PostUp = ufw route allow in on wg6 out on eno1
 PostUp = iptables -t nat -I POSTROUTING -o eno1 -j MASQUERADE

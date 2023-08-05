@@ -36,7 +36,7 @@ wireguard:
       PreSharedKey = C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
       AllowedIPs = 10.1.6.0/24
       AllowedIPs = fc00::1:6:0/112
-      Endpoint = 10.0.6.1:51820
+      Endpoint = 10.0.6.1:61006
       PersistentKeepAlive = 25
 write_files:
 - path: /etc/ssh/sshd_config

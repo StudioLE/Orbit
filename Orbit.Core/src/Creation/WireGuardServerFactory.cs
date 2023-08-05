@@ -38,7 +38,7 @@ public class WireGuardServerFactory : IFactory<Network, WireGuardServer>
             result.Name = $"wg{network.Number}";
 
         if (result.Port == default)
-            result.Port = 51820;
+            result.Port = 61000 + network.Number;
 
         if (result.PrivateKey.IsNullOrEmpty())
             result.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
