@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Orbit.Core.Schema.DataAnnotations;
 
 namespace Orbit.Core.Schema;
@@ -23,6 +24,12 @@ public sealed class WireGuardClient
     /// Is the WireGuard peer external?
     /// </summary>
     public bool IsExternal { get; set; } = false;
+
+    /// <summary>
+    /// The WireGuard listen port.
+    /// </summary>
+    [Range(1, 65535)]
+    public int Port { get; set; }
 
     /// <summary>
     /// The private key of the WireGuard interface.

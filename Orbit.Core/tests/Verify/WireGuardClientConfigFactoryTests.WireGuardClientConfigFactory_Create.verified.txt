@@ -1,4 +1,5 @@
 ﻿[Interface]
+ListenPort = 61006
 PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
 Address = 10.1.6.9
 Address = fc00::1:6:9

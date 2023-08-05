@@ -48,6 +48,7 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
         {
             Name = wg.Name,
             Network = wg.Network,
+            Port = wg.Port,
             PrivateKey = wg.PrivateKey,
             PublicKey = wg.PublicKey,
             PreSharedKey = wg.PreSharedKey,
@@ -62,6 +63,9 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
 
         if (result.Name.IsNullOrEmpty())
             result.Name = $"wg{network.Number}";
+
+        if (result.Port == default)
+            result.Port = 61000 + network.Number;
 
         if (result.PrivateKey.IsNullOrEmpty())
             result.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");

@@ -26,6 +26,7 @@ public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
             : _ip.GetInternalGatewayIPv4(network);
         return $"""
             [Interface]
+            ListenPort = {wg.Port}
             PrivateKey = {wg.PrivateKey}
             {MultiLine("Address", wg.Addresses)}
             {MultiLine("DNS", network.WireGuard.Dns)}

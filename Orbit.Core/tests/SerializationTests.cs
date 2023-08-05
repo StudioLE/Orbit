@@ -35,6 +35,7 @@ internal sealed class SerializationTests
         - Name: wg1
           Network: network-01
           IsExternal: false
+          Port: {MockConstants.WireGuardPort}
           PrivateKey: {MockConstants.PrivateKey}
           PublicKey: {MockConstants.PublicKey}
           PreSharedKey: {MockConstants.PreSharedKey}
