@@ -48,6 +48,7 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
         {
             Name = wg.Name,
             Network = wg.Network,
+            IsExternal = wg.IsExternal,
             Port = wg.Port,
             PrivateKey = wg.PrivateKey,
             PublicKey = wg.PublicKey,
@@ -63,6 +64,8 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
 
         if (result.Name.IsNullOrEmpty())
             result.Name = $"wg{network.Number}";
+
+        result.IsExternal = instance.Server != network.Server;
 
         if (result.Port == default)
             result.Port = 61000 + network.Number;
