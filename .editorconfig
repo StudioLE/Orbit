@@ -1,5 +1,5 @@
-# Source https://github.com/dotnet/runtime/blob/main/.editorconfig
-# editorconfig.org
+# StudioLE C# Code Style
+# Devised from https://github.com/dotnet/runtime/blob/main/.editorconfig
 
 # top-most EditorConfig file
 root = true
@@ -38,7 +38,7 @@ csharp_indent_switch_labels = true
 csharp_indent_labels = one_less_than_current
 
 # Modifier preferences
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:warning
 
 # avoid this. unless absolutely necessary
 dotnet_style_qualification_for_field = false:warning
@@ -55,9 +55,9 @@ dotnet_style_predefined_type_for_member_access = true:warning
 
 # name all constant fields using PascalCase
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
-dotnet_naming_symbols.constant_fields.applicable_kinds   = field
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
 dotnet_naming_symbols.constant_fields.required_modifiers = const
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
@@ -73,7 +73,7 @@ dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 # internal and private fields should be _camelCase
 dotnet_naming_rule.camel_case_for_private_internal_fields.severity = warning
-dotnet_naming_rule.camel_case_for_private_internal_fields.symbols  = private_internal_fields
+dotnet_naming_rule.camel_case_for_private_internal_fields.symbols = private_internal_fields
 dotnet_naming_rule.camel_case_for_private_internal_fields.style = camel_case_underscore_style
 dotnet_naming_symbols.private_internal_fields.applicable_kinds = field
 dotnet_naming_symbols.private_internal_fields.applicable_accessibilities = private, internal
@@ -82,7 +82,7 @@ dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
 
 # LE RULE: protected fields should be _camelCase
 dotnet_naming_rule.camel_case_for_protected_fields.severity = warning
-dotnet_naming_rule.camel_case_for_protected_fields.symbols  = protected_fields
+dotnet_naming_rule.camel_case_for_protected_fields.symbols = protected_fields
 dotnet_naming_rule.camel_case_for_protected_fields.style = camel_case_underscore_style
 dotnet_naming_symbols.protected_fields.applicable_kinds = field
 dotnet_naming_symbols.protected_fields.applicable_accessibilities = protected
@@ -102,7 +102,7 @@ dotnet_style_readonly_field = true:warning
 dotnet_style_object_initializer = true:warning
 dotnet_style_collection_initializer = true:warning
 dotnet_style_explicit_tuple_names = true:warning
-dotnet_style_coalesce_expression = true:warning
+dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 dotnet_style_prefer_inferred_tuple_names = true:warning
@@ -132,8 +132,8 @@ csharp_style_throw_expression = true:warning
 csharp_style_conditional_delegate_call = true:warning
 
 # Other features
-csharp_style_prefer_index_operator = true:warning
-csharp_style_prefer_range_operator = true:warning
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
 csharp_style_pattern_local_over_anonymous_function = false:warning
 
 # Space preferences
@@ -173,5 +173,3 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sug
 csharp_style_allow_embedded_statements_on_same_line_experimental = true:silent
 csharp_style_allow_blank_lines_between_consecutive_braces_experimental = true:silent
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true:silent
-
-
