@@ -8,7 +8,7 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
 using Orbit.Core.Utils.Serialization.Yaml;
-using StudioLE.Core.Serialization;
+using StudioLE.Serialization;
 using Mount = Orbit.Core.Initialization.Mount;
 
 namespace Orbit.Core.Hosting;

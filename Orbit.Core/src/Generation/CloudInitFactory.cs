@@ -4,7 +4,7 @@ using Orbit.Core.Schema;
 using Orbit.Core.Utils.Serialization;
 using Orbit.Core.Utils.Serialization.Yaml;
 using StudioLE.Core.Patterns;
-using StudioLE.Core.Serialization;
+using StudioLE.Serialization;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 

@@ -7,7 +7,7 @@ using Orbit.Core.Schema;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Utils.DataAnnotations;
 using Orbit.Core.Utils.Serialization;
-using StudioLE.Core.Serialization;
+using StudioLE.Serialization;
 
 namespace Orbit.Core.Generation;
 

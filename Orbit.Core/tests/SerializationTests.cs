@@ -5,7 +5,7 @@ using Orbit.Core.Creation;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using Orbit.Core.Utils.Serialization;
-using StudioLE.Core.Serialization;
+using StudioLE.Serialization;
 using StudioLE.Verify;
 using StudioLE.Verify.Json;
 using StudioLE.Verify.NUnit;

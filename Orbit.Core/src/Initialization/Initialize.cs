@@ -10,7 +10,7 @@ using Orbit.Core.Shell;
 using Orbit.Core.Utils.DataAnnotations;
 using Orbit.Core.Utils.Serialization;
 using Renci.SshNet;
-using StudioLE.Core.Serialization;
+using StudioLE.Serialization;
 
 namespace Orbit.Core.Initialization;
 

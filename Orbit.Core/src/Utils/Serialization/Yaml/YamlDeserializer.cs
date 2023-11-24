@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using StudioLE.Core.Serialization;
+using StudioLE.Serialization;
 
 namespace Orbit.Core.Utils.Serialization.Yaml;
 
