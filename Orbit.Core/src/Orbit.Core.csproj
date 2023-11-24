@@ -9,11 +9,11 @@
   <Import Project="..\..\Global.props" />
 
   <ItemGroup>
-    <PackageReference Include="Cascade.Workflows.CommandLine" Version="0.4.0-alpha.12" />
+    <PackageReference Include="Cascade.Workflows.CommandLine" Version="0.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
     <PackageReference Include="StudioLE.Serialization.Abstractions" Version="0.8.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
