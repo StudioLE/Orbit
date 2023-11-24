@@ -1,6 +1,6 @@
 using Orbit.Core.Creation;
 using Orbit.Core.Schema;
-using StudioLE.Core.Patterns;
+using StudioLE.Patterns;
 
 namespace Orbit.Core.Generation;
 

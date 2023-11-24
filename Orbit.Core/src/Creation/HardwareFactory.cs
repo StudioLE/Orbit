@@ -1,7 +1,7 @@
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
-using StudioLE.Core.Patterns;
-using StudioLE.Core.System;
+using StudioLE.Patterns;
+using StudioLE.Extensions.System;
 
 namespace Orbit.Core.Creation;
 

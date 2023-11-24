@@ -1,4 +1,4 @@
-using StudioLE.Core.System;
+using StudioLE.Extensions.System;
 
 namespace Orbit.Core.Utils.Networking;
 

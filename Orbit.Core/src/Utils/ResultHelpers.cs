@@ -1,5 +1,5 @@
-using StudioLE.Core.Results;
-using StudioLE.Core.System;
+using StudioLE.Extensions.System;
+using StudioLE.Results;
 
 namespace Orbit.Core.Utils;
 

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
-using StudioLE.Core.System;
+using StudioLE.Extensions.System;
 
 namespace Orbit.Core.Utils.DataAnnotations;
 

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
-using StudioLE.Core.Patterns;
+using StudioLE.Patterns;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
 using YamlDotNet.Core;

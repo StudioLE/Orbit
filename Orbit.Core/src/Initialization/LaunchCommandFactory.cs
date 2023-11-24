@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Orbit.Core.Generation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
-using StudioLE.Core.Patterns;
+using StudioLE.Patterns;
 
 namespace Orbit.Core.Initialization;
 

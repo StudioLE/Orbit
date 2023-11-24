@@ -2,8 +2,8 @@ using Microsoft.Extensions.Logging;
 using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
-using StudioLE.Core.Patterns;
-using StudioLE.Core.System;
+using StudioLE.Extensions.System;
+using StudioLE.Patterns;
 
 namespace Orbit.Core.Generation;
 

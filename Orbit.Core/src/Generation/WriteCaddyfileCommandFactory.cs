@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Orbit.Core.Schema;
-using StudioLE.Core.Patterns;
+using StudioLE.Patterns;
 
 namespace Orbit.Core.Generation;
 

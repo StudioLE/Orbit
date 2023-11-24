@@ -2,7 +2,7 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Utils;
 using Orbit.Core.Utils.Networking;
-using StudioLE.Core.Patterns;
+using StudioLE.Patterns;
 
 namespace Orbit.Core.Creation;
 
