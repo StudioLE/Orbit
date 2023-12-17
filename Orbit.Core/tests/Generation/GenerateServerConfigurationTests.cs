@@ -6,7 +6,7 @@ using Orbit.Core.Generation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
-using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
 
@@ -18,7 +18,7 @@ internal sealed class GenerateServerConfigurationTests
     private readonly CommandContext _context;
     private readonly GenerateServerConfiguration _activity;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly IReadOnlyCollection<TestLog> _logs;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public GenerateServerConfigurationTests()
     {
@@ -31,7 +31,7 @@ internal sealed class GenerateServerConfigurationTests
         _context = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<GenerateServerConfiguration>();
         _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
-        _logs = provider.GetTestLogs();
+        _logs = provider.GetCachedLogs();
     }
 
     [Test]

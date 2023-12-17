@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Orbit.Core.Generation;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
-using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
 
@@ -14,7 +14,7 @@ internal sealed class CaddyfileFactoryTests
 {
     private readonly IVerify _verify = new NUnitVerify();
     private readonly CaddyfileFactory _factory;
-    private readonly IReadOnlyCollection<TestLog> _logs;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public CaddyfileFactoryTests()
     {
@@ -23,7 +23,7 @@ internal sealed class CaddyfileFactoryTests
         #endif
         IHost host = TestHelpers.CreateTestHost();
         _factory = host.Services.GetRequiredService<CaddyfileFactory>();
-        _logs = host.Services.GetTestLogs();
+        _logs = host.Services.GetCachedLogs();
     }
 
     [Test]

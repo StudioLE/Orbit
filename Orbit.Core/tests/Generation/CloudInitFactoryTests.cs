@@ -6,7 +6,7 @@ using Orbit.Core.Creation;
 using Orbit.Core.Generation;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
-using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
 
@@ -17,7 +17,7 @@ internal sealed class CloudInitFactoryTests
     private readonly IVerify _verify = new NUnitVerify();
     private readonly InstanceFactory _instanceFactory;
     private readonly CloudInitFactory _factory;
-    private readonly IReadOnlyCollection<TestLog> _logs;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public CloudInitFactoryTests()
     {
@@ -27,7 +27,7 @@ internal sealed class CloudInitFactoryTests
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _factory = host.Services.GetRequiredService<CloudInitFactory>();
-        _logs = host.Services.GetTestLogs();
+        _logs = host.Services.GetCachedLogs();
     }
 
     [Test]

@@ -6,7 +6,7 @@ using Orbit.Core.Generation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
-using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Serialization;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
@@ -21,7 +21,7 @@ internal sealed class CreateNetworkTests
     private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Server> _servers;
     private readonly ISerializer _serializer;
-    private readonly IReadOnlyCollection<TestLog> _logs;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public CreateNetworkTests()
     {
@@ -33,7 +33,7 @@ internal sealed class CreateNetworkTests
         _networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
         _servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
-        _logs = host.Services.GetTestLogs();
+        _logs = host.Services.GetCachedLogs();
     }
 
     [Test]

@@ -5,7 +5,7 @@ using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
-using Orbit.Core.Utils.Logging.TestLogger;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Serialization;
 using StudioLE.Verify;
 using StudioLE.Verify.NUnit;
@@ -19,7 +19,7 @@ internal sealed class CreateServerTests
     private readonly CreateServer _activity;
     private readonly IEntityProvider<Server> _servers;
     private readonly ISerializer _serializer;
-    private readonly IReadOnlyCollection<TestLog> _logs;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public CreateServerTests()
     {
@@ -30,7 +30,7 @@ internal sealed class CreateServerTests
         _activity = host.Services.GetRequiredService<CreateServer>();
         _servers = host.Services.GetRequiredService<IEntityProvider<Server>>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
-        _logs = host.Services.GetTestLogs();
+        _logs = host.Services.GetCachedLogs();
     }
 
     [Test]

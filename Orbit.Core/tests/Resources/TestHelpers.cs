@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orbit.Core.Creation;
 using Orbit.Core.Generation;
@@ -7,6 +8,8 @@ using Orbit.Core.Hosting;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Shell;
+using StudioLE.Extensions.Logging.Cache;
+using StudioLE.Extensions.Logging.Console;
 
 namespace Orbit.Core.Tests.Resources;
 
@@ -122,5 +125,23 @@ public static class TestHelpers
     private static IServiceCollection AddMockWireGuardFacade(this IServiceCollection services)
     {
         return services.AddSingleton<IWireGuardFacade, MockWireGuardFacade>();
+    }
+
+    /// <summary>
+    /// Replace the loggers with <see cref="Microsoft.Extensions.Logging.Debug.DebugLogger"/>,
+    /// <see cref="BasicConsoleFormatter"/>  and <see cref="CacheLogger"/>
+    /// </summary>
+    public static IHostBuilder UseTestLoggingProviders(this IHostBuilder builder)
+    {
+        return builder
+            .ConfigureLogging((hostingContext, logging) =>
+            {
+                logging.ClearProviders();
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                logging.AddDebug();
+                logging.AddBasicConsole();
+                // logging.AddConsole();
+                logging.AddCache();
+            });
     }
 }

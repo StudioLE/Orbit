@@ -2,7 +2,8 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Orbit.Core.Schema.DataAnnotations;
 using Orbit.Core.Shell;
-using Orbit.Core.Utils.Logging;
+using StudioLE.Extensions.Logging.Cache;
+using StudioLE.Extensions.Logging.Console;
 
 namespace Orbit.Core.Tests.Shell;
 
@@ -12,7 +13,10 @@ internal sealed class WireGuardFacadeTests
 
     public WireGuardFacadeTests()
     {
-        ILogger<WireGuardFacade> logger = LoggingHelpers.CreateConsoleLogger<WireGuardFacade>();
+        ILogger<WireGuardFacade> logger = LoggerFactory.Create(builder => builder
+                .AddBasicConsole()
+                .AddCache())
+            .CreateLogger<WireGuardFacade>();
         _wg = new(logger);
     }
 
