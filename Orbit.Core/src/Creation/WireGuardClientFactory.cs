@@ -65,8 +65,8 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
         if (result.Name.IsNullOrEmpty())
             result.Name = $"wg{network.Number}";
 
-        result.IsExternal = instance is Instance actualInstance
-                            && actualInstance.Server != network.Server;
+        result.IsExternal = instance is not Instance actualInstance
+                            || actualInstance.Server != network.Server;
 
         if (result.Port == default)
             result.Port = 61000 + network.Number;
