@@ -17,6 +17,9 @@ trim_trailing_whitespace = true
 [*.{cmd,bat}]
 end_of_line = crlf
 
+[*.verified.{yaml,yml,txt,json}]
+trim_trailing_whitespace = false
+
 # C# files
 [*.cs]
 indent_size = 4
