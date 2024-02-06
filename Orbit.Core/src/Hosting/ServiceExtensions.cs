@@ -33,6 +33,7 @@ public static class ServiceExtensions
             .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
             .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
+            .AddTransient<IEntityProvider<Client>, EntityProvider<Client>>()
 
             .AddScoped<CommandContext>()
 
@@ -51,6 +52,9 @@ public static class ServiceExtensions
             .AddTransient<WireGuardClientFactory>()
             .AddTransient<IWireGuardFacade, WireGuardFacade>()
             .AddTransient<IIPAddressStrategy, IPAddressStrategy>()
+
+            .AddTransient<CreateClient>()
+            .AddTransient<ClientFactory>()
 
             .AddTransient<GenerateInstanceConfiguration>()
             .AddTransient<CloudInitFactory>()

@@ -29,6 +29,7 @@ internal static class Program
             .Register<CreateServer>("create", "server")
             .Register<CreateNetwork>("create", "network")
             .Register<CreateInstance>("create", "instance")
+            .Register<CreateClient>("create", "client")
             .Register<GenerateInstanceConfiguration>("generate", "instance")
             .Register<GenerateServerConfiguration>("generate", "server")
             .Register<Initialize>("initialize")

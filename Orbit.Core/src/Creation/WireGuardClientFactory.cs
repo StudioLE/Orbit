@@ -9,7 +9,7 @@ namespace Orbit.Creation;
 /// <summary>
 /// A factory for creating <see cref="WireGuardClient"/> with default values.
 /// </summary>
-public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
+public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardClient[]>
 {
     private readonly IWireGuardFacade _wg;
     private readonly IEntityProvider<Network> _networks;
@@ -26,7 +26,7 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
     }
 
     /// <inheritdoc/>
-    public WireGuardClient[] Create(Instance instance)
+    public WireGuardClient[] Create(IHasWireGuardClient instance)
     {
         if (!instance.WireGuard.Any())
             instance.WireGuard = instance
@@ -42,7 +42,7 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
             .ToArray();
     }
 
-    private WireGuardClient Create(WireGuardClient wg, Instance instance)
+    private WireGuardClient Create(WireGuardClient wg, IHasWireGuardClient instance)
     {
         WireGuardClient result = new()
         {
@@ -65,7 +65,8 @@ public class WireGuardClientFactory : IFactory<Instance, WireGuardClient[]>
         if (result.Name.IsNullOrEmpty())
             result.Name = $"wg{network.Number}";
 
-        result.IsExternal = instance.Server != network.Server;
+        result.IsExternal = instance is Instance actualInstance
+                            && actualInstance.Server != network.Server;
 
         if (result.Port == default)
             result.Port = 61000 + network.Number;

@@ -7,7 +7,7 @@ namespace Orbit.Schema;
 /// <summary>
 /// The schema for an instance.
 /// </summary>
-public sealed class Instance : IEntity, IHasValidationAttributes
+public sealed class Instance : IHasWireGuardClient, IEntity, IHasValidationAttributes
 {
     /// <summary>
     /// The name of the instance.

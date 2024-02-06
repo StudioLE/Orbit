@@ -21,6 +21,13 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
+    "CreateClient": {
+      "commandName": "Project",
+      "commandLineArgs": "create client --name test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
     "GenerateInstanceInit": {
       "commandName": "Project",
       "commandLineArgs": "generate instance --instance test",
