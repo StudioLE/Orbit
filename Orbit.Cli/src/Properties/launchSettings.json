@@ -28,16 +28,23 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateInstanceInit": {
+    "GenerateInstance": {
       "commandName": "Project",
       "commandLineArgs": "generate instance --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateServerInit": {
+    "GenerateServer": {
       "commandName": "Project",
       "commandLineArgs": "generate server --instance test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
+    "GenerateClient": {
+      "commandName": "Project",
+      "commandLineArgs": "generate client --client test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

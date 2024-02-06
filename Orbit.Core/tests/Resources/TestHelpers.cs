@@ -16,10 +16,16 @@ namespace Orbit.Core.Tests.Resources;
 public static class TestHelpers
 {
     private static Instance? _exampleInstance;
+    private static Client? _exampleClient;
 
     public static Instance GetExampleInstance()
     {
         return _exampleInstance ?? throw new("Example instance must be created using TestHelpers.CreateTestHost()");
+    }
+
+    public static Client GetExampleClient()
+    {
+        return _exampleClient ?? throw new("Example client must be created using TestHelpers.CreateTestHost()");
     }
 
     private static void CreateExampleServer(IServiceProvider services)
@@ -87,6 +93,29 @@ public static class TestHelpers
         _exampleInstance = instance;
     }
 
+    private static void CreateExampleClient(IServiceProvider services)
+    {
+        ClientFactory factory = services.GetRequiredService<ClientFactory>();
+        Client client = factory.Create(new()
+        {
+            Name = MockConstants.ClientName,
+            Number = MockConstants.ClientNumber,
+            WireGuard = new[]
+            {
+                new WireGuardClient
+                {
+                    Network = MockConstants.NetworkName,
+                    PrivateKey = MockConstants.PrivateKey,
+                    PublicKey = MockConstants.PublicKey,
+                    PreSharedKey = MockConstants.PreSharedKey
+                }
+            }
+        });
+        IEntityProvider<Client> clients = services.GetRequiredService<IEntityProvider<Client>>();
+        clients.Put(client);
+        _exampleClient = client;
+    }
+
     public static IHost CreateTestHost(Action<IServiceCollection>? configureServices = null)
     {
         configureServices ??= _ => { };
@@ -103,6 +132,7 @@ public static class TestHelpers
         CreateExampleServer(host.Services);
         CreateExampleNetwork(host.Services);
         CreateExampleInstance(host.Services);
+        CreateExampleClient(host.Services);
         return host;
     }
 

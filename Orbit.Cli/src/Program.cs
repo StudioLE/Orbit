@@ -32,6 +32,7 @@ internal static class Program
             .Register<CreateClient>("create", "client")
             .Register<GenerateInstanceConfiguration>("generate", "instance")
             .Register<GenerateServerConfiguration>("generate", "server")
+            .Register<GenerateClientConfiguration>("generate", "client")
             .Register<Initialize>("initialize")
             .Register<Launch>("launch")
             .Register<Mount>("mount")

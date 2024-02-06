@@ -63,6 +63,8 @@ public static class ServiceExtensions
             .AddTransient<NetplanFactory>()
             .AddTransient<WireGuardClientConfigFactory>()
 
+            .AddTransient<GenerateClientConfiguration>()
+
             .AddTransient<GenerateServerConfiguration>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()

@@ -1,0 +1,105 @@
+using System.ComponentModel.DataAnnotations;
+using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
+using Microsoft.Extensions.Logging;
+using Orbit.Provision;
+using Orbit.Schema;
+using Orbit.Schema.DataAnnotations;
+using Orbit.Utils.DataAnnotations;
+
+namespace Orbit.Generation;
+
+/// <summary>
+/// An <see cref="IActivity"/> to generate the WireGuard config a network client.
+/// </summary>
+public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration.Inputs, string>
+{
+    private readonly ILogger<GenerateClientConfiguration> _logger;
+    private readonly IEntityProvider<Client> _clients;
+    private readonly CommandContext _context;
+    private readonly WireGuardClientConfigFactory _factory;
+
+    /// <summary>
+    /// DI constructor for <see cref="GenerateClientConfiguration"/>.
+    /// </summary>
+    public GenerateClientConfiguration(
+        ILogger<GenerateClientConfiguration> logger,
+        IEntityProvider<Client> clients,
+        CommandContext context,
+        WireGuardClientConfigFactory factory)
+    {
+        _logger = logger;
+        _clients = clients;
+        _context = context;
+        _factory = factory;
+    }
+
+    /// <summary>
+    /// The inputs for <see cref="GenerateClientConfiguration"/>.
+    /// </summary>
+    public class Inputs
+    {
+        /// <summary>
+        /// The name of the client to launch.
+        /// </summary>
+        [Required]
+        [NameSchema]
+        public string Client { get; set; } = string.Empty;
+    }
+
+    /// <inheritdoc/>
+    public Task<string> Execute(Inputs inputs)
+    {
+        Client client = new();
+        string output = string.Empty;
+        Func<bool>[] steps =
+        {
+            () => GetClient(inputs.Client, out client),
+            () => ValidateClient(client),
+            () => CreateWireGuardConfig(client)
+        };
+        bool isSuccess = steps.All(step => step.Invoke());
+        if (isSuccess)
+        {
+            _logger.LogInformation("Generated client configuration");
+            return Task.FromResult(output);
+        }
+        _logger.LogError("Failed to generate client configuration.");
+        _context.ExitCode = 1;
+        return Task.FromResult(output);
+    }
+
+    private bool GetClient(string clientName, out Client client)
+    {
+        Client? result = _clients.Get(new ClientId(clientName));
+        client = result!;
+        if (result is null)
+        {
+            _logger.LogError("The client does not exist.");
+            return false;
+        }
+        return true;
+    }
+
+    private bool ValidateClient(Client client)
+    {
+        return client.TryValidate(_logger);
+    }
+
+    private bool CreateWireGuardConfig(Client client)
+    {
+        // TODO: for each wireguard create a config and save
+        foreach (WireGuardClient wg in client.WireGuard)
+        {
+            string fileName = $"{wg.Name}.conf";
+            string config = _factory.Create(wg);
+            // TODO: Make save optional
+            if (!_clients.PutResource(new ClientId(client.Name), fileName, config))
+            {
+                _logger.LogError("Failed to write the wireguard config file.");
+                return false;
+            }
+        }
+        return true;
+    }
+}
