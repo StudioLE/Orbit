@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
+using Orbit.Shell;
 using Orbit.Utils.DataAnnotations;
 
 namespace Orbit.Generation;
@@ -18,6 +19,7 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
     private readonly IEntityProvider<Client> _clients;
     private readonly CommandContext _context;
     private readonly WireGuardClientConfigFactory _factory;
+    private readonly QREncodeFacade _qr;
 
     /// <summary>
     /// DI constructor for <see cref="GenerateClientConfiguration"/>.
@@ -26,12 +28,14 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
         ILogger<GenerateClientConfiguration> logger,
         IEntityProvider<Client> clients,
         CommandContext context,
-        WireGuardClientConfigFactory factory)
+        WireGuardClientConfigFactory factory,
+        QREncodeFacade qr)
     {
         _logger = logger;
         _clients = clients;
         _context = context;
         _factory = factory;
+        _qr = qr;
     }
 
     /// <summary>
@@ -97,6 +101,18 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
             if (!_clients.PutResource(new ClientId(client.Name), fileName, config))
             {
                 _logger.LogError("Failed to write the wireguard config file.");
+                return false;
+            }
+            string? svg = _qr.GenerateSvg(config);
+            if (svg is null)
+            {
+                _logger.LogError("Failed to generate the QR code.");
+                return false;
+            }
+            // TODO: Make save optional
+            if (!_clients.PutResource(new ClientId(client.Name), fileName + ".svg", svg))
+            {
+                _logger.LogError("Failed to write the QR code file.");
                 return false;
             }
         }

@@ -10,6 +10,8 @@ public class QREncodeFacade : IQREncodeFacade
 {
     private readonly ILogger<QREncodeFacade> _logger;
 
+    private const int Timeout = 1000;
+
     /// <summary>
     /// The DI constructor for <see cref="QREncodeFacade"/>.
     /// </summary>
@@ -34,10 +36,10 @@ public class QREncodeFacade : IQREncodeFacade
         cmd.StandardInput.WriteLine(source);
         cmd.StandardInput.Flush();
         cmd.StandardInput.Close();
-
-        cmd.WaitForExit();
+        string output = cmd.StandardOutput.ReadToEnd();
+        cmd.WaitForExit(Timeout);
         if (cmd.ExitCode == 0)
-            return cmd.StandardOutput.ReadToEnd();
+            return output;
         string[] messages =
         {
             $"The executed command failed: {cmd}",
