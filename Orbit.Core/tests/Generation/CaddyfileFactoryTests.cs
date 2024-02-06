@@ -6,13 +6,14 @@ using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 
 namespace Orbit.Core.Tests.Generation;
 
 internal sealed class CaddyfileFactoryTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly CaddyfileFactory _factory;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
@@ -44,6 +45,6 @@ internal sealed class CaddyfileFactoryTests
         // Assert
         Assert.That(_logs.Count, Is.EqualTo(0), "Logs Count");
         Assert.That(output, Is.Not.Null);
-        await _verify.String(output!);
+        await _context.Verify(output!);
     }
 }

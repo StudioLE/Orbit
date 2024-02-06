@@ -9,14 +9,15 @@ using Orbit.Core.Tests.Resources;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Serialization;
 using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Creation;
 
 internal sealed class CreateNetworkTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly CreateNetwork _activity;
     private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Server> _servers;
@@ -54,14 +55,14 @@ internal sealed class CreateNetworkTests
         if (createdNetwork is null)
             Assert.Fail();
         else
-            await _verify.AsSerialized(createdNetwork, _serializer);
+            await _context.VerifyAsSerialized(createdNetwork, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created network {createdNetwork!.Name}"));
         Network storedNetwork = _networks.Get(new NetworkId(createdNetwork.Name)) ?? throw new("Failed to get network.");
-        await _verify.AsSerialized(storedNetwork, createdNetwork, _serializer);
+        await _context.VerifyAsSerialized(storedNetwork, createdNetwork, _serializer);
         string fileName = WireGuardServerConfigFactory.GetFileName(createdNetwork);
         string? wgConfig = _servers.GetResource(new ServerId(createdNetwork.Server), fileName);
         Assert.That(wgConfig, Is.Not.Null);
-        await _verify.String(wgConfig!);
+        await _context.Verify(wgConfig!);
     }
 }

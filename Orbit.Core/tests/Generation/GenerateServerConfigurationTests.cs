@@ -7,15 +7,16 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using StudioLE.Extensions.Logging.Cache;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
 
 namespace Orbit.Core.Tests.Generation;
 
 internal sealed class GenerateServerConfigurationTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
-    private readonly CommandContext _context;
+    private readonly IContext _context = new NUnitContext();
+    private readonly CommandContext _commandContext;
     private readonly GenerateServerConfiguration _activity;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IReadOnlyCollection<LogEntry> _logs;
@@ -28,7 +29,7 @@ internal sealed class GenerateServerConfigurationTests
         IHost host = TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
-        _context = provider.GetRequiredService<CommandContext>();
+        _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<GenerateServerConfiguration>();
         _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
         _logs = provider.GetCachedLogs();
@@ -48,11 +49,11 @@ internal sealed class GenerateServerConfigurationTests
         GenerateServerConfiguration.Outputs outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(_context.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
         string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfiguration.FileName);
         Assert.That(resource, Is.Not.Null);
-        await _verify.String(resource!);
+        await _context.Verify(resource!);
     }
 }

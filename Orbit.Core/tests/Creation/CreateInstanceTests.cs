@@ -5,17 +5,17 @@ using Orbit.Core.Creation;
 using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
+using StudioLE.Diagnostics;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Serialization;
-using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
+using StudioLE.Diagnostics.NUnit;
 using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Creation;
 
 internal sealed class CreateInstanceTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly CreateInstance _activity;
     private readonly IEntityProvider<Instance> _instances;
     private readonly ISerializer _serializer;
@@ -60,10 +60,10 @@ internal sealed class CreateInstanceTests
         if (createdInstance is null)
             Assert.Fail();
         else
-            await _verify.AsSerialized(createdInstance, _serializer);
+            await _context.VerifyAsSerialized(createdInstance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
         Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
-        await _verify.AsSerialized(storedInstance, createdInstance, _serializer);
+        await _context.VerifyAsSerialized(storedInstance, createdInstance, _serializer);
     }
 }

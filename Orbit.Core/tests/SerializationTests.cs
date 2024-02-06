@@ -6,8 +6,9 @@ using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using StudioLE.Serialization;
 using StudioLE.Verify;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 using StudioLE.Verify.Json;
-using StudioLE.Verify.NUnit;
 
 namespace Orbit.Core.Tests;
 
@@ -65,7 +66,7 @@ internal sealed class SerializationTests
         - upgrade-packages
 
         """;
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly InstanceFactory _instanceFactory;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
@@ -89,7 +90,7 @@ internal sealed class SerializationTests
         string serialized = _serializer.Serialize(instance);
 
         // Assert
-        await _verify.String(serialized);
+        await _context.Verify(serialized);
     }
 
     [Test]
@@ -101,7 +102,7 @@ internal sealed class SerializationTests
         Instance instance = _deserializer.Deserialize<Instance>(Source) ?? throw new("Failed to deserialize.");
 
         // Assert
-        await _verify.AsJson(instance);
+        await _context.VerifyAsJson(instance);
     }
 
     [Test]
@@ -115,6 +116,6 @@ internal sealed class SerializationTests
 
         // Assert
         string expected = Source.Replace("Repo:", "Repo: ");
-        await _verify.String(expected, serialized);
+        await _context.Verify(expected, serialized);
     }
 }

@@ -8,14 +8,15 @@ using Orbit.Core.Utils.DataAnnotations;
 using StudioLE.Extensions.System;
 using StudioLE.Serialization;
 using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Schema;
 
 internal sealed class InstanceTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly InstanceFactory _instanceFactory;
     private readonly ISerializer _serializer;
 
@@ -38,7 +39,7 @@ internal sealed class InstanceTests
         Console.WriteLine(errors.Join());
 
         // Assert
-        await _verify.String(errors.Join());
+        await _context.Verify(errors.Join());
         Assert.Multiple(() =>
         {
             Assert.That(isValid, Is.False);
@@ -58,7 +59,7 @@ internal sealed class InstanceTests
         Console.WriteLine(errors.Join());
 
         // Assert
-        await _verify.AsSerialized(instance, _serializer);
+        await _context.VerifyAsSerialized(instance, _serializer);
         Assert.Multiple(() =>
         {
             Assert.That(isValid, Is.True);

@@ -7,15 +7,15 @@ using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Serialization;
-using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Creation;
 
 internal sealed class CreateServerTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly CreateServer _activity;
     private readonly IEntityProvider<Server> _servers;
     private readonly ISerializer _serializer;
@@ -50,10 +50,10 @@ internal sealed class CreateServerTests
         if (createdServer is null)
             Assert.Fail();
         else
-            await _verify.AsSerialized(createdServer, _serializer);
+            await _context.VerifyAsSerialized(createdServer, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created server {createdServer!.Name}"));
         Server storedServer = _servers.Get(new ServerId(createdServer.Name)) ?? throw new("Failed to get server.");
-        await _verify.AsSerialized(storedServer, createdServer, _serializer);
+        await _context.VerifyAsSerialized(storedServer, createdServer, _serializer);
     }
 }

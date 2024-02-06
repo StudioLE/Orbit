@@ -6,13 +6,14 @@ using Orbit.Core.Provision;
 using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
 using StudioLE.Verify;
-using StudioLE.Verify.NUnit;
+using StudioLE.Diagnostics;
+using StudioLE.Diagnostics.NUnit;
 
 namespace Orbit.Core.Tests.Generation;
 
 internal sealed class WireGuardServerConfigFactoryTests
 {
-    private readonly IVerify _verify = new NUnitVerify();
+    private readonly IContext _context = new NUnitContext();
     private readonly IEntityProvider<Network> _networks;
     private readonly WireGuardServerConfigFactory _wgConfigFactory;
 
@@ -40,6 +41,6 @@ internal sealed class WireGuardServerConfigFactoryTests
         string output = _wgConfigFactory.Create(network);
 
         // Assert
-        await _verify.String(output);
+        await _context.Verify(output);
     }
 }
