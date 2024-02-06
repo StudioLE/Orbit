@@ -5,9 +5,9 @@ namespace Orbit.Creation;
 // ReSharper disable once InconsistentNaming
 public interface IIPAddressStrategy
 {
-    public string GetInternalIPv4(Instance instance, Network network);
+    public string GetInternalIPv4(IEntity instance, Network network);
 
-    public string GetInternalIPv6(Instance instance, Network network);
+    public string GetInternalIPv6(IEntity instance, Network network);
 
     public string GetInternalGatewayIPv4(Network network);
 
@@ -17,9 +17,9 @@ public interface IIPAddressStrategy
 
     public string GetInternalGatewayIPv6(Network network);
 
-    public string GetWireGuardIPv4(Instance instance, Network network);
+    public string GetWireGuardIPv4(IEntity instance, Network network);
 
-    public string GetWireGuardIPv6(Instance instance, Network network);
+    public string GetWireGuardIPv6(IEntity instance, Network network);
 
     public string GetWireGuardSubnetIPv4(Network network);
 

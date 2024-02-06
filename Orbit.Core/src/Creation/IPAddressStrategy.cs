@@ -5,51 +5,61 @@ namespace Orbit.Creation;
 // ReSharper disable once InconsistentNaming
 public class IPAddressStrategy : IIPAddressStrategy
 {
-    public string GetInternalIPv4(Instance instance, Network network)
+    /// <inheritdoc/>
+    public string GetInternalIPv4(IEntity entity, Network network)
     {
-        return $"10.0.{network.Number}.{instance.Number}";
+        return $"10.0.{network.Number}.{entity.Number}";
     }
 
-    public string GetInternalIPv6(Instance instance, Network network)
+    /// <inheritdoc/>
+    public string GetInternalIPv6(IEntity entity, Network network)
     {
-        return $"fc00::0:{network.Number}:{instance.Number}";
+        return $"fc00::0:{network.Number}:{entity.Number}";
     }
 
+    /// <inheritdoc/>
     public string GetInternalGatewayIPv4(Network network)
     {
         return $"10.0.{network.Number}.1";
     }
 
+    /// <inheritdoc/>
     public string GetInternalGatewayIPv6(Network network)
     {
         return $"fc00::0:{network.Number}:1";
     }
 
+    /// <inheritdoc/>
     public string GetInternalDnsIPv4(Network network)
     {
         return $"10.0.{network.Number}.2";
     }
 
+    /// <inheritdoc/>
     public string GetInternalDnsIPv6(Network network)
     {
         return $"fc00::0:{network.Number}:2";
     }
 
-    public string GetWireGuardIPv4(Instance instance, Network network)
+    /// <inheritdoc/>
+    public string GetWireGuardIPv4(IEntity entity, Network network)
     {
-        return $"10.1.{network.Number}.{instance.Number}";
+        return $"10.1.{network.Number}.{entity.Number}";
     }
 
-    public string GetWireGuardIPv6(Instance instance, Network network)
+    /// <inheritdoc/>
+    public string GetWireGuardIPv6(IEntity entity, Network network)
     {
-        return $"fc00::1:{network.Number}:{instance.Number}";
+        return $"fc00::1:{network.Number}:{entity.Number}";
     }
 
+    /// <inheritdoc/>
     public string GetWireGuardSubnetIPv4(Network network)
     {
         return $"10.1.{network.Number}.0/24";
     }
 
+    /// <inheritdoc/>
     public string GetWireGuardSubnetIPv6(Network network)
     {
         return $"fc00::1:{network.Number}:0/112";
@@ -60,17 +70,19 @@ public class IPAddressStrategy : IIPAddressStrategy
         return $"10.1.{network.Number}.1/24";
     }
 
+    /// <inheritdoc/>
     public string GetWireGuardGatewayIPv6(Network network)
     {
         return $"fc00::1:{network.Number}:1/112";
     }
 
+    /// <inheritdoc/>
     public string GetWireGuardDnsIPv4(Network network)
     {
         return $"10.1.{network.Number}.2";
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public string GetWireGuardDnsIPv6(Network network)
     {
         return $"fc00::1:{network.Number}:2";
