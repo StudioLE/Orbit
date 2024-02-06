@@ -66,6 +66,9 @@ public static class ServiceExtensions
             .AddTransient<GenerateClientConfiguration>()
 
             .AddTransient<GenerateServerConfiguration>()
+            .AddTransient<GenerateServerConfigurationForInstance>()
+            .AddTransient<GenerateServerConfigurationForClient>()
+            .AddTransient<GenerateServerConfiguration>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardSetCommandFactory>()

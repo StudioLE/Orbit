@@ -16,12 +16,14 @@ namespace Orbit.Core.Tests.Generation;
 internal sealed class GenerateServerConfigurationTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly CommandContext _commandContext;
-    private readonly GenerateServerConfiguration _activity;
-    private readonly IEntityProvider<Instance> _instances;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private CommandContext _commandContext = null!;
+    private GenerateServerConfiguration _activity = null!;
+    private IEntityProvider<Instance> _instances = null!;
+    private IEntityProvider<Client> _clients = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
-    public GenerateServerConfigurationTests()
+    [SetUp]
+    public void SetUp()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -32,12 +34,13 @@ internal sealed class GenerateServerConfigurationTests
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<GenerateServerConfiguration>();
         _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
         _logs = provider.GetCachedLogs();
     }
 
     [Test]
     [Category("Activity")]
-    public async Task GenerateServerConfiguration_Execute()
+    public async Task GenerateServerConfiguration_Instance_Execute()
     {
         // Arrange
         GenerateServerConfiguration.Inputs inputs = new()
@@ -53,6 +56,28 @@ internal sealed class GenerateServerConfigurationTests
         Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
         string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfiguration.FileName);
+        Assert.That(resource, Is.Not.Null);
+        await _context.Verify(resource!);
+    }
+
+    [Test]
+    [Category("Activity")]
+    public async Task GenerateServerConfiguration_Client_Execute()
+    {
+        // Arrange
+        GenerateServerConfiguration.Inputs inputs = new()
+        {
+            Client = MockConstants.ClientName
+        };
+
+        // Act
+        GenerateServerConfiguration.Outputs outputs = await _activity.Execute(inputs);
+
+        // Assert
+        Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
+        string? resource = _clients.GetResource(new ClientId(inputs.Client), GenerateServerConfiguration.FileName);
         Assert.That(resource, Is.Not.Null);
         await _context.Verify(resource!);
     }

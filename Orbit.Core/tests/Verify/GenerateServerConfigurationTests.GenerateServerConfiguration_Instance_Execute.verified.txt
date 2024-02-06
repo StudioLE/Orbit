@@ -1,4 +1,4 @@
-﻿example-server:
+example-server:
 - Command: |-
     echo C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY= | sudo wg set wg6 \
         peer Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE= \
