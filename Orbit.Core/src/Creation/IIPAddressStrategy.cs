@@ -1,6 +1,6 @@
-using Orbit.Core.Schema;
+using Orbit.Schema;
 
-namespace Orbit.Core.Creation;
+namespace Orbit.Creation;
 
 // ReSharper disable once InconsistentNaming
 public interface IIPAddressStrategy

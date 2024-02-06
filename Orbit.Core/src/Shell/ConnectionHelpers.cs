@@ -1,7 +1,7 @@
-using Orbit.Core.Schema;
+using Orbit.Schema;
 using Renci.SshNet;
 
-namespace Orbit.Core.Shell;
+namespace Orbit.Shell;
 
 /// <summary>
 /// Methods to help with <see cref="ConnectionInfo"/>.

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Schema;
+using Orbit.Schema;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
 {

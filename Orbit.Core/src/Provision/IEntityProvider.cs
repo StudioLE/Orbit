@@ -1,7 +1,7 @@
-using Orbit.Core.Schema;
-using Orbit.Core.Utils.Patterns;
+using Orbit.Schema;
+using Orbit.Utils.Patterns;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 public interface IEntityProvider<T> : IProvider<IEntityId<T>, T?> where T : class, IEntity
 {

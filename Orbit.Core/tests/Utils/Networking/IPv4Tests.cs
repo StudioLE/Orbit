@@ -1,6 +1,6 @@
 using System.Text.Json;
 using NUnit.Framework;
-using Orbit.Core.Utils.Networking;
+using Orbit.Utils.Networking;
 using YamlDotNet.Serialization;
 
 namespace Orbit.Core.Tests.Utils.Networking;

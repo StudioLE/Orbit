@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Orbit.Core.Utils.Networking;
+namespace Orbit.Utils.Networking;
 
 // ReSharper disable once InconsistentNaming
 internal static class IPv6Parser

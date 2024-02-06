@@ -1,17 +1,17 @@
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Orbit.Core.Creation;
-using Orbit.Core.Generation;
-using Orbit.Core.Initialization;
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
-using Orbit.Core.Shell;
+using Orbit.Creation;
+using Orbit.Generation;
+using Orbit.Initialization;
+using Orbit.Provision;
+using Orbit.Schema;
+using Orbit.Shell;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
-using Mount = Orbit.Core.Initialization.Mount;
+using Mount = Orbit.Initialization.Mount;
 
-namespace Orbit.Core.Hosting;
+namespace Orbit.Hosting;
 
 /// <summary>
 /// Extensions to configure services on an <see cref="IServiceCollection"/>.

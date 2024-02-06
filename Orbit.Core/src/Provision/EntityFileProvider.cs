@@ -2,10 +2,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Orbit.Core.Schema;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Schema;
+using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 public class EntityFileProvider : IEntityFileProvider
 {

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 public interface IEntityFileProvider : IFileProvider
 {

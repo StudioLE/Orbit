@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Orbit.Core.Utils.Networking;
+namespace Orbit.Utils.Networking;
 
 [JsonConverter(typeof(IPv6JsonConverter))]
 // ReSharper disable once InconsistentNaming

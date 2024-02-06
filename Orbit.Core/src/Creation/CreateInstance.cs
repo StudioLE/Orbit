@@ -1,10 +1,10 @@
 using Cascade.Workflows;
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Provision;
+using Orbit.Schema;
+using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Core.Creation;
+namespace Orbit.Creation;
 
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine instance.

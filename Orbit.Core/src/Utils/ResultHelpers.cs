@@ -1,7 +1,7 @@
 using StudioLE.Extensions.System;
 using StudioLE.Results;
 
-namespace Orbit.Core.Utils;
+namespace Orbit.Utils;
 
 /// <summary>
 /// Methods to help with <see cref="IResult"/>.

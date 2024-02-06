@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Orbit.Core.Utils.Networking;
+using Orbit.Utils.Networking;
 
 namespace Orbit.Core.Tests.Utils.Networking;
 

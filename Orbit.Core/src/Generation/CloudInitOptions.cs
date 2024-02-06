@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 /// <summary>
 /// Configuration options for <see cref="GenerateInstanceConfiguration"/>.

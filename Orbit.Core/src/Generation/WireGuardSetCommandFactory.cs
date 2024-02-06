@@ -1,8 +1,8 @@
-using Orbit.Core.Schema;
+using Orbit.Schema;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 public class WireGuardSetCommandFactory : IFactory<WireGuardClient, ShellCommand>
 {

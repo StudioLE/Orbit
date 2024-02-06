@@ -1,4 +1,4 @@
-namespace Orbit.Core.Utils.Patterns;
+namespace Orbit.Utils.Patterns;
 
 /// <summary>
 /// A service to provide a <typeparamref name="TValue"/> for a give <typeparamref name="TKey"/> asynchronously.

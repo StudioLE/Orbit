@@ -1,6 +1,6 @@
 using StudioLE.Extensions.System;
 
-namespace Orbit.Core.Utils.Networking;
+namespace Orbit.Utils.Networking;
 
 public static class MacAddressHelpers
 {

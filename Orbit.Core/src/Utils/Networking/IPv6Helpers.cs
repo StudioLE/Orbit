@@ -1,6 +1,6 @@
 using StudioLE.Extensions.System;
 
-namespace Orbit.Core.Utils.Networking;
+namespace Orbit.Utils.Networking;
 
 // ReSharper disable once InconsistentNaming
 public static class IPv6Helpers

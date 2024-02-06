@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Creation;
-using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Creation;
+using Orbit.Schema;
+using Orbit.Utils.DataAnnotations;
 using StudioLE.Extensions.System;
 using StudioLE.Serialization;
 using StudioLE.Verify;

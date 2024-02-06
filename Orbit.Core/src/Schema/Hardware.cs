@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Schema.DataAnnotations;
+using Orbit.Schema.DataAnnotations;
 
-namespace Orbit.Core.Schema;
+namespace Orbit.Schema;
 
 /// <summary>
 /// The schema for the hardware of an <see cref="Instance"/>.

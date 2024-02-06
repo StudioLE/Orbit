@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Generation;
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
+using Orbit.Generation;
+using Orbit.Provision;
+using Orbit.Schema;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Initialization;
+namespace Orbit.Initialization;
 
 public class LaunchCommandFactory : IFactory<Instance, string?>
 {

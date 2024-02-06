@@ -3,10 +3,10 @@ using Cascade.Workflows.CommandLine;
 using Cascade.Workflows.CommandLine.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orbit.Core.Creation;
-using Orbit.Core.Generation;
-using Orbit.Core.Hosting;
-using Orbit.Core.Initialization;
+using Orbit.Creation;
+using Orbit.Generation;
+using Orbit.Hosting;
+using Orbit.Initialization;
 
 namespace Orbit.Cli;
 

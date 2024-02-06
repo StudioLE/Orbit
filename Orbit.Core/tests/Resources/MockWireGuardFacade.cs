@@ -1,4 +1,4 @@
-using Orbit.Core.Shell;
+using Orbit.Shell;
 
 namespace Orbit.Core.Tests.Resources;
 

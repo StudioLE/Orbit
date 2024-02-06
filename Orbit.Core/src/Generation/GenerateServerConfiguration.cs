@@ -2,13 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
-using Orbit.Core.Schema.DataAnnotations;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Provision;
+using Orbit.Schema;
+using Orbit.Schema.DataAnnotations;
+using Orbit.Utils.DataAnnotations;
 using StudioLE.Serialization;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 /// <summary>
 /// An <see cref="IActivity"/> to remotely launch an instance with Multipass.

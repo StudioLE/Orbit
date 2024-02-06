@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Schema.DataAnnotations;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Schema.DataAnnotations;
+using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Core.Schema;
+namespace Orbit.Schema;
 
 /// <summary>
 /// The schema for the server hosting an <see cref="Instance"/>.

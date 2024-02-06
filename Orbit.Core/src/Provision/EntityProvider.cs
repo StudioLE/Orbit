@@ -1,8 +1,8 @@
 using Microsoft.Extensions.FileProviders;
-using Orbit.Core.Schema;
+using Orbit.Schema;
 using StudioLE.Serialization;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
 {

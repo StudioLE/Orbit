@@ -1,6 +1,6 @@
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 /// <summary>
 /// Configuration options for <see cref="IEntityProvider{T}"/>.

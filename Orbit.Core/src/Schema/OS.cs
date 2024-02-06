@@ -1,4 +1,4 @@
-namespace Orbit.Core.Schema;
+namespace Orbit.Schema;
 
 /// <summary>
 /// The schema for the operating system of an <see cref="Instance"/>

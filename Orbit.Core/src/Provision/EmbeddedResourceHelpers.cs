@@ -2,7 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using YamlDotNet.RepresentationModel;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 /// <summary>
 /// Methods to help with <see cref="EmbeddedFileProvider"/>.
@@ -40,7 +40,7 @@ public static class EmbeddedResourceHelpers
     private static IFileInfo GetFile(string path)
     {
         Assembly assembly = typeof(EmbeddedResourceHelpers).Assembly;
-        EmbeddedFileProvider provider = new(assembly);
+        EmbeddedFileProvider provider = new(assembly, "Orbit");
         IFileInfo file = provider.GetFileInfo(path);
         if (!file.Exists)
             throw new($"EmbeddedResource does not exist: {path}");

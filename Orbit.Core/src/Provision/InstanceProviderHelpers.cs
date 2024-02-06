@@ -1,6 +1,6 @@
-using Orbit.Core.Schema;
+using Orbit.Schema;
 
-namespace Orbit.Core.Provision;
+namespace Orbit.Provision;
 
 public static class InstanceProviderHelpers
 {

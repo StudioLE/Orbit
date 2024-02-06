@@ -1,4 +1,4 @@
-namespace Orbit.Core.Shell;
+namespace Orbit.Shell;
 
 /// <summary>
 /// A facade to access the WireGuard CLI.

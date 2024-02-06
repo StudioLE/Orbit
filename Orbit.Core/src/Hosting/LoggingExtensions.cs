@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StudioLE.Extensions.Logging.Console;
 
-namespace Orbit.Core.Hosting;
+namespace Orbit.Hosting;
 
 /// <summary>
 /// Extensions to configure logging on an <see cref="IHostBuilder"/>.

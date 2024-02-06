@@ -2,7 +2,7 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace Orbit.Core.Utils.Networking;
+namespace Orbit.Utils.Networking;
 
 // ReSharper disable once InconsistentNaming
 public class IPv4YamlConverter : IYamlTypeConverter

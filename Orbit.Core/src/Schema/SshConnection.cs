@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Orbit.Core.Utils.DataAnnotations;
+using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Core.Schema;
+namespace Orbit.Schema;
 
 /// <summary>
 /// The schema for the SSH connection of a <see cref="Server"/>.

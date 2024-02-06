@@ -1,4 +1,4 @@
-namespace Orbit.Core.Schema;
+namespace Orbit.Schema;
 
 public class ShellCommand
 {

@@ -1,4 +1,4 @@
-namespace Orbit.Core.Utils;
+namespace Orbit.Utils;
 
 /// <summary>
 /// Methods to help with <see cref="string"/>.

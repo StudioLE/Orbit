@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Orbit.Core.Utils.DataAnnotations;
+namespace Orbit.Utils.DataAnnotations;
 
 /// <summary>
 /// Specifies that an object has properties with <see cref="ValidationAttribute"/> which can

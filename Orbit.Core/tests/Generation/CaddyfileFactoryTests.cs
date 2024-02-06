@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Core.Generation;
-using Orbit.Core.Schema;
 using Orbit.Core.Tests.Resources;
+using Orbit.Generation;
+using Orbit.Schema;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 using StudioLE.Diagnostics;

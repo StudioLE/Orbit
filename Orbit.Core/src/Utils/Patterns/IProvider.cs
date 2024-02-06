@@ -1,4 +1,4 @@
-namespace Orbit.Core.Utils.Patterns;
+namespace Orbit.Utils.Patterns;
 
 /// <summary>
 /// A <see href="https://www.patterns.dev/posts/provider-pattern">provider design pattern</see>.

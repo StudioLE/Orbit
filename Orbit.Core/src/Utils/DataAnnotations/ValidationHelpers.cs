@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using StudioLE.Extensions.System;
 
-namespace Orbit.Core.Utils.DataAnnotations;
+namespace Orbit.Utils.DataAnnotations;
 
 /// <summary>
 /// Methods to help with <see cref="ValidationAttribute"/>.

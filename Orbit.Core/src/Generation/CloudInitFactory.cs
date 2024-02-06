@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Options;
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
+using Orbit.Provision;
+using Orbit.Schema;
 using StudioLE.Patterns;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 public class CloudInitFactory : IFactory<Instance, string>
 {

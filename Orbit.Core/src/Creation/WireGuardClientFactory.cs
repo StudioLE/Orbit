@@ -1,10 +1,10 @@
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
-using Orbit.Core.Shell;
-using Orbit.Core.Utils;
+using Orbit.Provision;
+using Orbit.Schema;
+using Orbit.Shell;
+using Orbit.Utils;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Creation;
+namespace Orbit.Creation;
 
 /// <summary>
 /// A factory for creating <see cref="WireGuardClient"/> with default values.

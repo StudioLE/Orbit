@@ -1,4 +1,4 @@
-namespace Orbit.Core.Schema;
+namespace Orbit.Schema;
 
 /// <summary>
 /// The <see cref="Hardware"/> platform of an <see cref="Instance"/>.

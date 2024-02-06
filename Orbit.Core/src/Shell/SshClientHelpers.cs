@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Core.Utils;
+using Orbit.Utils;
 using Renci.SshNet;
 
 // ReSharper disable CommentTypo
 
-namespace Orbit.Core.Shell;
+namespace Orbit.Shell;
 
 /// <summary>
 /// Methods to help with <see cref="SshClient"/>.

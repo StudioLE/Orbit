@@ -1,9 +1,9 @@
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
-using Orbit.Core.Utils;
+using Orbit.Provision;
+using Orbit.Schema;
+using Orbit.Utils;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Creation;
+namespace Orbit.Creation;
 
 /// <summary>
 /// A factory for creating <see cref="Network"/> with default values.

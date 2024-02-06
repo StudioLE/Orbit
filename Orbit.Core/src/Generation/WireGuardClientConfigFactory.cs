@@ -1,10 +1,10 @@
-using Orbit.Core.Creation;
-using Orbit.Core.Provision;
-using Orbit.Core.Schema;
+using Orbit.Creation;
+using Orbit.Provision;
+using Orbit.Schema;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
 {

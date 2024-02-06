@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using StudioLE.Extensions.System;
 
-namespace Orbit.Core.Shell;
+namespace Orbit.Shell;
 
 /// <inheritdoc cref="IWireGuardFacade"/>
 public class WireGuardFacade : IWireGuardFacade

@@ -1,8 +1,8 @@
-using Orbit.Core.Creation;
-using Orbit.Core.Schema;
+using Orbit.Creation;
+using Orbit.Schema;
 using StudioLE.Patterns;
 
-namespace Orbit.Core.Generation;
+namespace Orbit.Generation;
 
 public class WireGuardServerConfigFactory : IFactory<Network, string>
 {
