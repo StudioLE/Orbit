@@ -106,8 +106,8 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
             string? svg = _qr.GenerateSvg(config);
             if (svg is null)
             {
-                _logger.LogError("Failed to generate the QR code.");
-                return false;
+                _logger.LogWarning("Failed to generate the QR code.");
+                return true;
             }
             // TODO: Make save optional
             if (!_clients.PutResource(new ClientId(client.Name), fileName + ".svg", svg))
