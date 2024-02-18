@@ -31,7 +31,16 @@ public class QREncodeFacade : IQREncodeFacade
         cmd.StartInfo.RedirectStandardOutput = true;
         cmd.StartInfo.CreateNoWindow = true;
         cmd.StartInfo.UseShellExecute = false;
-        cmd.Start();
+        try
+        {
+            cmd.Start();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to start qrencode. Are you sure it's installed?");
+            _logger.LogDebug(e, e.Message);
+            return null;
+        }
 
         cmd.StandardInput.WriteLine(source);
         cmd.StandardInput.Flush();
