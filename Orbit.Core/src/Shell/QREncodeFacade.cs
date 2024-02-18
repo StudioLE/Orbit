@@ -1,62 +1,33 @@
-using System.Diagnostics;
+using System.Text;
 using Microsoft.Extensions.Logging;
-using StudioLE.Extensions.System;
 
 namespace Orbit.Shell;
 
 /// <inheritdoc cref="IQREncodeFacade"/>
 // ReSharper disable once InconsistentNaming
-public class QREncodeFacade : IQREncodeFacade
+public class QREncodeFacade : ShellCommand, IQREncodeFacade
 {
-    private readonly ILogger<QREncodeFacade> _logger;
-
-    private const int Timeout = 1000;
+    private StringBuilder _output = null!;
 
     /// <summary>
     /// The DI constructor for <see cref="QREncodeFacade"/>.
     /// </summary>
     /// <param name="logger"></param>
-    public QREncodeFacade(ILogger<QREncodeFacade> logger)
+    public QREncodeFacade(ILogger<QREncodeFacade> logger) : base(logger)
     {
-        _logger = logger;
     }
 
     /// <inheritdoc/>
-    public string? GenerateSvg(string source)
+    public async Task<string?> GenerateSvg(string source)
     {
-        Process cmd = new();
-        cmd.StartInfo.FileName = "qrencode";
-        cmd.StartInfo.Arguments = "-t svg";
-        cmd.StartInfo.RedirectStandardInput = true;
-        cmd.StartInfo.RedirectStandardOutput = true;
-        cmd.StartInfo.CreateNoWindow = true;
-        cmd.StartInfo.UseShellExecute = false;
-        try
-        {
-            cmd.Start();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("Failed to start qrencode. Are you sure it's installed?");
-            _logger.LogDebug(e, e.Message);
-            return null;
-        }
+        _output = new();
+        await Execute("qrencode", "-t svg", source);
+        return _output.ToString();
+    }
 
-        cmd.StandardInput.WriteLine(source);
-        cmd.StandardInput.Flush();
-        cmd.StandardInput.Close();
-        string output = cmd.StandardOutput.ReadToEnd();
-        cmd.WaitForExit(Timeout);
-        if (cmd.ExitCode == 0)
-            return output;
-        string[] messages =
-        {
-            $"The executed command failed: {cmd}",
-            $"ExitCode: {cmd.ExitCode}",
-            $"StandardOutput: {cmd.StandardOutput.ReadToEnd()}",
-            $"StandardError: {cmd.StandardError.ReadToEnd()}"
-        };
-        _logger.LogError(messages.Join());
-        return null;
+    protected override void OnOutput(string? output)
+    {
+        if (output is not null)
+            _output.AppendLine(output);
     }
 }

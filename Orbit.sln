@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbit.Core", "Orbit.Core\sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbit.Core.Tests", "Orbit.Core\tests\Orbit.Core.Tests.csproj", "{0B96AFD0-EF47-4FFA-8F01-33A89C39F81D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbit.Core.Shell.Sample", "Orbit.Core\samples\Orbit.Core.Shell.Sample.csproj", "{10C41D12-3D12-4A9F-A7A6-4FC362A9C241}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{0B96AFD0-EF47-4FFA-8F01-33A89C39F81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B96AFD0-EF47-4FFA-8F01-33A89C39F81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B96AFD0-EF47-4FFA-8F01-33A89C39F81D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C41D12-3D12-4A9F-A7A6-4FC362A9C241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C41D12-3D12-4A9F-A7A6-4FC362A9C241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C41D12-3D12-4A9F-A7A6-4FC362A9C241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C41D12-3D12-4A9F-A7A6-4FC362A9C241}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

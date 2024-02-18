@@ -9,5 +9,5 @@ public interface IQREncodeFacade
     /// <summary>
     /// Generate an Svg
     /// </summary>
-    string? GenerateSvg(string source);
+    public Task<string?> GenerateSvg(string source);
 }

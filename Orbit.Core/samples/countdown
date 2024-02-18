@@ -1,0 +1,13 @@
+#!/bin/bash
+start="${1:-10}"
+interval="${2:-1}"
+exit_code="${3:-0}"
+for i in $(seq "${start}" -"${interval}" 0)
+do
+  echo "${i}"
+  if [[ "${i}" == 0 ]]
+  then
+    exit "${exit_code}"
+  fi
+  sleep "${interval}"
+done

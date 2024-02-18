@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Sample": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

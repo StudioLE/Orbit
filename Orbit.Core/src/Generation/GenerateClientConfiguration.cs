@@ -52,25 +52,26 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
     }
 
     /// <inheritdoc/>
-    public Task<string> Execute(Inputs inputs)
+    public async Task<string> Execute(Inputs inputs)
     {
         Client client = new();
         string output = string.Empty;
-        Func<bool>[] steps =
-        {
-            () => GetClient(inputs.Client, out client),
-            () => ValidateClient(client),
+        Func<Task<bool>>[] steps =
+        [
+            () => Task.FromResult(GetClient(inputs.Client, out client)),
+            () => Task.FromResult(ValidateClient(client)),
             () => CreateWireGuardConfig(client)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
+        ];
+        foreach (Func<Task<bool>> step in steps)
         {
-            _logger.LogInformation("Generated client configuration");
-            return Task.FromResult(output);
+            if (await step.Invoke())
+                continue;
+            _logger.LogError("Failed to generate client configuration.");
+            _context.ExitCode = 1;
+            return output;
         }
-        _logger.LogError("Failed to generate client configuration.");
-        _context.ExitCode = 1;
-        return Task.FromResult(output);
+        _logger.LogInformation("Generated client configuration");
+        return output;
     }
 
     private bool GetClient(string clientName, out Client client)
@@ -90,7 +91,7 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
         return client.TryValidate(_logger);
     }
 
-    private bool CreateWireGuardConfig(Client client)
+    private async Task<bool> CreateWireGuardConfig(Client client)
     {
         // TODO: for each wireguard create a config and save
         foreach (WireGuardClient wg in client.WireGuard)
@@ -103,7 +104,7 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
                 _logger.LogError("Failed to write the wireguard config file.");
                 return false;
             }
-            string? svg = _qr.GenerateSvg(config);
+            string? svg = await _qr.GenerateSvg(config);
             if (svg is null)
             {
                 _logger.LogWarning("Failed to generate the QR code.");

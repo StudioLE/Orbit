@@ -39,7 +39,7 @@ internal sealed class QREncodeFacadeTests
         const string source = "Hello, world!";
 
         // Act
-        string? output = _qr.GenerateSvg(source);
+        string? output = await _qr.GenerateSvg(source);
 
         // Assert
         if (_logs.Any(log => log is
