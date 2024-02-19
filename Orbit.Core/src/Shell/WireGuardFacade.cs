@@ -1,6 +1,6 @@
-using System.Diagnostics;
+using System.Text;
 using Microsoft.Extensions.Logging;
-using StudioLE.Extensions.System;
+using Orbit.Utils.Shell;
 
 namespace Orbit.Shell;
 
@@ -19,115 +19,56 @@ public class WireGuardFacade : IWireGuardFacade
     }
 
     /// <inheritdoc/>
-    public string? GeneratePrivateKey()
+    public string GeneratePrivateKey()
     {
-        Process cmd = new();
-        cmd.StartInfo.FileName = "wg";
-        cmd.StartInfo.Arguments = "genkey";
-        cmd.StartInfo.RedirectStandardInput = true;
-        cmd.StartInfo.RedirectStandardOutput = true;
-        cmd.StartInfo.CreateNoWindow = true;
-        cmd.StartInfo.UseShellExecute = false;
-        cmd.Start();
-
-        // cmd.StandardInput.WriteLine(commandText);
-        // cmd.StandardInput.Flush();
-        // cmd.StandardInput.Close();
-        cmd.WaitForExit();
-        if (cmd.ExitCode == 0)
+        StringBuilder output = new();
+        ShellCommand cmd = new()
         {
-            IReadOnlyCollection<string> lines = ReadAllLines(cmd.StandardOutput);
-            if (lines.Count != 1)
-                throw new("Expected only one line");
-            return lines.First();
-        }
-        string[] messages =
-        {
-            $"The executed command failed: {cmd}",
-            $"ExitCode: {cmd.ExitCode}",
-            $"StandardOutput: {cmd.StandardOutput.ReadToEnd()}",
-            $"StandardError: {cmd.StandardError.ReadToEnd()}"
+            Logger = _logger,
+            OnOutput = line =>
+            {
+                if (!string.IsNullOrEmpty(line))
+                    output.Append(line);
+            }
         };
-        _logger.LogError(messages.Join());
-        return null;
+        // ReSharper disable once StringLiteralTypo
+        int _ = cmd.Execute("wg", "genkey");
+        return output.ToString();
     }
 
     /// <inheritdoc/>
-    public string? GeneratePublicKey(string privateKey)
+    public string GeneratePublicKey(string privateKey)
     {
-        Process cmd = new();
-        // TODO: cmd is specific to windows...
-        cmd.StartInfo.FileName = "wg";
-        cmd.StartInfo.Arguments = "pubkey";
-        cmd.StartInfo.RedirectStandardInput = true;
-        cmd.StartInfo.RedirectStandardOutput = true;
-        cmd.StartInfo.CreateNoWindow = true;
-        cmd.StartInfo.UseShellExecute = false;
-        cmd.Start();
-
-        cmd.StandardInput.WriteLine(privateKey);
-        cmd.StandardInput.Flush();
-        cmd.StandardInput.Close();
-
-        cmd.WaitForExit();
-        if (cmd.ExitCode == 0)
+        StringBuilder output = new();
+        ShellCommand cmd = new()
         {
-            IReadOnlyCollection<string> lines = ReadAllLines(cmd.StandardOutput);
-            if (lines.Count != 1)
-                throw new("Expected only one line");
-            return lines.First();
-        }
-        string[] messages =
-        {
-            $"The executed command failed: {cmd}",
-            $"ExitCode: {cmd.ExitCode}",
-            $"StandardOutput: {cmd.StandardOutput.ReadToEnd()}",
-            $"StandardError: {cmd.StandardError.ReadToEnd()}"
+            Logger = _logger,
+            OnOutput = line =>
+            {
+                if (!string.IsNullOrEmpty(line))
+                    output.Append(line);
+            }
         };
-        _logger.LogError(messages.Join());
-        return null;
+        // ReSharper disable once StringLiteralTypo
+        int _ = cmd.Execute("wg", "pubkey", privateKey);
+        return output.ToString();
     }
 
     /// <inheritdoc/>
-    public string? GeneratePreSharedKey()
+    public string GeneratePreSharedKey()
     {
-        Process cmd = new();
-        cmd.StartInfo.FileName = "wg";
-        cmd.StartInfo.Arguments = "genpsk";
-        cmd.StartInfo.RedirectStandardInput = true;
-        cmd.StartInfo.RedirectStandardOutput = true;
-        cmd.StartInfo.CreateNoWindow = true;
-        cmd.StartInfo.UseShellExecute = false;
-        cmd.Start();
-
-        // cmd.StandardInput.WriteLine(commandText);
-        // cmd.StandardInput.Flush();
-        // cmd.StandardInput.Close();
-        cmd.WaitForExit();
-        if (cmd.ExitCode == 0)
+        StringBuilder output = new();
+        ShellCommand cmd = new()
         {
-            IReadOnlyCollection<string> lines = ReadAllLines(cmd.StandardOutput);
-            if (lines.Count != 1)
-                throw new("Expected only one line");
-            return lines.First();
-        }
-        string[] messages =
-        {
-            $"The executed command failed: {cmd}",
-            $"ExitCode: {cmd.ExitCode}",
-            $"StandardOutput: {cmd.StandardOutput.ReadToEnd()}",
-            $"StandardError: {cmd.StandardError.ReadToEnd()}"
+            Logger = _logger,
+            OnOutput = line =>
+            {
+                if (!string.IsNullOrEmpty(line))
+                    output.Append(line);
+            }
         };
-        _logger.LogError(messages.Join());
-        return null;
-    }
-
-    private static IReadOnlyCollection<string> ReadAllLines(TextReader reader)
-    {
-        List<string> lines = new();
-        string? line;
-        while ((line = reader.ReadLine()) is not null)
-            lines.Add(line);
-        return lines;
+        // ReSharper disable once StringLiteralTypo
+        int _ = cmd.Execute("wg", "genpsk");
+        return output.ToString();
     }
 }

@@ -15,6 +15,23 @@ namespace Orbit.Core.Tests.Shell;
 // ReSharper disable once InconsistentNaming
 internal sealed class QREncodeFacadeTests
 {
+    private const string WireGuardConfig = """
+        [Interface]
+        ListenPort = 61006
+        PrivateKey = 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+        Address = 10.1.6.9
+        Address = fc00::1:6:9
+        DNS = 10.1.6.2
+        DNS = fc00::1:6:2
+
+        [Peer]
+        PublicKey = Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+        PreSharedKey = C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
+        AllowedIPs = 10.1.6.0/24
+        AllowedIPs = fc00::1:6:0/112
+        Endpoint = 10.0.6.1:61006
+        PersistentKeepAlive = 25
+        """;
     private readonly IContext _context = new NUnitContext();
     private readonly QREncodeFacade _qr;
     private readonly IReadOnlyCollection<LogEntry> _logs;
@@ -31,15 +48,26 @@ internal sealed class QREncodeFacadeTests
         _qr = host.Services.GetRequiredService<QREncodeFacade>();
     }
 
+    public enum StringContent
+    {
+        HelloWorld,
+        WireGuardConfig
+    }
+
     [Test]
     [Category("Misc")]
-    public async Task QREncodeFacade_GenerateSvg()
+    public async Task QREncodeFacade_GenerateSvg([Values] StringContent stringContent)
     {
         // Arrange
-        const string source = "Hello, world!";
+        string source = stringContent switch
+        {
+            StringContent.HelloWorld => "Hello, world!",
+            StringContent.WireGuardConfig => WireGuardConfig,
+            _ => throw new ArgumentOutOfRangeException(nameof(stringContent), stringContent, null)
+        };
 
         // Act
-        string? output = await _qr.GenerateSvg(source);
+        string output = _qr.GenerateSvg(source);
 
         // Assert
         if (_logs.Any(log => log is
@@ -53,6 +81,6 @@ internal sealed class QREncodeFacadeTests
         }
         Assert.That(output, Is.Not.Null);
         Assert.That(output, Is.Not.Empty);
-        await _context.Verify(output!);
+        await _context.Verify(output);
     }
 }

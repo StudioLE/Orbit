@@ -1,0 +1,23 @@
+#!/bin/bash
+
+repetitions="${1:-10}"
+pause="${2:-0.1}"
+
+for i in $(seq 1 "${repetitions}")
+do
+  echo "${i} Hello, world!"
+  sleep "${pause}"
+done
+
+echo "What would you like to say?"
+
+input=$(< /dev/stdin)
+
+echo "Repeating input..."
+
+for i in $(seq 1 "${repetitions}")
+do
+  echo "------- Repetition Number: ${i} ----------------------------------------------------------------"
+  echo "$input"
+  sleep "${pause}"
+done
