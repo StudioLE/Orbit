@@ -1,5 +1,5 @@
 namespace Orbit.Schema;
 
-public class ServerConfiguration : Dictionary<string, ShellCommand[]>
+public class ServerConfiguration : Dictionary<string, PreparedShellCommand[]>
 {
 }

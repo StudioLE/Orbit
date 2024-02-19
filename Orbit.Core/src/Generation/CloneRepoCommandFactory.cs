@@ -3,14 +3,14 @@ using StudioLE.Patterns;
 
 namespace Orbit.Generation;
 
-public class CloneRepoCommandFactory : IFactory<Instance, ShellCommand?>
+public class CloneRepoCommandFactory : IFactory<Instance, PreparedShellCommand?>
 {
     /// <inheritdoc/>
-    public ShellCommand? Create(Instance instance)
+    public PreparedShellCommand? Create(Instance instance)
     {
         return instance.Repo is null
             ? null
-            : new ShellCommand
+            : new PreparedShellCommand
             {
                 Command = $"""
                     git clone {instance.Repo.Origin} /mnt/{instance.Name}/srv --branch {instance.Repo.Branch} --depth 1

@@ -10,7 +10,6 @@ using Orbit.Shell;
 using Orbit.Utils.DataAnnotations;
 using Renci.SshNet;
 using StudioLE.Serialization;
-using ShellCommand = Orbit.Schema.ShellCommand;
 
 namespace Orbit.Initialization;
 
@@ -117,7 +116,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
         return config.All(pair => InitializeOnServer(pair.Key, pair.Value));
     }
 
-    private bool InitializeOnServer(string serverName, ShellCommand[] commands)
+    private bool InitializeOnServer(string serverName, PreparedShellCommand[] commands)
     {
         Server? server = _servers.Get(new ServerId(serverName));
         if (server is null)
@@ -128,7 +127,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
         ConnectionInfo connection = server.CreateConnection();
         using SshClient ssh = new(connection);
         ssh.Connect();
-        foreach (ShellCommand command in commands)
+        foreach (PreparedShellCommand command in commands)
         {
             if (!ssh.ExecuteToLogger(_logger, command.Command))
             {

@@ -1,6 +1,6 @@
 namespace Orbit.Schema;
 
-public class ShellCommand
+public class PreparedShellCommand
 {
     public string Command { get; set; } = string.Empty;
 

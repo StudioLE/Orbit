@@ -4,7 +4,7 @@ using StudioLE.Patterns;
 
 namespace Orbit.Generation;
 
-public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
+public class WriteCaddyfileCommandFactory : IFactory<Instance, PreparedShellCommand[]>
 {
     private readonly ILogger<WriteCaddyfileCommandFactory> _logger;
     private readonly CaddyfileFactory _factory;
@@ -15,15 +15,15 @@ public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
         _factory = factory;
     }
 
-    public ShellCommand[] Create(Instance instance)
+    public PreparedShellCommand[] Create(Instance instance)
     {
         string? caddyfile = _factory.Create(instance);
         if (caddyfile is null)
         {
             _logger.LogError("Failed to create Caddyfile");
-            return Array.Empty<ShellCommand>();
+            return Array.Empty<PreparedShellCommand>();
         }
-        return new ShellCommand[]
+        return new PreparedShellCommand[]
         {
             new()
             {

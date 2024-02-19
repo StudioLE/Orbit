@@ -4,10 +4,10 @@ using StudioLE.Patterns;
 
 namespace Orbit.Generation;
 
-public class WireGuardSetCommandFactory : IFactory<WireGuardClient, ShellCommand>
+public class WireGuardSetCommandFactory : IFactory<WireGuardClient, PreparedShellCommand>
 {
     /// <inheritdoc/>
-    public ShellCommand Create(WireGuardClient wg)
+    public PreparedShellCommand Create(WireGuardClient wg)
     {
         return new()
         {
