@@ -7,6 +7,8 @@ namespace Orbit.Utils.Shell;
 /// </summary>
 public class SecureShellOptions
 {
+    public const string SectionKey = "SSH";
+
     /// <summary>
     /// The SSH host.
     /// </summary>
@@ -25,14 +27,4 @@ public class SecureShellOptions
     /// </summary>
     [Required]
     public string User { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The optional SSH password.
-    /// </summary>
-    public string Password { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The optional path to an SSH private key.
-    /// </summary>
-    public string PrivateKeyFile { get; set; } = string.Empty;
 }

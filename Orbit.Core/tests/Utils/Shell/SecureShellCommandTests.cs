@@ -13,36 +13,35 @@ using StudioLE.Verify;
 namespace Orbit.Core.Tests.Utils.Shell;
 
 // ReSharper disable once InconsistentNaming
-internal sealed class ShellCommandTests
+internal sealed class SecureShellCommandTests
 {
     private readonly IContext _context = new NUnitContext();
-    private ShellCommand _cmd = null!;
+    private SecureShellCommand _cmd = null!;
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public void SetUp()
     {
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
         IHost host = Host
             .CreateDefaultBuilder()
             .UseTestLoggingProviders()
-            .ConfigureServices(services => services
-                .AddTransient<ShellCommand>())
+            .ConfigureServices((builder, services) => services
+                .AddTransient<SecureShellCommand>()
+                .AddOptions<SecureShellOptions>()
+                .Bind(builder.Configuration.GetSection(SecureShellOptions.SectionKey)))
             .Build();
         _logs = host.Services.GetCachedLogs();
-        _cmd = host.Services.GetRequiredService<ShellCommand>();
+        _cmd = host.Services.GetRequiredService<SecureShellCommand>();
     }
 
     [Test]
     [Category("Misc")]
-    public async Task ShellCommand_Execute_Countdown()
+    public async Task SecureShellCommand_Execute_Countdown()
     {
         // Arrange
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "countdown");
-        if (!Path.Exists(path))
-            throw new("The countdown executable is missing.");
-
         // Act
-        int exitCode = _cmd.Execute(path, "2 0.5 0");
+        int exitCode = _cmd.Execute("./countdown", "2 0.5 0");
 
         // Assert
         Assert.That(exitCode, Is.EqualTo(0), "Exit code");
@@ -57,19 +56,16 @@ internal sealed class ShellCommandTests
 
     [Test]
     [Category("Misc")]
-    public async Task ShellCommand_Execute_Repeat()
+    public async Task SecureShellCommand_Execute_Repeat()
     {
         // Arrange
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "repeat");
-        if (!Path.Exists(path))
-            throw new("The countdown executable is missing.");
         const int count = 1000;
         string longString = Enumerable.Range(1, count)
             .Select(i => $"Line {i} of {count}")
             .Join();
 
         // Act
-        int exitCode = _cmd.Execute(path, "2 0.2", longString);
+        int exitCode = _cmd.Execute("./repeat", "2 0.2", longString);
 
         // Assert
         Assert.That(exitCode, Is.EqualTo(0), "Exit code");

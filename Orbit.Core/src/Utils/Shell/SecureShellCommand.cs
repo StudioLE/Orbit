@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Orbit.Utils.Shell;
 
@@ -12,7 +14,21 @@ namespace Orbit.Utils.Shell;
 /// </remarks>
 public class SecureShellCommand : ShellCommand
 {
-    public SecureShellOptions? Options { get; set; } = null;
+    /// <summary>
+    /// The SSH host.
+    /// </summary>
+    public string? Host { get; set; } = null;
+
+    /// <summary>
+    /// The SSH port.
+    /// </summary>
+    [Range(0, 65536)]
+    public int? Port { get; set; } = null;
+
+    /// <summary>
+    /// The SSH user.
+    /// </summary>
+    public string? User { get; set; } = null;
 
     /// <summary>
     /// Creates a new instance of <see cref="SecureShellCommand"/>.
@@ -30,19 +46,30 @@ public class SecureShellCommand : ShellCommand
         Logger = logger;
     }
 
+    /// <summary>
+    /// DI constructor for <see cref="SecureShellCommand"/>.
+    /// </summary>
+    public SecureShellCommand(ILogger<SecureShellCommand> logger, IOptions<SecureShellOptions> options) : this(logger)
+    {
+        Host = options.Value.Host;
+        Port = options.Value.Port;
+        User = options.Value.User;
+    }
+
     private void ConfigureStartInfoForSsh(ProcessStartInfo startInfo)
     {
-        if (Options is null)
-            throw new("Options must be set.");
-        startInfo.FileName = "ssh";
+        if (string.IsNullOrEmpty(Host))
+            throw new("Host must be set.");
         StringBuilder args = new();
-        args.Append(" " + Options.Host);
-        args.Append(" -l " + Options.User);
-        args.Append(" -p " + Options.Port);
+        args.Append(" " + Host);
+        if (Port is not null)
+            args.Append(" -p " + Port);
+        if (User is not null)
+            args.Append(" -l " + User);
         args.Append(" -o BatchMode=yes");
-        args.Append(" -o StrictHostKeyChecking=no");
-        args.Append(" -o UserKnownHostsFile=/dev/null");
+        args.Append(" -o StrictHostKeyChecking=yes");
         args.Append(" " + startInfo.FileName + " " + startInfo.Arguments);
+        startInfo.FileName = "ssh";
         startInfo.Arguments = args.ToString();
     }
 }
