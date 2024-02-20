@@ -15,6 +15,12 @@ namespace Orbit.Core.Tests.WireGuard;
 // ReSharper disable once InconsistentNaming
 internal sealed class QREncodeFacadeTests
 {
+    public enum StringContent
+    {
+        HelloWorld,
+        WireGuardConfig
+    }
+
     private const string WireGuardConfig = """
         [Interface]
         ListenPort = 61006
@@ -33,7 +39,7 @@ internal sealed class QREncodeFacadeTests
         PersistentKeepAlive = 25
         """;
     private readonly IContext _context = new NUnitContext();
-    private readonly QREncodeFacade _qr;
+    private readonly IQREncodeFacade _qr;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public QREncodeFacadeTests()
@@ -45,17 +51,12 @@ internal sealed class QREncodeFacadeTests
                 .AddOrbitServices())
             .Build();
         _logs = host.Services.GetCachedLogs();
-        _qr = host.Services.GetRequiredService<QREncodeFacade>();
-    }
-
-    public enum StringContent
-    {
-        HelloWorld,
-        WireGuardConfig
+        _qr = host.Services.GetRequiredService<IQREncodeFacade>();
     }
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires QREncode")]
     public async Task QREncodeFacade_GenerateSvg([Values] StringContent stringContent)
     {
         // Arrange

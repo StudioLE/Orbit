@@ -20,10 +20,9 @@ internal sealed class WireGuardFacadeTests
         _wg = new(logger);
     }
 
-    #if DEBUG
-
     [Test]
     [Category("Misc")]
+    [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePrivateKey()
     {
         // Arrange
@@ -39,6 +38,7 @@ internal sealed class WireGuardFacadeTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePublicKey()
     {
         // Arrange
@@ -53,6 +53,7 @@ internal sealed class WireGuardFacadeTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePublicAndPrivate()
     {
         // Arrange
@@ -74,6 +75,7 @@ internal sealed class WireGuardFacadeTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePreSharedKey()
     {
         // Arrange
@@ -86,6 +88,4 @@ internal sealed class WireGuardFacadeTests
         Assert.That(preSharedKey.Length, Is.EqualTo(44));
         Assert.That(preSharedKey, Does.Match(Base64SchemaAttribute.Base64Regex));
     }
-
-    #endif
 }

@@ -84,18 +84,6 @@ public class Cli
         return WaitForCompletion(process, outputWaitHandle, errorWaitHandle);
     }
 
-    /// <summary>
-    /// <inheritdoc cref="Execute(string,string,string[])"/>
-    /// </summary>
-    /// <param name="commandWithArguments">The command to execute.</param>
-    /// <returns>
-    /// <inheritdoc cref="Execute(string,string,string[])"/>
-    /// </returns>
-    public int Execute(string commandWithArguments)
-    {
-        return Execute(commandWithArguments, string.Empty);
-    }
-
     private Process CreateProcess(string commandPath, string arguments, bool enableStandardInput)
     {
         ProcessStartInfo startInfo = new()
@@ -125,8 +113,7 @@ public class Cli
         }
         catch (Exception e)
         {
-            Logger?.LogError($"Failed to start {process.StartInfo.FileName}. Are you sure it's installed?");
-            Logger?.LogDebug(e, e.Message);
+            Logger?.LogDebug(e, $"Failed to start {process.StartInfo.FileName}. Are you sure it's installed?");
             return false;
         }
         return true;

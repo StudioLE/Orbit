@@ -129,7 +129,8 @@ public static class TestHelpers
                 // .AddOrbitOptions(context.Configuration)
                 .AddOrbitTestOptions()
                 .AddOrbitServices()
-                .AddMockWireGuardFacade())
+                .AddMockWireGuardFacade()
+                .AddMockQREncodeFacade())
             .ConfigureServices(configureServices)
             .Build();
         CreateExampleServer(host.Services);
@@ -158,6 +159,12 @@ public static class TestHelpers
     private static IServiceCollection AddMockWireGuardFacade(this IServiceCollection services)
     {
         return services.AddSingleton<IWireGuardFacade, MockWireGuardFacade>();
+    }
+
+    // ReSharper disable once InconsistentNaming
+    private static IServiceCollection AddMockQREncodeFacade(this IServiceCollection services)
+    {
+        return services.AddSingleton<IQREncodeFacade, MockQREncodeFacade>();
     }
 
     /// <summary>

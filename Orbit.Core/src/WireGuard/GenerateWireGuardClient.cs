@@ -18,7 +18,7 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
     private readonly IEntityProvider<Client> _clients;
     private readonly CommandContext _context;
     private readonly WireGuardClientConfigFactory _factory;
-    private readonly QREncodeFacade _qr;
+    private readonly IQREncodeFacade _qr;
 
     /// <summary>
     /// DI constructor for <see cref="GenerateWireGuardClient"/>.
@@ -28,7 +28,7 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
         IEntityProvider<Client> clients,
         CommandContext context,
         WireGuardClientConfigFactory factory,
-        QREncodeFacade qr)
+        IQREncodeFacade qr)
     {
         _logger = logger;
         _clients = clients;

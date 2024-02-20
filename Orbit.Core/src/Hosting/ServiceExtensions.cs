@@ -70,7 +70,7 @@ public static class ServiceExtensions
             .AddTransient<WireGuardClientConfigFactory>()
 
             .AddTransient<GenerateWireGuardClient>()
-            .AddTransient<QREncodeFacade>()
+            .AddTransient<IQREncodeFacade, QREncodeFacade>()
 
             .AddTransient<GenerateServerConfigurationForInstance>()
             .AddTransient<GenerateServerConfigurationForClient>()
