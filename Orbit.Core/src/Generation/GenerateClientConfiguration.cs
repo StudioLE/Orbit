@@ -55,70 +55,43 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Client client = new();
-        string output = string.Empty;
-        Func<bool>[] steps =
-        [
-            () => GetClient(inputs.Client, out client),
-            () => ValidateClient(client),
-            () => CreateWireGuardConfig(client)
-        ];
-        if (steps.Any(step => !step.Invoke()))
-        {
-            _logger.LogError("Failed to generate client configuration.");
-            _context.ExitCode = 1;
-        }
-        else
-        {
-            _logger.LogInformation("Generated client configuration");
-            _context.ExitCode = 0;
-        }
-        return Task.FromResult(output);
-    }
-
-    private bool GetClient(string clientName, out Client client)
-    {
-        Client? result = _clients.Get(new ClientId(clientName));
-        client = result!;
-        if (result is null)
-        {
-            _logger.LogError("The client does not exist.");
-            return false;
-        }
-        return true;
-    }
-
-    private bool ValidateClient(Client client)
-    {
-        return client.TryValidate(_logger);
-    }
-
-    private bool CreateWireGuardConfig(Client client)
-    {
-        // TODO: for each wireguard create a config and save
+        Client? client = _clients.Get(new ClientId(inputs.Client));
+        if (client is null)
+            return Failure("The client does not exist.");
+        bool isValid = client.TryValidate(_logger);
+        if (!isValid)
+            return Failure();
         foreach (WireGuardClient wg in client.WireGuard)
         {
             string fileName = $"{wg.Name}.conf";
             string config = _factory.Create(wg);
             // TODO: Make save optional
             if (!_clients.PutResource(new ClientId(client.Name), fileName, config))
-            {
-                _logger.LogError("Failed to write the wireguard config file.");
-                return false;
-            }
+                return Failure("Failed to write the wireguard config file.");
             string svg = _qr.GenerateSvg(config);
             if (string.IsNullOrEmpty(svg))
             {
                 _logger.LogWarning("Failed to generate the QR code.");
-                return true;
+                continue;
             }
             // TODO: Make save optional
             if (!_clients.PutResource(new ClientId(client.Name), fileName + ".svg", svg))
-            {
-                _logger.LogError("Failed to write the QR code file.");
-                return false;
-            }
+                return Failure("Failed to write the QR code file.");
         }
-        return true;
+        return Success(string.Empty);
+    }
+
+    private Task<string> Success(string output)
+    {
+        _context.ExitCode = 0;
+        return Task.FromResult(output);
+    }
+
+    private Task<string> Failure(string error = "", int exitCode = 1)
+    {
+        if(!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(error);
     }
 }

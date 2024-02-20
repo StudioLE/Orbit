@@ -51,11 +51,10 @@ internal sealed class GenerateInstanceConfigurationTests
 
         // Assert
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated instance configuration"));
+        Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
+        Assert.That(output, Is.Empty, "Output");
         string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateInstanceConfiguration.FileName);
         Assert.That(resource, Is.Not.Null);
-        Assert.That(resource, Is.EqualTo(output));
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

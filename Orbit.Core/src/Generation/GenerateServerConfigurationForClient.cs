@@ -13,7 +13,7 @@ namespace Orbit.Generation;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for a client.
 /// </summary>
-public class GenerateServerConfigurationForClient : IActivity<GenerateServerConfigurationForClient.Inputs, GenerateServerConfigurationForClient.Outputs>
+public class GenerateServerConfigurationForClient : IActivity<GenerateServerConfigurationForClient.Inputs, string>
 {
     public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfigurationForClient> _logger;
@@ -56,81 +56,45 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
         public string Client { get; set; } = string.Empty;
     }
 
-    /// <summary>
-    /// The outputs of <see cref="GenerateServerConfigurationForClient"/>.
-    /// </summary>
-    public class Outputs
-    {
-    }
-
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public Task<string> Execute(Inputs inputs)
     {
-        Client client = new();
+        Client? client = _clients.Get(new ClientId(inputs.Client));
+        if (client is null)
+            return Failure("The client does not exist.");
+        if (!client.TryValidate(_logger))
+            return Failure();
         List<KeyValuePair<string, ShellCommand>> commands = new();
-        Func<bool>[] steps =
-        {
-            () => GetClient(inputs.Client, out client),
-            () => ValidateClient(client),
-            () => SetWireGuardPeer(client, commands),
-            () => WriteConfiguration(client, commands)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation("Generated server configuration");
-            return Task.FromResult(new Outputs());
-        }
-        _logger.LogError("Failed to generate server configuration");
-        _context.ExitCode = 1;
-        return Task.FromResult(new Outputs());
-    }
-
-    private bool GetClient(string clientName, out Client client)
-    {
-        Client? result = _clients.Get(new ClientId(clientName));
-        client = result!;
-        if (result is null)
-        {
-            _logger.LogError("The client does not exist.");
-            return false;
-        }
-        return true;
-    }
-
-    private bool ValidateClient(Client client)
-    {
-        return client.TryValidate(_logger);
-    }
-
-    private bool SetWireGuardPeer(Client client, List<KeyValuePair<string, ShellCommand>> commands)
-    {
+        // Set WireGuard peer
         foreach (WireGuardClient wg in client.WireGuard)
         {
             Network? network = _networks.Get(new NetworkId(wg.Network));
             if (network is null)
-            {
-                _logger.LogError("Failed to get network");
-                return false;
-            }
+                return Failure("Failed to get network");
             ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
             commands.Add(new(network.Server, command));
         }
-        return true;
-    }
-
-    private bool WriteConfiguration(Client client, List<KeyValuePair<string, ShellCommand>> commands)
-    {
+        // Write configuration
         Dictionary<string, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
-
         string serialized = _serializer.Serialize(dictionary);
         if (!_clients.PutResource(new ClientId(client.Name), FileName, serialized))
-        {
-            _logger.LogError("Failed to write server configuration.");
-            return false;
-        }
-        return true;
+            return Failure("Failed to write server configuration.");
+        return Success(string.Empty);
+    }
+
+    private Task<string> Success(string output)
+    {
+        _context.ExitCode = 0;
+        return Task.FromResult(output);
+    }
+
+    private Task<string> Failure(string error = "", int exitCode = 1)
+    {
+        if (!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(error);
     }
 }

@@ -1,4 +1,5 @@
 using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
 using Orbit.Provision;
 using Orbit.Schema;
@@ -14,52 +15,46 @@ public class CreateInstance : IActivity<Instance, Instance?>
     private readonly ILogger<CreateInstance> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly InstanceFactory _factory;
+    private readonly CommandContext _context;
 
     /// <summary>
     /// DI constructor for <see cref="CreateInstance"/>.
     /// </summary>
-    public CreateInstance(ILogger<CreateInstance> logger, IEntityProvider<Instance> instances, InstanceFactory factory)
+    public CreateInstance(
+        ILogger<CreateInstance> logger,
+        IEntityProvider<Instance> instances,
+        InstanceFactory factory,
+        CommandContext context)
     {
         _logger = logger;
         _instances = instances;
         _factory = factory;
+        _context = context;
     }
 
     /// <inheritdoc/>
     public Task<Instance?> Execute(Instance instance)
     {
-        Func<bool>[] steps =
-        {
-            () => UpdateInstanceProperties(ref instance),
-            () => ValidateInstance(instance),
-            () => PutInstance(instance)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation($"Created instance {instance.Name}");
-            return Task.FromResult<Instance?>(instance);
-        }
-        _logger.LogError("Failed to create instance.");
-        return Task.FromResult<Instance?>(null);
-    }
-
-    private bool UpdateInstanceProperties(ref Instance instance)
-    {
         instance = _factory.Create(instance);
-        return true;
+        if (!instance.TryValidate(_logger))
+            return Failure(instance);
+        if (!_instances.Put(instance))
+            return Failure(instance, "Failed to write the instance file.");
+        _logger.LogInformation($"Created instance {instance.Name}");
+        return Success(instance);
     }
 
-    private bool ValidateInstance(Instance instance)
+    private Task<Instance?> Success(Instance? instance)
     {
-        return instance.TryValidate(_logger);
+        _context.ExitCode = 0;
+        return Task.FromResult(instance);
     }
 
-    private bool PutInstance(Instance instance)
+    private Task<Instance?> Failure(Instance? instance, string error = "", int exitCode = 1)
     {
-        if (_instances.Put(instance))
-            return true;
-        _logger.LogError("Failed to write the instance file.");
-        return false;
+        if (!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(instance);
     }
 }

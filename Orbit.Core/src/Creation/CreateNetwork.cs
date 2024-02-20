@@ -1,9 +1,9 @@
 using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
 using Orbit.Generation;
 using Orbit.Provision;
 using Orbit.Schema;
-using Orbit.Utils.DataAnnotations;
 
 namespace Orbit.Creation;
 
@@ -17,6 +17,7 @@ public class CreateNetwork : IActivity<Network, Network?>
     private readonly IEntityProvider<Server> _servers;
     private readonly NetworkFactory _factory;
     private readonly WireGuardServerConfigFactory _wgConfigFactory;
+    private readonly CommandContext _context;
 
     /// <summary>
     /// DI constructor for <see cref="CreateNetwork"/>.
@@ -26,61 +27,43 @@ public class CreateNetwork : IActivity<Network, Network?>
         IEntityProvider<Network> networks,
         IEntityProvider<Server> servers,
         NetworkFactory factory,
-        WireGuardServerConfigFactory wgConfigFactory)
+        WireGuardServerConfigFactory wgConfigFactory,
+        CommandContext context)
     {
         _logger = logger;
         _networks = networks;
         _servers = servers;
         _factory = factory;
         _wgConfigFactory = wgConfigFactory;
+        _context = context;
     }
 
     /// <inheritdoc/>
     public Task<Network?> Execute(Network network)
     {
-        Func<bool>[] steps =
-        {
-            () => UpdateNetworkProperties(ref network),
-            () => ValidateNetwork(network),
-            () => PutNetwork(network),
-            () => PutWireGuardConfig(network)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation($"Created network {network.Name}");
-            return Task.FromResult<Network?>(network);
-        }
-        _logger.LogError("Failed to create network.");
-        return Task.FromResult<Network?>(null);
-    }
-
-    private bool UpdateNetworkProperties(ref Network network)
-    {
         network = _factory.Create(network);
-        return true;
-    }
-
-    private bool ValidateNetwork(Network network)
-    {
-        return network.TryValidate(_logger);
-    }
-
-    private bool PutNetwork(Network network)
-    {
-        if (_networks.Put(network))
-            return true;
-        _logger.LogError("Failed to write the network file.");
-        return false;
-    }
-
-    private bool PutWireGuardConfig(Network network)
-    {
+        if (!_networks.Put(network))
+            return Failure(network, "Failed to write the network file.");
         string config = _wgConfigFactory.Create(network);
         string fileName = WireGuardServerConfigFactory.GetFileName(network);
-        if (_servers.PutResource(new ServerId(network.Server), fileName, config))
-            return true;
-        _logger.LogError("Failed to write the wireguard config file.");
-        return false;
+        if (!_servers.PutResource(new ServerId(network.Server), fileName, config))
+            return Failure(network, "Failed to write the wireguard config file.");
+
+        _logger.LogInformation($"Created network {network.Name}");
+        return Success(network);
+    }
+
+    private Task<Network?> Success(Network? network)
+    {
+        _context.ExitCode = 0;
+        return Task.FromResult(network);
+    }
+
+    private Task<Network?> Failure(Network? network, string error = "", int exitCode = 1)
+    {
+        if (!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(network);
     }
 }

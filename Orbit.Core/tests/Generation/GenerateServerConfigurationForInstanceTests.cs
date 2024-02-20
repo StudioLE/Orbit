@@ -47,12 +47,12 @@ internal sealed class GenerateServerConfigurationForInstanceTests
         };
 
         // Act
-        GenerateServerConfigurationForInstance.Outputs outputs = await _activity.Execute(inputs);
+        string output = await _activity.Execute(inputs);
 
         // Assert
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
+        Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
+        Assert.That(output, Is.Empty, "Output");
         string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfigurationForInstance.FileName);
         Assert.That(resource, Is.Not.Null);
         await _context.Verify(resource!);

@@ -13,7 +13,7 @@ namespace Orbit.Generation;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for an instance.
 /// </summary>
-public class GenerateServerConfigurationForInstance : IActivity<GenerateServerConfigurationForInstance.Inputs, GenerateServerConfigurationForInstance.Outputs>
+public class GenerateServerConfigurationForInstance : IActivity<GenerateServerConfigurationForInstance.Inputs, string>
 {
     public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfigurationForInstance> _logger;
@@ -62,53 +62,29 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         public string Instance { get; set; } = string.Empty;
     }
 
-    /// <summary>
-    /// The outputs of <see cref="GenerateServerConfigurationForInstance"/>.
-    /// </summary>
-    public class Outputs
-    {
-    }
-
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public Task<string> Execute(Inputs inputs)
     {
-        Instance instance = new();
+        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
+        if (instance is null)
+            return Failure("The instance does not exist.");
+        if (!instance.TryValidate(_logger))
+            return Failure();
         List<KeyValuePair<string, ShellCommand>> commands = new();
-        Func<bool>[] steps =
-        {
-            () => GetInstance(inputs.Instance, out instance),
-            () => ValidateInstance(instance),
-            () => SetWireGuardPeer(instance, commands),
-            () => WriteCaddyfile(instance, commands),
-            () => CloneRepo(instance, commands),
-            () => WriteConfiguration(instance, commands)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation("Generated server configuration");
-            return Task.FromResult(new Outputs());
-        }
-        _logger.LogError("Failed to generate server configuration");
-        _context.ExitCode = 1;
-        return Task.FromResult(new Outputs());
-    }
-
-    private bool GetInstance(string instanceName, out Instance instance)
-    {
-        Instance? result = _instances.Get(new InstanceId(instanceName));
-        instance = result!;
-        if (result is null)
-        {
-            _logger.LogError("The instance does not exist.");
-            return false;
-        }
-        return true;
-    }
-
-    private bool ValidateInstance(Instance instance)
-    {
-        return instance.TryValidate(_logger);
+        if (!SetWireGuardPeer(instance, commands))
+            return Failure();
+        if (!WriteCaddyfile(instance, commands))
+            return Failure();
+        if (!CloneRepo(instance, commands))
+            return Failure();
+        // Write configuration
+        Dictionary<string, ShellCommand[]> dictionary = commands
+            .GroupBy(x => x.Key, x => x.Value)
+            .ToDictionary(x => x.Key, x => x.ToArray());
+        string serialized = _serializer.Serialize(dictionary);
+        if (!_instances.PutResource(new InstanceId(instance.Name), FileName, serialized))
+            return Failure("Failed to write server configuration.");
+        return Success(string.Empty);
     }
 
     private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
@@ -130,10 +106,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
         if (!instance.Domains.Any())
-        {
-            _logger.LogWarning("Domains are required for Caddyfile generation.");
             return true;
-        }
         ShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
         if (!results.Any())
             return false;
@@ -151,18 +124,17 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         return true;
     }
 
-    private bool WriteConfiguration(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
+    private Task<string> Success(string output)
     {
-        Dictionary<string, ShellCommand[]> dictionary = commands
-            .GroupBy(x => x.Key, x => x.Value)
-            .ToDictionary(x => x.Key, x => x.ToArray());
+        _context.ExitCode = 0;
+        return Task.FromResult(output);
+    }
 
-        string serialized = _serializer.Serialize(dictionary);
-        if (!_instances.PutResource(new InstanceId(instance.Name), FileName, serialized))
-        {
-            _logger.LogError("Failed to write server configuration.");
-            return false;
-        }
-        return true;
+    private Task<string> Failure(string error = "", int exitCode = 1)
+    {
+        if(!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(error);
     }
 }

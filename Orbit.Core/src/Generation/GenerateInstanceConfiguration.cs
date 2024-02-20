@@ -56,55 +56,31 @@ public class GenerateInstanceConfiguration : IActivity<GenerateInstanceConfigura
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Instance instance = new();
-        string output = string.Empty;
-        Func<bool>[] steps =
-        {
-            () => ValidateOptions(),
-            () => GetInstance(inputs.Instance, out instance),
-            () => ValidateInstance(instance),
-            () => CreateUserConfig(instance, out output)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation("Generated instance configuration");
-            return Task.FromResult(output);
-        }
-        _logger.LogError("Failed to generate instance configuration.");
-        _context.ExitCode = 1;
+        if(!_options.TryValidate(_logger))
+            return Failure();
+        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
+        if (instance is null)
+            return Failure("The instance does not exist.");
+        if(!instance.TryValidate(_logger))
+            return Failure();
+        string output = _factory.Create(instance);
+        // TODO: Make save optional
+        if (!_instances.PutResource(new InstanceId(instance.Name), FileName, output))
+            return Failure("Failed to write the user config file.");
+        return Success(string.Empty);
+    }
+
+    private Task<string> Success(string output)
+    {
+        _context.ExitCode = 0;
         return Task.FromResult(output);
     }
 
-    private bool ValidateOptions()
+    private Task<string> Failure(string error = "", int exitCode = 1)
     {
-        return _options.TryValidate(_logger);
-    }
-
-    private bool GetInstance(string instanceName, out Instance instance)
-    {
-        Instance? result = _instances.Get(new InstanceId(instanceName));
-        instance = result!;
-        if (result is null)
-        {
-            _logger.LogError("The instance does not exist.");
-            return false;
-        }
-        return true;
-    }
-
-    private bool ValidateInstance(Instance instance)
-    {
-        return instance.TryValidate(_logger);
-    }
-
-    private bool CreateUserConfig(Instance instance, out string output)
-    {
-        output = _factory.Create(instance);
-        // TODO: Make save optional
-        if (_instances.PutResource(new InstanceId(instance.Name), FileName, output))
-            return true;
-        _logger.LogError("Failed to write the user config file.");
-        return false;
+        if(!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(error);
     }
 }

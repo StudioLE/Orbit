@@ -1,4 +1,5 @@
 using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
 using Orbit.Provision;
 using Orbit.Schema;
@@ -14,52 +15,46 @@ public class CreateServer : IActivity<Server, Server?>
     private readonly ILogger<CreateServer> _logger;
     private readonly IEntityProvider<Server> _servers;
     private readonly ServerFactory _factory;
+    private readonly CommandContext _context;
 
     /// <summary>
     /// DI constructor for <see cref="CreateServer"/>.
     /// </summary>
-    public CreateServer(ILogger<CreateServer> logger, IEntityProvider<Server> servers, ServerFactory factory)
+    public CreateServer(
+        ILogger<CreateServer> logger,
+        IEntityProvider<Server> servers,
+        ServerFactory factory,
+        CommandContext context)
     {
         _logger = logger;
         _servers = servers;
         _factory = factory;
+        _context = context;
     }
 
     /// <inheritdoc/>
     public Task<Server?> Execute(Server server)
     {
-        Func<bool>[] steps =
-        {
-            () => UpdateServerProperties(ref server),
-            () => ValidateServer(server),
-            () => PutServer(server)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation($"Created server {server.Name}");
-            return Task.FromResult<Server?>(server);
-        }
-        _logger.LogError("Failed to create server.");
-        return Task.FromResult<Server?>(null);
-    }
-
-    private bool UpdateServerProperties(ref Server server)
-    {
         server = _factory.Create(server);
-        return true;
+        if (!server.TryValidate(_logger))
+            return Failure(server);
+        if (!_servers.Put(server))
+            return Failure(server, "Failed to write the server file.");
+        _logger.LogInformation($"Created server {server.Name}");
+        return Success(server);
     }
 
-    private bool ValidateServer(Server server)
+    private Task<Server?> Success(Server? server)
     {
-        return server.TryValidate(_logger);
+        _context.ExitCode = 0;
+        return Task.FromResult(server);
     }
 
-    private bool PutServer(Server server)
+    private Task<Server?> Failure(Server? server, string error = "", int exitCode = 1)
     {
-        if (_servers.Put(server))
-            return true;
-        _logger.LogError("Failed to write the server file.");
-        return false;
+        if (!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(server);
     }
 }

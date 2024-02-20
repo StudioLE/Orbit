@@ -2,15 +2,14 @@ using System.Runtime.InteropServices;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
 using Orbit.Generation;
 using Orbit.Provision;
 using Orbit.Schema;
-using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 
 namespace Orbit.Core.Tests.Generation;
@@ -52,11 +51,8 @@ internal sealed class GenerateClientConfigurationTests
 
         // Assert
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Any(log => log is
-        {
-            LogLevel: LogLevel.Information,
-            Message: "Generated client configuration"
-        }), "Success log");
+        Assert.That(_logs.Count, Is.EqualTo(0), "Log count");
+        Assert.That(output, Is.Empty, "Output");
         string? resource = _clients.GetResource(new ClientId(inputs.Client), $"wg{MockConstants.NetworkNumber}.conf");
         Assert.That(resource, Is.Not.Null);
 

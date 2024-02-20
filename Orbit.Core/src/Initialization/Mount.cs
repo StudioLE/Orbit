@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
+using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
 using Orbit.Provision;
 using Orbit.Schema;
@@ -13,20 +14,26 @@ namespace Orbit.Initialization;
 /// <summary>
 /// An <see cref="IActivity"/> to remotely launch an instance with Multipass.
 /// </summary>
-public class Mount : IActivity<Mount.Inputs, Mount.Outputs>
+public class Mount : IActivity<Mount.Inputs, string>
 {
     private readonly ILogger<Mount> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
+    private readonly CommandContext _context;
 
     /// <summary>
     /// DI constructor for <see cref="Mount"/>.
     /// </summary>
-    public Mount(ILogger<Mount> logger, IEntityProvider<Instance> instances, IEntityProvider<Server> servers)
+    public Mount(
+        ILogger<Mount> logger,
+        IEntityProvider<Instance> instances,
+        IEntityProvider<Server> servers,
+        CommandContext context)
     {
         _logger = logger;
         _instances = instances;
         _servers = servers;
+        _context = context;
     }
 
     /// <summary>
@@ -42,84 +49,48 @@ public class Mount : IActivity<Mount.Inputs, Mount.Outputs>
         public string Instance { get; set; } = string.Empty;
     }
 
-    /// <summary>
-    /// The outputs of <see cref="Mount"/>.
-    /// </summary>
-    public class Outputs
-    {
-        public int ExitCode { get; set; }
-    }
-
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public Task<string> Execute(Inputs inputs)
     {
-        Instance instance = new();
-        Func<bool>[] steps =
-        {
-            () => GetInstance(inputs.Instance, out instance),
-            () => ValidateInstance(instance),
-            () => CreateMountsOnServer(instance)
-        };
-        bool isSuccess = steps.All(step => step.Invoke());
-        if (isSuccess)
-        {
-            _logger.LogInformation($"Created mounts for instance {instance.Name}");
-            return Task.FromResult(new Outputs { ExitCode = 0 });
-        }
-        _logger.LogError("Failed to create mounts for instance.");
-        return Task.FromResult(new Outputs { ExitCode = 1 });
-    }
-
-    private bool GetInstance(string instanceName, out Instance instance)
-    {
-        Instance? result = _instances.Get(new InstanceId(instanceName));
-        instance = result!;
-        if (result is null)
-        {
-            _logger.LogError("The instance does not exist.");
-            return false;
-        }
-        return true;
-    }
-
-    private bool ValidateInstance(Instance instance)
-    {
-        return instance.TryValidate(_logger);
-    }
-
-    private bool CreateMountsOnServer(Instance instance)
-    {
+        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
+        if (instance is null)
+            return Failure("The instance does not exist.");
+        if (!instance.TryValidate(_logger))
+            return Failure();
         if (!instance.Mounts.Any())
-            return true;
+            return Failure("No mounts to create.");
         Server? server = _servers.Get(new ServerId(instance.Server));
         if (server is null)
-        {
-            _logger.LogError("Failed to get server");
-            return false;
-        }
+            return Failure("Failed to get server");
         Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
         foreach (Schema.Mount mount in instance.Mounts)
         {
             if (!mount.Source.StartsWith("/mnt"))
-            {
-                _logger.LogError($"Mount source path is invalid: {mount.Source}");
-                return false;
-            }
+                return Failure($"Mount source path is invalid: {mount.Source}");
             string mkdirCommand = $"mkdir -p {mount.Source}";
             int exitCode = ssh.Execute(mkdirCommand, string.Empty);
             if (exitCode != 0)
-            {
-                _logger.LogError("Failed to create mount directory on server.");
-                return false;
-            }
+                return Failure("Failed to create mount directory on server.");
             string multipassCommand = $"multipass mount {mount.Source} {instance.Name}:{mount.Target}";
             exitCode = ssh.Execute(multipassCommand, string.Empty);
             if (exitCode != 0)
-            {
-                _logger.LogError($"Failed to create mount: {instance.Name}:{mount.Target}");
-                return false;
-            }
+                return Failure($"Failed to create mount: {instance.Name}:{mount.Target}");
         }
-        return true;
+        _logger.LogInformation($"Created mounts for instance {instance.Name}");
+        return Success(string.Empty);
+    }
+
+    private Task<string> Success(string output)
+    {
+        _context.ExitCode = 0;
+        return Task.FromResult(output);
+    }
+
+    private Task<string> Failure(string error = "", int exitCode = 1)
+    {
+        if (!string.IsNullOrEmpty(error))
+            _logger.LogError(error);
+        _context.ExitCode = exitCode;
+        return Task.FromResult(error);
     }
 }
