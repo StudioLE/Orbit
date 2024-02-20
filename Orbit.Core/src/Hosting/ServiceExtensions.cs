@@ -72,7 +72,6 @@ public static class ServiceExtensions
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
             .AddTransient<MountCommandFactory>()
-            .AddTransient<CloneRepoCommandFactory>()
             .AddTransient<WireGuardServerConfigFactory>()
 
             .AddTransient<Initialize>()

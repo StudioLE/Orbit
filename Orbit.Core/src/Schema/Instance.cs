@@ -70,11 +70,13 @@ public sealed class Instance : IHasWireGuardClient, IEntity, IHasValidationAttri
     [Required]
     public string[] Domains { get; set; } = Array.Empty<string>();
 
+    // TODO: Remove Mounts
     /// <summary>
     /// The mounted directories of the instance.
     /// </summary>
     public Mount[] Mounts { get; set; } = Array.Empty<Mount>();
 
+    // TODO: Remove Repo
     /// <summary>
     /// The repo to pull into the instance.
     /// </summary>

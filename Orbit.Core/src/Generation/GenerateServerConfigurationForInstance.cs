@@ -22,7 +22,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
-    private readonly CloneRepoCommandFactory _cloneRepoCommandFactory;
     private readonly ISerializer _serializer;
 
     /// <summary>
@@ -35,7 +34,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
-        CloneRepoCommandFactory cloneRepoCommandFactory,
         ISerializer serializer)
     {
         _logger = logger;
@@ -44,7 +42,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         _context = context;
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
-        _cloneRepoCommandFactory = cloneRepoCommandFactory;
         _serializer = serializer;
     }
 
@@ -74,8 +71,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         if (!SetWireGuardPeer(instance, commands))
             return Failure();
         if (!WriteCaddyfile(instance, commands))
-            return Failure();
-        if (!CloneRepo(instance, commands))
             return Failure();
         // Write configuration
         Dictionary<string, ShellCommand[]> dictionary = commands
@@ -112,15 +107,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
             return false;
         commands.AddRange(results
             .Select(x => new KeyValuePair<string, ShellCommand>(instance.Server, x)));
-        return true;
-    }
-
-    private bool CloneRepo(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
-    {
-        ShellCommand? command = _cloneRepoCommandFactory.Create(instance);
-        if (command is null)
-            return true;
-        commands.Add(new(instance.Server, command));
         return true;
     }
 
