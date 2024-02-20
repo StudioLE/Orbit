@@ -6,19 +6,19 @@ using Orbit.Configuration;
 using Orbit.Core.Tests.Resources;
 using Orbit.Provision;
 using Orbit.Schema;
-using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 
-namespace Orbit.Core.Tests.Generation;
+namespace Orbit.Core.Tests.Configuration;
 
-internal sealed class GenerateServerConfigurationForInstanceTests
+internal sealed class GenerateServerConfigurationForClientTests
 {
     private readonly IContext _context = new NUnitContext();
     private CommandContext _commandContext = null!;
-    private GenerateServerConfigurationForInstance _activity = null!;
-    private IEntityProvider<Instance> _instances = null!;
+    private GenerateServerConfigurationForClient _activity = null!;
+    private IEntityProvider<Client> _clients = null!;
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
@@ -31,19 +31,19 @@ internal sealed class GenerateServerConfigurationForInstanceTests
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
-        _activity = provider.GetRequiredService<GenerateServerConfigurationForInstance>();
-        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _activity = provider.GetRequiredService<GenerateServerConfigurationForClient>();
+        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
         _logs = provider.GetCachedLogs();
     }
 
     [Test]
     [Category("Activity")]
-    public async Task GenerateServerConfigurationForInstance_Execute()
+    public async Task GenerateServerConfigurationForClient_Execute()
     {
         // Arrange
-        GenerateServerConfigurationForInstance.Inputs inputs = new()
+        GenerateServerConfigurationForClient.Inputs inputs = new()
         {
-            Instance = MockConstants.InstanceName
+            Client = MockConstants.ClientName
         };
 
         // Act
@@ -53,7 +53,7 @@ internal sealed class GenerateServerConfigurationForInstanceTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfigurationForInstance.FileName);
+        string? resource = _clients.GetResource(new ClientId(inputs.Client), GenerateServerConfigurationForClient.FileName);
         Assert.That(resource, Is.Not.Null);
         await _context.Verify(resource!);
     }

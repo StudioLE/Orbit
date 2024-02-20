@@ -9,14 +9,13 @@ using Orbit.Creation.Clients;
 using Orbit.Creation.Instances;
 using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
-using Orbit.Initialization;
+using Orbit.Multipass;
 using Orbit.Provision;
 using Orbit.Schema;
-using Orbit.Shell;
 using Orbit.WireGuard;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
-using Mount = Orbit.Initialization.Mount;
+using Mount = Orbit.Multipass.Mount;
 
 namespace Orbit.Hosting;
 

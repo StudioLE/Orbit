@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Orbit.Schema;
 using Orbit.Utils.CommandLine;
 
-namespace Orbit.Shell;
+namespace Orbit.Multipass;
 
 /// <summary>
 /// Methods to help with Multipass.

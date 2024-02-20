@@ -10,7 +10,7 @@ using Orbit.Creation.Instances;
 using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
 using Orbit.Hosting;
-using Orbit.Initialization;
+using Orbit.Multipass;
 using Orbit.WireGuard;
 
 namespace Orbit.Cli;

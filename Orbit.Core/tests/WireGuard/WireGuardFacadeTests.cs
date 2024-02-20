@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Orbit.Schema.DataAnnotations;
-using Orbit.Shell;
+using Orbit.WireGuard;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Extensions.Logging.Console;
 
-namespace Orbit.Core.Tests.Shell;
+namespace Orbit.Core.Tests.WireGuard;
 
 internal sealed class WireGuardFacadeTests
 {

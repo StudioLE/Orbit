@@ -1,6 +1,6 @@
 using Orbit.Schema;
-using Orbit.Shell;
 using Orbit.Utils;
+using Orbit.WireGuard;
 using StudioLE.Patterns;
 
 namespace Orbit.Creation.Networks;

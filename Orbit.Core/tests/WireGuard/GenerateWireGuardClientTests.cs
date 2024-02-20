@@ -12,7 +12,7 @@ using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 
-namespace Orbit.Core.Tests.Generation;
+namespace Orbit.Core.Tests.WireGuard;
 
 internal sealed class GenerateWireGuardClientTests
 {

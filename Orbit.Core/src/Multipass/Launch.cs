@@ -6,11 +6,10 @@ using Orbit.CloudInit;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
-using Orbit.Shell;
 using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Initialization;
+namespace Orbit.Multipass;
 
 /// <summary>
 /// An <see cref="IActivity"/> to remotely launch an instance with Multipass.

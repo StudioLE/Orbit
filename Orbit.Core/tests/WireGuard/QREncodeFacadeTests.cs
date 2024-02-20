@@ -4,13 +4,13 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
 using Orbit.Hosting;
-using Orbit.Shell;
+using Orbit.WireGuard;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 
-namespace Orbit.Core.Tests.Shell;
+namespace Orbit.Core.Tests.WireGuard;
 
 // ReSharper disable once InconsistentNaming
 internal sealed class QREncodeFacadeTests

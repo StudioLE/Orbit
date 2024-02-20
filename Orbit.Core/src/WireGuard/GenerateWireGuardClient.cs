@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
-using Orbit.Shell;
 using Orbit.Utils.DataAnnotations;
 
 namespace Orbit.WireGuard;

@@ -6,12 +6,12 @@ using Orbit.CloudInit;
 using Orbit.Core.Tests.Resources;
 using Orbit.Creation.Instances;
 using Orbit.Schema;
-using StudioLE.Extensions.Logging.Cache;
-using StudioLE.Verify;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Extensions.Logging.Cache;
+using StudioLE.Verify;
 
-namespace Orbit.Core.Tests.Generation;
+namespace Orbit.Core.Tests.CloudInit;
 
 internal sealed class CloudInitFactoryTests
 {

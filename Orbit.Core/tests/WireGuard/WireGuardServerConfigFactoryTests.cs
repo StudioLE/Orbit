@@ -5,11 +5,11 @@ using Orbit.Core.Tests.Resources;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.WireGuard;
-using StudioLE.Verify;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Verify;
 
-namespace Orbit.Core.Tests.Generation;
+namespace Orbit.Core.Tests.WireGuard;
 
 internal sealed class WireGuardServerConfigFactoryTests
 {

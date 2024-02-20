@@ -10,7 +10,7 @@ using Orbit.Creation.Servers;
 using Orbit.Hosting;
 using Orbit.Provision;
 using Orbit.Schema;
-using Orbit.Shell;
+using Orbit.WireGuard;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Extensions.Logging.Console;
 

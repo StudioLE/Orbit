@@ -2,7 +2,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Orbit.Utils.CommandLine;
 
-namespace Orbit.Shell;
+namespace Orbit.WireGuard;
 
 /// <inheritdoc cref="IQREncodeFacade"/>
 // ReSharper disable once InconsistentNaming

@@ -1,4 +1,4 @@
-using Orbit.Shell;
+using Orbit.WireGuard;
 
 namespace Orbit.Core.Tests.Resources;
 

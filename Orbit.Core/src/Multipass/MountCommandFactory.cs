@@ -2,7 +2,7 @@ using Orbit.Schema;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
-namespace Orbit.Initialization;
+namespace Orbit.Multipass;
 
 public class MountCommandFactory : IFactory<Instance, string>
 {
