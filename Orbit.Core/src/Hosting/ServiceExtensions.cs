@@ -80,7 +80,6 @@ public static class ServiceExtensions
             .AddTransient<Initialize>()
 
             .AddTransient<Launch>()
-            .AddTransient<LaunchCommandFactory>()
 
             .AddTransient<Mount>();
 

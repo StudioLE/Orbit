@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
+using Orbit.Generation;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
@@ -19,8 +20,8 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
     private readonly ILogger<Launch> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
+    private readonly IEntityProvider<Network> _networks;
     private readonly CommandContext _context;
-    private readonly LaunchCommandFactory _factory;
 
     /// <summary>
     /// DI constructor for <see cref="Launch"/>.
@@ -29,14 +30,14 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
         ILogger<Launch> logger,
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
-        CommandContext context,
-        LaunchCommandFactory factory)
+        IEntityProvider<Network> networks,
+        CommandContext context)
     {
         _logger = logger;
         _instances = instances;
         _servers = servers;
         _context = context;
-        _factory = factory;
+        _networks = networks;
     }
 
     /// <summary>
@@ -106,10 +107,24 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             return false;
         }
         SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
-        string? command = _factory.Create(instance);
-        if (command is null)
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateInstanceConfiguration.FileName);
+        if (cloudInit is null)
+        {
+            _logger.LogError("Failed to get user-config");
             return false;
-        int exitCode = ssh.Execute(command, string.Empty);
+        }
+        string networkName = instance.Networks.FirstOrDefault() ?? throw new("Instance has no networks");
+        Network network = _networks.Get(new NetworkId(networkName)) ?? throw new($"Network {networkName} not found");
+        string[] args = [
+            "launch",
+            $"--cpus {instance.Hardware.Cpus}",
+            $"--memory {instance.Hardware.Memory}G",
+            $"--disk {instance.Hardware.Disk}G",
+            $"--name {instance.Name}",
+            $"--network name=br{network.Number},mode=manual,mac=\"{instance.MacAddress}\"",
+            "--cloud-init -"
+        ];
+        int exitCode = ssh.Execute("multipass", string.Join(" ", args), cloudInit);
         if (exitCode == 0)
             return true;
         _logger.LogError("Failed to run multipass launch on server.");
