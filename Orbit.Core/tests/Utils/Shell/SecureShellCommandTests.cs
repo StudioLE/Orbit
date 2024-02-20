@@ -37,6 +37,7 @@ internal sealed class SecureShellCommandTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires ssh config")]
     public async Task SecureShellCommand_Execute_Countdown()
     {
         // Arrange
@@ -56,6 +57,7 @@ internal sealed class SecureShellCommandTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires ssh config")]
     public async Task SecureShellCommand_Execute_Repeat()
     {
         // Arrange

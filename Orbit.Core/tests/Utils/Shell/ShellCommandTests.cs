@@ -34,6 +34,7 @@ internal sealed class ShellCommandTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires bash executable")]
     public async Task ShellCommand_Execute_Countdown()
     {
         // Arrange
@@ -57,6 +58,7 @@ internal sealed class ShellCommandTests
 
     [Test]
     [Category("Misc")]
+    [Explicit("Requires bash executable")]
     public async Task ShellCommand_Execute_Repeat()
     {
         // Arrange
