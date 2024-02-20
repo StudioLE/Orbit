@@ -10,13 +10,13 @@
 
   <ItemGroup>
     <PackageReference Include="StudioLE.Extensions.Logging.Cache" Version="0.10.0-alpha.2" />
-    <PackageReference Include="StudioLE.Verify.Json" Version="0.7.0" />
-    <PackageReference Include="StudioLE.Diagnostics.NUnit" Version="0.7.0" />
-    <PackageReference Include="StudioLE.Verify.Yaml" Version="0.7.0" />
+    <PackageReference Include="StudioLE.Verify.Json" Version="0.8.0" />
+    <PackageReference Include="StudioLE.Diagnostics.NUnit" Version="0.8.0" />
+    <PackageReference Include="StudioLE.Verify.Yaml" Version="0.8.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="NUnit" Version="4.0.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
