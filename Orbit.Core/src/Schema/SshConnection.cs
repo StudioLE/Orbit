@@ -30,4 +30,5 @@ public class SshConnection : IHasValidationAttributes
     /// The optional path to an SSH private key.
     /// </summary>
     public string PrivateKeyFile { get; set; } = string.Empty;
+    // TODO: Remove Password and PrivateKeyFile from SshConnection.
 }

@@ -6,7 +6,7 @@ using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Shell;
 using Orbit.Utils.DataAnnotations;
-using Renci.SshNet;
+using Orbit.Utils.Shell;
 
 namespace Orbit.Initialization;
 
@@ -97,9 +97,7 @@ public class Mount : IActivity<Mount.Inputs, Mount.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        ConnectionInfo connection = server.CreateConnection();
-        using SshClient ssh = new(connection);
-        ssh.Connect();
+        SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
         foreach (Schema.Mount mount in instance.Mounts)
         {
             if (!mount.Source.StartsWith("/mnt"))
@@ -108,13 +106,15 @@ public class Mount : IActivity<Mount.Inputs, Mount.Outputs>
                 return false;
             }
             string mkdirCommand = $"mkdir -p {mount.Source}";
-            if (!ssh.ExecuteToLogger(_logger, mkdirCommand))
+            int exitCode = ssh.Execute(mkdirCommand, string.Empty);
+            if (exitCode != 0)
             {
                 _logger.LogError("Failed to create mount directory on server.");
                 return false;
             }
             string multipassCommand = $"multipass mount {mount.Source} {instance.Name}:{mount.Target}";
-            if (!ssh.ExecuteToLogger(_logger, multipassCommand))
+            exitCode = ssh.Execute(multipassCommand, string.Empty);
+            if (exitCode != 0)
             {
                 _logger.LogError($"Failed to create mount: {instance.Name}:{mount.Target}");
                 return false;

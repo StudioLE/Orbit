@@ -12,15 +12,6 @@ namespace Orbit.Utils.Shell;
 /// </remarks>
 public class ShellCommand
 {
-    private enum ExitCode
-    {
-        Success,
-        FailedToStart = 200,
-        TimedOutWaitingForExit = 201,
-        TimedOutWaitingForStandardOutput = 202,
-        TimedOutWaitingForStandardError = 203
-    }
-
     public ILogger? Logger { get; set; }
 
     /// <summary>
@@ -60,6 +51,15 @@ public class ShellCommand
         Logger = logger;
     }
 
+    private enum ExitCode
+    {
+        Success,
+        FailedToStart = 200,
+        TimedOutWaitingForExit = 201,
+        TimedOutWaitingForStandardOutput = 202,
+        TimedOutWaitingForStandardError = 203
+    }
+
     /// <summary>
     /// Execute a shell command - with optional standard input - and capture the output.
     /// </summary>
@@ -82,6 +82,18 @@ public class ShellCommand
         if (enableStandardInput)
             WriteStandardInput(process, standardInput);
         return WaitForCompletion(process, outputWaitHandle, errorWaitHandle);
+    }
+
+    /// <summary>
+    /// <inheritdoc cref="Execute(string,string,string[])"/>
+    /// </summary>
+    /// <param name="commandWithArguments">The command to execute.</param>
+    /// <returns>
+    /// <inheritdoc cref="Execute(string,string,string[])"/>
+    /// </returns>
+    public int Execute(string commandWithArguments)
+    {
+        return Execute(commandWithArguments, string.Empty);
     }
 
     private Process CreateProcess(string commandPath, string arguments, bool enableStandardInput)
@@ -124,14 +136,14 @@ public class ShellCommand
     {
         process.OutputDataReceived += (_, e) =>
         {
-            if(e.Data is null)
+            if (e.Data is null)
                 outputWaitHandle.Set();
             else
                 OnOutput.Invoke(e.Data);
         };
         process.ErrorDataReceived += (_, e) =>
         {
-            if(e.Data is null)
+            if (e.Data is null)
                 errorWaitHandle.Set();
             else
                 OnError.Invoke(e.Data);
@@ -140,16 +152,14 @@ public class ShellCommand
         process.BeginErrorReadLine();
     }
 
-    private void OutputToLogger(string? output)
+    private void OutputToLogger(string output)
     {
-        if (output is not null)
-            Logger?.LogInformation(output);
+        Logger?.LogInformation(output);
     }
 
-    private void ErrorToLogger(string? error)
+    private void ErrorToLogger(string error)
     {
-        if (error is not null)
-            Logger?.LogError(error);
+        Logger?.LogError(error);
     }
 
     private static void WriteStandardInput(Process process, IEnumerable<string> standardInput)
@@ -162,7 +172,6 @@ public class ShellCommand
 
     private int WaitForCompletion(Process process, AutoResetEvent outputWaitHandle, AutoResetEvent errorWaitHandle)
     {
-
         if (!process.WaitForExit(TimeOut))
         {
             Logger?.LogWarning($"The process {process.StartInfo.FileName} timed out after {TimeOut} milliseconds waiting for exit.");

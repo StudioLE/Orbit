@@ -7,7 +7,7 @@ using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Shell;
 using Orbit.Utils.DataAnnotations;
-using Renci.SshNet;
+using Orbit.Utils.Shell;
 
 namespace Orbit.Initialization;
 
@@ -105,13 +105,12 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        ConnectionInfo connection = server.CreateConnection();
-        using SshClient ssh = new(connection);
-        ssh.Connect();
+        SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
         string? command = _factory.Create(instance);
         if (command is null)
             return false;
-        if (ssh.ExecuteToLogger(_logger, command))
+        int exitCode = ssh.Execute(command, string.Empty);
+        if (exitCode == 0)
             return true;
         _logger.LogError("Failed to run multipass launch on server.");
         return false;

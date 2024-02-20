@@ -8,7 +8,7 @@ using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Shell;
 using Orbit.Utils.DataAnnotations;
-using Renci.SshNet;
+using Orbit.Utils.Shell;
 using StudioLE.Serialization;
 
 namespace Orbit.Initialization;
@@ -124,12 +124,11 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        ConnectionInfo connection = server.CreateConnection();
-        using SshClient ssh = new(connection);
-        ssh.Connect();
+        SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
         foreach (PreparedShellCommand command in commands)
         {
-            if (!ssh.ExecuteToLogger(_logger, command.Command))
+            int exitCode = ssh.Execute(command.Command, string.Empty);
+            if (exitCode != 0)
             {
                 string errorMessage = command.ErrorMessage ?? "Failed to run command on server.";
                 _logger.LogError(errorMessage);
@@ -138,7 +137,6 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
             if (command.SuccessMessage is not null)
                 _logger.LogInformation(command.SuccessMessage);
         }
-        ssh.Disconnect();
         return true;
     }
 }
