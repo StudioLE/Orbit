@@ -30,7 +30,6 @@ WireGuard:
   - fc00::1:6:0/112
 Domains: []
 Mounts: []
-Repo: 
 Install:
 - bat
 - micro

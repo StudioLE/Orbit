@@ -32,7 +32,6 @@ Domains:
 - example.com
 - example.org
 Mounts: []
-Repo: 
 Install:
 - bat
 - micro

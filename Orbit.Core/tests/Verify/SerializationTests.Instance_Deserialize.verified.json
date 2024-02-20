@@ -48,7 +48,6 @@
       "Target": "/config"
     }
   ],
-  "Repo": null,
   "Install": [
     "bat",
     "micro",

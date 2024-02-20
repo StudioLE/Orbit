@@ -76,12 +76,6 @@ public sealed class Instance : IHasWireGuardClient, IEntity, IHasValidationAttri
     /// </summary>
     public Mount[] Mounts { get; set; } = Array.Empty<Mount>();
 
-    // TODO: Remove Repo
-    /// <summary>
-    /// The repo to pull into the instance.
-    /// </summary>
-    public Repo? Repo { get; set; }
-
     /// <summary>
     /// The packages to install.
     /// </summary>

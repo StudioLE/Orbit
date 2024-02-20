@@ -51,7 +51,6 @@ internal sealed class SerializationTests
           Target: /srv
         - Source: /mnt/instance-01/config
           Target: /config
-        Repo:
         Install:
         - bat
         - micro
