@@ -46,6 +46,7 @@ public class Mount : IActivity<Mount.Inputs, string>
         /// </summary>
         [Required]
         [NameSchema]
+        [Argument]
         public string Instance { get; set; } = string.Empty;
     }
 

@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
-using Orbit.Creation;
+using Orbit.Creation.Instances;
 using Orbit.Provision;
 using Orbit.Schema;
 

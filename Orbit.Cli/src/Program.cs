@@ -3,10 +3,15 @@ using Cascade.Workflows.CommandLine;
 using Cascade.Workflows.CommandLine.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orbit.Creation;
-using Orbit.Generation;
+using Orbit.CloudInit;
+using Orbit.Configuration;
+using Orbit.Creation.Clients;
+using Orbit.Creation.Instances;
+using Orbit.Creation.Networks;
+using Orbit.Creation.Servers;
 using Orbit.Hosting;
 using Orbit.Initialization;
+using Orbit.WireGuard;
 
 namespace Orbit.Cli;
 
@@ -30,11 +35,11 @@ internal static class Program
             .Register<CreateNetwork>("create", "network")
             .Register<CreateInstance>("create", "instance")
             .Register<CreateClient>("create", "client")
-            .Register<GenerateInstanceConfiguration>("generate", "instance")
-            .Register<GenerateServerConfigurationForInstance>("generate", "server", "instance")
-            .Register<GenerateServerConfigurationForClient>("generate", "server", "client")
-            .Register<GenerateClientConfiguration>("generate", "client")
-            .Register<Initialize>("initialize")
+            .Register<GenerateCloudInit>("generate", "cloud-init")
+            .Register<GenerateServerConfigurationForInstance>("generate", "server-config", "instance")
+            .Register<GenerateServerConfigurationForClient>("generate", "server-config", "client")
+            .Register<GenerateWireGuardClient>("generate", "wireguard", "client")
+            .Register<ExecuteServerConfiguration>("execute", "server-config")
             .Register<Launch>("launch")
             .Register<Mount>("mount")
             .Build();

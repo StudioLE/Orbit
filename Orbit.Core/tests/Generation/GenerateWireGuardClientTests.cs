@@ -1,28 +1,28 @@
+using System.Runtime.InteropServices;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Configuration;
 using Orbit.Core.Tests.Resources;
 using Orbit.Provision;
 using Orbit.Schema;
-using StudioLE.Extensions.Logging.Cache;
+using Orbit.WireGuard;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
 
 namespace Orbit.Core.Tests.Generation;
 
-internal sealed class GenerateServerConfigurationForClientTests
+internal sealed class GenerateWireGuardClientTests
 {
     private readonly IContext _context = new NUnitContext();
-    private CommandContext _commandContext = null!;
-    private GenerateServerConfigurationForClient _activity = null!;
-    private IEntityProvider<Client> _clients = null!;
-    private IReadOnlyCollection<LogEntry> _logs = null!;
+    private readonly CommandContext _commandContext;
+    private readonly GenerateWireGuardClient _activity;
+    private readonly IEntityProvider<Client> _clients;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
-    [SetUp]
-    public void SetUp()
+    public GenerateWireGuardClientTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -31,17 +31,17 @@ internal sealed class GenerateServerConfigurationForClientTests
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
-        _activity = provider.GetRequiredService<GenerateServerConfigurationForClient>();
+        _activity = provider.GetRequiredService<GenerateWireGuardClient>();
         _clients = provider.GetRequiredService<IEntityProvider<Client>>();
         _logs = provider.GetCachedLogs();
     }
 
     [Test]
     [Category("Activity")]
-    public async Task GenerateServerConfigurationForClient_Execute()
+    public async Task GenerateWireGuardClient_Execute()
     {
         // Arrange
-        GenerateServerConfigurationForClient.Inputs inputs = new()
+        GenerateWireGuardClient.Inputs inputs = new()
         {
             Client = MockConstants.ClientName
         };
@@ -51,10 +51,14 @@ internal sealed class GenerateServerConfigurationForClientTests
 
         // Assert
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
+        Assert.That(_logs.Count, Is.EqualTo(0), "Log count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _clients.GetResource(new ClientId(inputs.Client), GenerateServerConfigurationForClient.FileName);
+        string? resource = _clients.GetResource(new ClientId(inputs.Client), $"wg{MockConstants.NetworkNumber}.conf");
         Assert.That(resource, Is.Not.Null);
+
+        // Yaml serialization is inconsistent on Windows
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
         await _context.Verify(resource!);
     }
 }

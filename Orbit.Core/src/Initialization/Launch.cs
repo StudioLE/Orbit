@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
-using Orbit.Generation;
+using Orbit.CloudInit;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
@@ -50,6 +50,7 @@ public class Launch : IActivity<Launch.Inputs, string>
         /// </summary>
         [Required]
         [NameSchema]
+        [Argument]
         public string Instance { get; set; } = string.Empty;
     }
 
@@ -65,7 +66,7 @@ public class Launch : IActivity<Launch.Inputs, string>
         if (server is null)
             return Failure("Failed to get server");
         Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
-        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateInstanceConfiguration.FileName);
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
         if (cloudInit is null)
             return Failure("Failed to get user-config");
         string networkName = instance.Networks.FirstOrDefault() ?? throw new("Instance has no networks");

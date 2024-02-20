@@ -1,8 +1,9 @@
+using System.Runtime.InteropServices;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
-using Orbit.Configuration;
+using Orbit.CloudInit;
 using Orbit.Core.Tests.Resources;
 using Orbit.Provision;
 using Orbit.Schema;
@@ -13,16 +14,15 @@ using StudioLE.Verify;
 
 namespace Orbit.Core.Tests.Generation;
 
-internal sealed class GenerateServerConfigurationForClientTests
+internal sealed class GenerateCloudInitTests
 {
     private readonly IContext _context = new NUnitContext();
-    private CommandContext _commandContext = null!;
-    private GenerateServerConfigurationForClient _activity = null!;
-    private IEntityProvider<Client> _clients = null!;
-    private IReadOnlyCollection<LogEntry> _logs = null!;
+    private readonly CommandContext _commandContext;
+    private readonly GenerateCloudInit _activity;
+    private readonly IEntityProvider<Instance> _instances;
+    private readonly IReadOnlyCollection<LogEntry> _logs;
 
-    [SetUp]
-    public void SetUp()
+    public GenerateCloudInitTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -31,19 +31,19 @@ internal sealed class GenerateServerConfigurationForClientTests
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
-        _activity = provider.GetRequiredService<GenerateServerConfigurationForClient>();
-        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
+        _activity = provider.GetRequiredService<GenerateCloudInit>();
+        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
         _logs = provider.GetCachedLogs();
     }
 
     [Test]
     [Category("Activity")]
-    public async Task GenerateServerConfigurationForClient_Execute()
+    public async Task GenerateCloudInit_Execute()
     {
         // Arrange
-        GenerateServerConfigurationForClient.Inputs inputs = new()
+        GenerateCloudInit.Inputs inputs = new()
         {
-            Client = MockConstants.ClientName
+            Instance = MockConstants.InstanceName
         };
 
         // Act
@@ -53,8 +53,12 @@ internal sealed class GenerateServerConfigurationForClientTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _clients.GetResource(new ClientId(inputs.Client), GenerateServerConfigurationForClient.FileName);
+        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateCloudInit.FileName);
         Assert.That(resource, Is.Not.Null);
+
+        // Yaml serialization is inconsistent on Windows
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
         await _context.Verify(resource!);
     }
 }

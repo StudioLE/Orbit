@@ -1,12 +1,19 @@
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Orbit.Caddy;
+using Orbit.CloudInit;
+using Orbit.Configuration;
 using Orbit.Creation;
-using Orbit.Generation;
+using Orbit.Creation.Clients;
+using Orbit.Creation.Instances;
+using Orbit.Creation.Networks;
+using Orbit.Creation.Servers;
 using Orbit.Initialization;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Shell;
+using Orbit.WireGuard;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
 using Mount = Orbit.Initialization.Mount;
@@ -56,14 +63,14 @@ public static class ServiceExtensions
             .AddTransient<CreateClient>()
             .AddTransient<ClientFactory>()
 
-            .AddTransient<GenerateInstanceConfiguration>()
+            .AddTransient<GenerateCloudInit>()
             .AddTransient<CloudInitFactory>()
             .AddTransient<InstallFactory>()
             .AddTransient<RunFactory>()
             .AddTransient<NetplanFactory>()
             .AddTransient<WireGuardClientConfigFactory>()
 
-            .AddTransient<GenerateClientConfiguration>()
+            .AddTransient<GenerateWireGuardClient>()
             .AddTransient<QREncodeFacade>()
 
             .AddTransient<GenerateServerConfigurationForInstance>()
@@ -74,7 +81,7 @@ public static class ServiceExtensions
             .AddTransient<MountCommandFactory>()
             .AddTransient<WireGuardServerConfigFactory>()
 
-            .AddTransient<Initialize>()
+            .AddTransient<ExecuteServerConfiguration>()
 
             .AddTransient<Launch>()
 

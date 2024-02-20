@@ -30,56 +30,49 @@
     },
     "GenerateInstance": {
       "commandName": "Project",
-      "commandLineArgs": "generate instance test",
+      "commandLineArgs": "generate cloud-init test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "GenerateServerForInstance": {
       "commandName": "Project",
-      "commandLineArgs": "generate server instance test",
+      "commandLineArgs": "generate server-config instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "GenerateServerForClient": {
       "commandName": "Project",
-      "commandLineArgs": "generate server client test",
+      "commandLineArgs": "generate server-config client test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "GenerateClient": {
       "commandName": "Project",
-      "commandLineArgs": "generate client test",
+      "commandLineArgs": "generate wireguard client test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "InitializeServer": {
       "commandName": "Project",
-      "commandLineArgs": "initialize --instance test",
+      "commandLineArgs": "execute server-config test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "Launch": {
       "commandName": "Project",
-      "commandLineArgs": "launch --instance test",
+      "commandLineArgs": "launch test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "Mount": {
       "commandName": "Project",
-      "commandLineArgs": "mount --instance test",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
-    },
-    "Pull": {
-      "commandName": "Project",
-      "commandLineArgs": "pull --instance test",
+      "commandLineArgs": "mount test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
