@@ -64,7 +64,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     public Task<GenerateServerConfiguration.Outputs> Execute(Inputs inputs)
     {
         Instance instance = new();
-        List<KeyValuePair<string, PreparedShellCommand>> commands = new();
+        List<KeyValuePair<string, ShellCommand>> commands = new();
         Func<bool>[] steps =
         {
             () => GetInstance(inputs.Instance, out instance),
@@ -102,7 +102,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         return instance.TryValidate(_logger);
     }
 
-    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, PreparedShellCommand>> commands)
+    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
         foreach (WireGuardClient wg in instance.WireGuard)
         {
@@ -112,39 +112,39 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
                 _logger.LogError("Failed to get network");
                 return false;
             }
-            PreparedShellCommand command = _wireGuardSetCommandFactory.Create(wg);
+            ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
             commands.Add(new(network.Server, command));
         }
         return true;
     }
 
-    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, PreparedShellCommand>> commands)
+    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
         if (!instance.Domains.Any())
         {
             _logger.LogWarning("Domains are required for Caddyfile generation.");
             return true;
         }
-        PreparedShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
+        ShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
         if (!results.Any())
             return false;
         commands.AddRange(results
-            .Select(x => new KeyValuePair<string, PreparedShellCommand>(instance.Server, x)));
+            .Select(x => new KeyValuePair<string, ShellCommand>(instance.Server, x)));
         return true;
     }
 
-    private bool CloneRepo(Instance instance, List<KeyValuePair<string, PreparedShellCommand>> commands)
+    private bool CloneRepo(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        PreparedShellCommand? command = _cloneRepoCommandFactory.Create(instance);
+        ShellCommand? command = _cloneRepoCommandFactory.Create(instance);
         if (command is null)
             return true;
         commands.Add(new(instance.Server, command));
         return true;
     }
 
-    private bool WriteConfiguration(Instance instance, List<KeyValuePair<string, PreparedShellCommand>> commands)
+    private bool WriteConfiguration(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        Dictionary<string, PreparedShellCommand[]> dictionary = commands
+        Dictionary<string, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
 

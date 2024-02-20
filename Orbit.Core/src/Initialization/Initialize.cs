@@ -116,7 +116,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
         return config.All(pair => InitializeOnServer(pair.Key, pair.Value));
     }
 
-    private bool InitializeOnServer(string serverName, PreparedShellCommand[] commands)
+    private bool InitializeOnServer(string serverName, ShellCommand[] commands)
     {
         Server? server = _servers.Get(new ServerId(serverName));
         if (server is null)
@@ -125,7 +125,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
             return false;
         }
         Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
-        foreach (PreparedShellCommand command in commands)
+        foreach (ShellCommand command in commands)
         {
             int exitCode = ssh.Execute(command.Command, string.Empty);
             if (exitCode != 0)

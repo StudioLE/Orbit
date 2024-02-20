@@ -58,7 +58,7 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
     public Task<GenerateServerConfiguration.Outputs> Execute(Inputs inputs)
     {
         Client client = new();
-        List<KeyValuePair<string, PreparedShellCommand>> commands = new();
+        List<KeyValuePair<string, ShellCommand>> commands = new();
         Func<bool>[] steps =
         {
             () => GetClient(inputs.Client, out client),
@@ -94,7 +94,7 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
         return client.TryValidate(_logger);
     }
 
-    private bool SetWireGuardPeer(Client client, List<KeyValuePair<string, PreparedShellCommand>> commands)
+    private bool SetWireGuardPeer(Client client, List<KeyValuePair<string, ShellCommand>> commands)
     {
         foreach (WireGuardClient wg in client.WireGuard)
         {
@@ -104,15 +104,15 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
                 _logger.LogError("Failed to get network");
                 return false;
             }
-            PreparedShellCommand command = _wireGuardSetCommandFactory.Create(wg);
+            ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
             commands.Add(new(network.Server, command));
         }
         return true;
     }
 
-    private bool WriteConfiguration(Client client, List<KeyValuePair<string, PreparedShellCommand>> commands)
+    private bool WriteConfiguration(Client client, List<KeyValuePair<string, ShellCommand>> commands)
     {
-        Dictionary<string, PreparedShellCommand[]> dictionary = commands
+        Dictionary<string, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
 
