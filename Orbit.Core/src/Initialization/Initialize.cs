@@ -101,7 +101,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
 
     private bool InitializeOnServer(Instance instance)
     {
-        string? resource = _instances.GetResource(new InstanceId(instance.Name), GenerateServerConfiguration.FileName);
+        string? resource = _instances.GetResource(new InstanceId(instance.Name), GenerateServerConfigurationForInstance.FileName);
         if (resource is null)
         {
             _logger.LogError("Failed to get server configuration");

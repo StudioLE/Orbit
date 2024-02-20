@@ -30,28 +30,28 @@
     },
     "GenerateInstance": {
       "commandName": "Project",
-      "commandLineArgs": "generate instance --instance test",
+      "commandLineArgs": "generate instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "GenerateServerForInstance": {
       "commandName": "Project",
-      "commandLineArgs": "generate server --instance test",
+      "commandLineArgs": "generate server instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "GenerateServerForClient": {
       "commandName": "Project",
-      "commandLineArgs": "generate server --client test",
+      "commandLineArgs": "generate server client test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
     "GenerateClient": {
       "commandName": "Project",
-      "commandLineArgs": "generate client --client test",
+      "commandLineArgs": "generate client test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

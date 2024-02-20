@@ -49,6 +49,7 @@ public class GenerateInstanceConfiguration : IActivity<GenerateInstanceConfigura
         /// </summary>
         [Required]
         [NameSchema]
+        [Argument]
         public string Instance { get; set; } = string.Empty;
     }
 

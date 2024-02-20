@@ -48,6 +48,7 @@ public class GenerateClientConfiguration : IActivity<GenerateClientConfiguration
         /// </summary>
         [Required]
         [NameSchema]
+        [Argument]
         public string Client { get; set; } = string.Empty;
     }
 

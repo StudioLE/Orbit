@@ -13,8 +13,9 @@ namespace Orbit.Generation;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for a client.
 /// </summary>
-public class GenerateServerConfigurationForClient : IActivity<GenerateServerConfigurationForClient.Inputs, GenerateServerConfiguration.Outputs>
+public class GenerateServerConfigurationForClient : IActivity<GenerateServerConfigurationForClient.Inputs, GenerateServerConfigurationForClient.Outputs>
 {
+    public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfigurationForClient> _logger;
     private readonly IEntityProvider<Client> _clients;
     private readonly IEntityProvider<Network> _networks;
@@ -51,11 +52,19 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
         /// </summary>
         [Required]
         [NameSchema]
+        [Argument]
         public string Client { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// The outputs of <see cref="GenerateServerConfigurationForClient"/>.
+    /// </summary>
+    public class Outputs
+    {
+    }
+
     /// <inheritdoc/>
-    public Task<GenerateServerConfiguration.Outputs> Execute(Inputs inputs)
+    public Task<Outputs> Execute(Inputs inputs)
     {
         Client client = new();
         List<KeyValuePair<string, ShellCommand>> commands = new();
@@ -70,11 +79,11 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
         if (isSuccess)
         {
             _logger.LogInformation("Generated server configuration");
-            return Task.FromResult(new GenerateServerConfiguration.Outputs());
+            return Task.FromResult(new Outputs());
         }
         _logger.LogError("Failed to generate server configuration");
         _context.ExitCode = 1;
-        return Task.FromResult(new GenerateServerConfiguration.Outputs());
+        return Task.FromResult(new Outputs());
     }
 
     private bool GetClient(string clientName, out Client client)
@@ -117,7 +126,7 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
             .ToDictionary(x => x.Key, x => x.ToArray());
 
         string serialized = _serializer.Serialize(dictionary);
-        if (!_clients.PutResource(new ClientId(client.Name), GenerateServerConfiguration.FileName, serialized))
+        if (!_clients.PutResource(new ClientId(client.Name), FileName, serialized))
         {
             _logger.LogError("Failed to write server configuration.");
             return false;

@@ -66,10 +66,8 @@ public static class ServiceExtensions
             .AddTransient<GenerateClientConfiguration>()
             .AddTransient<QREncodeFacade>()
 
-            .AddTransient<GenerateServerConfiguration>()
             .AddTransient<GenerateServerConfigurationForInstance>()
             .AddTransient<GenerateServerConfigurationForClient>()
-            .AddTransient<GenerateServerConfiguration>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardSetCommandFactory>()

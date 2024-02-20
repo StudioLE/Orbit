@@ -13,13 +13,12 @@ using StudioLE.Verify;
 
 namespace Orbit.Core.Tests.Generation;
 
-internal sealed class GenerateServerConfigurationTests
+internal sealed class GenerateServerConfigurationForInstanceTests
 {
     private readonly IContext _context = new NUnitContext();
     private CommandContext _commandContext = null!;
-    private GenerateServerConfiguration _activity = null!;
+    private GenerateServerConfigurationForInstance _activity = null!;
     private IEntityProvider<Instance> _instances = null!;
-    private IEntityProvider<Client> _clients = null!;
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
@@ -32,52 +31,29 @@ internal sealed class GenerateServerConfigurationTests
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
-        _activity = provider.GetRequiredService<GenerateServerConfiguration>();
+        _activity = provider.GetRequiredService<GenerateServerConfigurationForInstance>();
         _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
-        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
         _logs = provider.GetCachedLogs();
     }
 
     [Test]
     [Category("Activity")]
-    public async Task GenerateServerConfiguration_Instance_Execute()
+    public async Task GenerateServerConfigurationForInstance_Execute()
     {
         // Arrange
-        GenerateServerConfiguration.Inputs inputs = new()
+        GenerateServerConfigurationForInstance.Inputs inputs = new()
         {
             Instance = MockConstants.InstanceName
         };
 
         // Act
-        GenerateServerConfiguration.Outputs outputs = await _activity.Execute(inputs);
+        GenerateServerConfigurationForInstance.Outputs outputs = await _activity.Execute(inputs);
 
         // Assert
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
-        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfiguration.FileName);
-        Assert.That(resource, Is.Not.Null);
-        await _context.Verify(resource!);
-    }
-
-    [Test]
-    [Category("Activity")]
-    public async Task GenerateServerConfiguration_Client_Execute()
-    {
-        // Arrange
-        GenerateServerConfiguration.Inputs inputs = new()
-        {
-            Client = MockConstants.ClientName
-        };
-
-        // Act
-        GenerateServerConfiguration.Outputs outputs = await _activity.Execute(inputs);
-
-        // Assert
-        Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo("Generated server configuration"));
-        string? resource = _clients.GetResource(new ClientId(inputs.Client), GenerateServerConfiguration.FileName);
+        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateServerConfigurationForInstance.FileName);
         Assert.That(resource, Is.Not.Null);
         await _context.Verify(resource!);
     }

@@ -13,8 +13,9 @@ namespace Orbit.Generation;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for an instance.
 /// </summary>
-public class GenerateServerConfigurationForInstance : IActivity<GenerateServerConfigurationForInstance.Inputs, GenerateServerConfiguration.Outputs>
+public class GenerateServerConfigurationForInstance : IActivity<GenerateServerConfigurationForInstance.Inputs, GenerateServerConfigurationForInstance.Outputs>
 {
+    public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfigurationForInstance> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Network> _networks;
@@ -57,11 +58,19 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         /// </summary>
         [Required]
         [NameSchema]
+        [Argument]
         public string Instance { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// The outputs of <see cref="GenerateServerConfigurationForInstance"/>.
+    /// </summary>
+    public class Outputs
+    {
+    }
+
     /// <inheritdoc/>
-    public Task<GenerateServerConfiguration.Outputs> Execute(Inputs inputs)
+    public Task<Outputs> Execute(Inputs inputs)
     {
         Instance instance = new();
         List<KeyValuePair<string, ShellCommand>> commands = new();
@@ -78,11 +87,11 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         if (isSuccess)
         {
             _logger.LogInformation("Generated server configuration");
-            return Task.FromResult(new GenerateServerConfiguration.Outputs());
+            return Task.FromResult(new Outputs());
         }
         _logger.LogError("Failed to generate server configuration");
         _context.ExitCode = 1;
-        return Task.FromResult(new GenerateServerConfiguration.Outputs());
+        return Task.FromResult(new Outputs());
     }
 
     private bool GetInstance(string instanceName, out Instance instance)
@@ -149,7 +158,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
             .ToDictionary(x => x.Key, x => x.ToArray());
 
         string serialized = _serializer.Serialize(dictionary);
-        if (!_instances.PutResource(new InstanceId(instance.Name), GenerateServerConfiguration.FileName, serialized))
+        if (!_instances.PutResource(new InstanceId(instance.Name), FileName, serialized))
         {
             _logger.LogError("Failed to write server configuration.");
             return false;
