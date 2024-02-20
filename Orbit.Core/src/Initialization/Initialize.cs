@@ -7,8 +7,8 @@ using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Shell;
+using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
-using Orbit.Utils.Shell;
 using StudioLE.Serialization;
 
 namespace Orbit.Initialization;
@@ -124,7 +124,7 @@ public class Initialize : IActivity<Initialize.Inputs, Initialize.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
+        Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
         foreach (PreparedShellCommand command in commands)
         {
             int exitCode = ssh.Execute(command.Command, string.Empty);

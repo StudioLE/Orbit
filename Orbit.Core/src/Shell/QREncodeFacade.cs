@@ -1,6 +1,6 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Orbit.Utils.Shell;
+using Orbit.Utils.CommandLine;
 
 namespace Orbit.Shell;
 
@@ -23,7 +23,7 @@ public class QREncodeFacade : IQREncodeFacade
     public string GenerateSvg(string source)
     {
         StringBuilder output = new();
-        ShellCommand cmd = new()
+        Cli cli = new()
         {
             Logger = _logger,
             OnOutput = line =>
@@ -32,7 +32,7 @@ public class QREncodeFacade : IQREncodeFacade
                     output.AppendLine(line);
             }
         };
-        int _ = cmd.Execute("qrencode", "-t svg", source);
+        int _ = cli.Execute("qrencode", "-t svg", source);
         return output.ToString();
     }
 }

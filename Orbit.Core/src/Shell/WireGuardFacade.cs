@@ -1,6 +1,6 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Orbit.Utils.Shell;
+using Orbit.Utils.CommandLine;
 
 namespace Orbit.Shell;
 
@@ -22,7 +22,7 @@ public class WireGuardFacade : IWireGuardFacade
     public string GeneratePrivateKey()
     {
         StringBuilder output = new();
-        ShellCommand cmd = new()
+        Cli cli = new()
         {
             Logger = _logger,
             OnOutput = line =>
@@ -32,7 +32,7 @@ public class WireGuardFacade : IWireGuardFacade
             }
         };
         // ReSharper disable once StringLiteralTypo
-        int _ = cmd.Execute("wg", "genkey");
+        int _ = cli.Execute("wg", "genkey");
         return output.ToString();
     }
 
@@ -40,7 +40,7 @@ public class WireGuardFacade : IWireGuardFacade
     public string GeneratePublicKey(string privateKey)
     {
         StringBuilder output = new();
-        ShellCommand cmd = new()
+        Cli cli = new()
         {
             Logger = _logger,
             OnOutput = line =>
@@ -50,7 +50,7 @@ public class WireGuardFacade : IWireGuardFacade
             }
         };
         // ReSharper disable once StringLiteralTypo
-        int _ = cmd.Execute("wg", "pubkey", privateKey);
+        int _ = cli.Execute("wg", "pubkey", privateKey);
         return output.ToString();
     }
 
@@ -58,7 +58,7 @@ public class WireGuardFacade : IWireGuardFacade
     public string GeneratePreSharedKey()
     {
         StringBuilder output = new();
-        ShellCommand cmd = new()
+        Cli cli = new()
         {
             Logger = _logger,
             OnOutput = line =>
@@ -68,7 +68,7 @@ public class WireGuardFacade : IWireGuardFacade
             }
         };
         // ReSharper disable once StringLiteralTypo
-        int _ = cmd.Execute("wg", "genpsk");
+        int _ = cli.Execute("wg", "genpsk");
         return output.ToString();
     }
 }

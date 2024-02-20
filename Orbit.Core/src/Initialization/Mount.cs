@@ -5,8 +5,8 @@ using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Shell;
+using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
-using Orbit.Utils.Shell;
 
 namespace Orbit.Initialization;
 
@@ -97,7 +97,7 @@ public class Mount : IActivity<Mount.Inputs, Mount.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
+        Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
         foreach (Schema.Mount mount in instance.Mounts)
         {
             if (!mount.Source.StartsWith("/mnt"))

@@ -1,16 +1,16 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
-namespace Orbit.Utils.Shell;
+namespace Orbit.Utils.CommandLine;
 
 /// <summary>
 /// Execute a shell command - with optional standard input - and capture the output.
 /// </summary>
 /// <remarks>
-/// <see cref="ShellCommand"/> is a wrapper around <see cref="Process"/> that handles the
+/// <see cref="Cli"/> is a wrapper around <see cref="Process"/> that handles the
 /// frustrations quirks of the dealing with <see cref="Process"/> directly.
 /// </remarks>
-public class ShellCommand
+public class Cli
 {
     public ILogger? Logger { get; set; }
 
@@ -35,18 +35,18 @@ public class ShellCommand
     public Action<ProcessStartInfo>? ConfigureStartInfo { get; set; }
 
     /// <summary>
-    /// Creates a new instance of <see cref="ShellCommand"/>.
+    /// Creates a new instance of <see cref="Cli"/>.
     /// </summary>
-    public ShellCommand()
+    public Cli()
     {
         OnOutput = OutputToLogger;
         OnError = ErrorToLogger;
     }
 
     /// <summary>
-    /// DI constructor for <see cref="ShellCommand"/>.
+    /// DI constructor for <see cref="Cli"/>.
     /// </summary>
-    public ShellCommand(ILogger<ShellCommand> logger) : this()
+    public Cli(ILogger<Cli> logger) : this()
     {
         Logger = logger;
     }

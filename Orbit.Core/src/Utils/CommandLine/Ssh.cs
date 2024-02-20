@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Orbit.Utils.Shell;
+namespace Orbit.Utils.CommandLine;
 
 /// <summary>
 /// Execute a shell command on a remote server via SSH - with optional standard input - and capture the output.
@@ -12,7 +12,7 @@ namespace Orbit.Utils.Shell;
 /// <remarks>
 /// <inheritdoc/>
 /// </remarks>
-public class SecureShellCommand : ShellCommand
+public class Ssh : Cli
 {
     /// <summary>
     /// The SSH host.
@@ -31,25 +31,25 @@ public class SecureShellCommand : ShellCommand
     public string? User { get; set; } = null;
 
     /// <summary>
-    /// Creates a new instance of <see cref="SecureShellCommand"/>.
+    /// Creates a new instance of <see cref="Ssh"/>.
     /// </summary>
-    public SecureShellCommand()
+    public Ssh()
     {
         ConfigureStartInfo = ConfigureStartInfoForSsh;
     }
 
     /// <summary>
-    /// DI constructor for <see cref="SecureShellCommand"/>.
+    /// DI constructor for <see cref="Ssh"/>.
     /// </summary>
-    public SecureShellCommand(ILogger<SecureShellCommand> logger) : this()
+    public Ssh(ILogger<Ssh> logger) : this()
     {
         Logger = logger;
     }
 
     /// <summary>
-    /// DI constructor for <see cref="SecureShellCommand"/>.
+    /// DI constructor for <see cref="Ssh"/>.
     /// </summary>
-    public SecureShellCommand(ILogger<SecureShellCommand> logger, IOptions<SecureShellOptions> options) : this(logger)
+    public Ssh(ILogger<Ssh> logger, IOptions<SshOptions> options) : this(logger)
     {
         Host = options.Value.Host;
         Port = options.Value.Port;

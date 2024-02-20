@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Orbit.Schema;
-using Orbit.Utils.Shell;
+using Orbit.Utils.CommandLine;
 
 namespace Orbit.Shell;
 
@@ -10,12 +10,12 @@ namespace Orbit.Shell;
 public static class MultipassHelpers
 {
     /// <summary>
-    /// Create a <see cref="SecureShellCommand"/> to execute Multipass commands on <see cref="Server"/>.
+    /// Create a <see cref="Ssh"/> to execute Multipass commands on <see cref="Server"/>.
     /// </summary>
     /// <param name="logger">The logger to use.</param>
     /// <param name="server">The server to connect to.</param>
-    /// <returns>The created <see cref="SecureShellCommand"/></returns>
-    public static SecureShellCommand CreateSecureShellCommand(ILogger logger, Server server)
+    /// <returns>The created <see cref="Ssh"/></returns>
+    public static Ssh CreateSsh(ILogger logger, Server server)
     {
         return new()
         {

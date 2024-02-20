@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Utils.Shell;
+using Orbit.Utils.CommandLine;
 
 namespace Orbit.Core.Shell.Sample;
 
@@ -23,11 +23,11 @@ public class ShellCommandSample
         string path = Path.Combine(Directory.GetCurrentDirectory(), "countdown");
         if (!Path.Exists(path))
             throw new("The countdown executable is missing.");
-        ShellCommand cmd = new()
+        Cli cli = new()
         {
             Logger = _logger,
             TimeOut = 10_000
         };
-        return cmd.Execute(path, "2 0.5 0");
+        return cli.Execute(path, "2 0.5 0");
     }
 }

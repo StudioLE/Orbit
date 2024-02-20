@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Orbit.Utils.Shell;
+namespace Orbit.Utils.CommandLine;
 
 /// <summary>
 /// Options for a secure shell connection.
 /// </summary>
-public class SecureShellOptions
+public class SshOptions
 {
     public const string SectionKey = "SSH";
 

@@ -7,8 +7,8 @@ using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Shell;
+using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
-using Orbit.Utils.Shell;
 
 namespace Orbit.Initialization;
 
@@ -106,7 +106,7 @@ public class Launch : IActivity<Launch.Inputs, Launch.Outputs>
             _logger.LogError("Failed to get server");
             return false;
         }
-        SecureShellCommand ssh = MultipassHelpers.CreateSecureShellCommand(_logger, server);
+        Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
         string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateInstanceConfiguration.FileName);
         if (cloudInit is null)
         {

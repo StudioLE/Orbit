@@ -3,46 +3,47 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
-using Orbit.Utils.Shell;
+using Orbit.Utils.CommandLine;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Extensions.System;
 using StudioLE.Verify;
 
-namespace Orbit.Core.Tests.Utils.Shell;
+namespace Orbit.Core.Tests.Utils.CommandLine;
 
 // ReSharper disable once InconsistentNaming
-internal sealed class SecureShellCommandTests
+internal sealed class CliTests
 {
     private readonly IContext _context = new NUnitContext();
-    private SecureShellCommand _cmd = null!;
+    private Cli _cli = null!;
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public void SetUp()
     {
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
         IHost host = Host
             .CreateDefaultBuilder()
             .UseTestLoggingProviders()
-            .ConfigureServices((builder, services) => services
-                .AddTransient<SecureShellCommand>()
-                .AddOptions<SecureShellOptions>()
-                .Bind(builder.Configuration.GetSection(SecureShellOptions.SectionKey)))
+            .ConfigureServices(services => services
+                .AddTransient<Cli>())
             .Build();
         _logs = host.Services.GetCachedLogs();
-        _cmd = host.Services.GetRequiredService<SecureShellCommand>();
+        _cli = host.Services.GetRequiredService<Cli>();
     }
 
     [Test]
     [Category("Misc")]
-    [Explicit("Requires ssh config")]
-    public async Task SecureShellCommand_Execute_Countdown()
+    [Explicit("Requires bash executable")]
+    public async Task ShellCommand_Execute_Countdown()
     {
         // Arrange
+        string path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "countdown");
+        if (!Path.Exists(path))
+            throw new("The countdown executable is missing.");
+
         // Act
-        int exitCode = _cmd.Execute("./countdown", "2 0.5 0");
+        int exitCode = _cli.Execute(path, "2 0.5 0");
 
         // Assert
         Assert.That(exitCode, Is.EqualTo(0), "Exit code");
@@ -57,17 +58,20 @@ internal sealed class SecureShellCommandTests
 
     [Test]
     [Category("Misc")]
-    [Explicit("Requires ssh config")]
-    public async Task SecureShellCommand_Execute_Repeat()
+    [Explicit("Requires bash executable")]
+    public async Task ShellCommand_Execute_Repeat()
     {
         // Arrange
+        string path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "repeat");
+        if (!Path.Exists(path))
+            throw new("The countdown executable is missing.");
         const int count = 1000;
         string longString = Enumerable.Range(1, count)
             .Select(i => $"Line {i} of {count}")
             .Join();
 
         // Act
-        int exitCode = _cmd.Execute("./repeat", "2 0.2", longString);
+        int exitCode = _cli.Execute(path, "2 0.2", longString);
 
         // Assert
         Assert.That(exitCode, Is.EqualTo(0), "Exit code");
