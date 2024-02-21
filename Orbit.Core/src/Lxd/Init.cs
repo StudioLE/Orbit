@@ -73,14 +73,8 @@ public class Init : IActivity<Init.Inputs, string>
         string[] args =
         [
             "init",
-            // TODO: Set image based on instance.OS
-            "ubuntu:22.04",
-            instance.Name,
-            $"--device root,size={instance.Hardware.Disk}",
-            $"--config limits.cpu={instance.Hardware.Cpus}",
-            $"--config limits.memory={instance.Hardware.Memory}GB",
-            "--vm",
-            "--cloud-init -"
+            $"{instance.OS.Name.ToLower()}:{instance.OS.Version}",
+            instance.Name
         ];
         int exitCode = ssh.Execute("lxc", string.Join(" ", args), cloudInit);
         if (exitCode != 0)

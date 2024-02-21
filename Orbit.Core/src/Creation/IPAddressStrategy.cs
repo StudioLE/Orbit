@@ -18,6 +18,14 @@ public class IPAddressStrategy : IIPAddressStrategy
     }
 
     /// <inheritdoc/>
+    public string? GetExternalIPv6(IEntity entity, Network network)
+    {
+        if(network.ExternalIPv6.EndsWith("::"))
+            return $"{network.ExternalIPv6}{entity.Number}";
+        return null;
+    }
+
+    /// <inheritdoc/>
     public string GetInternalGatewayIPv4(Network network)
     {
         return $"10.0.{network.Number}.1";

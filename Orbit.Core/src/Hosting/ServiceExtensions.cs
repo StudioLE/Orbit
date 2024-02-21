@@ -68,6 +68,9 @@ public static class ServiceExtensions
             .AddTransient<NetplanFactory>()
             .AddTransient<WireGuardClientConfigFactory>()
 
+            .AddTransient<GenerateLxdConfig>()
+            .AddTransient<LxdConfigFactory>()
+
             .AddTransient<GenerateWireGuardClient>()
             .AddTransient<IQREncodeFacade, QREncodeFacade>()
 

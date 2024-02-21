@@ -28,28 +28,35 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateInstance": {
+    "GenerateCloudInit": {
       "commandName": "Project",
       "commandLineArgs": "generate cloud-init test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateServerForInstance": {
+    "GenerateLxdConfig": {
+      "commandName": "Project",
+      "commandLineArgs": "generate lxd test",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
+    "GenerateServerConfigForInstance": {
       "commandName": "Project",
       "commandLineArgs": "generate server-config instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateServerForClient": {
+    "GenerateServerConfigForClient": {
       "commandName": "Project",
       "commandLineArgs": "generate server-config client test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateClient": {
+    "GenerateWireGuardClient": {
       "commandName": "Project",
       "commandLineArgs": "generate wireguard client test",
       "environmentVariables": {

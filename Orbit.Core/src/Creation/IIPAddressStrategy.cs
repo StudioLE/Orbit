@@ -9,6 +9,8 @@ public interface IIPAddressStrategy
 
     public string GetInternalIPv6(IEntity instance, Network network);
 
+    public string? GetExternalIPv6(IEntity instance, Network network);
+
     public string GetInternalGatewayIPv4(Network network);
 
     public string GetInternalDnsIPv6(Network network);
