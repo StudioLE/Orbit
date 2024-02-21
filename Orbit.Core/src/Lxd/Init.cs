@@ -9,24 +9,24 @@ using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
 
-namespace Orbit.Multipass;
+namespace Orbit.Lxd;
 
 /// <summary>
 /// An <see cref="IActivity"/> to remotely launch an instance with Multipass.
 /// </summary>
-public class Launch : IActivity<Launch.Inputs, string>
+public class Init : IActivity<Init.Inputs, string>
 {
-    private readonly ILogger<Launch> _logger;
+    private readonly ILogger<Init> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
     private readonly IEntityProvider<Network> _networks;
     private readonly CommandContext _context;
 
     /// <summary>
-    /// DI constructor for <see cref="Launch"/>.
+    /// DI constructor for <see cref="Init"/>.
     /// </summary>
-    public Launch(
-        ILogger<Launch> logger,
+    public Init(
+        ILogger<Init> logger,
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
         IEntityProvider<Network> networks,
@@ -40,7 +40,7 @@ public class Launch : IActivity<Launch.Inputs, string>
     }
 
     /// <summary>
-    /// The inputs for <see cref="Launch"/>.
+    /// The inputs for <see cref="Init"/>.
     /// </summary>
     public class Inputs
     {
@@ -64,7 +64,7 @@ public class Launch : IActivity<Launch.Inputs, string>
         Server? server = _servers.Get(new ServerId(instance.Server));
         if (server is null)
             return Failure("Failed to get server");
-        Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
+        Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
         string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
         if (cloudInit is null)
             return Failure("Failed to get user-config");
@@ -72,15 +72,17 @@ public class Launch : IActivity<Launch.Inputs, string>
         Network network = _networks.Get(new NetworkId(networkName)) ?? throw new($"Network {networkName} not found");
         string[] args =
         [
-            "launch",
-            $"--cpus {instance.Hardware.Cpus}",
-            $"--memory {instance.Hardware.Memory}G",
-            $"--disk {instance.Hardware.Disk}G",
-            $"--name {instance.Name}",
-            $"--network name=br{network.Number},mode=manual,mac=\"{instance.MacAddress}\"",
+            "init",
+            // TODO: Set image based on instance.OS
+            "ubuntu:22.04",
+            instance.Name,
+            $"--device root,size={instance.Hardware.Disk}",
+            $"--config limits.cpu={instance.Hardware.Cpus}",
+            $"--config limits.memory={instance.Hardware.Memory}GB",
+            "--vm",
             "--cloud-init -"
         ];
-        int exitCode = ssh.Execute("multipass", string.Join(" ", args), cloudInit);
+        int exitCode = ssh.Execute("lxc", string.Join(" ", args), cloudInit);
         if (exitCode != 0)
             return Failure("Failed to run multipass launch on server.");
         _logger.LogInformation($"Launched instance {instance.Name}");

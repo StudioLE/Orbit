@@ -56,23 +56,16 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "InitializeServer": {
+    "ExecuteServerConfig": {
       "commandName": "Project",
       "commandLineArgs": "execute server-config test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "Launch": {
+    "Init": {
       "commandName": "Project",
-      "commandLineArgs": "launch test",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
-    },
-    "Mount": {
-      "commandName": "Project",
-      "commandLineArgs": "mount test",
+      "commandLineArgs": "init test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

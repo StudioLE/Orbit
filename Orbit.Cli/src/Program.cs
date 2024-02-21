@@ -10,7 +10,7 @@ using Orbit.Creation.Instances;
 using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
 using Orbit.Hosting;
-using Orbit.Multipass;
+using Orbit.Lxd;
 using Orbit.WireGuard;
 
 namespace Orbit.Cli;
@@ -40,8 +40,7 @@ internal static class Program
             .Register<GenerateServerConfigurationForClient>("generate", "server-config", "client")
             .Register<GenerateWireGuardClient>("generate", "wireguard", "client")
             .Register<ExecuteServerConfiguration>("execute", "server-config")
-            .Register<Launch>("launch")
-            .Register<Mount>("mount")
+            .Register<Init>("init")
             .Build();
 
         await command.InvokeAsync(args);

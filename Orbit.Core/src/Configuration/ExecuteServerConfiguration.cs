@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Cascade.Workflows;
 using Cascade.Workflows.CommandLine;
 using Microsoft.Extensions.Logging;
-using Orbit.Multipass;
+using Orbit.Lxd;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
@@ -72,7 +72,7 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
             Server? server = _servers.Get(new ServerId(serverName));
             if (server is null)
                 return Failure("Failed to get server");
-            Ssh ssh = MultipassHelpers.CreateSsh(_logger, server);
+            Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
             foreach (ShellCommand command in commands)
             {
                 int exitCode = ssh.Execute(command.Command, string.Empty);

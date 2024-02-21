@@ -9,13 +9,12 @@ using Orbit.Creation.Clients;
 using Orbit.Creation.Instances;
 using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
-using Orbit.Multipass;
+using Orbit.Lxd;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.WireGuard;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
-using Mount = Orbit.Multipass.Mount;
 
 namespace Orbit.Hosting;
 
@@ -77,14 +76,11 @@ public static class ServiceExtensions
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
-            .AddTransient<MountCommandFactory>()
             .AddTransient<WireGuardServerConfigFactory>()
 
             .AddTransient<ExecuteServerConfiguration>()
 
-            .AddTransient<Launch>()
-
-            .AddTransient<Mount>();
+            .AddTransient<Init>();
 
         // @formatter:on
     }

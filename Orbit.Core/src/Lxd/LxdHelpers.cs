@@ -2,15 +2,15 @@ using Microsoft.Extensions.Logging;
 using Orbit.Schema;
 using Orbit.Utils.CommandLine;
 
-namespace Orbit.Multipass;
+namespace Orbit.Lxd;
 
 /// <summary>
-/// Methods to help with Multipass.
+/// Methods to help with LXD.
 /// </summary>
-public static class MultipassHelpers
+public static class LxdHelpers
 {
     /// <summary>
-    /// Create a <see cref="Ssh"/> to execute Multipass commands on <see cref="Server"/>.
+    /// Create a <see cref="Ssh"/> to execute LXD commands on <see cref="Server"/>.
     /// </summary>
     /// <param name="logger">The logger to use.</param>
     /// <param name="server">The server to connect to.</param>
@@ -28,23 +28,23 @@ public static class MultipassHelpers
     }
 
     /// <summary>
-    /// Remove the rotating spinner and pass the standard output of a Multipass command to the logger.
+    /// Remove the rotating spinner and pass the standard output of a LXD command to the logger.
     /// </summary>
     /// <param name="logger">The logger to pass to.</param>
     /// <param name="output">The standard output.</param>
     public static void OutputToLogger(ILogger logger, string output)
     {
-        string filtered = RemoveMultipassSpinner(output);
+        string filtered = RemoveSpinner(output);
         if (!string.IsNullOrEmpty(filtered))
             logger.LogInformation(filtered);
     }
 
     /// <summary>
-    /// Filter the standard output of a Multipass command to remove the rotating spinner.
+    /// Filter the standard output of a LXD command to remove the rotating spinner.
     /// </summary>
     /// <param name="output">The standard output of a Multipass command.</param>
     /// <returns>The output without spinner or unicode backspaces</returns>
-    public static string RemoveMultipassSpinner(string output)
+    public static string RemoveSpinner(string output)
     {
         const char unicodeBackspace = '\b';
         return output
