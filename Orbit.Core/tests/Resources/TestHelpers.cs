@@ -18,8 +18,20 @@ namespace Orbit.Core.Tests.Resources;
 
 public static class TestHelpers
 {
+    private static Server? _exampleServer;
+    private static Network? _exampleNetwork;
     private static Instance? _exampleInstance;
     private static Client? _exampleClient;
+
+    public static Server GetExampleServer()
+    {
+        return _exampleServer ?? throw new("Example server must be created using TestHelpers.CreateTestHost()");
+    }
+
+    public static Network GetExampleNetwork()
+    {
+        return _exampleNetwork ?? throw new("Example network must be created using TestHelpers.CreateTestHost()");
+    }
 
     public static Instance GetExampleInstance()
     {
@@ -48,6 +60,7 @@ public static class TestHelpers
         });
         IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
         servers.Put(server);
+        _exampleServer = server;
     }
 
     private static void CreateExampleNetwork(IServiceProvider services)
@@ -66,9 +79,9 @@ public static class TestHelpers
                 PublicKey = MockConstants.PublicKey
             }
         });
-
         IEntityProvider<Network> networks = services.GetRequiredService<IEntityProvider<Network>>();
         networks.Put(network);
+        _exampleNetwork = network;
     }
 
     private static void CreateExampleInstance(IServiceProvider services)

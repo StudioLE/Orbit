@@ -1,0 +1,46 @@
+Name: example-instance
+Number: 9
+Role: node
+Server: example-server
+Networks:
+- example-network
+MacAddress: 7C:62:7E:63:55:E5
+OS:
+  Name: ubuntu
+  Version: jammy
+Hardware:
+  Platform: Virtual
+  Type: G2
+  Cpus: 2
+  Memory: 2
+  Disk: 20
+WireGuard:
+- Name: wg6
+  Network: example-network
+  IsExternal: false
+  Port: 61006
+  PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+  PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+  PreSharedKey: C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
+  Addresses:
+  - 10.1.6.9
+  - fc00::1:6:9
+  AllowedIPs:
+  - 10.1.6.0/24
+  - fc00::1:6:0/112
+Domains:
+- example.com
+- example.org
+Mounts: []
+Install:
+- bat
+- micro
+- figlet
+- motd-hostname
+- motd-system
+- network-test
+- upgrade-packages
+Run:
+- disable-motd
+- network-test
+- upgrade-packages

@@ -1,0 +1,18 @@
+Name: example-client
+Number: 111
+Networks:
+- example-network
+WireGuard:
+- Name: wg6
+  Network: example-network
+  IsExternal: true
+  Port: 61006
+  PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+  PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+  PreSharedKey: C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
+  Addresses:
+  - 10.1.6.111
+  - fc00::1:6:111
+  AllowedIPs:
+  - 10.1.6.0/24
+  - fc00::1:6:0/112

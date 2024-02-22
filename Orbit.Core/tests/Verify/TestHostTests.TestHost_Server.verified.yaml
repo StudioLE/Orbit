@@ -1,0 +1,8 @@
+Name: example-server
+Number: 3
+Address: localhost
+Ssh:
+  Port: 22
+  User: user
+  Password: ''
+  PrivateKeyFile: /home/le/.ssh/id_rsa

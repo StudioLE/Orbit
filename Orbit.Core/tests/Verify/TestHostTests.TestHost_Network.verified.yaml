@@ -1,0 +1,14 @@
+Name: example-network
+Number: 6
+Server: example-server
+Interface: eno1
+ExternalIPv4: 203.0.113.1
+ExternalIPv6: '2001:db8::'
+WireGuard:
+  Name: wg6
+  Port: 61006
+  PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
+  PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
+  Dns:
+  - 10.1.6.2
+  - fc00::1:6:2
