@@ -1,18 +1,41 @@
 Name: example-client
 Number: 111
-Networks:
-- example-network
+Connections:
+- example-server
+Interfaces:
+- Name: eth0
+  Server: ''
+  Type: Nic
+  MacAddress: 7C:62:7E:63:55:E5
+  Addresses:
+  - 203.0.113.1
+  - '2001:db8::'
+  Gateways: []
+  Subnets: []
+  Dns: []
 WireGuard:
-- Name: wg6
-  Network: example-network
-  IsExternal: true
-  Port: 61006
+- Interface:
+    Name: wg3
+    Server: example-server
+    Type: WireGuard
+    MacAddress: 7C:62:7E:63:55:E5
+    Addresses:
+    - 10.1.3.111/24
+    - fc00::1:3:111/112
+    Gateways:
+    - 10.1.3.1
+    - fc00::1:3:1
+    Subnets:
+    - 10.1.3.0/24
+    - fc00::1:3:0/112
+    Dns:
+    - 10.1.3.2
+    - fc00::1:3:2
+  Port: 61003
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=
   PreSharedKey: C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY=
-  Addresses:
-  - 10.1.6.111
-  - fc00::1:6:111
   AllowedIPs:
-  - 10.1.6.0/24
-  - fc00::1:6:0/112
+  - 10.1.3.0/24
+  - fc00::1:3:0/112
+  Endpoint: 203.0.113.64:61003

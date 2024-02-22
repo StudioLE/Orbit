@@ -1,49 +1,75 @@
-using Orbit.Networking;
 using Orbit.Provision;
 using Orbit.Schema;
 using StudioLE.Patterns;
+using StudioLE.Serialization;
+using StudioLE.Serialization.Yaml;
+using YamlDotNet.RepresentationModel;
 
 namespace Orbit.CloudInit;
 
 public class NetplanFactory : IFactory<Instance, string>
 {
-    private readonly IEntityProvider<Network> _networks;
-    private readonly IIPAddressStrategy _ip;
+    private readonly ISerializer _serializer;
 
-    public NetplanFactory(IEntityProvider<Network> networks, IIPAddressStrategy ip)
+    public NetplanFactory(ISerializer serializer)
     {
-        _networks = networks;
-        _ip = ip;
+        _serializer = serializer;
     }
 
     /// <inheritdoc/>
     public string Create(Instance instance)
     {
-        string networkName = instance.Networks.FirstOrDefault() ?? throw new("Instance must have a network.");
-        Network network = _networks.Get(new NetworkId(networkName)) ?? throw new($"Network {networkName} not found.");
-        return $"""
-            network:
-              version: 2
-              ethernets:
-                extra0:
-                  dhcp4: no
-                  match:
-                    macaddress: {instance.MacAddress}
-                  addresses:
-                  - {_ip.GetInternalIPv4(instance, network)}/24
-                  - {_ip.GetInternalIPv6(instance, network)}/112
-                  nameservers:
-                    addresses:
-                    - {_ip.GetInternalDnsIPv4(network)}
-                    - {_ip.GetInternalDnsIPv6(network)}
-                  routes:
-                  - to: default
-                    via: {_ip.GetInternalGatewayIPv4(network)}
-                    metric: 50
-                  - to: default
-                    via: {_ip.GetInternalGatewayIPv6(network)}
-                    metric: 50
+        YamlNode resource = EmbeddedResourceHelpers.GetYaml("Resources/Templates/netplan-config-template.yml");
+        if (resource is not YamlMappingNode yaml)
+            throw new($"Expected a {nameof(YamlMappingNode)}");
 
-            """;
+        // Network
+        YamlMappingNode root = yaml.GetValue<YamlMappingNode>("network") ?? throw new("Invalid netplan");
+
+        // Ethernets
+        YamlMappingNode? ethernets = root.GetValue<YamlMappingNode>("ethernets");
+        if (ethernets is null)
+        {
+            ethernets = new();
+            root.SetValue("ethernets", ethernets);
+        }
+
+        // Bridges
+        IEnumerable<Interface> bridges = instance.Interfaces.Where(x => x.Type == NetworkType.Bridge);
+        foreach (Interface bridge in bridges)
+        {
+            YamlMappingNode match = new()
+            {
+                { "macaddress", bridge.MacAddress }
+            };
+            YamlMappingNode nameservers = new()
+            {
+                { "addresses", bridge.Dns }
+            };
+            YamlSequenceNode routes = new(bridge
+                .Gateways
+                .Select(x => new YamlMappingNode
+                {
+                    { "to", "default" },
+                    { "via", x },
+                    { "metric", "50" }
+                }));
+            YamlMappingNode ethernet = new()
+            {
+                { "dhcp4", "no" },
+                // { "dhcp6", "no" },
+                { "match", match },
+                { "addresses", bridge.Addresses },
+                { "nameservers", nameservers },
+                { "routes", routes }
+            };
+            ethernets.SetValue(bridge.Name, ethernet);
+        }
+
+        // TODO: RoutedNic
+
+        // Serialize
+        string output = _serializer.Serialize(yaml);
+        return output;
     }
 }

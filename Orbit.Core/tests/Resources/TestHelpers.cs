@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using Orbit.CloudInit;
 using Orbit.Creation.Clients;
 using Orbit.Creation.Instances;
-using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
 using Orbit.Hosting;
 using Orbit.Provision;
@@ -19,18 +18,12 @@ namespace Orbit.Core.Tests.Resources;
 public static class TestHelpers
 {
     private static Server? _exampleServer;
-    private static Network? _exampleNetwork;
     private static Instance? _exampleInstance;
     private static Client? _exampleClient;
 
     public static Server GetExampleServer()
     {
         return _exampleServer ?? throw new("Example server must be created using TestHelpers.CreateTestHost()");
-    }
-
-    public static Network GetExampleNetwork()
-    {
-        return _exampleNetwork ?? throw new("Example network must be created using TestHelpers.CreateTestHost()");
     }
 
     public static Instance GetExampleInstance()
@@ -50,38 +43,21 @@ public static class TestHelpers
         {
             Name = MockConstants.ServerName,
             Number = MockConstants.ServerNumber,
-            Address = "localhost",
             Ssh = new()
             {
+                Host = "localhost",
                 Port = 22,
-                User = "user",
-                PrivateKeyFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh/id_rsa")
-            }
-        });
-        IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
-        servers.Put(server);
-        _exampleServer = server;
-    }
-
-    private static void CreateExampleNetwork(IServiceProvider services)
-    {
-        NetworkFactory factory = services.GetRequiredService<NetworkFactory>();
-        Network network = factory.Create(new()
-        {
-            Name = MockConstants.NetworkName,
-            Number = MockConstants.NetworkNumber,
-            Server = MockConstants.ServerName,
-            ExternalIPv4 = MockConstants.ExternalIPv4,
-            ExternalIPv6 = MockConstants.ExternalIPv6,
+                User = "user"
+            },
             WireGuard = new()
             {
                 PrivateKey = MockConstants.PrivateKey,
                 PublicKey = MockConstants.PublicKey
             }
         });
-        IEntityProvider<Network> networks = services.GetRequiredService<IEntityProvider<Network>>();
-        networks.Put(network);
-        _exampleNetwork = network;
+        IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
+        servers.Put(server);
+        _exampleServer = server;
     }
 
     private static void CreateExampleInstance(IServiceProvider services)
@@ -91,18 +67,21 @@ public static class TestHelpers
         {
             Name = MockConstants.InstanceName,
             Number = MockConstants.InstanceNumber,
-            MacAddress = MockConstants.MacAddress,
-            WireGuard = new[]
-            {
-                new WireGuardClient
+            WireGuard =
+            [
+                new()
                 {
-                    Network = MockConstants.NetworkName,
+                    Interface = new()
+                    {
+                        Server = MockConstants.ServerName,
+                        MacAddress = MockConstants.MacAddress
+                    },
                     PrivateKey = MockConstants.PrivateKey,
                     PublicKey = MockConstants.PublicKey,
                     PreSharedKey = MockConstants.PreSharedKey
                 }
-            },
-            Domains = new[] { "example.com", "example.org" }
+            ],
+            Domains = ["example.com", "example.org"]
         });
         IEntityProvider<Instance> instances = services.GetRequiredService<IEntityProvider<Instance>>();
         instances.Put(instance);
@@ -116,16 +95,20 @@ public static class TestHelpers
         {
             Name = MockConstants.ClientName,
             Number = MockConstants.ClientNumber,
-            WireGuard = new[]
-            {
-                new WireGuardClient
+            WireGuard =
+            [
+                new()
                 {
-                    Network = MockConstants.NetworkName,
+                    Interface = new()
+                    {
+                        Server = MockConstants.ServerName,
+                        MacAddress = MockConstants.MacAddress
+                    },
                     PrivateKey = MockConstants.PrivateKey,
                     PublicKey = MockConstants.PublicKey,
                     PreSharedKey = MockConstants.PreSharedKey
                 }
-            }
+            ]
         });
         IEntityProvider<Client> clients = services.GetRequiredService<IEntityProvider<Client>>();
         clients.Put(client);
@@ -147,7 +130,6 @@ public static class TestHelpers
             .ConfigureServices(configureServices)
             .Build();
         CreateExampleServer(host.Services);
-        CreateExampleNetwork(host.Services);
         CreateExampleInstance(host.Services);
         CreateExampleClient(host.Services);
         return host;
@@ -196,5 +178,19 @@ public static class TestHelpers
                 // logging.AddConsole();
                 logging.AddCache();
             });
+    }
+
+    public static void UseMockMacAddress(IHasWireGuardClient entity)
+    {
+        foreach (Interface @interface in entity.Interfaces)
+            @interface.MacAddress = MockConstants.MacAddress;
+        foreach (WireGuardClient wg in entity.WireGuard)
+            wg.Interface.MacAddress = MockConstants.MacAddress;
+    }
+
+    public static void UseMockMacAddress(Server server)
+    {
+        foreach (Interface @interface in server.Interfaces)
+            @interface.MacAddress = MockConstants.MacAddress;
     }
 }

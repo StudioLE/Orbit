@@ -62,7 +62,7 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
             return Failure();
         foreach (WireGuardClient wg in client.WireGuard)
         {
-            string fileName = $"{wg.Name}.conf";
+            string fileName = $"{wg.Interface.Name}.conf";
             string config = _factory.Create(wg);
             // TODO: Make save optional
             if (!_clients.PutResource(new ClientId(client.Name), fileName, config))

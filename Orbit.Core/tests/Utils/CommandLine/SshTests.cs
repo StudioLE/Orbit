@@ -38,7 +38,7 @@ internal sealed class SshTests
     [Test]
     [Category("Misc")]
     [Explicit("Requires ssh config")]
-    public async Task SecureShellCommand_Execute_Countdown()
+    public async Task Ssh_Execute_Countdown()
     {
         // Arrange
         // Act
@@ -58,7 +58,7 @@ internal sealed class SshTests
     [Test]
     [Category("Misc")]
     [Explicit("Requires ssh config")]
-    public async Task SecureShellCommand_Execute_Repeat()
+    public async Task Ssh_Execute_Repeat()
     {
         // Arrange
         const int count = 1000;

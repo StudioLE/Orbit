@@ -9,6 +9,15 @@ namespace Orbit.Schema;
 public class SshConnection : IHasValidationAttributes
 {
     /// <summary>
+    /// The SSH host.
+    /// </summary>
+    /// <remarks>
+    /// This could be an IP address or a domain name.
+    /// </remarks>
+    [Required]
+    public string Host { get; set; } = string.Empty;
+
+    /// <summary>
     /// The SSH port.
     /// </summary>
     [Required]
@@ -21,14 +30,5 @@ public class SshConnection : IHasValidationAttributes
     [Required]
     public string User { get; set; } = string.Empty;
 
-    /// <summary>
-    /// The optional SSH password.
-    /// </summary>
-    public string Password { get; set; } = string.Empty;
 
-    /// <summary>
-    /// The optional path to an SSH private key.
-    /// </summary>
-    public string PrivateKeyFile { get; set; } = string.Empty;
-    // TODO: Remove Password and PrivateKeyFile from SshConnection.
 }

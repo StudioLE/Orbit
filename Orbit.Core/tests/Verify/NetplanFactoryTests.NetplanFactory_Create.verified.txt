@@ -1,21 +1,21 @@
 ﻿network:
   version: 2
   ethernets:
-    extra0:
+    int3:
       dhcp4: no
       match:
         macaddress: 7C:62:7E:63:55:E5
       addresses:
-      - 10.0.6.9/24
-      - fc00::0:6:9/112
+      - 10.0.3.9/24
+      - fc00::0:3:9/112
       nameservers:
         addresses:
-        - 10.0.6.2
-        - fc00::0:6:2
+        - 10.0.3.2
+        - fc00::0:3:2
       routes:
       - to: default
-        via: 10.0.6.1
+        via: 10.0.3.1
         metric: 50
       - to: default
-        via: fc00::0:6:1
+        via: fc00::0:3:1
         metric: 50

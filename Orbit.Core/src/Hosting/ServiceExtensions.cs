@@ -6,10 +6,8 @@ using Orbit.CloudInit;
 using Orbit.Configuration;
 using Orbit.Creation.Clients;
 using Orbit.Creation.Instances;
-using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
 using Orbit.Lxd;
-using Orbit.Networking;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.WireGuard;
@@ -36,7 +34,6 @@ public static class ServiceExtensions
 
             .AddTransient<IEntityFileProvider, EntityFileProvider>()
             .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
-            .AddTransient<IEntityProvider<Network>, EntityProvider<Network>>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddTransient<IEntityProvider<Client>, EntityProvider<Client>>()
 
@@ -44,19 +41,18 @@ public static class ServiceExtensions
 
             .AddTransient<CreateServer>()
             .AddTransient<ServerFactory>()
-
-            .AddTransient<CreateNetwork>()
-            .AddTransient<NetworkFactory>()
             .AddTransient<WireGuardServerFactory>()
+            .AddTransient<BridgeInterfaceFactory>()
 
             .AddTransient<CreateInstance>()
             .AddTransient<InstanceFactory>()
             .AddTransient<HardwareFactory>()
-            .AddTransient<NetworkFactory>()
+            .AddTransient<ExternalInterfaceFactory>()
+            .AddTransient<InternalInterfaceFactory>()
+
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardClientFactory>()
             .AddTransient<IWireGuardFacade, WireGuardFacade>()
-            .AddTransient<IIPAddressStrategy, IPAddressStrategy>()
 
             .AddTransient<CreateClient>()
             .AddTransient<ClientFactory>()

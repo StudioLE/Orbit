@@ -1,58 +1,46 @@
-using Orbit.Networking;
 using Orbit.Schema;
 using Orbit.Utils;
-using Orbit.WireGuard;
 using StudioLE.Patterns;
 
-namespace Orbit.Creation.Networks;
+namespace Orbit.WireGuard;
 
 /// <summary>
 /// A factory for creating <see cref="WireGuardServer"/> with default values.
 /// </summary>
-public class WireGuardServerFactory : IFactory<Network, WireGuardServer>
+public class WireGuardServerFactory : IFactory<Server, WireGuardServer>
 {
     private readonly IWireGuardFacade _wg;
-    private readonly IIPAddressStrategy _ip;
 
     /// <summary>
     /// The DI constructor for <see cref="WireGuardServerFactory"/>.
     /// </summary>
-    public WireGuardServerFactory(IWireGuardFacade wg, IIPAddressStrategy ip)
+    public WireGuardServerFactory(IWireGuardFacade wg)
     {
         _wg = wg;
-        _ip = ip;
     }
 
     /// <inheritdoc/>
-    public WireGuardServer Create(Network network)
+    public WireGuardServer Create(Server server)
     {
         WireGuardServer result = new()
         {
-            Name = network.WireGuard.Name,
-            Port = network.WireGuard.Port,
-            PrivateKey = network.WireGuard.PrivateKey,
-            PublicKey = network.WireGuard.PublicKey,
-            Dns = network.WireGuard.Dns
+            Name = server.WireGuard.Name,
+            Port = server.WireGuard.Port,
+            PrivateKey = server.WireGuard.PrivateKey,
+            PublicKey = server.WireGuard.PublicKey
         };
 
         if (result.Name.IsNullOrEmpty())
-            result.Name = $"wg{network.Number}";
+            result.Name = $"wg{server.Number}";
 
         if (result.Port == default)
-            result.Port = 61000 + network.Number;
+            result.Port = 61000 + server.Number;
 
         if (result.PrivateKey.IsNullOrEmpty())
             result.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
 
         if (result.PublicKey.IsNullOrEmpty())
             result.PublicKey = _wg.GeneratePublicKey(result.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
-
-        if (!result.Dns.Any())
-            result.Dns = new[]
-            {
-                _ip.GetWireGuardDnsIPv4(network),
-                _ip.GetWireGuardDnsIPv6(network)
-            };
 
         return result;
     }

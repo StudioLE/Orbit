@@ -1,7 +1,7 @@
 using Orbit.CloudInit;
-using Orbit.Networking;
 using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Utils.Networking;
 using StudioLE.Patterns;
 using StudioLE.Serialization;
 using StudioLE.Serialization.Yaml;
@@ -14,9 +14,8 @@ public class LxdConfigFactory : IFactory<Instance, string>
 {
     private readonly ISerializer _serializer;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly IEntityProvider<Network> _networks;
+    private readonly IEntityProvider<Server> _servers;
     private readonly UserConfigFactory _userConfig;
-    private readonly IIPAddressStrategy _ip;
 
     /// <summary>
     /// DI constructor for <see cref="LxdConfigFactory"/>.
@@ -24,15 +23,13 @@ public class LxdConfigFactory : IFactory<Instance, string>
     public LxdConfigFactory(
         ISerializer serializer,
         IEntityProvider<Instance> instances,
-        IEntityProvider<Network> networks,
-        UserConfigFactory userConfig,
-        IIPAddressStrategy ip)
+        IEntityProvider<Server> servers,
+        UserConfigFactory userConfig)
     {
         _serializer = serializer;
         _instances = instances;
-        _networks = networks;
         _userConfig = userConfig;
-        _ip = ip;
+        _servers = servers;
     }
 
     /// <inheritdoc/>
@@ -41,6 +38,8 @@ public class LxdConfigFactory : IFactory<Instance, string>
         YamlNode resource = EmbeddedResourceHelpers.GetYaml("Resources/Templates/lxd-config-template.yml");
         if (resource is not YamlMappingNode yaml)
             throw new($"Expected a {nameof(YamlMappingNode)}");
+
+        // TODO: Rewrite to use multiline interpolated strings
 
         // Name
         yaml.SetValue("name", instance.Name, false);
@@ -61,32 +60,36 @@ public class LxdConfigFactory : IFactory<Instance, string>
         devices.SetValue("root", rootDisk);
 
         // Networks
-        string networkName = instance.Networks.FirstOrDefault() ?? throw new("Instance must have a network.");
-        Network network = _networks.Get(new NetworkId(networkName)) ?? throw new($"Network {networkName} not found.");
-        string internalIPv4 = _ip.GetInternalIPv4(instance, network);
-        string internalIPv6 = _ip.GetInternalIPv6(instance, network);
-        // string externalIPv4 = _ip.GetExternalIPv4();
-        string? externalIPv6 = _ip.GetExternalIPv6(instance, network);
-        if (externalIPv6 is not null)
+        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new($"Server not found: {instance.Server}.");
+        Interface? routedNic = instance.Interfaces.FirstOrDefault(x => x.Type == NetworkType.RoutedNic);
+        if (routedNic is not null)
         {
-            YamlMappingNode ext0 = new()
+            string routedIPv6 = routedNic.Addresses.FirstOrDefault(IPHelpers.IsIPv6) ?? throw new("No IPv6 found.");
+            Interface serverNic = server.Interfaces.FirstOrDefault(x => x.Type == NetworkType.Nic) ?? throw new($"NIC not found for server: {server.Name}.");
+            YamlMappingNode routedNicDevice = new()
             {
-                { "ipv6.address", externalIPv6 },
+                { "ipv6.address", routedIPv6 },
                 { "nictype", "routed" },
-                { "parent", network.Interface },
+                { "parent", serverNic.Name },
                 { "type", "nic" }
             };
-            devices.SetValue("ext0", ext0);
+            devices.SetValue(routedNic.Name, routedNicDevice);
         }
-        string bridgeInterface = $"br{network.Number}";
-        YamlMappingNode int0 = new()
+        Interface bridge = instance.Interfaces.FirstOrDefault(x => x.Type == NetworkType.Bridge) ?? throw new($"Bridge not found for instance: {instance.Name}.");
+        string ipv4 = bridge.Addresses.FirstOrDefault(IPHelpers.IsIPv4) ?? string.Empty;
+        string ipv6 = bridge.Addresses.FirstOrDefault(IPHelpers.IsIPv6) ?? string.Empty;
+        // TODO: The server may have more than one bridge. If so how do we know which one to use?
+        string bridgeParent = server.Interfaces.FirstOrDefault(x => x.Type == NetworkType.Bridge)?.Name ?? throw new($"Bridge not found for server: {server.Name}.");
+        ipv4 = IPHelpers.RemoveCidr(ipv4);
+        ipv6 = IPHelpers.RemoveCidr(ipv6);
+        YamlMappingNode bridgeDevice = new()
         {
-            { "ipv6.address", internalIPv6 },
-            { "ipv4.address", internalIPv4 },
-            { "network", bridgeInterface },
+            { "ipv4.address", ipv4 },
+            { "ipv6.address", ipv6 },
+            { "network", bridgeParent },
             { "type", "nic" }
         };
-        devices.SetValue("int0", int0);
+        devices.SetValue(bridge.Name, bridgeDevice);
 
         // Config
         YamlMappingNode? config = yaml.GetValue<YamlMappingNode>("config");

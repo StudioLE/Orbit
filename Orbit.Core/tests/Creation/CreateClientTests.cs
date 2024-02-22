@@ -40,28 +40,28 @@ internal sealed class CreateClientTests
         // Arrange
         Client sourceClient = new()
         {
-            WireGuard = new[]
-            {
-                new WireGuardClient
+            WireGuard =
+            [
+                new()
                 {
                     PrivateKey = MockConstants.PrivateKey,
                     PublicKey = MockConstants.PublicKey,
                     PreSharedKey = MockConstants.PreSharedKey
                 }
-            }
+            ]
         };
 
         // Act
         Client? createdClient = await _activity.Execute(sourceClient);
 
         // Assert
-        if (createdClient is null)
-            Assert.Fail();
-        else
-            await _context.VerifyAsSerialized(createdClient, _serializer);
+        TestHelpers.UseMockMacAddress(createdClient!);
+        Assert.That(createdClient, Is.Not.Null);
+        await _context.VerifyAsSerialized(createdClient!, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {createdClient!.Name}"));
         Client storedClient = _clients.Get(new ClientId(createdClient.Name)) ?? throw new("Failed to get client.");
+        TestHelpers.UseMockMacAddress(storedClient);
         await _context.VerifyAsSerialized(storedClient, createdClient, _serializer);
     }
 }

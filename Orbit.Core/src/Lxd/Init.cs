@@ -19,7 +19,6 @@ public class Init : IActivity<Init.Inputs, string>
     private readonly ILogger<Init> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
-    private readonly IEntityProvider<Network> _networks;
     private readonly CommandContext _context;
 
     /// <summary>
@@ -29,14 +28,12 @@ public class Init : IActivity<Init.Inputs, string>
         ILogger<Init> logger,
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
-        IEntityProvider<Network> networks,
         CommandContext context)
     {
         _logger = logger;
         _instances = instances;
         _servers = servers;
         _context = context;
-        _networks = networks;
     }
 
     /// <summary>
@@ -68,8 +65,6 @@ public class Init : IActivity<Init.Inputs, string>
         string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateUserConfig.FileName);
         if (cloudInit is null)
             return Failure("Failed to get user-config");
-        string networkName = instance.Networks.FirstOrDefault() ?? throw new("Instance has no networks");
-        Network network = _networks.Get(new NetworkId(networkName)) ?? throw new($"Network {networkName} not found");
         string[] args =
         [
             "init",

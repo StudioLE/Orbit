@@ -14,57 +14,6 @@ namespace Orbit.Core.Tests;
 
 internal sealed class SerializationTests
 {
-    private const string Source = $"""
-        Name: instance-01
-        Number: 1
-        Role: node
-        Server: server-01
-        Networks:
-        - network-01
-        MacAddress: {MockConstants.MacAddress}
-        OS:
-          Name: ubuntu
-          Version: jammy
-        Hardware:
-          Platform: Virtual
-          Type: G1
-          Cpus: 1
-          Memory: 4
-          Disk: 20
-        WireGuard:
-        - Name: wg1
-          Network: network-01
-          IsExternal: false
-          Port: {MockConstants.WireGuardPort}
-          PrivateKey: {MockConstants.PrivateKey}
-          PublicKey: {MockConstants.PublicKey}
-          PreSharedKey: {MockConstants.PreSharedKey}
-          Addresses:
-          - 10.1.1.1
-          - fc00::1:1:1
-          AllowedIPs:
-          - 0.0.0.0/0
-          - ::/0
-        Domains: []
-        Mounts:
-        - Source: /mnt/instance-01/srv
-          Target: /srv
-        - Source: /mnt/instance-01/config
-          Target: /config
-        Install:
-        - bat
-        - micro
-        - figlet
-        - motd-hostname
-        - motd-system
-        - network-test
-        - upgrade-packages
-        Run:
-        - disable-motd
-        - network-test
-        - upgrade-packages
-
-        """;
     private readonly IContext _context = new NUnitContext();
     private readonly InstanceFactory _instanceFactory;
     private readonly ISerializer _serializer;
@@ -84,6 +33,7 @@ internal sealed class SerializationTests
     {
         // Arrange
         Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
+        TestHelpers.UseMockMacAddress(instance);
 
         // Act
         string serialized = _serializer.Serialize(instance);
@@ -97,8 +47,13 @@ internal sealed class SerializationTests
     public async Task Instance_Deserialize()
     {
         // Arrange
+        string path = "../../../Verify/SerializationTests.Instance_Serialize.verified.txt";
+        if (!File.Exists(path))
+            throw new("The file does not exist.");
+        string yaml = await File.ReadAllTextAsync(path);
+
         // Act
-        Instance instance = _deserializer.Deserialize<Instance>(Source) ?? throw new("Failed to deserialize.");
+        Instance instance = _deserializer.Deserialize<Instance>(yaml) ?? throw new("Failed to deserialize.");
 
         // Assert
         await _context.VerifyAsJson(instance);
@@ -109,12 +64,17 @@ internal sealed class SerializationTests
     public async Task Instance_Serialization_RoundTrip()
     {
         // Arrange
+        string path = "../../../Verify/SerializationTests.Instance_Serialize.verified.txt";
+        if (!File.Exists(path))
+            throw new("The file does not exist.");
+        string yaml = await File.ReadAllTextAsync(path);
+
         // Act
-        Instance instance = _deserializer.Deserialize<Instance>(Source) ?? throw new("Failed to deserialize.");
+        Instance instance = _deserializer.Deserialize<Instance>(yaml) ?? throw new("Failed to deserialize.");
         string serialized = _serializer.Serialize(instance);
 
         // Assert
-        string expected = Source.Replace("Repo:", "Repo: ");
+        string expected = yaml.Replace("Repo:", "Repo: ");
         await _context.Verify(expected, serialized);
     }
 }

@@ -1,6 +1,6 @@
-using Orbit.Networking;
 using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Utils.Networking;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
@@ -8,40 +8,35 @@ namespace Orbit.WireGuard;
 
 public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
 {
-    private readonly IEntityProvider<Network> _networks;
-    private readonly IIPAddressStrategy _ip;
+    private readonly IEntityProvider<Server> _servers;
 
-    public WireGuardClientConfigFactory(IEntityProvider<Network> networks, IIPAddressStrategy ip)
+    public WireGuardClientConfigFactory(IEntityProvider<Server> servers)
     {
-        _networks = networks;
-        _ip = ip;
+        _servers = servers;
     }
 
     /// <inheritdoc/>
     public string Create(WireGuardClient wg)
     {
-        Network network = _networks.Get(new NetworkId(wg.Network)) ?? throw new("Failed to get network.");
-        string endpoint = wg.IsExternal
-            ? network.ExternalIPv4
-            : _ip.GetInternalGatewayIPv4(network);
+        Server server = _servers.Get(new ServerId(wg.Interface.Server)) ?? throw new($"Server not found: {wg.Interface.Server}.");
         return $"""
             [Interface]
             ListenPort = {wg.Port}
             PrivateKey = {wg.PrivateKey}
-            {MultiLine("Address", wg.Addresses)}
-            {MultiLine("DNS", network.WireGuard.Dns)}
+            {MultiLine("Address", wg.Interface.Addresses.Select(IPHelpers.RemoveCidr))}
+            {MultiLine("DNS", wg.Interface.Dns)}
 
             [Peer]
-            PublicKey = {network.WireGuard.PublicKey}
+            PublicKey = {server.WireGuard.PublicKey}
             PreSharedKey = {wg.PreSharedKey}
             {MultiLine("AllowedIPs", wg.AllowedIPs)}
-            Endpoint = {endpoint}:{network.WireGuard.Port}
+            Endpoint = {wg.Endpoint}
             PersistentKeepAlive = 25
 
             """;
     }
 
-    private static string MultiLine(string key, string[] values)
+    private static string MultiLine(string key, IEnumerable<string> values)
     {
         return values
             .Select(value => $"{key} = {value}")

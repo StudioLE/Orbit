@@ -49,13 +49,13 @@ internal sealed class CreateServerTests
         Server? createdServer = await _activity.Execute(sourceServer);
 
         // Assert
-        if (createdServer is null)
-            Assert.Fail();
-        else
-            await _context.VerifyAsSerialized(createdServer, _serializer);
+        Assert.That(createdServer, Is.Not.Null);
+        TestHelpers.UseMockMacAddress(createdServer!);
+        await _context.VerifyAsSerialized(createdServer!, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created server {createdServer!.Name}"));
         Server storedServer = _servers.Get(new ServerId(createdServer.Name)) ?? throw new("Failed to get server.");
+        TestHelpers.UseMockMacAddress(storedServer);
         await _context.VerifyAsSerialized(storedServer, createdServer, _serializer);
     }
 }

@@ -35,15 +35,16 @@ public sealed class Instance : IHasWireGuardClient, IEntity, IHasValidationAttri
     public string Server { get; set; } = string.Empty;
 
     /// <summary>
-    /// The names of the network the instance is connected to.
+    /// The names of the networks the instance is connected to.
     /// </summary>
     [Required]
-    public string[] Networks { get; set; } = Array.Empty<string>();
+    public string[] Connections { get; set; } = Array.Empty<string>();
 
     /// <summary>
-    /// The mac address of the primary network interface.
+    /// The network interfaces of the instance.
     /// </summary>
-    public string MacAddress { get; set; } = string.Empty;
+    [Required]
+    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
 
     /// <summary>
     /// The operating system of the instance.

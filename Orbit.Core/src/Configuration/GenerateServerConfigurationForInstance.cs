@@ -20,7 +20,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfigurationForInstance> _logger;
     private readonly IEntityProvider<Instance> _instances;
-    private readonly IEntityProvider<Network> _networks;
     private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
@@ -32,7 +31,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     public GenerateServerConfigurationForInstance(
         ILogger<GenerateServerConfigurationForInstance> logger,
         IEntityProvider<Instance> instances,
-        IEntityProvider<Network> networks,
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
@@ -40,7 +38,6 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     {
         _logger = logger;
         _instances = instances;
-        _networks = networks;
         _context = context;
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
@@ -88,14 +85,8 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     {
         foreach (WireGuardClient wg in instance.WireGuard)
         {
-            Network? network = _networks.Get(new NetworkId(wg.Network));
-            if (network is null)
-            {
-                _logger.LogError("Failed to get network");
-                return false;
-            }
             ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
-            commands.Add(new(network.Server, command));
+            commands.Add(new(wg.Interface.Server, command));
         }
         return true;
     }

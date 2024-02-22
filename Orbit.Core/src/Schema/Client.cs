@@ -22,10 +22,13 @@ public sealed class Client : IEntity, IHasWireGuardClient, IHasValidationAttribu
     public int Number { get; set; }
 
     /// <summary>
-    /// The names of the network the client is connected to.
+    /// The names of the servers the client has WireGuard connections to.
     /// </summary>
     [Required]
-    public string[] Networks { get; set; } = Array.Empty<string>();
+    public string[] Connections { get; set; } = Array.Empty<string>();
+
+    /// <inheritdoc />
+    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
 
     /// <summary>
     /// The WireGuard configuration of the client.

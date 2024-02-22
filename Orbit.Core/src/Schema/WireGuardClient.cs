@@ -9,21 +9,9 @@ namespace Orbit.Schema;
 public sealed class WireGuardClient
 {
     /// <summary>
-    /// The name of the WireGuard interface.
+    /// The WireGuard interface.
     /// </summary>
-    [NameSchema]
-    public string Name { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The network of the WireGuard peer.
-    /// </summary>
-    [NameSchema]
-    public string Network { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Is the WireGuard peer external?
-    /// </summary>
-    public bool IsExternal { get; set; } = false;
+    public Interface Interface { get; set; } = new();
 
     /// <summary>
     /// The WireGuard listen port.
@@ -50,15 +38,14 @@ public sealed class WireGuardClient
     public string PreSharedKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// The addresses of the WireGuard interface.
-    /// </summary>
-    [IPSchema]
-    public string[] Addresses { get; set; } = Array.Empty<string>();
-
-    /// <summary>
     /// The destination IP ranges to be routed through the WireGuard server.
     /// </summary>
-    [IPSchema]
+    [IPv4Schema]
     // ReSharper disable once InconsistentNaming
     public string[] AllowedIPs { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// The endpoint of the WireGuard server including the port.
+    /// </summary>
+    public string Endpoint { get; set; } = string.Empty;
 }

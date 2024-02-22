@@ -6,12 +6,17 @@ namespace Orbit.Schema;
 public interface IHasWireGuardClient : IEntity
 {
     /// <summary>
-    /// The names of the network the instance is connected to.
+    /// The names of the servers the entity is connected to.
     /// </summary>
-    public string[] Networks { get; }
+    public string[] Connections { get; }
 
     /// <summary>
-    /// The WireGuard configuration of the instance.
+    /// The network interfaces of the entity.
+    /// </summary>
+    public Interface[] Interfaces { get; }
+
+    /// <summary>
+    /// The WireGuard configuration of the entity.
     /// </summary>
     public WireGuardClient[] WireGuard { get; set; }
 }

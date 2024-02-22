@@ -1,8 +1,7 @@
-using Orbit.Creation.Clients;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
-using Orbit.Utils.Networking;
+using Orbit.WireGuard;
 using StudioLE.Patterns;
 
 namespace Orbit.Creation.Instances;
@@ -32,8 +31,9 @@ public class InstanceFactory : IFactory<Instance, Instance>
     };
 
     private readonly IEntityProvider<Server> _servers;
-    private readonly IEntityProvider<Network> _networks;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly ExternalInterfaceFactory _externalInterfaceFactory;
+    private readonly InternalInterfaceFactory _internalInterfaceFactory;
     private readonly WireGuardClientFactory _wireGuardClientFactory;
     private readonly HardwareFactory _hardwareFactory;
     private readonly OSFactory _osFactory;
@@ -43,15 +43,17 @@ public class InstanceFactory : IFactory<Instance, Instance>
     /// </summary>
     public InstanceFactory(
         IEntityProvider<Server> servers,
-        IEntityProvider<Network> networks,
         IEntityProvider<Instance> instances,
+        ExternalInterfaceFactory externalInterfaceFactory,
+        InternalInterfaceFactory internalInterfaceFactory,
         OSFactory osFactory,
         HardwareFactory hardwareFactory,
         WireGuardClientFactory wireGuardClientFactory)
     {
         _servers = servers;
-        _networks = networks;
         _instances = instances;
+        _externalInterfaceFactory = externalInterfaceFactory;
+        _internalInterfaceFactory = internalInterfaceFactory;
         _osFactory = osFactory;
         _hardwareFactory = hardwareFactory;
         _wireGuardClientFactory = wireGuardClientFactory;
@@ -66,13 +68,9 @@ public class InstanceFactory : IFactory<Instance, Instance>
             ? DefaultServer()
             : source.Server;
 
-        result.Networks = source.Networks.Any()
-            ? source.Networks
-            : new[] { DefaultNetwork(result.Server) };
-
-        result.MacAddress = source.MacAddress.IsNullOrEmpty()
-            ? MacAddressHelpers.Generate()
-            : source.MacAddress;
+        result.Connections = source.Connections.Any()
+            ? source.Connections
+            : [result.Server];
 
         result.Hardware = _hardwareFactory.Create(source.Hardware);
         result.OS = _osFactory.Create(source.OS);
@@ -88,6 +86,10 @@ public class InstanceFactory : IFactory<Instance, Instance>
         result.Name = source.Name.IsNullOrEmpty()
             ? $"instance-{result.Number:00}"
             : source.Name;
+
+        result.Interfaces = source.Interfaces.Any()
+            ? source.Interfaces
+            : DefaultInterfaces(result);
 
         result.WireGuard = _wireGuardClientFactory.Create(result);
         result.Mounts = source.Mounts.Any()
@@ -109,6 +111,15 @@ public class InstanceFactory : IFactory<Instance, Instance>
         return result;
     }
 
+    private Interface[] DefaultInterfaces(Instance result)
+    {
+        Interface internalInterface = _internalInterfaceFactory.Create(result);
+        Interface? externalInterface = _externalInterfaceFactory.Create(result);
+        return externalInterface is not null
+            ? [internalInterface, externalInterface]
+            : [internalInterface];
+    }
+
     private string DefaultServer()
     {
         return _servers
@@ -117,17 +128,6 @@ public class InstanceFactory : IFactory<Instance, Instance>
                    .FirstOrDefault()
                    ?.Name
                ?? throw new("Server must be set if more than one exist.");
-    }
-
-    private string DefaultNetwork(string server)
-    {
-        return _networks
-                   .GetAll()
-                   .Where(x => x.Server == server)
-                   .OrderBy(x => x.Number)
-                   .FirstOrDefault()
-                   ?.Name
-               ?? throw new("Network must be set if more than one exist.");
     }
 
     private int DefaultNumber()

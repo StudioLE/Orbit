@@ -1,16 +1,16 @@
 example-server:
 - Command: |-
-    echo C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY= | sudo wg set wg6 \
+    echo C/quZemAL04qz/eC+WIoelwa+H0oZSiYDSyHNvMVpsY= | sudo wg set wg3 \
         peer Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE= \
         preshared-key /dev/fd/0 \
-        allowed-ips 10.1.6.9,fc00::1:6:9
+        allowed-ips 10.1.3.9/24,fc00::1:3:9/112
   SuccessMessage: 
   ErrorMessage: Failed to set WireGuard peer
 - Command: |-
     (
     cat <<'EOF'
     example.com, example.org {
-        reverse_proxy 10.0.6.9:80
+        reverse_proxy 10.0.3.9:80
     }
     EOF
     ) | tee "/caddy/example-instance.caddy" > /dev/null

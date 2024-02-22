@@ -20,7 +20,7 @@ public static class LxdHelpers
         return new()
         {
             Logger = logger,
-            Host = server.Address,
+            Host = server.Ssh.Host,
             User = server.Ssh.User,
             Port = server.Ssh.Port,
             OnOutput = output => OutputToLogger(logger, output)

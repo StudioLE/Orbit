@@ -14,7 +14,6 @@ namespace Orbit.Core.Tests.WireGuard;
 internal sealed class WireGuardServerConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly IEntityProvider<Network> _networks;
     private readonly WireGuardServerConfigFactory _wgConfigFactory;
 
     public WireGuardServerConfigFactoryTests()
@@ -23,7 +22,6 @@ internal sealed class WireGuardServerConfigFactoryTests
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
-        _networks = host.Services.GetRequiredService<IEntityProvider<Network>>();
         _wgConfigFactory = host.Services.GetRequiredService<WireGuardServerConfigFactory>();
     }
 
@@ -32,13 +30,10 @@ internal sealed class WireGuardServerConfigFactoryTests
     public async Task WireGuardServerConfigFactory_Create()
     {
         // Arrange
-        Network network = _networks.GetIndex()
-                              .Select(x => _networks.Get(new NetworkId(x)))
-                              .FirstOrDefault()
-                          ?? throw new("Failed to get Network");
+        Server server = TestHelpers.GetExampleServer();
 
         // Act
-        string output = _wgConfigFactory.Create(network);
+        string output = _wgConfigFactory.Create(server);
 
         // Assert
         await _context.Verify(output);

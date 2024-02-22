@@ -19,7 +19,6 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
     public const string FileName = "server-config.yml";
     private readonly ILogger<GenerateServerConfigurationForClient> _logger;
     private readonly IEntityProvider<Client> _clients;
-    private readonly IEntityProvider<Network> _networks;
     private readonly CommandContext _context;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
     private readonly ISerializer _serializer;
@@ -30,14 +29,12 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
     public GenerateServerConfigurationForClient(
         ILogger<GenerateServerConfigurationForClient> logger,
         IEntityProvider<Client> clients,
-        IEntityProvider<Network> networks,
         CommandContext context,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
         ISerializer serializer)
     {
         _logger = logger;
         _clients = clients;
-        _networks = networks;
         _context = context;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
         _serializer = serializer;
@@ -69,11 +66,8 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
         // Set WireGuard peer
         foreach (WireGuardClient wg in client.WireGuard)
         {
-            Network? network = _networks.Get(new NetworkId(wg.Network));
-            if (network is null)
-                return Failure("Failed to get network");
             ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
-            commands.Add(new(network.Server, command));
+            commands.Add(new(wg.Interface.Server, command));
         }
         // Write configuration
         Dictionary<string, ShellCommand[]> dictionary = commands

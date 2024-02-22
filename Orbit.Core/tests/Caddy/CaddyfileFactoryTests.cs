@@ -33,11 +33,11 @@ internal sealed class CaddyfileFactoryTests
     {
         // Arrange
         Instance instance = TestHelpers.GetExampleInstance();
-        instance.Domains = new[]
-        {
+        instance.Domains =
+        [
             "example.com",
             "example.org"
-        };
+        ];
 
         // Act
         string? output = _factory.Create(instance);

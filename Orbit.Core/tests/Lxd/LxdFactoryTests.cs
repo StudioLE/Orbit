@@ -37,6 +37,7 @@ internal sealed class LxdConfigFactoryTests
     {
         // Arrange
         Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
+        TestHelpers.UseMockMacAddress(instance);
 
         // Act
         string output = _factory.Create(instance);

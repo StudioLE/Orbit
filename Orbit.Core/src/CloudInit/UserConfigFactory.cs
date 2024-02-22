@@ -81,8 +81,8 @@ public class UserConfigFactory : IFactory<Instance, string>
                 string config = _wgConfigFactory.Create(wg);
                 return new YamlMappingNode
                 {
-                    { "name", wg.Name },
-                    { "config_path", $"/etc/wireguard/{wg.Name}.conf" },
+                    { "name", wg.Interface.Name },
+                    { "config_path", $"/etc/wireguard/{wg.Interface.Name}.conf" },
                     { "content", new YamlScalarNode(config) { Style = ScalarStyle.Literal } }
                 };
             })

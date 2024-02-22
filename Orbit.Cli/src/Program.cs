@@ -7,7 +7,6 @@ using Orbit.CloudInit;
 using Orbit.Configuration;
 using Orbit.Creation.Clients;
 using Orbit.Creation.Instances;
-using Orbit.Creation.Networks;
 using Orbit.Creation.Servers;
 using Orbit.Hosting;
 using Orbit.Lxd;
@@ -32,7 +31,6 @@ internal static class Program
             .GetRequiredService<CommandBuilder>();
         RootCommand command = builder
             .Register<CreateServer>("create", "server")
-            .Register<CreateNetwork>("create", "network")
             .Register<CreateInstance>("create", "instance")
             .Register<CreateClient>("create", "client")
             .Register<GenerateUserConfig>("generate", "cloud-init")

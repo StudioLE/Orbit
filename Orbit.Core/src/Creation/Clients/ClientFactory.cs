@@ -1,6 +1,8 @@
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
+using Orbit.Utils.Networking;
+using Orbit.WireGuard;
 using StudioLE.Patterns;
 
 namespace Orbit.Creation.Clients;
@@ -12,7 +14,7 @@ public class ClientFactory : IFactory<Client, Client>
 {
     private const int DefaultClientNumber = 100;
 
-    private readonly IEntityProvider<Network> _networks;
+    private readonly IEntityProvider<Server> _servers;
     private readonly IEntityProvider<Client> _clients;
     private readonly WireGuardClientFactory _wireGuardClientFactory;
 
@@ -20,11 +22,11 @@ public class ClientFactory : IFactory<Client, Client>
     /// The DI constructor for <see cref="ClientFactory"/>.
     /// </summary>
     public ClientFactory(
-        IEntityProvider<Network> networks,
+        IEntityProvider<Server> servers,
         IEntityProvider<Client> clients,
         WireGuardClientFactory wireGuardClientFactory)
     {
-        _networks = networks;
+        _servers = servers;
         _clients = clients;
         _wireGuardClientFactory = wireGuardClientFactory;
     }
@@ -34,9 +36,9 @@ public class ClientFactory : IFactory<Client, Client>
     {
         Client result = new();
 
-        result.Networks = source.Networks.Any()
-            ? source.Networks
-            : DefaultNetworks();
+        result.Connections = source.Connections.Any()
+            ? source.Connections
+            : DefaultServers();
 
         result.Number = source.Number == default
             ? DefaultNumber()
@@ -46,14 +48,18 @@ public class ClientFactory : IFactory<Client, Client>
             ? $"client-{result.Number:00}"
             : source.Name;
 
+        result.Interfaces = source.Interfaces.Any()
+            ? source.Interfaces
+            : DefaultInterfaces();
+
         result.WireGuard = _wireGuardClientFactory.Create(result);
 
         return result;
     }
 
-    private string[] DefaultNetworks()
+    private string[] DefaultServers()
     {
-        return _networks
+        return _servers
                    .GetAll()
                    .Select(x => x.Name)
                    .ToArray();
@@ -69,5 +75,19 @@ public class ClientFactory : IFactory<Client, Client>
             ? numbers.Max()
             : DefaultClientNumber - 1;
         return finalNumber + 1;
+    }
+
+    private static Interface[] DefaultInterfaces()
+    {
+        return
+        [
+            new()
+            {
+                Name = "eth0",
+                Type = NetworkType.Nic,
+                MacAddress = MacAddressHelpers.Generate(),
+                Addresses = [ "203.0.113.1", "2001:db8::" ]
+            }
+        ];
     }
 }

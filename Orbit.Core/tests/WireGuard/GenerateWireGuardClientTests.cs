@@ -53,7 +53,7 @@ internal sealed class GenerateWireGuardClientTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _clients.GetResource(new ClientId(inputs.Client), $"wg{MockConstants.NetworkNumber}.conf");
+        string? resource = _clients.GetResource(new ClientId(inputs.Client), $"wg{MockConstants.ServerNumber}.conf");
         Assert.That(resource, Is.Not.Null);
 
         // Yaml serialization is inconsistent on Windows

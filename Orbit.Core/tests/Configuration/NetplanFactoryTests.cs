@@ -33,11 +33,12 @@ internal sealed class NetplanFactoryTests
     {
         // Arrange
         Instance instance = TestHelpers.GetExampleInstance();
-        instance.Domains = new[]
-        {
+        TestHelpers.UseMockMacAddress(instance);
+        instance.Domains =
+        [
             "example.com",
             "example.org"
-        };
+        ];
 
         // Act
         string output = _factory.Create(instance);

@@ -35,7 +35,7 @@ internal sealed class CliTests
     [Test]
     [Category("Misc")]
     [Explicit("Requires bash executable")]
-    public async Task ShellCommand_Execute_Countdown()
+    public async Task Cli_Execute_Countdown()
     {
         // Arrange
         string path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "countdown");
@@ -59,7 +59,7 @@ internal sealed class CliTests
     [Test]
     [Category("Misc")]
     [Explicit("Requires bash executable")]
-    public async Task ShellCommand_Execute_Repeat()
+    public async Task Cli_Execute_Repeat()
     {
         // Arrange
         string path = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "repeat");

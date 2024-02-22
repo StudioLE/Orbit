@@ -22,14 +22,19 @@ public sealed class Server : IEntity, IHasValidationAttributes
     public int Number { get; set; }
 
     /// <summary>
-    /// The IP address or domain name that resolves the server.
+    /// The interfaces connecting the server to a network.
     /// </summary>
-    [Required]
-    public string Address { get; set; } = string.Empty;
+    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
 
     /// <summary>
     /// The SSH connection details for the server.
     /// </summary>
     [ValidateComplexType]
     public SshConnection Ssh { get; set; } = new();
+
+    /// <summary>
+    /// The WireGuard configuration for the server.
+    /// </summary>
+    [ValidateComplexType]
+    public WireGuardServer WireGuard { get; set; } = new();
 }
