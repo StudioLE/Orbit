@@ -13,21 +13,21 @@ using StudioLE.Verify;
 
 namespace Orbit.Core.Tests.CloudInit;
 
-internal sealed class CloudInitFactoryTests
+internal sealed class UserConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
     private readonly InstanceFactory _instanceFactory;
-    private readonly CloudInitFactory _factory;
+    private readonly UserConfigFactory _factory;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
-    public CloudInitFactoryTests()
+    public UserConfigFactoryTests()
     {
         #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
-        _factory = host.Services.GetRequiredService<CloudInitFactory>();
+        _factory = host.Services.GetRequiredService<UserConfigFactory>();
         _logs = host.Services.GetCachedLogs();
     }
 

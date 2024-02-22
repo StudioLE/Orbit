@@ -28,9 +28,9 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "GenerateCloudInit": {
+    "GenerateUserConfig": {
       "commandName": "Project",
-      "commandLineArgs": "generate cloud-init test",
+      "commandLineArgs": "generate user-config test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }

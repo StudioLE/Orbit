@@ -4,7 +4,7 @@ using Orbit.Utils.DataAnnotations;
 namespace Orbit.CloudInit;
 
 /// <summary>
-/// Configuration options for <see cref="GenerateCloudInit"/>.
+/// Configuration options for <see cref="GenerateUserConfig"/>.
 /// </summary>
 /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#bind-hierarchical-configuration-data-using-the-options-pattern">Options pattern</see>
 public class CloudInitOptions : IHasValidationAttributes

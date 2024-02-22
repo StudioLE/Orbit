@@ -13,24 +13,24 @@ namespace Orbit.CloudInit;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the cloud init user-data yaml for a virtual machine instance.
 /// </summary>
-public class GenerateCloudInit : IActivity<GenerateCloudInit.Inputs, string>
+public class GenerateUserConfig : IActivity<GenerateUserConfig.Inputs, string>
 {
     public const string FileName = "user-config.yml";
-    private readonly ILogger<GenerateCloudInit> _logger;
+    private readonly ILogger<GenerateUserConfig> _logger;
     private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
     private readonly CommandContext _context;
-    private readonly CloudInitFactory _factory;
+    private readonly UserConfigFactory _factory;
 
     /// <summary>
-    /// DI constructor for <see cref="GenerateCloudInit"/>.
+    /// DI constructor for <see cref="GenerateUserConfig"/>.
     /// </summary>
-    public GenerateCloudInit(
-        ILogger<GenerateCloudInit> logger,
+    public GenerateUserConfig(
+        ILogger<GenerateUserConfig> logger,
         IOptions<CloudInitOptions> options,
         IEntityProvider<Instance> instances,
         CommandContext context,
-        CloudInitFactory factory)
+        UserConfigFactory factory)
     {
         _logger = logger;
         _options = options.Value;
@@ -40,7 +40,7 @@ public class GenerateCloudInit : IActivity<GenerateCloudInit.Inputs, string>
     }
 
     /// <summary>
-    /// The inputs for <see cref="GenerateCloudInit"/>.
+    /// The inputs for <see cref="GenerateUserConfig"/>.
     /// </summary>
     public class Inputs
     {

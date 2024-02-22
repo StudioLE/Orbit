@@ -10,7 +10,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace Orbit.CloudInit;
 
-public class CloudInitFactory : IFactory<Instance, string>
+public class UserConfigFactory : IFactory<Instance, string>
 {
     private readonly CloudInitOptions _options;
     private readonly ISerializer _serializer;
@@ -20,9 +20,9 @@ public class CloudInitFactory : IFactory<Instance, string>
     private readonly RunFactory _runFactory;
 
     /// <summary>
-    /// DI constructor for <see cref="CloudInitFactory"/>.
+    /// DI constructor for <see cref="UserConfigFactory"/>.
     /// </summary>
-    public CloudInitFactory(
+    public UserConfigFactory(
         IOptions<CloudInitOptions> options,
         ISerializer serializer,
         WireGuardClientConfigFactory wgConfigFactory,

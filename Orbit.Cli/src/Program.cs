@@ -35,7 +35,7 @@ internal static class Program
             .Register<CreateNetwork>("create", "network")
             .Register<CreateInstance>("create", "instance")
             .Register<CreateClient>("create", "client")
-            .Register<GenerateCloudInit>("generate", "cloud-init")
+            .Register<GenerateUserConfig>("generate", "cloud-init")
             .Register<GenerateLxdConfig>("generate", "lxd")
             .Register<GenerateServerConfigurationForInstance>("generate", "server-config", "instance")
             .Register<GenerateServerConfigurationForClient>("generate", "server-config", "client")

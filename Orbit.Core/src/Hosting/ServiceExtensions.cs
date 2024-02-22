@@ -61,8 +61,8 @@ public static class ServiceExtensions
             .AddTransient<CreateClient>()
             .AddTransient<ClientFactory>()
 
-            .AddTransient<GenerateCloudInit>()
-            .AddTransient<CloudInitFactory>()
+            .AddTransient<GenerateUserConfig>()
+            .AddTransient<UserConfigFactory>()
             .AddTransient<InstallFactory>()
             .AddTransient<RunFactory>()
             .AddTransient<NetplanFactory>()

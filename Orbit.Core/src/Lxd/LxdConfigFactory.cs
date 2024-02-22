@@ -15,7 +15,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
     private readonly ISerializer _serializer;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Network> _networks;
-    private readonly CloudInitFactory _cloudInit;
+    private readonly UserConfigFactory _userConfig;
     private readonly IIPAddressStrategy _ip;
 
     /// <summary>
@@ -25,13 +25,13 @@ public class LxdConfigFactory : IFactory<Instance, string>
         ISerializer serializer,
         IEntityProvider<Instance> instances,
         IEntityProvider<Network> networks,
-        CloudInitFactory cloudInit,
+        UserConfigFactory userConfig,
         IIPAddressStrategy ip)
     {
         _serializer = serializer;
         _instances = instances;
         _networks = networks;
-        _cloudInit = cloudInit;
+        _userConfig = userConfig;
         _ip = ip;
     }
 
@@ -103,9 +103,9 @@ public class LxdConfigFactory : IFactory<Instance, string>
         config.SetValue("limits.memory", $"{instance.Hardware.Memory}GB");
 
         // Cloud Init
-        string? userConfig = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
+        string? userConfig = _instances.GetResource(new InstanceId(instance.Name), GenerateUserConfig.FileName);
         if (userConfig is null)
-            userConfig = _cloudInit.Create(instance);
+            userConfig = _userConfig.Create(instance);
         config.SetValue("cloud-init.user-data", new YamlScalarNode(userConfig)
         {
             Style = ScalarStyle.Literal

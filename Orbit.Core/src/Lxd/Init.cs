@@ -65,7 +65,7 @@ public class Init : IActivity<Init.Inputs, string>
         if (server is null)
             return Failure("Failed to get server");
         Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
-        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateCloudInit.FileName);
+        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateUserConfig.FileName);
         if (cloudInit is null)
             return Failure("Failed to get user-config");
         string networkName = instance.Networks.FirstOrDefault() ?? throw new("Instance has no networks");

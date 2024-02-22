@@ -1,4 +1,4 @@
-﻿#cloud-config
+#cloud-config
 
 packages:
 - resolvconf
