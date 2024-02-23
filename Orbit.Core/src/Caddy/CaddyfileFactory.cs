@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils.Networking;
 using StudioLE.Extensions.System;
@@ -22,19 +21,18 @@ public class CaddyfileFactory : IFactory<Instance, string?>
     /// <inheritdoc/>
     public string? Create(Instance instance)
     {
-        if (!instance.Domains.Any())
+        if (instance.Domains.Length == 0)
         {
             _logger.LogWarning("Domains are required for Caddyfile generation.");
             return null;
         }
+        Interface iface = instance
+            .Interfaces
+            .First(x => x.Type == NetworkType.Bridge);
         // TODO: We have no idea what server the domain is point at so this is irrelevant
-        Interface iface = true
-            ? instance
-                .Interfaces
-                .First(x => x.Type == NetworkType.Bridge)
-            : instance
-                .Interfaces
-                .First(x => x.Type == NetworkType.WireGuard);
+        // Interface iface = instance
+        //         .Interfaces
+        //         .First(x => x.Type == NetworkType.WireGuard);
         string domains = instance.Domains.Join(", ");
         string address = IPHelpers.RemoveCidr(iface.Addresses.First()) + ":80";
         return $$"""

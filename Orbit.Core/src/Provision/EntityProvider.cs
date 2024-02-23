@@ -4,7 +4,7 @@ using StudioLE.Serialization;
 
 namespace Orbit.Provision;
 
-public class EntityProvider<T> : IEntityProvider<T> where T : class, IEntity
+public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
 {
     private readonly IEntityFileProvider _fileProvider;
     private readonly ISerializer _serializer;

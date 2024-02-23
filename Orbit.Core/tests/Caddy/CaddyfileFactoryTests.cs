@@ -19,9 +19,9 @@ internal sealed class CaddyfileFactoryTests
 
     public CaddyfileFactoryTests()
     {
-        #if DEBUG
+#if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
+#endif
         IHost host = TestHelpers.CreateTestHost();
         _factory = host.Services.GetRequiredService<CaddyfileFactory>();
         _logs = host.Services.GetCachedLogs();
@@ -32,12 +32,14 @@ internal sealed class CaddyfileFactoryTests
     public async Task CaddyfileFactory_Create()
     {
         // Arrange
-        Instance instance = TestHelpers.GetExampleInstance();
-        instance.Domains =
-        [
-            "example.com",
-            "example.org"
-        ];
+        Instance instance = TestHelpers.GetExampleInstance() with
+        {
+            Domains =
+            [
+                "example.com",
+                "example.org"
+            ]
+        };
 
         // Act
         string? output = _factory.Create(instance);

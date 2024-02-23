@@ -10,7 +10,7 @@ namespace Orbit.Creation.Servers;
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine server.
 /// </summary>
-public class CreateServer : IActivity<Server, Server?>
+public class CreateServer : IActivity<Server, Server>
 {
     private readonly ILogger<CreateServer> _logger;
     private readonly IEntityProvider<Server> _servers;
@@ -33,7 +33,7 @@ public class CreateServer : IActivity<Server, Server?>
     }
 
     /// <inheritdoc/>
-    public Task<Server?> Execute(Server server)
+    public Task<Server> Execute(Server server)
     {
         server = _factory.Create(server);
         if (!server.TryValidate(_logger))
@@ -44,13 +44,13 @@ public class CreateServer : IActivity<Server, Server?>
         return Success(server);
     }
 
-    private Task<Server?> Success(Server? server)
+    private Task<Server> Success(Server server)
     {
         _context.ExitCode = 0;
         return Task.FromResult(server);
     }
 
-    private Task<Server?> Failure(Server? server, string error = "", int exitCode = 1)
+    private Task<Server> Failure(Server server, string error = "", int exitCode = 1)
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);

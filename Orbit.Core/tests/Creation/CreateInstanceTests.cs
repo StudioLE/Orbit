@@ -42,29 +42,19 @@ internal sealed class CreateInstanceTests
         // Arrange
         Instance sourceInstance = new()
         {
-            Server = MockConstants.ServerName,
-            WireGuard =
-            [
-                new()
-                {
-                    PrivateKey = MockConstants.PrivateKey,
-                    PublicKey = MockConstants.PublicKey,
-                    PreSharedKey = MockConstants.PreSharedKey
-                }
-            ]
+            Server = MockConstants.ServerName
         };
 
         // Act
-        Instance? createdInstance = await _activity.Execute(sourceInstance);
+        Instance createdInstance = await _activity.Execute(sourceInstance);
 
         // Assert
-        Assert.That(createdInstance, Is.Not.Null);
-        TestHelpers.UseMockMacAddress(createdInstance!);
-        await _context.VerifyAsSerialized(createdInstance!, _serializer);
+        createdInstance = createdInstance.WithMockMacAddress();
+        await _context.VerifyAsSerialized(createdInstance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance!.Name}"));
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance.Name}"));
         Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
-        TestHelpers.UseMockMacAddress(storedInstance);
+        storedInstance = storedInstance.WithMockMacAddress();
         await _context.VerifyAsSerialized(storedInstance, createdInstance, _serializer);
     }
 }

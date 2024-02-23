@@ -16,7 +16,7 @@ public class ServerFactory : IFactory<Server, Server>
     private const int DefaultNumberValue = 1;
     private readonly IEntityProvider<Server> _servers;
     private readonly BridgeInterfaceFactory _bridgeFactory;
-    private WireGuardServerFactory _wireGuardServerFactory;
+    private readonly WireGuardServerFactory _wireGuardServerFactory;
 
 
     public ServerFactory(
@@ -30,27 +30,30 @@ public class ServerFactory : IFactory<Server, Server>
     }
 
     /// <inheritdoc />
-    public Server Create(Server source)
+    public Server Create(Server server)
     {
-        Server result = new();
+        if(server.Number.IsDefault())
+            server = server with
+            {
+                Number = DefaultNumber()
+            };
+        if(server.Name.IsDefault())
+            server = server with
+            {
+                Name = $"{DefaultName}-{server.Number:00}"
+            };
+        if(server.Interfaces.IsDefault())
+            server = server with
+            {
+                Interfaces = DefaultInterfaces(server)
+            };
 
-        result.Number = source.Number == default
-            ? DefaultNumber()
-            : source.Number;
+        server = server with
+        {
+            WireGuard = _wireGuardServerFactory.Create(server)
+        };
 
-        result.Name = source.Name.IsNullOrEmpty()
-            ? $"{DefaultName}-{result.Number:00}"
-            : source.Name;
-
-        result.Ssh = source.Ssh;
-
-        result.Interfaces = source.Interfaces.Any()
-            ? source.Interfaces
-            : DefaultInterfaces(result);
-
-        result.WireGuard = _wireGuardServerFactory.Create(result);
-
-        return result;
+        return server;
     }
 
     private Interface[] DefaultInterfaces(Server server)

@@ -61,8 +61,8 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
-        if (instance is null)
+        Instance? instanceQuery = _instances.Get(new InstanceId(inputs.Instance));
+        if (instanceQuery is not Instance instance)
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();

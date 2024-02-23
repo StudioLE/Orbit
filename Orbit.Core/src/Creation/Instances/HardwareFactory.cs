@@ -15,31 +15,34 @@ public class HardwareFactory : IFactory<Hardware, Hardware>
     private const int DefaultDisk = 20;
 
     /// <inheritdoc/>
-    public Hardware Create(Hardware source)
+    public Hardware Create(Hardware hardware)
     {
-        Hardware result = new();
-
-        result.Platform = source.Platform == default
-            ? DefaultPlatform
-            : source.Platform;
-
-        result.Disk = source.Disk == default
-            ? DefaultDisk
-            : source.Disk;
-
-        result.Type = source.Type.IsNullOrEmpty()
-            ? DefaultType
-            : source.Type;
-
-        result.Cpus = source.Cpus == default
-            ? DefaultCpus(result)
-            : source.Cpus;
-
-        result.Memory = source.Memory == default
-            ? DefaultMemory(result)
-            : source.Memory;
-
-        return result;
+        if (hardware.Platform.IsDefault())
+            hardware = hardware with
+            {
+                Platform = DefaultPlatform
+            };
+        if(hardware.Disk.IsDefault())
+            hardware = hardware with
+            {
+                Disk = DefaultDisk
+            };
+        if(hardware.Type.IsDefault())
+            hardware = hardware with
+            {
+                Type = DefaultType
+            };
+        if(hardware.Cpus.IsDefault())
+            hardware = hardware with
+            {
+                Cpus = DefaultCpus(hardware)
+            };
+        if(hardware.Memory.IsDefault())
+            hardware = hardware with
+            {
+                Memory = DefaultMemory(hardware)
+            };
+        return hardware;
     }
 
     private static int DefaultCpus(Hardware hardware)

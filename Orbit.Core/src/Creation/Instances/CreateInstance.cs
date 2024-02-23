@@ -10,7 +10,7 @@ namespace Orbit.Creation.Instances;
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine instance.
 /// </summary>
-public class CreateInstance : IActivity<Instance, Instance?>
+public class CreateInstance : IActivity<Instance, Instance>
 {
     private readonly ILogger<CreateInstance> _logger;
     private readonly IEntityProvider<Instance> _instances;
@@ -33,7 +33,7 @@ public class CreateInstance : IActivity<Instance, Instance?>
     }
 
     /// <inheritdoc/>
-    public Task<Instance?> Execute(Instance instance)
+    public Task<Instance> Execute(Instance instance)
     {
         instance = _factory.Create(instance);
         if (!instance.TryValidate(_logger))
@@ -44,13 +44,13 @@ public class CreateInstance : IActivity<Instance, Instance?>
         return Success(instance);
     }
 
-    private Task<Instance?> Success(Instance? instance)
+    private Task<Instance> Success(Instance instance)
     {
         _context.ExitCode = 0;
         return Task.FromResult(instance);
     }
 
-    private Task<Instance?> Failure(Instance? instance, string error = "", int exitCode = 1)
+    private Task<Instance> Failure(Instance instance, string error = "", int exitCode = 1)
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);

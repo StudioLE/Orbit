@@ -3,7 +3,7 @@ using Orbit.Utils.Patterns;
 
 namespace Orbit.Provision;
 
-public interface IEntityProvider<T> : IProvider<IEntityId<T>, T?> where T : class, IEntity
+public interface IEntityProvider<T> : IProvider<IEntityId<T>, T> where T : struct, IEntity
 {
     /// <summary>
     /// Get the <typeparamref name="T"/> for the <paramref name="id"/>.

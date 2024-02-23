@@ -2,6 +2,7 @@ using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
 using Orbit.Utils.Networking;
+using StudioLE.Extensions.System.Exceptions;
 using StudioLE.Patterns;
 
 namespace Orbit.WireGuard;
@@ -24,109 +25,134 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
     }
 
     /// <inheritdoc/>
-    public WireGuardClient[] Create(IHasWireGuardClient instance)
+    public WireGuardClient[] Create(IHasWireGuardClient entity)
     {
-        if (!instance.WireGuard.Any())
-            instance.WireGuard = instance
-                .Connections
-                .Select(network => new WireGuardClient
-                {
-                    Interface = new()
+        return entity switch
+        {
+            Instance instance => Create(instance),
+            Client client => Create(client),
+            _ => throw new TypeSwitchException<IHasWireGuardClient>(string.Empty, entity)
+        };
+    }
+
+    private WireGuardClient[] Create<T>(T entity) where T : struct, IHasWireGuardClient
+    {
+        if (entity.WireGuard.IsDefault())
+            entity = entity with
+            {
+                WireGuard = entity
+                    .Connections
+                    .Select(network => new WireGuardClient
                     {
-                        Server = network
-                    }
-                })
-                .ToArray();
-        return instance
+                        Interface = new()
+                        {
+                            Server = network
+                        }
+                    })
+                    .ToArray()
+            };
+        return entity
             .WireGuard
-            .Select(wg => Create(wg, instance))
+            .Select(wg => Create(wg, entity))
             .ToArray();
     }
 
     private WireGuardClient Create(WireGuardClient wg, IHasWireGuardClient entity)
     {
-        WireGuardClient result = new()
-        {
-            Interface = new()
-            {
-                Name = wg.Interface.Name,
-                Server = wg.Interface.Server,
-                Type = wg.Interface.Type,
-                MacAddress = wg.Interface.MacAddress,
-                Addresses = wg.Interface.Addresses,
-                Gateways = wg.Interface.Gateways,
-                Subnets = wg.Interface.Subnets,
-                Dns = wg.Interface.Dns
-            },
-            Port = wg.Port,
-            PrivateKey = wg.PrivateKey,
-            PublicKey = wg.PublicKey,
-            PreSharedKey = wg.PreSharedKey,
-            AllowedIPs = wg.AllowedIPs,
-            Endpoint = wg.Endpoint
-        };
-
-        if (result.Interface.Server.IsNullOrEmpty())
-            throw new("Network must be set.");
-
+        if (wg.Interface.Server.IsDefault())
+            throw new($"{nameof(WireGuardClient.Interface.Server)} must be set.");
         Server server = _servers.Get(new ServerId(wg.Interface.Server)) ?? throw new("Failed to get the server.");
+        wg = wg with
+        {
+            Interface = ApplyInterfaceDefaults(wg.Interface, entity, server)
+        };
+        if (wg.Port.IsDefault())
+            wg = wg with
+            {
+                Port = server.WireGuard.Port
+            };
+        if(wg.PrivateKey.IsDefault())
+            wg = wg with
+            {
+                PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key")
+            };
+        if(wg.PublicKey.IsDefault())
+            wg = wg with
+            {
+                PublicKey = _wg.GeneratePublicKey(wg.PrivateKey) ?? throw new("Failed to generate WireGuard public key")
+            };
+        if(wg.PreSharedKey.IsDefault())
+            wg = wg with
+            {
+                PreSharedKey = _wg.GeneratePreSharedKey() ?? throw new("Failed to generate WireGuard pre-shared key")
+            };
+        if(wg.AllowedIPs.IsDefault())
+            wg = wg with
+            {
+                AllowedIPs = wg.Interface.Subnets
+            };
+        if(wg.Endpoint.IsDefault())
+            wg = wg with
+            {
+                Endpoint = GetEndpoint(entity, server)
+            };
+        return wg;
+    }
 
-        if (result.Interface.Name.IsNullOrEmpty())
-            result.Interface.Name = $"wg{server.Number}";
-
-        if (result.Interface.Type == default)
-            result.Interface.Type = NetworkType.WireGuard;
-
-        if (result.Interface.MacAddress.IsNullOrEmpty())
-            result.Interface.MacAddress = MacAddressHelpers.Generate();
-
-        if(!result.Interface.Addresses.Any())
-            result.Interface.Addresses =
-            [
-                $"10.1.{server.Number}.{entity.Number}/24",
-                $"fc00::1:{server.Number}:{entity.Number}/112"
-            ];
-
-        if(!result.Interface.Gateways.Any())
-            result.Interface.Gateways =
-            [
-                $"10.1.{server.Number}.1",
-                $"fc00::1:{server.Number}:1"
-            ];
-
-        if(!result.Interface.Subnets.Any())
-            result.Interface.Subnets =
-            [
-                $"10.1.{server.Number}.0/24",
-                $"fc00::1:{server.Number}:0/112"
-            ];
-
-        if(!result.Interface.Dns.Any())
-            result.Interface.Dns =
-            [
-                $"10.1.{server.Number}.2",
-                $"fc00::1:{server.Number}:2"
-            ];
-
-        if (result.Port == default)
-            result.Port = 61000 + server.Number;
-
-        if (result.PrivateKey.IsNullOrEmpty())
-            result.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
-
-        if (result.PublicKey.IsNullOrEmpty())
-            result.PublicKey = _wg.GeneratePublicKey(result.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
-
-        if (result.PreSharedKey.IsNullOrEmpty())
-            result.PreSharedKey = _wg.GeneratePreSharedKey() ?? throw new("Failed to generate WireGuard pre-shared key");
-
-        if (!result.AllowedIPs.Any())
-            result.AllowedIPs = result.Interface.Subnets;
-
-        if (result.Endpoint.IsNullOrEmpty())
-            result.Endpoint = GetEndpoint(entity, server);
-
-        return result;
+    private static Interface ApplyInterfaceDefaults(Interface iface, IEntity entity, Server server)
+    {
+        if(iface.Name.IsDefault())
+            iface = iface with
+            {
+                Name = $"wg{server.Number}"
+            };
+        if(iface.Type.IsDefault())
+            iface = iface with
+            {
+                Type = NetworkType.WireGuard
+            };
+        if(iface.MacAddress.IsDefault())
+            iface = iface with
+            {
+                MacAddress = MacAddressHelpers.Generate()
+            };
+        if(iface.Addresses.IsDefault())
+            iface = iface with
+            {
+                Addresses =
+                [
+                    $"10.1.{server.Number}.{entity.Number}/24",
+                    $"fc00::1:{server.Number}:{entity.Number}/112"
+                ]
+            };
+        if(iface.Gateways.IsDefault())
+            iface = iface with
+            {
+                Gateways =
+                [
+                    $"10.1.{server.Number}.1",
+                    $"fc00::1:{server.Number}:1"
+                ]
+            };
+        if(iface.Subnets.IsDefault())
+            iface = iface with
+            {
+                Subnets =
+                [
+                    $"10.1.{server.Number}.0/24",
+                    $"fc00::1:{server.Number}:0/112"
+                ]
+            };
+        if(iface.Dns.IsDefault())
+            iface = iface with
+            {
+                Dns =
+                [
+                    $"10.1.{server.Number}.2",
+                    $"fc00::1:{server.Number}:2"
+                ]
+            };
+        return iface;
     }
 
     private string GetEndpoint(IHasWireGuardClient entity, Server server)
@@ -136,11 +162,11 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
         Interface iface = isExternal
             ? server
                   .Interfaces
-                  .FirstOrDefault(x => x.Type == NetworkType.Nic)
+                  .FirstOrNull(x => x.Type == NetworkType.Nic)
               ?? throw new($"NIC not found for server: {server.Name}.")
             : server
                   .Interfaces
-                  .FirstOrDefault(x => x.Type == NetworkType.Bridge && x.Server == server.Name)
+                  .FirstOrNull(x => x.Type == NetworkType.Bridge && x.Server == server.Name)
               ?? throw new($"Bridge not found for server: {server.Name}.");
         string endpoint = iface
                 .Addresses

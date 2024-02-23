@@ -56,8 +56,8 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
-        if (instance is null)
+        Instance? instanceQuery = _instances.Get(new InstanceId(inputs.Instance));
+        if (instanceQuery is not Instance instance)
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();
@@ -69,8 +69,8 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
             return Failure("Failed to deserialize server configuration");
         foreach ((string serverName, ShellCommand[] commands) in config)
         {
-            Server? server = _servers.Get(new ServerId(serverName));
-            if (server is null)
+            Server? serverQuery = _servers.Get(new ServerId(serverName));
+            if (serverQuery is not Server server)
                 return Failure("Failed to get server");
             Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
             foreach (ShellCommand command in commands)

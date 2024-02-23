@@ -1,11 +1,11 @@
 namespace Orbit.Schema;
 
-public class ClientId : IEntityId<Client>
+public readonly record struct ClientId : IEntityId<Client>
 {
     public const string Directory = "clients";
 
-    /// <inheritdoc />
-    public string Name { get; }
+    /// <inheritdoc/>
+    public string Name { get; init; }
 
     public ClientId(string name)
     {
@@ -19,7 +19,7 @@ public class ClientId : IEntityId<Client>
         return Path.Combine(Directory, Name, Name + ".yml");
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override string ToString()
     {
         return Name;

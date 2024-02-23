@@ -1,11 +1,11 @@
 namespace Orbit.Schema;
 
-public class InstanceId : IEntityId<Instance>
+public readonly record struct InstanceId : IEntityId<Instance>
 {
     public const string Directory = "instances";
 
     /// <inheritdoc />
-    public string Name { get; }
+    public string Name { get; init; }
 
     public InstanceId(string name)
     {

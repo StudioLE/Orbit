@@ -1,6 +1,6 @@
 using Orbit.Provision;
 using Orbit.Schema;
-using Orbit.Utils.Networking;
+using Orbit.Utils;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
@@ -20,11 +20,11 @@ public class WireGuardServerConfigFactory : IFactory<Server, string>
     {
         Interface nic = server
                             .Interfaces
-                            .FirstOrDefault(x => x.Type == NetworkType.Nic)
+                            .FirstOrNull(x => x.Type == NetworkType.Nic)
                         ?? throw new($"NIC not found for server: {server.Name}.");
         Interface bridge = server
                             .Interfaces
-                            .FirstOrDefault(x => x.Type == NetworkType.Bridge)
+                            .FirstOrNull(x => x.Type == NetworkType.Bridge)
                         ?? throw new($"Bridge not found for server: {server.Name}.");
         return $"""
             [Interface]

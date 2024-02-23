@@ -14,19 +14,15 @@ public class OSFactory : IFactory<OS, OS>
     private const string DefaultVersion = "jammy";
 
     /// <inheritdoc />
-    public OS Create(OS source)
+    public OS Create(OS os)
     {
-        OS result = new()
-        {
-            Name = source.Name,
-            Version = source.Version
-        };
-        if (!result.Name.IsNullOrEmpty() && !result.Version.IsNullOrEmpty())
-            return result;
-
-        result.Name = DefaultName;
-        result.Version = DefaultVersion;
-
-        return result;
+        bool isSet = !os.Name.IsDefault() && !os.Version.IsDefault();
+        return isSet
+            ? os
+            : os with
+            {
+                Name = DefaultName,
+                Version = DefaultVersion
+            };
     }
 }

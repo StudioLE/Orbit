@@ -39,22 +39,19 @@ public static class TestHelpers
     private static void CreateExampleServer(IServiceProvider services)
     {
         ServerFactory factory = services.GetRequiredService<ServerFactory>();
-        Server server = factory.Create(new()
-        {
-            Name = MockConstants.ServerName,
-            Number = MockConstants.ServerNumber,
-            Ssh = new()
+        Server server = factory
+            .Create(new()
             {
-                Host = "localhost",
-                Port = 22,
-                User = "user"
-            },
-            WireGuard = new()
-            {
-                PrivateKey = MockConstants.PrivateKey,
-                PublicKey = MockConstants.PublicKey
-            }
-        });
+                Name = MockConstants.ServerName,
+                Number = MockConstants.ServerNumber,
+                Ssh = new()
+                {
+                    Host = "localhost",
+                    Port = 22,
+                    User = "user"
+                }
+            })
+            .WithMockMacAddress();
         IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
         servers.Put(server);
         _exampleServer = server;
@@ -63,26 +60,14 @@ public static class TestHelpers
     private static void CreateExampleInstance(IServiceProvider services)
     {
         InstanceFactory factory = services.GetRequiredService<InstanceFactory>();
-        Instance instance = factory.Create(new()
-        {
-            Name = MockConstants.InstanceName,
-            Number = MockConstants.InstanceNumber,
-            WireGuard =
-            [
-                new()
-                {
-                    Interface = new()
-                    {
-                        Server = MockConstants.ServerName,
-                        MacAddress = MockConstants.MacAddress
-                    },
-                    PrivateKey = MockConstants.PrivateKey,
-                    PublicKey = MockConstants.PublicKey,
-                    PreSharedKey = MockConstants.PreSharedKey
-                }
-            ],
-            Domains = ["example.com", "example.org"]
-        });
+        Instance instance = factory
+            .Create(new()
+            {
+                Name = MockConstants.InstanceName,
+                Number = MockConstants.InstanceNumber,
+                Domains = ["example.com", "example.org"]
+            })
+            .WithMockMacAddress();
         IEntityProvider<Instance> instances = services.GetRequiredService<IEntityProvider<Instance>>();
         instances.Put(instance);
         _exampleInstance = instance;
@@ -91,25 +76,13 @@ public static class TestHelpers
     private static void CreateExampleClient(IServiceProvider services)
     {
         ClientFactory factory = services.GetRequiredService<ClientFactory>();
-        Client client = factory.Create(new()
-        {
-            Name = MockConstants.ClientName,
-            Number = MockConstants.ClientNumber,
-            WireGuard =
-            [
-                new()
-                {
-                    Interface = new()
-                    {
-                        Server = MockConstants.ServerName,
-                        MacAddress = MockConstants.MacAddress
-                    },
-                    PrivateKey = MockConstants.PrivateKey,
-                    PublicKey = MockConstants.PublicKey,
-                    PreSharedKey = MockConstants.PreSharedKey
-                }
-            ]
-        });
+        Client client = factory
+            .Create(new()
+            {
+                Name = MockConstants.ClientName,
+                Number = MockConstants.ClientNumber
+            })
+            .WithMockMacAddress();
         IEntityProvider<Client> clients = services.GetRequiredService<IEntityProvider<Client>>();
         clients.Put(client);
         _exampleClient = client;
@@ -180,17 +153,45 @@ public static class TestHelpers
             });
     }
 
-    public static void UseMockMacAddress(IHasWireGuardClient entity)
+    public static Server WithMockMacAddress(this Server server)
     {
-        foreach (Interface @interface in entity.Interfaces)
-            @interface.MacAddress = MockConstants.MacAddress;
-        foreach (WireGuardClient wg in entity.WireGuard)
-            wg.Interface.MacAddress = MockConstants.MacAddress;
+        return server with
+        {
+            Interfaces = server
+                .Interfaces
+                .Select(WithMockMacAddress)
+                .ToArray()
+        };
     }
 
-    public static void UseMockMacAddress(Server server)
+    public static T WithMockMacAddress<T>(this T entity) where T : struct, IHasWireGuardClient
     {
-        foreach (Interface @interface in server.Interfaces)
-            @interface.MacAddress = MockConstants.MacAddress;
+        return entity with
+        {
+            Interfaces = entity
+                .Interfaces
+                .Select(WithMockMacAddress)
+                .ToArray(),
+            WireGuard = entity
+                .WireGuard
+                .Select(WithMockMacAddress)
+                .ToArray()
+        };
+    }
+
+    private static WireGuardClient WithMockMacAddress(WireGuardClient wg)
+    {
+        return wg with
+        {
+            Interface = WithMockMacAddress(wg.Interface)
+        };
+    }
+
+    private static Interface WithMockMacAddress(Interface iface)
+    {
+        return iface with
+        {
+            MacAddress = MockConstants.MacAddress
+        };
     }
 }

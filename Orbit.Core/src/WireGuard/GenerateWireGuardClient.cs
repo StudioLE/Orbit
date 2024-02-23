@@ -54,8 +54,8 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Client? client = _clients.Get(new ClientId(inputs.Client));
-        if (client is null)
+        Client? clientQuery = _clients.Get(new ClientId(inputs.Client));
+        if (clientQuery is not Client client)
             return Failure("The client does not exist.");
         bool isValid = client.TryValidate(_logger);
         if (!isValid)

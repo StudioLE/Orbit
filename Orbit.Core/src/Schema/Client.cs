@@ -7,32 +7,32 @@ namespace Orbit.Schema;
 /// <summary>
 /// The schema for a client.
 /// </summary>
-public sealed class Client : IEntity, IHasWireGuardClient, IHasValidationAttributes
+public readonly record struct Client() : IEntity, IHasWireGuardClient, IHasValidationAttributes
 {
     /// <summary>
     /// The name of the client.
     /// </summary>
     [NameSchema]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
 
     /// <summary>
     /// The number of the client.
     /// </summary>
     [Range(100, 150)]
-    public int Number { get; set; }
+    public int Number { get; init; } = 0;
 
     /// <summary>
     /// The names of the servers the client has WireGuard connections to.
     /// </summary>
     [Required]
-    public string[] Connections { get; set; } = Array.Empty<string>();
+    public string[] Connections { get; init; } = Array.Empty<string>();
 
-    /// <inheritdoc />
-    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
+    /// <inheritdoc/>
+    public Interface[] Interfaces { get; init; } = Array.Empty<Interface>();
 
     /// <summary>
     /// The WireGuard configuration of the client.
     /// </summary>
     [ValidateComplexType]
-    public WireGuardClient[] WireGuard { get; set; } = Array.Empty<WireGuardClient>();
+    public WireGuardClient[] WireGuard { get; init; } = Array.Empty<WireGuardClient>();
 }

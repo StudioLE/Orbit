@@ -27,10 +27,12 @@ internal sealed class CreateClientTests
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
-        _activity = host.Services.GetRequiredService<CreateClient>();
-        _clients = host.Services.GetRequiredService<IEntityProvider<Client>>();
-        _serializer = host.Services.GetRequiredService<ISerializer>();
-        _logs = host.Services.GetCachedLogs();
+        using IServiceScope serviceScope = host.Services.CreateScope();
+        IServiceProvider provider = serviceScope.ServiceProvider;
+        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
+        _activity = provider.GetRequiredService<CreateClient>();
+        _serializer = provider.GetRequiredService<ISerializer>();
+        _logs = provider.GetCachedLogs();
     }
 
     [Test]
@@ -38,30 +40,19 @@ internal sealed class CreateClientTests
     public async Task CreateClient_Execute_Default()
     {
         // Arrange
-        Client sourceClient = new()
-        {
-            WireGuard =
-            [
-                new()
-                {
-                    PrivateKey = MockConstants.PrivateKey,
-                    PublicKey = MockConstants.PublicKey,
-                    PreSharedKey = MockConstants.PreSharedKey
-                }
-            ]
-        };
+        Client sourceClient = new();
 
         // Act
-        Client? createdClient = await _activity.Execute(sourceClient);
+        Client createdClient = await _activity.Execute(sourceClient);
 
         // Assert
-        TestHelpers.UseMockMacAddress(createdClient!);
+        createdClient = createdClient.WithMockMacAddress();
         Assert.That(createdClient, Is.Not.Null);
-        await _context.VerifyAsSerialized(createdClient!, _serializer);
+        await _context.VerifyAsSerialized(createdClient, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {createdClient!.Name}"));
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {createdClient.Name}"));
         Client storedClient = _clients.Get(new ClientId(createdClient.Name)) ?? throw new("Failed to get client.");
-        TestHelpers.UseMockMacAddress(storedClient);
+        storedClient = storedClient.WithMockMacAddress();
         await _context.VerifyAsSerialized(storedClient, createdClient, _serializer);
     }
 }

@@ -32,29 +32,34 @@ public class ClientFactory : IFactory<Client, Client>
     }
 
     /// <inheritdoc/>
-    public Client Create(Client source)
+    public Client Create(Client client)
     {
-        Client result = new();
-
-        result.Connections = source.Connections.Any()
-            ? source.Connections
-            : DefaultServers();
-
-        result.Number = source.Number == default
-            ? DefaultNumber()
-            : source.Number;
-
-        result.Name = source.Name.IsNullOrEmpty()
-            ? $"client-{result.Number:00}"
-            : source.Name;
-
-        result.Interfaces = source.Interfaces.Any()
-            ? source.Interfaces
-            : DefaultInterfaces();
-
-        result.WireGuard = _wireGuardClientFactory.Create(result);
-
-        return result;
+        if (client.Connections.IsDefault())
+            client = client with
+            {
+                Connections = DefaultServers()
+            };
+        if(client.Number.IsDefault())
+            client = client with
+            {
+                Number = DefaultNumber()
+            };
+        if(client.Name.IsDefault())
+            client = client with
+            {
+                Name = $"client-{client.Number:00}"
+            };
+        if(client.Interfaces.IsDefault())
+            client = client with
+            {
+                Interfaces = DefaultInterfaces()
+            };
+        if (client.WireGuard.IsDefault())
+            client = client with
+            {
+                WireGuard = _wireGuardClientFactory.Create(client)
+            };
+        return client;
     }
 
     private string[] DefaultServers()
@@ -71,7 +76,7 @@ public class ClientFactory : IFactory<Client, Client>
             .GetAll()
             .Select(x => x.Number)
             .ToArray();
-        int finalNumber = numbers.Any()
+        int finalNumber = numbers.Length != 0
             ? numbers.Max()
             : DefaultClientNumber - 1;
         return finalNumber + 1;

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.CloudInit;
 using Orbit.Core.Tests.Resources;
-using Orbit.Creation.Instances;
 using Orbit.Schema;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
@@ -16,7 +15,6 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class UserConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly InstanceFactory _instanceFactory;
     private readonly UserConfigFactory _factory;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
@@ -26,7 +24,6 @@ internal sealed class UserConfigFactoryTests
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
         #endif
         IHost host = TestHelpers.CreateTestHost();
-        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _factory = host.Services.GetRequiredService<UserConfigFactory>();
         _logs = host.Services.GetCachedLogs();
     }
@@ -36,8 +33,7 @@ internal sealed class UserConfigFactoryTests
     public async Task CloudInitFactory_Create()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
-        TestHelpers.UseMockMacAddress(instance);
+        Instance instance = TestHelpers.GetExampleInstance();
 
         // Act
         string output = _factory.Create(instance);

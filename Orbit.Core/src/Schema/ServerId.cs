@@ -1,11 +1,11 @@
 namespace Orbit.Schema;
 
-public class ServerId : IEntityId<Server>
+public readonly record struct ServerId : IEntityId<Server>
 {
     public const string Directory = "servers";
 
     /// <inheritdoc />
-    public string Name { get; }
+    public string Name { get; init; }
 
     public ServerId(string name)
     {

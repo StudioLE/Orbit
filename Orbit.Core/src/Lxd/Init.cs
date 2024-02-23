@@ -53,13 +53,13 @@ public class Init : IActivity<Init.Inputs, string>
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
-        if (instance is null)
+        Instance? instanceQuery = _instances.Get(new InstanceId(inputs.Instance));
+        if (instanceQuery is not Instance instance)
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();
-        Server? server = _servers.Get(new ServerId(instance.Server));
-        if (server is null)
+        Server? serverQuery = _servers.Get(new ServerId(instance.Server));
+        if (serverQuery is not Server server)
             return Failure("Failed to get server");
         Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
         string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateUserConfig.FileName);

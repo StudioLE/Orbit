@@ -1,5 +1,6 @@
 using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Utils;
 using Orbit.Utils.Networking;
 using StudioLE.Patterns;
 
@@ -23,7 +24,7 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
         Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new($"Server not found: {instance.Server}.");
         Interface nic = server
                             .Interfaces
-                            .FirstOrDefault(x => x.Type == NetworkType.Nic)
+                            .FirstOrNull(x => x.Type == NetworkType.Nic)
                         ?? throw new($"NIC not found for server: {instance.Server}.");
         string? ipv6 = nic.Addresses.FirstOrDefault(x => x.EndsWith("::"));
         if (ipv6 is null)
@@ -38,7 +39,7 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
             [
                 ipv6
             ],
-            // TODO: Add gateway and DNS
+            // TODO: Add subnet
             Gateways = nic.Gateways,
             Dns = nic.Dns
         };

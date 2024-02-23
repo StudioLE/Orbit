@@ -36,6 +36,7 @@ public class InternalInterfaceFactory : IFactory<Instance, Interface>
                 $"10.0.{server.Number}.1",
                 $"fc00::0:{server.Number}:1"
             ],
+            // TODO: Set the subnets
             Subnets = Array.Empty<string>(),
             Dns = [
                 $"10.0.{server.Number}.2",

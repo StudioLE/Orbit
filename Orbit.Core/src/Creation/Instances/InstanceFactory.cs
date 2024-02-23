@@ -60,62 +60,78 @@ public class InstanceFactory : IFactory<Instance, Instance>
     }
 
     /// <inheritdoc/>
-    public Instance Create(Instance source)
+    public Instance Create(Instance instance)
     {
-        Instance result = new();
-
-        result.Server = source.Server.IsNullOrEmpty()
-            ? DefaultServer()
-            : source.Server;
-
-        result.Connections = source.Connections.Any()
-            ? source.Connections
-            : [result.Server];
-
-        result.Hardware = _hardwareFactory.Create(source.Hardware);
-        result.OS = _osFactory.Create(source.OS);
-
-        result.Number = source.Number == default
-            ? DefaultNumber()
-            : source.Number;
-
-        result.Role = source.Role.IsNullOrEmpty()
-            ? DefaultRole
-            : source.Role;
-
-        result.Name = source.Name.IsNullOrEmpty()
-            ? $"instance-{result.Number:00}"
-            : source.Name;
-
-        result.Interfaces = source.Interfaces.Any()
-            ? source.Interfaces
-            : DefaultInterfaces(result);
-
-        result.WireGuard = _wireGuardClientFactory.Create(result);
-        result.Mounts = source.Mounts.Any()
-            ? source.Mounts
-            : Array.Empty<Mount>();
-
-        result.Domains = source.Domains.Any()
-            ? source.Domains
-            : Array.Empty<string>();
-
-        result.Install = source.Install.Any()
-            ? source.Install
-            : _defaultInstall;
-
-        result.Run = source.Run.Any()
-            ? source.Run
-            : _defaultRun;
-
-        return result;
+        if (instance.Server.IsDefault())
+            instance = instance with
+            {
+                Server = DefaultServer()
+            };
+        if (instance.Connections.IsDefault())
+            instance = instance with
+            {
+                Connections = [instance.Server]
+            };
+        instance = instance with
+        {
+            Hardware = _hardwareFactory.Create(instance.Hardware)
+        };
+        instance = instance with
+        {
+            OS = _osFactory.Create(instance.OS)
+        };
+        if(instance.Number.IsDefault())
+            instance = instance with
+            {
+                Number = DefaultNumber()
+            };
+        if(instance.Role.IsDefault())
+            instance = instance with
+            {
+                Role = DefaultRole
+            };
+        if(instance.Name.IsDefault())
+            instance = instance with
+            {
+                Name = $"instance-{instance.Number:00}"
+            };
+        if(instance.Interfaces.IsDefault())
+            instance = instance with
+            {
+                Interfaces = DefaultInterfaces(instance)
+            };
+        instance = instance with
+        {
+            WireGuard = _wireGuardClientFactory.Create(instance)
+        };
+        if(instance.Mounts.IsDefault())
+            instance = instance with
+            {
+                Mounts = Array.Empty<Mount>()
+            };
+        if(instance.Domains.IsDefault())
+            instance = instance with
+            {
+                Domains = Array.Empty<string>()
+            };
+        if(instance.Install.IsDefault())
+            instance = instance with
+            {
+                Install = _defaultInstall
+            };
+        if(instance.Run.IsDefault())
+            instance = instance with
+            {
+                Run = _defaultRun
+            };
+        return instance;
     }
 
     private Interface[] DefaultInterfaces(Instance result)
     {
         Interface internalInterface = _internalInterfaceFactory.Create(result);
-        Interface? externalInterface = _externalInterfaceFactory.Create(result);
-        return externalInterface is not null
+        Interface? externalInterfaceQuery = _externalInterfaceFactory.Create(result);
+        return externalInterfaceQuery is Interface externalInterface
             ? [internalInterface, externalInterface]
             : [internalInterface];
     }
@@ -125,7 +141,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
         return _servers
                    .GetAll()
                    .OrderBy(x => x.Number)
-                   .FirstOrDefault()
+                   .FirstOrNull()
                    ?.Name
                ?? throw new("Server must be set if more than one exist.");
     }
@@ -136,7 +152,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
             .GetAll()
             .Select(x => x.Number)
             .ToArray();
-        int finalNumber = numbers.Any()
+        int finalNumber = numbers.Length != 0
             ? numbers.Max()
             : DefaultInstanceNumber - 1;
         return finalNumber + 1;

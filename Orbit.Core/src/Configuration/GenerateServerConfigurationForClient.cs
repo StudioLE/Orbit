@@ -57,8 +57,8 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Client? client = _clients.Get(new ClientId(inputs.Client));
-        if (client is null)
+        Client? clientQuery = _clients.Get(new ClientId(inputs.Client));
+        if (clientQuery is not Client client)
             return Failure("The client does not exist.");
         if (!client.TryValidate(_logger))
             return Failure();

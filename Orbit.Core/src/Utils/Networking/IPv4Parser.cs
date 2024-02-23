@@ -27,6 +27,7 @@ internal static class IPv4Parser
             return null;
         byte[] octets = match
             .Groups
+            .Values
             .Skip(1)
             .Take(4)
             .Select(g => byte.Parse(g.Value))
@@ -42,6 +43,7 @@ internal static class IPv4Parser
             return null;
         byte[] octets = match
             .Groups
+            .Values
             .Skip(1)
             .Take(4)
             .Select(g => byte.Parse(g.Value))

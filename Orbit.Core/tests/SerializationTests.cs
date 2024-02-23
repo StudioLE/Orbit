@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
-using Orbit.Creation.Instances;
 using Orbit.Schema;
 using StudioLE.Serialization;
 using StudioLE.Verify;
@@ -15,14 +14,12 @@ namespace Orbit.Core.Tests;
 internal sealed class SerializationTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly InstanceFactory _instanceFactory;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
 
     public SerializationTests()
     {
         IHost host = TestHelpers.CreateTestHost();
-        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _serializer = host.Services.GetRequiredService<ISerializer>();
         _deserializer = host.Services.GetRequiredService<IDeserializer>();
     }
@@ -32,8 +29,7 @@ internal sealed class SerializationTests
     public async Task Instance_Serialize()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(TestHelpers.GetExampleInstance());
-        TestHelpers.UseMockMacAddress(instance);
+        Instance instance = TestHelpers.GetExampleInstance();
 
         // Act
         string serialized = _serializer.Serialize(instance);

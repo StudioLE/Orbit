@@ -33,7 +33,7 @@ internal sealed class WireGuardClientConfigFactoryTests
         // Arrange
         Instance instance = TestHelpers.GetExampleInstance();
         WireGuardClient[] interfaces = _wireGuardClientFactory.Create(instance);
-        WireGuardClient wg = interfaces.FirstOrDefault() ?? throw new("Failed to create WireGuard");
+        WireGuardClient wg = interfaces.First();
 
         // Act
         string output = _wgConfigFactory.Create(wg);

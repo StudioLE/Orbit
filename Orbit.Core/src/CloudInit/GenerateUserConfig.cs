@@ -58,8 +58,8 @@ public class GenerateUserConfig : IActivity<GenerateUserConfig.Inputs, string>
     {
         if(!_options.TryValidate(_logger))
             return Failure();
-        Instance? instance = _instances.Get(new InstanceId(inputs.Instance));
-        if (instance is null)
+        Instance? result = _instances.Get(new InstanceId(inputs.Instance));
+        if (result is not Instance instance)
             return Failure("The instance does not exist.");
         if(!instance.TryValidate(_logger))
             return Failure();
