@@ -5,39 +5,68 @@ on:
 
 jobs:
 
-  analysis:
-    name: Analysis
-    uses: StudioLE/Actions/.github/workflows/01-semantic-release.yml@main
-    secrets: inherit
-
-  build-and-test-ubuntu:
+  test-ubuntu:
     name: Ubuntu
-    needs: analysis
-    uses: StudioLE/Actions/.github/workflows/02-build-and-test.yml@main
+    uses: StudioLE/Actions/.github/workflows/01-test.yml@v3
     with:
-      solution: ""
+      project: ""
       os: ubuntu-latest
-      version: ${{ needs.analysis.outputs.version }}
     secrets: inherit
 
-  build-and-test-windows:
+  test-windows:
     name: Windows
-    if: ${{ needs.analysis.outputs.version != '0.0.0' }}
-    needs: analysis
-    uses: StudioLE/Actions/.github/workflows/02-build-and-test.yml@main
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "beta"]'), github.ref_name) }}
+    uses: StudioLE/Actions/.github/workflows/01-test.yml@v3
     with:
-      solution:  ""
+      project: ""
       os: windows-latest
-      version: ${{ needs.analysis.outputs.version }}
     secrets: inherit
 
-  publish-nuget:
-    name: Publish NuGet
-    if: ${{ needs.analysis.outputs.version != '0.0.0' }}
+  release:
+    name: Release
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta"]'), github.ref_name) }}
     needs:
-      - analysis
-      - build-and-test-ubuntu
-    uses: StudioLE/Actions/.github/workflows/03-publish-nuget.yml@main
-    with:
-      version: ${{ needs.analysis.outputs.version }}
+    - test-ubuntu
+    uses: StudioLE/Actions/.github/workflows/02-release.yml@v3
     secrets: inherit
+
+  push:
+    name: Push
+    needs:
+    - release
+    uses: StudioLE/Actions/.github/workflows/03-push.yml@v3
+    with:
+      project: ""
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit
+
+  publish:
+    name: Publish
+    needs:
+    - release
+    uses: StudioLE/Actions/.github/workflows/04-publish.yml@v3
+    strategy:
+      matrix:
+        runtime:
+        - win-x64
+        - linux-x64
+    with:
+      project: StudioLE.Example.Cli/src/StudioLE.Example.Cli.csproj
+      version: ${{ needs.release.outputs.version }}
+      runtime: ${{ matrix.runtime }}
+      npm: ""
+      workload: ""
+      name: StudioLE.Example-${{ needs.release.outputs.version }}-${{ matrix.runtime }}
+    secrets: inherit
+
+  environment:
+    name: Environment
+    needs:
+    - release
+    - push
+    - publish
+    runs-on: ubuntu-latest
+    environment: ${{ needs.release.outputs.environment }}
+    steps:
+    - run: |
+        echo "Environment: ${{ needs.release.outputs.environment }}"
