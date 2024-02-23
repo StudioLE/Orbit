@@ -30,6 +30,9 @@
   <PropertyGroup Condition="$(IsExecutable)">
     <TargetFramework>net8.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- <PublishTrimmed>true</PublishTrimmed> -->
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsTestLibrary)">
