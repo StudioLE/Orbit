@@ -21,7 +21,7 @@ internal sealed class WireGuardFacadeTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePrivateKey()
     {
@@ -37,7 +37,7 @@ internal sealed class WireGuardFacadeTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePublicKey()
     {
@@ -52,7 +52,7 @@ internal sealed class WireGuardFacadeTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePublicAndPrivate()
     {
@@ -74,7 +74,7 @@ internal sealed class WireGuardFacadeTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires WireGuard")]
     public void WireGuardFacade_GeneratePreSharedKey()
     {

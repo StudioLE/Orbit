@@ -55,7 +55,7 @@ internal sealed class QREncodeFacadeTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires QREncode")]
     public async Task QREncodeFacade_GenerateSvg([Values] StringContent stringContent)
     {

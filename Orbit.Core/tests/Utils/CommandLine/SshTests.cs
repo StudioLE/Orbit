@@ -36,7 +36,7 @@ internal sealed class SshTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires ssh config")]
     public async Task Ssh_Execute_Countdown()
     {
@@ -56,7 +56,7 @@ internal sealed class SshTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires ssh config")]
     public async Task Ssh_Execute_Repeat()
     {

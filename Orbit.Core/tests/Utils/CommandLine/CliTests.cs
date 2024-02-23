@@ -33,7 +33,7 @@ internal sealed class CliTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires bash executable")]
     public async Task Cli_Execute_Countdown()
     {
@@ -57,7 +57,7 @@ internal sealed class CliTests
     }
 
     [Test]
-    [Category("Misc")]
+    [Category("Cli")]
     [Explicit("Requires bash executable")]
     public async Task Cli_Execute_Repeat()
     {
