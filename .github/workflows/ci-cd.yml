@@ -51,12 +51,12 @@ jobs:
         - win-x64
         - linux-x64
     with:
-      project: StudioLE.Example.Cli/src/StudioLE.Example.Cli.csproj
+      project: Orbit.Cli/src/Orbit.Cli.csproj
       version: ${{ needs.release.outputs.version }}
       runtime: ${{ matrix.runtime }}
       npm: ""
       workload: ""
-      name: StudioLE.Example-${{ needs.release.outputs.version }}-${{ matrix.runtime }}
+      name: Orbit.Cli-${{ needs.release.outputs.version }}-${{ matrix.runtime }}
     secrets: inherit
 
   environment:
