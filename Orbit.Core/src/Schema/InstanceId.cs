@@ -2,7 +2,6 @@ namespace Orbit.Schema;
 
 public readonly record struct InstanceId : IEntityId<Instance>, IParsable<InstanceId>
 {
-    public const string Directory = "instances";
     private readonly string _name = string.Empty;
 
     public InstanceId(string name)
@@ -14,12 +13,6 @@ public readonly record struct InstanceId : IEntityId<Instance>, IParsable<Instan
     public bool IsDefault()
     {
         return string.IsNullOrEmpty(_name);
-    }
-
-    /// <inheritdoc/>
-    public string GetFilePath()
-    {
-        return Path.Combine(Directory, _name, _name + ".yml");
     }
 
     /// <inheritdoc/>

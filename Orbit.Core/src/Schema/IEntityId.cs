@@ -4,6 +4,4 @@ namespace Orbit.Schema;
 public interface IEntityId<T> where T : IEntity
 {
     public bool IsDefault();
-
-    public string GetFilePath();
 }

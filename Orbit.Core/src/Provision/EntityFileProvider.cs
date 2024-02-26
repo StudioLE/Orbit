@@ -2,7 +2,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Orbit.Schema;
 using Orbit.Utils.DataAnnotations;
 
 namespace Orbit.Provision;
@@ -44,17 +43,5 @@ public class EntityFileProvider : IEntityFileProvider
         if (_fileProvider is null)
             throw new("File provider is null.");
         return _fileProvider.Watch(filter);
-    }
-
-    public static string GetDirectory<T>() where T : IEntity
-    {
-        Type type = typeof(T);
-        if (type == typeof(Instance))
-            return InstanceId.Directory;
-        if (type == typeof(Server))
-            return ServerId.Directory;
-        if (type == typeof(Client))
-            return ClientId.Directory;
-        throw new("Invalid entity type.");
     }
 }

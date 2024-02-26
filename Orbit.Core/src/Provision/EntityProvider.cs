@@ -1,5 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 using Orbit.Schema;
+using StudioLE.Extensions.System.Exceptions;
 using StudioLE.Serialization;
 
 namespace Orbit.Provision;
@@ -23,7 +24,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
     /// <inheritdoc/>
     public T? Get(IEntityId<T> id)
     {
-        IFileInfo file = _fileProvider.GetFileInfo(id.GetFilePath());
+        IFileInfo file = _fileProvider.GetFileInfo(GetFilePath(id));
         if (!file.Exists)
             return null;
         using Stream stream = file.CreateReadStream();
@@ -34,7 +35,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
     /// <inheritdoc />
     public bool Put(IEntityId<T> id, T value)
     {
-        IFileInfo file = _fileProvider.GetFileInfo(id.GetFilePath());
+        IFileInfo file = _fileProvider.GetFileInfo(GetFilePath(id));
         if (file.Exists)
             return false;
         FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
@@ -51,9 +52,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
     /// <inheritdoc/>
     public IEnumerable<string> GetIndex()
     {
-        string directory = EntityFileProvider.GetDirectory<T>();
-        string fileExtension = _deserializer.FileExtension;
-        // TODO: Get file extension from deserializer.
+        string directory = GetSubDirectory();
         return _fileProvider.GetDirectoryContents(directory)
             .Where(x => x.IsDirectory)
             .Select(x => x.Name);
@@ -61,7 +60,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
 
     public bool PutResource(IEntityId<T> id, string fileName, string content)
     {
-        string path = Path.Combine(id.GetFilePath(), "..", fileName);
+        string path = Path.Combine(GetFilePath(id), "..", fileName);
         IFileInfo file = _fileProvider.GetFileInfo(path);
         FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
         DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
@@ -74,7 +73,8 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
 
     public string? GetResource(IEntityId<T> id, string fileName)
     {
-        string path = Path.Combine(id.GetFilePath(), "..", fileName);
+
+        string path = Path.Combine(GetFilePath(id), "..", fileName);
         IFileInfo file = _fileProvider.GetFileInfo(path);
         if (!file.Exists)
             return null;
@@ -82,4 +82,36 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
         using StreamReader reader = new(stream);
         return reader.ReadToEnd();
     }
+
+    public static string GetSubDirectory()
+    {
+        Type type = typeof(T);
+        if (type == typeof(Instance))
+            return "instances";
+        if (type == typeof(Server))
+            return "servers";
+        if (type == typeof(Client))
+            return "clients";
+        throw new("Invalid entity type.");
+    }
+
+    private static string GetSubDirectory(IEntityId<T> id)
+    {
+        return id switch {
+            ClientId _ => "clients",
+            InstanceId _ => "instances",
+            ServerId _ => "servers",
+            _ => throw new TypeSwitchException<IEntityId<T>>(id)
+        };
+    }
+
+    private static string GetFilePath(IEntityId<T> id)
+    {
+        string subDirectory = GetSubDirectory(id);
+        string name = id.ToString() ?? throw new("Id was unexpectedly null.");
+        return Path.Combine(subDirectory, name, name + ".yml");
+    }
+
+
+
 }
