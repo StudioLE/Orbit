@@ -14,7 +14,7 @@ public interface IEntityProvider<T> : IProvider<IEntityId<T>, T> where T : struc
 
     public IEnumerable<string> GetIndex();
 
-    bool PutResource(IEntityId<T> id, string fileName, string content);
+    bool PutArtifact(IEntityId<T> id, string fileName, string content);
 
-    string? GetResource(IEntityId<T> id, string fileName);
+    string? GetArtifact(IEntityId<T> id, string fileName);
 }

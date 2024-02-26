@@ -62,7 +62,7 @@ public class Init : IActivity<Init.Inputs, string>
         if (serverQuery is not Server server)
             return Failure("Failed to get server");
         Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
-        string? cloudInit = _instances.GetResource(instance.Name, GenerateUserConfig.FileName);
+        string? cloudInit = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);
         if (cloudInit is null)
             return Failure("Failed to get user-config");
         string[] args =

@@ -59,7 +59,7 @@ public class GenerateLxdConfig : IActivity<GenerateLxdConfig.Inputs, string>
             return Failure();
         string output = _factory.Create(instance);
         // TODO: Make save optional
-        if (!_instances.PutResource(instance.Name, FileName, output))
+        if (!_instances.PutArtifact(instance.Name, FileName, output))
             return Failure("Failed to write the lxd config file.");
         return Success(string.Empty);
     }

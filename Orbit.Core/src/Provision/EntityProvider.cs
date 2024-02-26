@@ -58,9 +58,9 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
             .Select(x => x.Name);
     }
 
-    public bool PutResource(IEntityId<T> id, string fileName, string content)
+    public bool PutArtifact(IEntityId<T> id, string fileName, string content)
     {
-        string path = Path.Combine(GetFilePath(id), "..", fileName);
+        string path = Path.Combine(GetFilePath(id), "..", "artifacts", fileName);
         IFileInfo file = _fileProvider.GetFileInfo(path);
         FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
         DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
@@ -71,10 +71,10 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
         return true;
     }
 
-    public string? GetResource(IEntityId<T> id, string fileName)
+    public string? GetArtifact(IEntityId<T> id, string fileName)
     {
 
-        string path = Path.Combine(GetFilePath(id), "..", fileName);
+        string path = Path.Combine(GetFilePath(id), "..", "artifacts", fileName);
         IFileInfo file = _fileProvider.GetFileInfo(path);
         if (!file.Exists)
             return null;

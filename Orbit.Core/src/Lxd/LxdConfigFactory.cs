@@ -107,7 +107,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         config.SetValue("limits.memory", $"{instance.Hardware.Memory}GB");
 
         // Cloud Init
-        string? userConfig = _instances.GetResource(instance.Name, GenerateUserConfig.FileName);
+        string? userConfig = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);
         if (userConfig is null)
             userConfig = _userConfig.Create(instance);
         config.SetValue("cloud-init.user-data", new YamlScalarNode(userConfig)

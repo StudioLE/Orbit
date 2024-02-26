@@ -76,7 +76,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
         string serialized = _serializer.Serialize(dictionary);
-        if (!_instances.PutResource(instance.Name, FileName, serialized))
+        if (!_instances.PutArtifact(instance.Name, FileName, serialized))
             return Failure("Failed to write server configuration.");
         return Success(string.Empty);
     }

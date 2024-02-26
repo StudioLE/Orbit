@@ -53,7 +53,7 @@ internal sealed class GenerateServerConfigurationForClientTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _clients.GetResource(new ClientId(inputs.Client), GenerateServerConfigurationForClient.FileName);
+        string? resource = _clients.GetArtifact(new ClientId(inputs.Client), GenerateServerConfigurationForClient.FileName);
         Assert.That(resource, Is.Not.Null);
         await _context.Verify(resource!);
     }

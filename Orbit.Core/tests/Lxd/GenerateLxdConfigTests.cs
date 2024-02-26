@@ -51,7 +51,7 @@ internal sealed class GenerateLxdConfigTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _instances.GetResource(new InstanceId(inputs.Instance), GenerateLxdConfig.FileName);
+        string? resource = _instances.GetArtifact(new InstanceId(inputs.Instance), GenerateLxdConfig.FileName);
         Assert.That(resource, Is.Not.Null);
 
         // TODO: We have no easy way to normalize the MacAddresses for unstructured data
