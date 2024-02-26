@@ -5,10 +5,10 @@ using Orbit.Core.Tests.Resources;
 using Orbit.Creation.Servers;
 using Orbit.Provision;
 using Orbit.Schema;
-using StudioLE.Extensions.Logging.Cache;
-using StudioLE.Serialization;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Extensions.Logging.Cache;
+using StudioLE.Serialization;
 using StudioLE.Verify.Serialization;
 
 namespace Orbit.Core.Tests.Creation;
@@ -23,9 +23,9 @@ internal sealed class CreateServerTests
 
     public CreateServerTests()
     {
-        #if DEBUG
+#if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
+#endif
         IHost host = TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;

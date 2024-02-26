@@ -36,7 +36,7 @@ public class ClientFactory : IFactory<Client, Client>
     {
         if (client.Connections.IsDefault())
             client.Connections = DefaultServers();
-        if(client.Number.IsDefault())
+        if (client.Number.IsDefault())
             client.Number = DefaultNumber();
         if (client.Name.IsDefault())
             client.Name = $"client-{client.Number:00}";
@@ -76,7 +76,7 @@ public class ClientFactory : IFactory<Client, Client>
                 Name = "eth0",
                 Type = NetworkType.Nic,
                 MacAddress = MacAddressHelpers.Generate(),
-                Addresses = [ "203.0.113.1", "2001:db8::" ]
+                Addresses = ["203.0.113.1", "2001:db8::"]
             }
         ];
     }

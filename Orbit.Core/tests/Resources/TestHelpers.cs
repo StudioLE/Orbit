@@ -173,7 +173,7 @@ public static class TestHelpers
             .Select(WithMockMacAddress)
             .ToArray();
         return entity;
-}
+    }
 
     private static WireGuardClient WithMockMacAddress(WireGuardClient wg)
     {

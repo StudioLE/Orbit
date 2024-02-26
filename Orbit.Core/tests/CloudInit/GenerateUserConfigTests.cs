@@ -22,9 +22,9 @@ internal sealed class GenerateUserConfigTests
 
     public GenerateUserConfigTests()
     {
-        #if DEBUG
+#if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
+#endif
         IHost host = TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;

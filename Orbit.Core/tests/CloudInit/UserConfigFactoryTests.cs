@@ -20,9 +20,9 @@ internal sealed class UserConfigFactoryTests
 
     public UserConfigFactoryTests()
     {
-        #if DEBUG
+#if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
+#endif
         IHost host = TestHelpers.CreateTestHost();
         _factory = host.Services.GetRequiredService<UserConfigFactory>();
         _logs = host.Services.GetCachedLogs();

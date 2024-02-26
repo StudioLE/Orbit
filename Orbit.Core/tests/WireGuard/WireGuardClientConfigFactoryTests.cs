@@ -18,9 +18,9 @@ internal sealed class WireGuardClientConfigFactoryTests
 
     public WireGuardClientConfigFactoryTests()
     {
-        #if DEBUG
+#if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
+#endif
         IHost host = TestHelpers.CreateTestHost();
         _wireGuardClientFactory = host.Services.GetRequiredService<WireGuardClientFactory>();
         _wgConfigFactory = host.Services.GetRequiredService<WireGuardClientConfigFactory>();

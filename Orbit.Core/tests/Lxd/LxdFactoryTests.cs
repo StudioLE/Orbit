@@ -22,9 +22,9 @@ internal sealed class LxdConfigFactoryTests
 
     public LxdConfigFactoryTests()
     {
-        #if DEBUG
+#if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        #endif
+#endif
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _factory = host.Services.GetRequiredService<LxdConfigFactory>();

@@ -3,10 +3,10 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
 using Orbit.Schema;
-using StudioLE.Serialization;
-using StudioLE.Verify;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
+using StudioLE.Serialization;
+using StudioLE.Verify;
 using StudioLE.Verify.Json;
 
 namespace Orbit.Core.Tests;

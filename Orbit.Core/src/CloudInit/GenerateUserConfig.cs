@@ -56,12 +56,12 @@ public class GenerateUserConfig : IActivity<GenerateUserConfig.Inputs, string>
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        if(!_options.TryValidate(_logger))
+        if (!_options.TryValidate(_logger))
             return Failure();
         Instance? result = _instances.Get(new InstanceId(inputs.Instance));
         if (result is not Instance instance)
             return Failure("The instance does not exist.");
-        if(!instance.TryValidate(_logger))
+        if (!instance.TryValidate(_logger))
             return Failure();
         string output = _factory.Create(instance);
         // TODO: Make save optional
@@ -78,7 +78,7 @@ public class GenerateUserConfig : IActivity<GenerateUserConfig.Inputs, string>
 
     private Task<string> Failure(string error = "", int exitCode = 1)
     {
-        if(!string.IsNullOrEmpty(error))
+        if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
         _context.ExitCode = exitCode;
         return Task.FromResult(error);

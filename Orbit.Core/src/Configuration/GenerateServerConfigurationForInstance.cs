@@ -111,7 +111,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
 
     private Task<string> Failure(string error = "", int exitCode = 1)
     {
-        if(!string.IsNullOrEmpty(error))
+        if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
         _context.ExitCode = exitCode;
         return Task.FromResult(error);
