@@ -1,13 +1,16 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
 using Orbit.Schema;
+using Orbit.Utils.Serialization;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Serialization;
 using StudioLE.Verify;
-using StudioLE.Verify.Json;
 
 namespace Orbit.Core.Tests;
 
@@ -50,9 +53,20 @@ internal sealed class SerializationTests
 
         // Act
         Instance instance = _deserializer.Deserialize<Instance>(yaml) ?? throw new("Failed to deserialize.");
+        JsonSerializerOptions options = new()
+        {
+            Converters =
+            {
+                new JsonStringEnumConverter(),
+                new ParseableJsonConverter()
+            },
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+        };
+        string json = JsonSerializer.Serialize(instance, options);
 
         // Assert
-        await _context.VerifyAsJson(instance);
+        await _context.Verify(json);
     }
 
     [Test]

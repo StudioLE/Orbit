@@ -1,5 +1,3 @@
-using Orbit.Schema;
-
 namespace Orbit.Utils;
 
 public static class DefaultHelpers
@@ -23,10 +21,5 @@ public static class DefaultHelpers
     {
         bool isDefault = @this.Equals(default(T));
         return isDefault;
-    }
-
-    public static bool IsDefault<T>(this IEntityId<T> @this) where T : IEntity
-    {
-        return string.IsNullOrEmpty(@this.Name);
     }
 }

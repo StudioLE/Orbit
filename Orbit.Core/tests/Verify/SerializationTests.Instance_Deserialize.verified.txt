@@ -1,4 +1,4 @@
-﻿{
+{
   "Name": "example-instance",
   "Number": 9,
   "Role": "node",

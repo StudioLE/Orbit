@@ -3,10 +3,7 @@ namespace Orbit.Schema;
 // ReSharper disable once UnusedTypeParameter
 public interface IEntityId<T> where T : IEntity
 {
-    /// <summary>
-    /// The name of the entity.
-    /// </summary>
-    public string Name { get; set; }
+    public bool IsDefault();
 
     public string GetFilePath();
 }

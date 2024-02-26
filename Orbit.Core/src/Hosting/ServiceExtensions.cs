@@ -10,9 +10,8 @@ using Orbit.Creation.Servers;
 using Orbit.Lxd;
 using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Serialization;
 using Orbit.WireGuard;
-using StudioLE.Serialization;
-using StudioLE.Serialization.Yaml;
 
 namespace Orbit.Hosting;
 
@@ -29,8 +28,8 @@ public static class ServiceExtensions
         return services
         // @formatter:off
 
-            .AddTransient<ISerializer, YamlSerializer>()
-            .AddTransient<IDeserializer, YamlDeserializer>()
+            .AddTransient(YamlHelpers.CreateSerializer)
+            .AddTransient(YamlHelpers.CreateDeserializer)
 
             .AddTransient<IEntityFileProvider, EntityFileProvider>()
             .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
