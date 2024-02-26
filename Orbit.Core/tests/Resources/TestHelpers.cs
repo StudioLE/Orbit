@@ -42,7 +42,7 @@ public static class TestHelpers
         Server server = factory
             .Create(new()
             {
-                Name = MockConstants.ServerName,
+                Name = new(MockConstants.ServerName),
                 Number = MockConstants.ServerNumber,
                 Ssh = new()
                 {
@@ -63,7 +63,7 @@ public static class TestHelpers
         Instance instance = factory
             .Create(new()
             {
-                Name = MockConstants.InstanceName,
+                Name = new(MockConstants.InstanceName),
                 Number = MockConstants.InstanceNumber,
                 Domains = ["example.com", "example.org"]
             })
@@ -79,7 +79,7 @@ public static class TestHelpers
         Client client = factory
             .Create(new()
             {
-                Name = MockConstants.ClientName,
+                Name = new(MockConstants.ClientName),
                 Number = MockConstants.ClientNumber
             })
             .WithMockMacAddress();

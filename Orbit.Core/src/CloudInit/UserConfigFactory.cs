@@ -46,7 +46,7 @@ public class UserConfigFactory : IFactory<Instance, string>
             throw new($"Expected a {nameof(YamlMappingNode)}");
 
         // Hostname
-        yaml.SetValue("hostname", instance.Name, false);
+        yaml.SetValue("hostname", instance.Name.ToString(), false);
 
         // Groups
         yaml.SetValue("groups", new[] { "docker" }, false);

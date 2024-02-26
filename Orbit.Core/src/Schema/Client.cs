@@ -13,7 +13,7 @@ public record struct Client() : IEntity, IHasWireGuardClient, IHasValidationAttr
     /// The name of the client.
     /// </summary>
     [NameSchema]
-    public string Name { get; set; } = string.Empty;
+    public ClientId Name { get; set; } = new();
 
     /// <summary>
     /// The number of the client.
@@ -25,7 +25,7 @@ public record struct Client() : IEntity, IHasWireGuardClient, IHasValidationAttr
     /// The names of the servers the client has WireGuard connections to.
     /// </summary>
     [Required]
-    public string[] Connections { get; set; } = Array.Empty<string>();
+    public ServerId[] Connections { get; set; } = Array.Empty<ServerId>();
 
     /// <inheritdoc/>
     public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();

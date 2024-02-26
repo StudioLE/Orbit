@@ -62,7 +62,7 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
             return Failure("The client does not exist.");
         if (!client.TryValidate(_logger))
             return Failure();
-        List<KeyValuePair<string, ShellCommand>> commands = new();
+        List<KeyValuePair<ServerId, ShellCommand>> commands = new();
         // Set WireGuard peer
         foreach (WireGuardClient wg in client.WireGuard)
         {
@@ -70,11 +70,11 @@ public class GenerateServerConfigurationForClient : IActivity<GenerateServerConf
             commands.Add(new(wg.Interface.Server, command));
         }
         // Write configuration
-        Dictionary<string, ShellCommand[]> dictionary = commands
+        Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
         string serialized = _serializer.Serialize(dictionary);
-        if (!_clients.PutResource(new ClientId(client.Name), FileName, serialized))
+        if (!_clients.PutResource(client.Name, FileName, serialized))
             return Failure("Failed to write server configuration.");
         return Success(string.Empty);
     }

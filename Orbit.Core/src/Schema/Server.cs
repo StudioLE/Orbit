@@ -13,7 +13,7 @@ public record struct Server() : IEntity, IHasValidationAttributes
     /// The name of the server.
     /// </summary>
     [NameSchema]
-    public string Name { get; set; } = string.Empty;
+    public ServerId Name { get; set; } = new();
 
     /// <summary>
     /// The number of the server.

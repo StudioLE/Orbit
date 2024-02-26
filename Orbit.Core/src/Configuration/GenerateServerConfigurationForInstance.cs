@@ -66,22 +66,22 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();
-        List<KeyValuePair<string, ShellCommand>> commands = new();
+        List<KeyValuePair<ServerId, ShellCommand>> commands = new();
         if (!SetWireGuardPeer(instance, commands))
             return Failure();
         if (!WriteCaddyfile(instance, commands))
             return Failure();
         // Write configuration
-        Dictionary<string, ShellCommand[]> dictionary = commands
+        Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
         string serialized = _serializer.Serialize(dictionary);
-        if (!_instances.PutResource(new InstanceId(instance.Name), FileName, serialized))
+        if (!_instances.PutResource(instance.Name, FileName, serialized))
             return Failure("Failed to write server configuration.");
         return Success(string.Empty);
     }
 
-    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
+    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
     {
         foreach (WireGuardClient wg in instance.WireGuard)
         {
@@ -91,7 +91,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         return true;
     }
 
-    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<string, ShellCommand>> commands)
+    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
     {
         if (!instance.Domains.Any())
             return true;
@@ -99,7 +99,7 @@ public class GenerateServerConfigurationForInstance : IActivity<GenerateServerCo
         if (!results.Any())
             return false;
         commands.AddRange(results
-            .Select(x => new KeyValuePair<string, ShellCommand>(instance.Server, x)));
+            .Select(x => new KeyValuePair<ServerId, ShellCommand>(instance.Server, x)));
         return true;
     }
 

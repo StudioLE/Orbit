@@ -40,11 +40,11 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
         if (entity.WireGuard.IsDefault())
             entity.WireGuard = entity
                     .Connections
-                    .Select(network => new WireGuardClient
+                    .Select(server => new WireGuardClient
                     {
                         Interface = new()
                         {
-                            Server = network
+                            Server = server
                         }
                     })
                     .ToArray();
@@ -58,7 +58,7 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
     {
         if (wg.Interface.Server.IsDefault())
             throw new($"{nameof(WireGuardClient.Interface.Server)} must be set.");
-        Server server = _servers.Get(new ServerId(wg.Interface.Server)) ?? throw new("Failed to get the server.");
+        Server server = _servers.Get(wg.Interface.Server) ?? throw new("Failed to get the server.");
         wg.Interface = ApplyInterfaceDefaults(wg.Interface, entity, server);
         if (wg.Port.IsDefault())
             wg.Port = server.WireGuard.Port;

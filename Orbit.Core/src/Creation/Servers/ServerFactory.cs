@@ -35,7 +35,7 @@ public class ServerFactory : IFactory<Server, Server>
         if (server.Number.IsDefault())
             server.Number = DefaultNumber();
         if (server.Name.IsDefault())
-            server.Name = $"{DefaultName}-{server.Number:00}";
+            server.Name = new($"{DefaultName}-{server.Number:00}");
         if (server.Interfaces.IsDefault())
             server.Interfaces = DefaultInterfaces(server);
         server.WireGuard = _wireGuardServerFactory.Create(server);

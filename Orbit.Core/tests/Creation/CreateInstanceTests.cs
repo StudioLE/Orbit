@@ -42,7 +42,7 @@ internal sealed class CreateInstanceTests
         // Arrange
         Instance sourceInstance = new()
         {
-            Server = MockConstants.ServerName
+            Server = new(MockConstants.ServerName)
         };
 
         // Act
@@ -53,7 +53,7 @@ internal sealed class CreateInstanceTests
         await _context.VerifyAsSerialized(createdInstance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance.Name}"));
-        Instance storedInstance = _instances.Get(new InstanceId(createdInstance.Name)) ?? throw new("Failed to get instance.");
+        Instance storedInstance = _instances.Get(createdInstance.Name) ?? throw new("Failed to get instance.");
         storedInstance = storedInstance.WithMockMacAddress();
         await _context.VerifyAsSerialized(storedInstance, createdInstance, _serializer);
     }

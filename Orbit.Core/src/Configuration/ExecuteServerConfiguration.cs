@@ -61,7 +61,7 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();
-        string? resource = _instances.GetResource(new InstanceId(instance.Name), GenerateServerConfigurationForInstance.FileName);
+        string? resource = _instances.GetResource(instance.Name, GenerateServerConfigurationForInstance.FileName);
         if (resource is null)
             return Failure("Failed to get server configuration");
         ServerConfiguration? config = _deserializer.Deserialize<ServerConfiguration>(resource);

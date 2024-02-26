@@ -39,7 +39,7 @@ public class ClientFactory : IFactory<Client, Client>
         if (client.Number.IsDefault())
             client.Number = DefaultNumber();
         if (client.Name.IsDefault())
-            client.Name = $"client-{client.Number:00}";
+            client.Name = new($"client-{client.Number:00}");
         if (client.Interfaces.IsDefault())
             client.Interfaces = DefaultInterfaces();
         if (client.WireGuard.IsDefault())
@@ -47,7 +47,7 @@ public class ClientFactory : IFactory<Client, Client>
         return client;
     }
 
-    private string[] DefaultServers()
+    private ServerId[] DefaultServers()
     {
         return _servers
                    .GetAll()

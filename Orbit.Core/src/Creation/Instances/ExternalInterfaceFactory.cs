@@ -21,7 +21,7 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
     /// <inheritdoc/>
     public Interface? Create(Instance instance)
     {
-        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new($"Server not found: {instance.Server}.");
+        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
         Interface nic = server
                             .Interfaces
                             .FirstOrNull(x => x.Type == NetworkType.Nic)

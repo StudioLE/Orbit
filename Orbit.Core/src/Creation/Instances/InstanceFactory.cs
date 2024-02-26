@@ -73,7 +73,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
         if (instance.Role.IsDefault())
             instance.Role = DefaultRole;
         if (instance.Name.IsDefault())
-            instance.Name = $"instance-{instance.Number:00}";
+            instance.Name = new($"instance-{instance.Number:00}");
         if (instance.Interfaces.IsDefault())
             instance.Interfaces = DefaultInterfaces(instance);
         instance.WireGuard = _wireGuardClientFactory.Create(instance);
@@ -97,7 +97,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
             : [internalInterface];
     }
 
-    private string DefaultServer()
+    private ServerId DefaultServer()
     {
         return _servers
                    .GetAll()

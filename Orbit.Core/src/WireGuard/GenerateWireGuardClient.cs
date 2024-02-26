@@ -65,7 +65,7 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
             string fileName = $"{wg.Interface.Name}.conf";
             string config = _factory.Create(wg);
             // TODO: Make save optional
-            if (!_clients.PutResource(new ClientId(client.Name), fileName, config))
+            if (!_clients.PutResource(client.Name, fileName, config))
                 return Failure("Failed to write the wireguard config file.");
             string svg = _qr.GenerateSvg(config);
             if (string.IsNullOrEmpty(svg))
@@ -74,7 +74,7 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
                 continue;
             }
             // TODO: Make save optional
-            if (!_clients.PutResource(new ClientId(client.Name), fileName + ".svg", svg))
+            if (!_clients.PutResource(client.Name, fileName + ".svg", svg))
                 return Failure("Failed to write the QR code file.");
         }
         return Success(string.Empty);

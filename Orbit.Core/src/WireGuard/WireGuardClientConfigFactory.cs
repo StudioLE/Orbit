@@ -18,7 +18,7 @@ public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
     /// <inheritdoc/>
     public string Create(WireGuardClient wg)
     {
-        Server server = _servers.Get(new ServerId(wg.Interface.Server)) ?? throw new($"Server not found: {wg.Interface.Server}.");
+        Server server = _servers.Get(wg.Interface.Server) ?? throw new($"Server not found: {wg.Interface.Server}.");
         return $"""
             [Interface]
             ListenPort = {wg.Port}

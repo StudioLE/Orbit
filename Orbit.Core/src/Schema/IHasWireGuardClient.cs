@@ -8,7 +8,7 @@ public interface IHasWireGuardClient : IEntity
     /// <summary>
     /// The names of the servers the entity is connected to.
     /// </summary>
-    public string[] Connections { get; set; }
+    public ServerId[] Connections { get; set; }
 
     /// <summary>
     /// The network interfaces of the entity.

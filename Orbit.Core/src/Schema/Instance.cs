@@ -13,7 +13,7 @@ public record struct Instance() : IHasWireGuardClient, IEntity, IHasValidationAt
     /// The name of the instance.
     /// </summary>
     [NameSchema]
-    public string Name { get; set; } = string.Empty;
+    public InstanceId Name { get; set; } = new();
 
     /// <summary>
     /// The number of the instance.
@@ -32,13 +32,13 @@ public record struct Instance() : IHasWireGuardClient, IEntity, IHasValidationAt
     /// </summary>
     [Required]
     [NameSchema]
-    public string Server { get; set; } = string.Empty;
+    public ServerId Server { get; set; } = new();
 
     /// <summary>
-    /// The names of the networks the instance is connected to.
+    /// The names of the servers the instance is connected to.
     /// </summary>
     [Required]
-    public string[] Connections { get; set; } = Array.Empty<string>();
+    public ServerId[] Connections { get; set; } = Array.Empty<ServerId>();
 
     /// <summary>
     /// The network interfaces of the instance.

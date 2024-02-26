@@ -58,18 +58,18 @@ public class Init : IActivity<Init.Inputs, string>
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();
-        Server? serverQuery = _servers.Get(new ServerId(instance.Server));
+        Server? serverQuery = _servers.Get(instance.Server);
         if (serverQuery is not Server server)
             return Failure("Failed to get server");
         Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
-        string? cloudInit = _instances.GetResource(new InstanceId(instance.Name), GenerateUserConfig.FileName);
+        string? cloudInit = _instances.GetResource(instance.Name, GenerateUserConfig.FileName);
         if (cloudInit is null)
             return Failure("Failed to get user-config");
         string[] args =
         [
             "init",
             $"{instance.OS.Name.ToLower()}:{instance.OS.Version}",
-            instance.Name
+            instance.Name.ToString()
         ];
         int exitCode = ssh.Execute("lxc", string.Join(" ", args), cloudInit);
         if (exitCode != 0)

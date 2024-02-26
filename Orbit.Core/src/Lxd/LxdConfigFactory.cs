@@ -43,7 +43,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         // TODO: Rewrite to use multiline interpolated strings
 
         // Name
-        yaml.SetValue("name", instance.Name, false);
+        yaml.SetValue("name", instance.Name.ToString(), false);
 
         // Devices
         YamlMappingNode? devices = yaml.GetValue<YamlMappingNode>("config");
@@ -61,7 +61,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         devices.SetValue("root", rootDisk);
 
         // Networks
-        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new($"Server not found: {instance.Server}.");
+        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
         Interface? routedNicQuery = instance.Interfaces.FirstOrNull(x => x.Type == NetworkType.RoutedNic);
         if (routedNicQuery is Interface routedNic)
         {
@@ -107,7 +107,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         config.SetValue("limits.memory", $"{instance.Hardware.Memory}GB");
 
         // Cloud Init
-        string? userConfig = _instances.GetResource(new InstanceId(instance.Name), GenerateUserConfig.FileName);
+        string? userConfig = _instances.GetResource(instance.Name, GenerateUserConfig.FileName);
         if (userConfig is null)
             userConfig = _userConfig.Create(instance);
         config.SetValue("cloud-init.user-data", new YamlScalarNode(userConfig)

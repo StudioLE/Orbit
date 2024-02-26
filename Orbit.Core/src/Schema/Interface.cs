@@ -18,7 +18,7 @@ public record struct Interface() : IHasValidationAttributes
     /// The name of the server the interface connects to.
     /// </summary>
     [NameSchema]
-    public string Server { get; set; } = string.Empty;
+    public ServerId Server { get; set; } = new();
 
     /// <summary>
     /// The type of the network.

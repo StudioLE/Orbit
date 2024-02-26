@@ -42,7 +42,7 @@ internal sealed class CreateServerTests
         // Arrange
         Server sourceServer = new()
         {
-            Name = "new-server"
+            Name = new("new-server")
         };
 
         // Act
@@ -54,7 +54,7 @@ internal sealed class CreateServerTests
         await _context.VerifyAsSerialized(createdServer, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created server {createdServer.Name}"));
-        Server storedServer = _servers.Get(new ServerId(createdServer.Name)) ?? throw new("Failed to get server.");
+        Server storedServer = _servers.Get(createdServer.Name) ?? throw new("Failed to get server.");
         storedServer = storedServer.WithMockMacAddress();
         await _context.VerifyAsSerialized(storedServer, createdServer, _serializer);
     }

@@ -20,7 +20,7 @@ public class InternalInterfaceFactory : IFactory<Instance, Interface>
     /// <inheritdoc/>
     public Interface Create(Instance instance)
     {
-        Server server = _servers.Get(new ServerId(instance.Server)) ?? throw new($"Server not found: {instance.Server}.");
+        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
         return new()
         {
             Name = "int" + server.Number,

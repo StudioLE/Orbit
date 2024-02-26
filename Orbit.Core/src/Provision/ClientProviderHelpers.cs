@@ -6,7 +6,7 @@ public static class ClientProviderHelpers
 {
     public static bool Put(this IEntityProvider<Client> provider, Client client)
     {
-        return provider.Put(new ClientId(client.Name), client);
+        return provider.Put(client.Name, client);
     }
 
     public static IEnumerable<Client> GetAll(this IEntityProvider<Client> provider)

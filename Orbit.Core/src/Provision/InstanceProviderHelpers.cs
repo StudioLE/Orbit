@@ -6,7 +6,7 @@ public static class InstanceProviderHelpers
 {
     public static bool Put(this IEntityProvider<Instance> provider, Instance instance)
     {
-        return provider.Put(new InstanceId(instance.Name), instance);
+        return provider.Put(instance.Name, instance);
     }
 
     public static IEnumerable<Instance> GetAll(this IEntityProvider<Instance> provider)
