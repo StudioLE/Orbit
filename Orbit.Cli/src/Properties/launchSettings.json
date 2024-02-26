@@ -7,13 +7,6 @@
         "DOTNET_ENVIRONMENT": "Production"
       }
     },
-    "CreateNetwork": {
-      "commandName": "Project",
-      "commandLineArgs": "create network --name test",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
-    },
     "CreateInstance": {
       "commandName": "Project",
       "commandLineArgs": "create instance --type G1 --name test",
