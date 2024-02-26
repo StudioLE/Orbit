@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Orbit.Schema;
 
-public readonly record struct ServerConfiguration : IReadOnlyDictionary<string, ShellCommand[]>
+public record struct ServerConfiguration : IReadOnlyDictionary<string, ShellCommand[]>
 {
     private readonly IReadOnlyDictionary<string, ShellCommand[]> _readOnlyDictionaryImplementation;
 

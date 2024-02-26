@@ -32,27 +32,13 @@ public class ServerFactory : IFactory<Server, Server>
     /// <inheritdoc />
     public Server Create(Server server)
     {
-        if(server.Number.IsDefault())
-            server = server with
-            {
-                Number = DefaultNumber()
-            };
-        if(server.Name.IsDefault())
-            server = server with
-            {
-                Name = $"{DefaultName}-{server.Number:00}"
-            };
-        if(server.Interfaces.IsDefault())
-            server = server with
-            {
-                Interfaces = DefaultInterfaces(server)
-            };
-
-        server = server with
-        {
-            WireGuard = _wireGuardServerFactory.Create(server)
-        };
-
+        if (server.Number.IsDefault())
+            server.Number = DefaultNumber();
+        if (server.Name.IsDefault())
+            server.Name = $"{DefaultName}-{server.Number:00}";
+        if (server.Interfaces.IsDefault())
+            server.Interfaces = DefaultInterfaces(server);
+        server.WireGuard = _wireGuardServerFactory.Create(server);
         return server;
     }
 

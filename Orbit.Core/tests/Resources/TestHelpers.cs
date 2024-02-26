@@ -155,43 +155,35 @@ public static class TestHelpers
 
     public static Server WithMockMacAddress(this Server server)
     {
-        return server with
-        {
-            Interfaces = server
-                .Interfaces
-                .Select(WithMockMacAddress)
-                .ToArray()
-        };
+        server.Interfaces = server
+            .Interfaces
+            .Select(WithMockMacAddress)
+            .ToArray();
+        return server;
     }
 
     public static T WithMockMacAddress<T>(this T entity) where T : struct, IHasWireGuardClient
     {
-        return entity with
-        {
-            Interfaces = entity
-                .Interfaces
-                .Select(WithMockMacAddress)
-                .ToArray(),
-            WireGuard = entity
-                .WireGuard
-                .Select(WithMockMacAddress)
-                .ToArray()
-        };
-    }
+        entity.Interfaces = entity
+            .Interfaces
+            .Select(WithMockMacAddress)
+            .ToArray();
+        entity.WireGuard = entity
+            .WireGuard
+            .Select(WithMockMacAddress)
+            .ToArray();
+        return entity;
+}
 
     private static WireGuardClient WithMockMacAddress(WireGuardClient wg)
     {
-        return wg with
-        {
-            Interface = WithMockMacAddress(wg.Interface)
-        };
+        wg.Interface = WithMockMacAddress(wg.Interface);
+        return wg;
     }
 
     private static Interface WithMockMacAddress(Interface iface)
     {
-        return iface with
-        {
-            MacAddress = MockConstants.MacAddress
-        };
+        iface.MacAddress = MockConstants.MacAddress;
+        return iface;
     }
 }

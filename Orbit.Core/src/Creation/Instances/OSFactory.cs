@@ -19,7 +19,7 @@ public class OSFactory : IFactory<OS, OS>
         bool isSet = !os.Name.IsDefault() && !os.Version.IsDefault();
         return isSet
             ? os
-            : os with
+            : new()
             {
                 Name = DefaultName,
                 Version = DefaultVersion

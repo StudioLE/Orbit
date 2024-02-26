@@ -24,25 +24,13 @@ public class WireGuardServerFactory : IFactory<Server, WireGuardServer>
     {
         WireGuardServer wg = server.WireGuard;
         if (wg.Name.IsDefault())
-            wg = wg with
-            {
-                Name = $"wg{server.Number}"
-            };
-        if(wg.Port.IsDefault())
-            wg = wg with
-            {
-                Port = 61000 + server.Number
-            };
-        if(wg.PrivateKey.IsDefault())
-            wg = wg with
-            {
-                PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key")
-            };
-        if(wg.PublicKey.IsDefault())
-            wg = wg with
-            {
-                PublicKey = _wg.GeneratePublicKey(wg.PrivateKey) ?? throw new("Failed to generate WireGuard public key")
-            };
+            wg.Name = $"wg{server.Number}";
+        if (wg.Port.IsDefault())
+            wg.Port = 61000 + server.Number;
+        if (wg.PrivateKey.IsDefault())
+            wg.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
+        if (wg.PublicKey.IsDefault())
+            wg.PublicKey = _wg.GeneratePublicKey(wg.PrivateKey) ?? throw new("Failed to generate WireGuard public key");
         return wg;
     }
 }

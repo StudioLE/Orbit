@@ -35,30 +35,15 @@ public class ClientFactory : IFactory<Client, Client>
     public Client Create(Client client)
     {
         if (client.Connections.IsDefault())
-            client = client with
-            {
-                Connections = DefaultServers()
-            };
+            client.Connections = DefaultServers();
         if(client.Number.IsDefault())
-            client = client with
-            {
-                Number = DefaultNumber()
-            };
-        if(client.Name.IsDefault())
-            client = client with
-            {
-                Name = $"client-{client.Number:00}"
-            };
-        if(client.Interfaces.IsDefault())
-            client = client with
-            {
-                Interfaces = DefaultInterfaces()
-            };
+            client.Number = DefaultNumber();
+        if (client.Name.IsDefault())
+            client.Name = $"client-{client.Number:00}";
+        if (client.Interfaces.IsDefault())
+            client.Interfaces = DefaultInterfaces();
         if (client.WireGuard.IsDefault())
-            client = client with
-            {
-                WireGuard = _wireGuardClientFactory.Create(client)
-            };
+            client.WireGuard = _wireGuardClientFactory.Create(client);
         return client;
     }
 

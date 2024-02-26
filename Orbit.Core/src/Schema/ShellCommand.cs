@@ -1,10 +1,10 @@
 namespace Orbit.Schema;
 
-public readonly record struct ShellCommand()
+public record struct ShellCommand()
 {
-    public string Command { get; init; } = string.Empty;
+    public string Command { get; set; } = string.Empty;
 
-    public string? SuccessMessage { get; init; } = null;
+    public string? SuccessMessage { get; set; } = null;
 
-    public string? ErrorMessage { get; init; } = null;
+    public string? ErrorMessage { get; set; } = null;
 }

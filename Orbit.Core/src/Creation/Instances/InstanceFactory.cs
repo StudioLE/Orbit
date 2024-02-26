@@ -63,67 +63,28 @@ public class InstanceFactory : IFactory<Instance, Instance>
     public Instance Create(Instance instance)
     {
         if (instance.Server.IsDefault())
-            instance = instance with
-            {
-                Server = DefaultServer()
-            };
+            instance.Server = DefaultServer();
         if (instance.Connections.IsDefault())
-            instance = instance with
-            {
-                Connections = [instance.Server]
-            };
-        instance = instance with
-        {
-            Hardware = _hardwareFactory.Create(instance.Hardware)
-        };
-        instance = instance with
-        {
-            OS = _osFactory.Create(instance.OS)
-        };
-        if(instance.Number.IsDefault())
-            instance = instance with
-            {
-                Number = DefaultNumber()
-            };
-        if(instance.Role.IsDefault())
-            instance = instance with
-            {
-                Role = DefaultRole
-            };
-        if(instance.Name.IsDefault())
-            instance = instance with
-            {
-                Name = $"instance-{instance.Number:00}"
-            };
-        if(instance.Interfaces.IsDefault())
-            instance = instance with
-            {
-                Interfaces = DefaultInterfaces(instance)
-            };
-        instance = instance with
-        {
-            WireGuard = _wireGuardClientFactory.Create(instance)
-        };
-        if(instance.Mounts.IsDefault())
-            instance = instance with
-            {
-                Mounts = Array.Empty<Mount>()
-            };
-        if(instance.Domains.IsDefault())
-            instance = instance with
-            {
-                Domains = Array.Empty<string>()
-            };
-        if(instance.Install.IsDefault())
-            instance = instance with
-            {
-                Install = _defaultInstall
-            };
-        if(instance.Run.IsDefault())
-            instance = instance with
-            {
-                Run = _defaultRun
-            };
+            instance.Connections = [instance.Server];
+        instance.Hardware = _hardwareFactory.Create(instance.Hardware);
+        instance.OS = _osFactory.Create(instance.OS);
+        if (instance.Number.IsDefault())
+            instance.Number = DefaultNumber();
+        if (instance.Role.IsDefault())
+            instance.Role = DefaultRole;
+        if (instance.Name.IsDefault())
+            instance.Name = $"instance-{instance.Number:00}";
+        if (instance.Interfaces.IsDefault())
+            instance.Interfaces = DefaultInterfaces(instance);
+        instance.WireGuard = _wireGuardClientFactory.Create(instance);
+        if (instance.Mounts.IsDefault())
+            instance.Mounts = Array.Empty<Mount>();
+        if (instance.Domains.IsDefault())
+            instance.Domains = Array.Empty<string>();
+        if (instance.Install.IsDefault())
+            instance.Install = _defaultInstall;
+        if (instance.Run.IsDefault())
+            instance.Run = _defaultRun;
         return instance;
     }
 

@@ -18,30 +18,15 @@ public class HardwareFactory : IFactory<Hardware, Hardware>
     public Hardware Create(Hardware hardware)
     {
         if (hardware.Platform.IsDefault())
-            hardware = hardware with
-            {
-                Platform = DefaultPlatform
-            };
-        if(hardware.Disk.IsDefault())
-            hardware = hardware with
-            {
-                Disk = DefaultDisk
-            };
-        if(hardware.Type.IsDefault())
-            hardware = hardware with
-            {
-                Type = DefaultType
-            };
-        if(hardware.Cpus.IsDefault())
-            hardware = hardware with
-            {
-                Cpus = DefaultCpus(hardware)
-            };
-        if(hardware.Memory.IsDefault())
-            hardware = hardware with
-            {
-                Memory = DefaultMemory(hardware)
-            };
+            hardware.Platform = DefaultPlatform;
+        if (hardware.Disk.IsDefault())
+            hardware.Disk = DefaultDisk;
+        if (hardware.Type.IsDefault())
+            hardware.Type = DefaultType;
+        if (hardware.Cpus.IsDefault())
+            hardware.Cpus = DefaultCpus(hardware);
+        if (hardware.Memory.IsDefault())
+            hardware.Memory = DefaultMemory(hardware);
         return hardware;
     }
 

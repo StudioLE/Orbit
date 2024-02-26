@@ -32,10 +32,8 @@ internal sealed class NetplanFactoryTests
     public async Task NetplanFactory_Create()
     {
         // Arrange
-        Instance instance = TestHelpers.GetExampleInstance() with
-        {
-            Domains = ["example.com", "example.org"]
-        };
+        Instance instance = TestHelpers.GetExampleInstance();
+        instance.Domains = ["example.com", "example.org"];
 
         // Act
         string output = _factory.Create(instance);

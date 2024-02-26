@@ -7,34 +7,34 @@ namespace Orbit.Schema;
 /// <summary>
 /// The schema for the server hosting an <see cref="Instance"/>.
 /// </summary>
-public readonly record struct Server() : IEntity, IHasValidationAttributes
+public record struct Server() : IEntity, IHasValidationAttributes
 {
     /// <summary>
     /// The name of the server.
     /// </summary>
     [NameSchema]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// The number of the server.
     /// </summary>
     [Range(1, 64)]
-    public int Number { get; init; } = 0;
+    public int Number { get; set; } = 0;
 
     /// <summary>
     /// The interfaces connecting the server to a network.
     /// </summary>
-    public Interface[] Interfaces { get; init; } = Array.Empty<Interface>();
+    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
 
     /// <summary>
     /// The SSH connection details for the server.
     /// </summary>
     [ValidateComplexType]
-    public SshConnection Ssh { get; init; } = new();
+    public SshConnection Ssh { get; set; } = new();
 
     /// <summary>
     /// The WireGuard configuration for the server.
     /// </summary>
     [ValidateComplexType]
-    public WireGuardServer WireGuard { get; init; } = new();
+    public WireGuardServer WireGuard { get; set; } = new();
 }

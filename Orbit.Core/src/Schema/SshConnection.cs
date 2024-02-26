@@ -6,7 +6,7 @@ namespace Orbit.Schema;
 /// <summary>
 /// The schema for the SSH connection of a <see cref="Server"/>.
 /// </summary>
-public readonly record struct SshConnection() : IHasValidationAttributes
+public record struct SshConnection() : IHasValidationAttributes
 {
     /// <summary>
     /// The SSH host.
@@ -15,20 +15,20 @@ public readonly record struct SshConnection() : IHasValidationAttributes
     /// This could be an IP address or a domain name.
     /// </remarks>
     [Required]
-    public string Host { get; init; } = string.Empty;
+    public string Host { get; set; } = string.Empty;
 
     /// <summary>
     /// The SSH port.
     /// </summary>
     [Required]
     [Range(0, 65536)]
-    public int Port { get; init; } = 22;
+    public int Port { get; set; } = 22;
 
     /// <summary>
     /// The SSH user.
     /// </summary>
     [Required]
-    public string User { get; init; } = string.Empty;
+    public string User { get; set; } = string.Empty;
 
 
 }
