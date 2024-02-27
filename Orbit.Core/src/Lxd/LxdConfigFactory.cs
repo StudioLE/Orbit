@@ -69,7 +69,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
             Interface serverNic = server.Interfaces.FirstOrNull(x => x.Type == NetworkType.Nic) ?? throw new($"NIC not found for server: {server.Name}.");
             YamlMappingNode routedNicDevice = new()
             {
-                { "ipv6.address", routedIPv6 },
+                { "ipv6.address", new YamlScalarNode(routedIPv6) { Style = ScalarStyle.SingleQuoted } },
                 { "nictype", "routed" },
                 { "parent", serverNic.Name },
                 { "type", "nic" }
@@ -86,7 +86,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         YamlMappingNode bridgeDevice = new()
         {
             { "ipv4.address", ipv4 },
-            { "ipv6.address", ipv6 },
+            { "ipv6.address", new YamlScalarNode(ipv6) { Style = ScalarStyle.SingleQuoted } },
             { "network", bridgeParent },
             { "type", "nic" }
         };
