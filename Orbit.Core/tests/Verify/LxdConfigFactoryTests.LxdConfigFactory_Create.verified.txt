@@ -8,6 +8,8 @@ devices:
     ipv6.address: 'fc00::0:3:9'
     network: br3
     type: nic
+    name: int3
+    hwaddr: 7C:62:7E:63:55:E5
 config:
   limits.cpu: 2
   limits.memory: 2GB

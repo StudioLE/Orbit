@@ -73,7 +73,9 @@ public class LxdConfigFactory : IFactory<Instance, string>
                 { "ipv6.address", new YamlScalarNode(routedIPv6) { Style = ScalarStyle.SingleQuoted } },
                 { "nictype", "routed" },
                 { "parent", serverNic.Name },
-                { "type", "nic" }
+                { "type", "nic" },
+                { "name", serverNic.Name },
+                { "hwaddr", serverNic.MacAddress }
             };
             devices.SetValue(routedNic.Name, routedNicDevice);
         }
@@ -89,7 +91,9 @@ public class LxdConfigFactory : IFactory<Instance, string>
             { "ipv4.address", ipv4 },
             { "ipv6.address", new YamlScalarNode(ipv6) { Style = ScalarStyle.SingleQuoted } },
             { "network", bridgeParent },
-            { "type", "nic" }
+            { "type", "nic" },
+            { "name", bridge.Name },
+            { "hwaddr", bridge.MacAddress }
         };
         devices.SetValue(bridge.Name, bridgeDevice);
 
