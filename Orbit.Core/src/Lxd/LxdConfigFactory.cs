@@ -66,6 +66,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         if (routedNicQuery is Interface routedNic)
         {
             string routedIPv6 = routedNic.Addresses.FirstOrDefault(IPHelpers.IsIPv6) ?? throw new("No IPv6 found.");
+            routedIPv6 = IPHelpers.RemoveCidr(routedIPv6);
             Interface serverNic = server.Interfaces.FirstOrNull(x => x.Type == NetworkType.Nic) ?? throw new($"NIC not found for server: {server.Name}.");
             YamlMappingNode routedNicDevice = new()
             {
