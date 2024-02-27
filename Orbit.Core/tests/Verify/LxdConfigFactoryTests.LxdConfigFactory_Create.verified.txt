@@ -18,7 +18,7 @@ devices:
     name: int3
     hwaddr: 7C:62:7E:63:55:E5
 config:
-  limits.cpu: 2
+  limits.cpu: '2'
   limits.memory: 2GB
   cloud-init.user-data: |
     #cloud-config

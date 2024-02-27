@@ -108,7 +108,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         // See: https://documentation.ubuntu.com/lxd/en/latest/reference/instance_options
 
         // Hardware
-        config.SetValue("limits.cpu", $"{instance.Hardware.Cpus}");
+        config.SetValue("limits.cpu", new YamlScalarNode(instance.Hardware.Cpus.ToString()) { Style = ScalarStyle.SingleQuoted });
         config.SetValue("limits.memory", $"{instance.Hardware.Memory}GB");
 
         // Cloud Init
