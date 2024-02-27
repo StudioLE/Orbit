@@ -39,7 +39,7 @@ PermitTunnel no
 DebianBanner no
 
 # Restrict all users by IP
-AllowUsers *@10.0.0.0/8
+#AllowUsers *@10.0.0.0/8
 
 # Disable weak key exchange
 # Provide forward secrecy. The server and the client will end up with a shared secret number at the end without a passive eavesdropper learning anything about this number. After we have a shared secret we have to derive a cryptographic key from this using a key derivation function.
