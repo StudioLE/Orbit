@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
-using Orbit.Creation.Instances;
 using Orbit.Lxd;
 using Orbit.Schema;
 using StudioLE.Diagnostics;
@@ -16,7 +15,6 @@ namespace Orbit.Core.Tests.Lxd;
 internal sealed class LxdConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly InstanceFactory _instanceFactory;
     private readonly LxdConfigFactory _factory;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
@@ -26,7 +24,6 @@ internal sealed class LxdConfigFactoryTests
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
         IHost host = TestHelpers.CreateTestHost();
-        _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _factory = host.Services.GetRequiredService<LxdConfigFactory>();
         _logs = host.Services.GetCachedLogs();
     }

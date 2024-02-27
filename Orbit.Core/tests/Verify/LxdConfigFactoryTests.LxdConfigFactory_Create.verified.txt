@@ -3,6 +3,13 @@ name: example-instance
 devices:
   root:
     size: 20GB
+  ext3:
+    ipv6.address: '2001:db8::9'
+    nictype: routed
+    parent: eth0
+    type: nic
+    name: eth0
+    hwaddr: 7C:62:7E:63:55:E5
   int3:
     ipv4.address: 10.0.3.9
     ipv6.address: 'fc00::0:3:9'
@@ -141,6 +148,27 @@ config:
               - to: default
                 via: fc00::0:3:1
                 metric: 50
+            ext3:
+              dhcp4: no
+              match:
+                macaddress: 7C:62:7E:63:55:E5
+              addresses:
+              - 2001:db8::9/128
+              nameservers:
+                addresses:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 2606:4700:4700::1111
+                - 2606:4700:4700::1001
+              routes:
+              - to: default
+                via: 203.0.113.255
+                metric: 50
+                on-link: true
+              - to: default
+                via: '2001:db8::'
+                metric: 50
+                on-link: true
     - path: /var/lib/cloud/scripts/per-instance/30-orbit-configure
       permissions: 0o500
       content: |

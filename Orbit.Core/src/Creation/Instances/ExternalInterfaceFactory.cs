@@ -26,8 +26,8 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
                             .Interfaces
                             .FirstOrNull(x => x.Type == NetworkType.Nic)
                         ?? throw new($"NIC not found for server: {instance.Server}.");
-        string? ipv6 = nic.Addresses.FirstOrDefault(x => x.EndsWith("::"));
-        if (ipv6 is null)
+        IPv6? ipv6Query = GetIPv6(nic, instance);
+        if (ipv6Query is not IPv6 ipv6)
             return null;
         return new()
         {
@@ -37,11 +37,31 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
             MacAddress = MacAddressHelpers.Generate(),
             Addresses =
             [
-                ipv6
+                ipv6.ToString()
             ],
             // TODO: Add subnet
             Gateways = nic.Gateways,
             Dns = nic.Dns
         };
+    }
+
+    private static IPv6? GetIPv6(Interface nic, Instance instance)
+    {
+        string? ipv6Str = nic.Subnets.FirstOrDefault(IPHelpers.IsIPv6);
+        if (ipv6Str is null)
+            return null;
+        ipv6Str = IPHelpers.RemoveCidr(ipv6Str);
+        IPv6? ipv6Query = IPv6Parser.Parse(ipv6Str);
+        if (ipv6Query is not IPv6 ipv6)
+            return null;
+        ushort[] hextets = ipv6.GetHextets();
+        int count = 8 - hextets.Length;
+        if(count > 0)
+        {
+            ushort[] padding = Enumerable.Repeat((ushort)0, count).ToArray();
+            hextets = hextets.Concat(padding).ToArray();
+        }
+        hextets[^1] = (ushort)instance.Number;
+        return new(hextets, 128);
     }
 }

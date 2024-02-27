@@ -42,6 +42,11 @@ public readonly struct IPv6
         return _cidr.ToString();
     }
 
+    public ushort[] GetHextets()
+    {
+        return _hextets;
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {
