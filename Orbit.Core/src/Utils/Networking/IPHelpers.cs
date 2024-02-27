@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace Orbit.Utils.Networking;
 
 /// <summary>
@@ -18,8 +16,8 @@ public static class IPHelpers
     /// <returns><see langword="true"/> if <paramref name="str"/> is a valid IPv4 address, <see langword="false"/> otherwise.</returns>
     public static bool IsIPv4(string str)
     {
-        Regex regex = new(IPv4Regex);
-        return regex.IsMatch(str);
+        IPv4? ipv4 = IPv4Parser.Parse(str);
+        return ipv4 is not null;
     }
 
     /// <summary>
