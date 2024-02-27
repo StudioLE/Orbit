@@ -48,10 +48,10 @@ public class NetplanFactory : IFactory<Instance, string>
             };
             YamlSequenceNode routes = new(bridge
                 .Gateways
-                .Select(x => new YamlMappingNode
+                .Select(address => new YamlMappingNode
                 {
                     { "to", "default" },
-                    { "via", x },
+                    { "via", address },
                     { "metric", "50" }
                 }));
             YamlMappingNode ethernet = new()
@@ -66,7 +66,38 @@ public class NetplanFactory : IFactory<Instance, string>
             ethernets.SetValue(bridge.Name, ethernet);
         }
 
-        // TODO: RoutedNic
+        // RoutedNic
+        IEnumerable<Interface> routedNics = instance.Interfaces.Where(x => x.Type == NetworkType.RoutedNic);
+        foreach (Interface routedNic in routedNics)
+        {
+            YamlMappingNode match = new()
+            {
+                { "macaddress", routedNic.MacAddress }
+            };
+            YamlMappingNode nameservers = new()
+            {
+                { "addresses", routedNic.Dns }
+            };
+            YamlSequenceNode routes = new(routedNic
+                .Gateways
+                .Select(address => new YamlMappingNode
+                {
+                    { "to", "default" },
+                    { "via", address },
+                    { "metric", "50" },
+                    { "on-link", "true" }
+                }));
+            YamlMappingNode ethernet = new()
+            {
+                { "dhcp4", "no" },
+                // { "dhcp6", "no" },
+                { "match", match },
+                { "addresses", routedNic.Addresses },
+                { "nameservers", nameservers },
+                { "routes", routes }
+            };
+            ethernets.SetValue(routedNic.Name, ethernet);
+        }
 
         // Serialize
         string output = _serializer.Serialize(yaml);
