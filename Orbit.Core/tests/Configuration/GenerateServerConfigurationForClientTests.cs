@@ -1,4 +1,4 @@
-using Cascade.Workflows.CommandLine;
+using Cascade.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;

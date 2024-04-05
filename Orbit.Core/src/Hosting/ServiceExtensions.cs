@@ -1,4 +1,4 @@
-using Cascade.Workflows.CommandLine;
+using Cascade.Workflows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Caddy;

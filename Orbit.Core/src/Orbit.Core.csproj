@@ -10,7 +10,7 @@
   <Import Project="..\..\Global.props" />
 
   <ItemGroup>
-    <PackageReference Include="Cascade.Workflows.CommandLine" Version="0.6.0" />
+    <PackageReference Include="Cascade.Workflows.Abstractions" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
