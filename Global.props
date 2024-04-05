@@ -44,7 +44,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(IsExecutable) OR $(IsLibrary)">
-    <PackageReference Include="Surveyor.BuildVersioning" Version="0.4.0-alpha.6" PrivateAssets="All" Condition="'$(CI)' == 'true'" />
+    <PackageReference Include="Surveyor.BuildVersioning" Version="0.4.0" PrivateAssets="All" Condition="'$(CI)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup Condition="$(IsLibrary)">
