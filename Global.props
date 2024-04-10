@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <Authors>StudioLE</Authors>
-    <Copyright>Copyright © Laurence Elsdon 2023</Copyright>
+    <Copyright>Copyright © Laurence Elsdon 2023-2024</Copyright>
     <PackageProjectUrl>https://github.com/StudioLE/Orbit</PackageProjectUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>multipass launcher wrapper cli console launch vm virtual machine infrastructure as code iac</PackageTags>
   </PropertyGroup>
 
@@ -14,9 +13,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="\" Visible="false"/>
-  </ItemGroup>
+  <PropertyGroup>
+    <RepositoryReadmeFilePath>../../README.md</RepositoryReadmeFilePath>
+    <ProjectReadmeFilePath>README.md</ProjectReadmeFilePath>
+    <PackageReadMeFile Condition="Exists('$(RepositoryReadmeFilePath)') OR Exists('$(ProjectReadmeFilePath)')">README.md</PackageReadMeFile>
+  </PropertyGroup>
 
   <PropertyGroup>
     <IsExecutable>false</IsExecutable>
@@ -28,17 +29,17 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsExecutable)">
-    <TargetFramework>net8.0</TargetFramework>
-    <PackAsTool>true</PackAsTool>
+    <TargetFramework Condition="'$(TargetFramework)' == '' AND '$(TargetFrameworks)' == ''">net8.0</TargetFramework>
+    <PackAsTool Condition="'$(PackAsTool)' == ''">true</PackAsTool>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsTestLibrary)">
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework Condition="'$(TargetFramework)' == '' AND '$(TargetFrameworks)' == ''">net8.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsLibrary)">
-    <TargetFramework>net8.0</TargetFramework>
-    <IsPackable>true</IsPackable>
+    <TargetFramework Condition="'$(TargetFramework)' == '' AND '$(TargetFrameworks)' == ''">net8.0</TargetFramework>
+    <IsPackable Condition="'$(IsPackable)' == ''">true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
@@ -49,6 +50,11 @@
 
   <ItemGroup Condition="$(IsLibrary)">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="$(IsLibrary) OR $(IsExecutable)">
+    <Content Condition="Exists('$(ProjectReadmeFilePath)')" Include="$(PackageReadmeFile)" Pack="true" PackagePath="/" />
+    <None Condition="Exists('$(RepositoryReadmeFilePath)') AND ! Exists('$(ProjectReadmeFilePath)')" Include="$(RepositoryReadmeFilePath)" Pack="true" PackagePath="/" Visible="false" />
   </ItemGroup>
 
 </Project>
