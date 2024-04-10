@@ -1,6 +1,4 @@
 using System.CommandLine;
-using Cascade.Workflows.CommandLine;
-using Cascade.Workflows.CommandLine.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orbit.CloudInit;
@@ -11,6 +9,8 @@ using Orbit.Creation.Servers;
 using Orbit.Hosting;
 using Orbit.Lxd;
 using Orbit.WireGuard;
+using Tectonic.Extensions.CommandLine;
+using Tectonic.Extensions.CommandLine.Utils;
 
 namespace Orbit.Cli;
 
