@@ -12,13 +12,13 @@
   <ItemGroup>
     <PackageReference Include="Cascade.Workflows.Abstractions" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
-    <PackageReference Include="StudioLE.Extensions.Logging.Console" Version="0.10.0" />
-    <PackageReference Include="StudioLE.Extensions.System" Version="0.10.0" />
-    <PackageReference Include="StudioLE.Patterns.Abstractions" Version="0.10.0" />
-    <PackageReference Include="StudioLE.Serialization.Yaml" Version="0.10.0" />
+    <PackageReference Include="StudioLE.Extensions.Logging.Console" Version="0.11.0" />
+    <PackageReference Include="StudioLE.Extensions.System" Version="0.11.0" />
+    <PackageReference Include="StudioLE.Patterns.Abstractions" Version="0.11.0" />
+    <PackageReference Include="StudioLE.Serialization.Yaml" Version="0.11.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
