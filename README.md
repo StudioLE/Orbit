@@ -1,3 +1,14 @@
+## Contents
+
+### [Orbit.Cli](Orbit.Cli/src)
+
+A CLI tool providing infrastructure-as-code and git-ops methods for creating and managing virtual machines with [LXD](https://canonical.com/lxd).
+
+### [Orbit.Core](Orbit.Core/src)
+
+A library providing infrastructure-as-code and git-ops methods for creating and managing virtual machines with [LXD](https://canonical.com/lxd).
+
+
 ## License
 
 This repository and its libraries are provided open source with the [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.en.html) license that requires you must disclose your source code when you distribute, publish, or provide access to modified or derivative software.

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Hello, world!</Description>
+    <Description>A library providing infrastructure-as-code and git-ops methods for creating and managing virtual machines with LXD.</Description>
     <RootNamespace>Orbit</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
