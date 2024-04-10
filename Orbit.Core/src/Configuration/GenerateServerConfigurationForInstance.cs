@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Tectonic;
 using Microsoft.Extensions.Logging;
 using Orbit.Caddy;
 using Orbit.Provision;
@@ -8,6 +7,7 @@ using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Orbit.WireGuard;
 using StudioLE.Serialization;
+using Tectonic;
 
 namespace Orbit.Configuration;
 

@@ -1,4 +1,3 @@
-using Tectonic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Caddy;
@@ -12,6 +11,7 @@ using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Serialization;
 using Orbit.WireGuard;
+using Tectonic;
 
 namespace Orbit.Hosting;
 

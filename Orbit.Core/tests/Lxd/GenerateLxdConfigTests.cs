@@ -1,4 +1,3 @@
-using Tectonic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
@@ -9,6 +8,7 @@ using Orbit.Schema;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
+using Tectonic;
 
 namespace Orbit.Core.Tests.Lxd;
 

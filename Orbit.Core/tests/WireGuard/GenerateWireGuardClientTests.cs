@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using Tectonic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
@@ -11,6 +10,7 @@ using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
+using Tectonic;
 
 namespace Orbit.Core.Tests.WireGuard;
 

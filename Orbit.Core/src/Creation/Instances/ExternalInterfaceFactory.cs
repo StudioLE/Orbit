@@ -56,7 +56,7 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
             return null;
         ushort[] hextets = ipv6.GetHextets();
         int count = 8 - hextets.Length;
-        if(count > 0)
+        if (count > 0)
         {
             ushort[] padding = Enumerable.Repeat((ushort)0, count).ToArray();
             hextets = hextets.Concat(padding).ToArray();

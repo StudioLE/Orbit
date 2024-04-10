@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Orbit.Utils.Serialization;
 using StudioLE.Serialization.Yaml;
 using YamlDotNet.Serialization;
-using ISerializer = StudioLE.Serialization.ISerializer;
 using IDeserializer = StudioLE.Serialization.IDeserializer;
+using ISerializer = StudioLE.Serialization.ISerializer;
 
 namespace Orbit.Serialization;
 

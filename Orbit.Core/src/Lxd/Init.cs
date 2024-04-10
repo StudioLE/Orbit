@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Tectonic;
 using Microsoft.Extensions.Logging;
 using Orbit.CloudInit;
 using Orbit.Provision;
@@ -7,6 +6,7 @@ using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
+using Tectonic;
 
 namespace Orbit.Lxd;
 

@@ -97,7 +97,8 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
 
     private static string GetSubDirectory(IEntityId<T> id)
     {
-        return id switch {
+        return id switch
+        {
             ClientId _ => "clients",
             InstanceId _ => "instances",
             ServerId _ => "servers",
