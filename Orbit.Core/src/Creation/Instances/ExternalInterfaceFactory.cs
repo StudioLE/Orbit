@@ -61,7 +61,8 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
             ushort[] padding = Enumerable.Repeat((ushort)0, count).ToArray();
             hextets = hextets.Concat(padding).ToArray();
         }
-        hextets[^1] = (ushort)instance.Number;
+
+        hextets[^1] = HexadecimalHelpers.ToUShort(instance.Number.ToString()) ?? throw new("Invalid instance number.");
         return new(hextets, 128);
     }
 }

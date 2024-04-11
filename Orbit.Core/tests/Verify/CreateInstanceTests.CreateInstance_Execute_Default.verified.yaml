@@ -24,7 +24,7 @@ Interfaces:
   Type: RoutedNic
   MacAddress: 7C:62:7E:63:55:E5
   Addresses:
-  - 2001:db8::a/128
+  - 2001:db8::10/128
   Gateways:
   - 203.0.113.255
   - '2001:db8::'
