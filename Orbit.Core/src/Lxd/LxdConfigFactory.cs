@@ -74,8 +74,8 @@ public class LxdConfigFactory : IFactory<Instance, string>
                 { "nictype", "routed" },
                 { "parent", serverNic.Name },
                 { "type", "nic" },
-                { "name", serverNic.Name },
-                { "hwaddr", serverNic.MacAddress }
+                { "name", routedNic.Name },
+                { "hwaddr", routedNic.MacAddress }
             };
             devices.SetValue(routedNic.Name, routedNicDevice);
         }
