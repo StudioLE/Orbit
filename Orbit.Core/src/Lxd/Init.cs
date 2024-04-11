@@ -71,7 +71,8 @@ public class Init : IActivity<Init.Inputs, string>
             "lxc",
             "init",
             $"{instance.OS.Name.ToLower()}:{instance.OS.Version}",
-            instance.Name.ToString()
+            instance.Name.ToString(),
+            "--vm"
         ];
         int exitCode = _ssh.Execute(string.Join(" ", args), config);
         if (exitCode != 0)
