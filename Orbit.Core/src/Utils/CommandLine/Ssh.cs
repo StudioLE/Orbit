@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Orbit.Utils.CommandLine;
@@ -10,66 +9,77 @@ namespace Orbit.Utils.CommandLine;
 /// Execute a shell command on a remote server via SSH - with optional standard input - and capture the output.
 /// </summary>
 /// <remarks>
-/// <inheritdoc/>
+/// <see cref="Ssh"/> is a wrapper around <see cref="Process"/> that handles the
+/// frustrations quirks of the dealing with <see cref="Process"/> directly.
 /// </remarks>
-public class Ssh : Cli
+public class Ssh
 {
+    private readonly Cli _cli;
+
     /// <summary>
     /// The SSH host.
     /// </summary>
-    public string? Host { get; set; } = null;
+    public string? Host { get; set; }
 
     /// <summary>
     /// The SSH port.
     /// </summary>
     [Range(0, 65536)]
-    public int? Port { get; set; } = null;
+    public int? Port { get; set; }
 
     /// <summary>
     /// The SSH user.
     /// </summary>
-    public string? User { get; set; } = null;
+    public string? User { get; set; }
 
     /// <summary>
-    /// Creates a new instance of <see cref="Ssh"/>.
+    /// DI constructor for <see cref="Ssh"/>.
     /// </summary>
-    public Ssh()
+    public Ssh(Cli cli)
     {
-        ConfigureStartInfo = ConfigureStartInfoForSsh;
+        _cli = cli;
+        _cli.TimeOut = 12 * 60 * 1000;
     }
 
     /// <summary>
     /// DI constructor for <see cref="Ssh"/>.
     /// </summary>
-    public Ssh(ILogger<Ssh> logger) : this()
-    {
-        Logger = logger;
-    }
-
-    /// <summary>
-    /// DI constructor for <see cref="Ssh"/>.
-    /// </summary>
-    public Ssh(ILogger<Ssh> logger, IOptions<SshOptions> options) : this(logger)
+    public Ssh(Cli cli, IOptions<SshOptions> options) : this(cli)
     {
         Host = options.Value.Host;
         Port = options.Value.Port;
         User = options.Value.User;
     }
 
-    private void ConfigureStartInfoForSsh(ProcessStartInfo startInfo)
+    /// <summary>
+    /// Execute a shell command - with optional standard input - and capture the output.
+    /// </summary>
+    /// <param name="command">The command and arguments to execute.</param>
+    /// <param name="standardInput">Optional strings to pass to standard input.</param>
+    /// <returns>
+    /// The process exit code if the command is executed,
+    /// or an integer value of <see cref="Cli.ExitCode"/> if something goes wrong.
+    /// </returns>
+    public int Execute(string command, string standardInput)
+    {
+        string args = FormatArguments(command);
+        return _cli.Execute("ssh", args, standardInput);
+    }
+
+    private string FormatArguments(string command)
     {
         if (string.IsNullOrEmpty(Host))
             throw new("Host must be set.");
         StringBuilder args = new();
         args.Append(" " + Host);
         if (Port is not null)
-            args.Append(" -p " + Port);
+            args.Append($" -p {Port}");
         if (User is not null)
-            args.Append(" -l " + User);
+            args.Append($" -l {User}");
         args.Append(" -o BatchMode=yes");
         args.Append(" -o StrictHostKeyChecking=yes");
-        args.Append(" " + startInfo.FileName + " " + startInfo.Arguments);
-        startInfo.FileName = "ssh";
-        startInfo.Arguments = args.ToString();
+        if (!string.IsNullOrEmpty(command))
+            args.Append($" {command}");
+        return args.ToString();
     }
 }

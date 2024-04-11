@@ -21,6 +21,7 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
     private readonly IEntityProvider<Server> _servers;
     private readonly CommandContext _context;
     private readonly IDeserializer _deserializer;
+    private readonly Ssh _ssh;
 
     /// <summary>
     /// DI constructor for <see cref="ExecuteServerConfiguration"/>.
@@ -30,13 +31,15 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
         CommandContext context,
-        IDeserializer deserializer)
+        IDeserializer deserializer,
+        Ssh ssh)
     {
         _logger = logger;
         _instances = instances;
         _servers = servers;
         _context = context;
         _deserializer = deserializer;
+        _ssh = ssh;
     }
 
     /// <summary>
@@ -71,10 +74,10 @@ public class ExecuteServerConfiguration : IActivity<ExecuteServerConfiguration.I
             Server? serverQuery = _servers.Get(new ServerId(serverName));
             if (serverQuery is not Server server)
                 return Failure("Failed to get server");
-            Ssh ssh = LxdHelpers.CreateSsh(_logger, server);
+            _ssh.SetServer(server);
             foreach (ShellCommand command in commands)
             {
-                int exitCode = ssh.Execute(command.Command, string.Empty);
+                int exitCode = _ssh.Execute(command.Command, string.Empty);
                 if (exitCode != 0)
                     return Failure(command.ErrorMessage ?? "Failed to run command on server.");
                 if (command.SuccessMessage is not null)

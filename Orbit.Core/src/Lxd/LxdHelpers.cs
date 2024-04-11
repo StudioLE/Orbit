@@ -12,19 +12,14 @@ public static class LxdHelpers
     /// <summary>
     /// Create a <see cref="Ssh"/> to execute LXD commands on <see cref="Server"/>.
     /// </summary>
-    /// <param name="logger">The logger to use.</param>
+    /// <param name="ssh">The ssh client.</param>
     /// <param name="server">The server to connect to.</param>
     /// <returns>The created <see cref="Ssh"/></returns>
-    public static Ssh CreateSsh(ILogger logger, Server server)
+    public static void SetServer(this Ssh ssh, Server server)
     {
-        return new()
-        {
-            Logger = logger,
-            Host = server.Ssh.Host,
-            User = server.Ssh.User,
-            Port = server.Ssh.Port,
-            OnOutput = output => OutputToLogger(logger, output)
-        };
+        ssh.Host = server.Ssh.Host;
+        ssh.User = server.Ssh.User;
+        ssh.Port = server.Ssh.Port;
     }
 
     /// <summary>

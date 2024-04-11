@@ -10,6 +10,7 @@ using Orbit.Lxd;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Serialization;
+using Orbit.Utils.CommandLine;
 using Orbit.WireGuard;
 using Tectonic;
 
@@ -78,7 +79,11 @@ public static class ServiceExtensions
 
             .AddTransient<ExecuteServerConfiguration>()
 
-            .AddTransient<Init>();
+            .AddTransient<Init>()
+
+            .AddTransient<Cli>()
+            .AddTransient<Ssh>()
+            ;
 
         // @formatter:on
     }

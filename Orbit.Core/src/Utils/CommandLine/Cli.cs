@@ -33,11 +33,6 @@ public class Cli
     public Action<string> OnError { get; set; }
 
     /// <summary>
-    /// An optional hook to configure the <see cref="ProcessStartInfo"/>.
-    /// </summary>
-    public Action<ProcessStartInfo>? ConfigureStartInfo { get; set; }
-
-    /// <summary>
     /// Creates a new instance of <see cref="Cli"/>.
     /// </summary>
     public Cli()
@@ -73,9 +68,9 @@ public class Cli
     /// The process exit code if the command is executed,
     /// or an integer value of <see cref="ExitCode"/> if something goes wrong.
     /// </returns>
-    public int Execute(string commandPath, string arguments, params string[] standardInput)
+    public int Execute(string commandPath, string arguments, string? standardInput = null)
     {
-        bool enableStandardInput = standardInput.Length > 0;
+        bool enableStandardInput = standardInput is not null;
         using AutoResetEvent outputWaitHandle = new(false);
         using AutoResetEvent errorWaitHandle = new(false);
         using Process process = CreateProcess(commandPath, arguments, enableStandardInput);
@@ -83,11 +78,11 @@ public class Cli
             return (int)ExitCode.FailedToStart;
         Subscribe(process, outputWaitHandle, errorWaitHandle);
         if (enableStandardInput)
-            WriteStandardInput(process, standardInput);
+            WriteStandardInput(process, standardInput!);
         return WaitForCompletion(process, outputWaitHandle, errorWaitHandle);
     }
 
-    private Process CreateProcess(string commandPath, string arguments, bool enableStandardInput)
+    private static Process CreateProcess(string commandPath, string arguments, bool enableStandardInput)
     {
         ProcessStartInfo startInfo = new()
         {
@@ -99,7 +94,6 @@ public class Cli
             CreateNoWindow = true,
             UseShellExecute = false
         };
-        ConfigureStartInfo?.Invoke(startInfo);
         Process process = new()
         {
             EnableRaisingEvents = true,
@@ -152,10 +146,9 @@ public class Cli
         Logger?.LogError(error);
     }
 
-    private static void WriteStandardInput(Process process, IEnumerable<string> standardInput)
+    private static void WriteStandardInput(Process process, string standardInput)
     {
-        foreach (string str in standardInput)
-            process.StandardInput.WriteLine(str);
+        process.StandardInput.WriteLine(standardInput);
         process.StandardInput.Flush();
         process.StandardInput.Close();
     }

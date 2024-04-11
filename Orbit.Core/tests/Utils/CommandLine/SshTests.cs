@@ -67,7 +67,7 @@ internal sealed class SshTests
             .Join();
 
         // Act
-        int exitCode = _ssh.Execute("./repeat", "2 0.2", longString);
+        int exitCode = _ssh.Execute("./repeat 2 0.2", longString);
 
         // Assert
         Assert.That(exitCode, Is.EqualTo(0), "Exit code");
