@@ -12,6 +12,9 @@ namespace Orbit.Utils.CommandLine;
 /// </remarks>
 public class Cli
 {
+    /// <summary>
+    /// The logger.
+    /// </summary>
     public ILogger? Logger { get; set; }
 
     /// <summary>
@@ -175,5 +178,28 @@ public class Cli
             return (int)ExitCode.TimedOutWaitingForStandardError;
         }
         return process.ExitCode;
+    }
+
+    /// <summary>
+    /// Execute a shell command and capture the output.
+    /// An exception is thrown if there is any error output.
+    /// </summary>
+    /// <param name="command">The command to execute.</param>
+    /// <param name="arguments">The arguments to append to the executed command.</param>
+    /// <returns>Lines of standard output.</returns>
+    /// <exception cref="Exception">Thrown for any standard error output.</exception>
+    public static IReadOnlyCollection<string> ExecuteOrThrow(string command, string arguments)
+    {
+        List<string> output = new();
+        List<string> errors = new();
+        Cli cli = new()
+        {
+            OnOutput = line => output.Add(line),
+            OnError = line => errors.Add(line)
+        };
+        cli.Execute(command, arguments);
+        if (errors.Count > 0)
+            throw new($"Failed to execute {command} command: {string.Join(Environment.NewLine, errors)}");
+        return output;
     }
 }
