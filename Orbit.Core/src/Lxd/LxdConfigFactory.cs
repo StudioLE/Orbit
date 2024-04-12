@@ -46,14 +46,14 @@ public class LxdConfigFactory : IFactory<Instance, string>
         string networkConfig = _netplanFactory.Create(instance);
         return $"""
             type: virtual-machine
-            name: example-instance
+            name: {instance.Name}
             devices:
               root:
-                size: 20GB
+                size: {instance.Hardware.Disk}GB
             {interfaces}
             config:
-              limits.cpu: '2'
-              limits.memory: 2GB
+              limits.cpu: '{instance.Hardware.Cpus}'
+              limits.memory: {instance.Hardware.Memory}GB
               cloud-init.network-config: |
             {networkConfig.Indent(2).TrimEnd()}
               cloud-init.user-data: |
