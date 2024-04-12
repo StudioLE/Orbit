@@ -11,7 +11,6 @@ public class UserConfigFactory : IFactory<Instance, string>
 {
     private readonly CloudInitOptions _options;
     private readonly WireGuardClientConfigFactory _wgConfigFactory;
-    private readonly NetplanFactory _netplanFactory;
     private readonly InstallFactory _installFactory;
     private readonly RunFactory _runFactory;
 
@@ -21,13 +20,11 @@ public class UserConfigFactory : IFactory<Instance, string>
     public UserConfigFactory(
         IOptions<CloudInitOptions> options,
         WireGuardClientConfigFactory wgConfigFactory,
-        NetplanFactory netplanFactory,
         InstallFactory installFactory,
         RunFactory runFactory)
     {
         _options = options.Value;
         _wgConfigFactory = wgConfigFactory;
-        _netplanFactory = netplanFactory;
         _installFactory = installFactory;
         _runFactory = runFactory;
     }
@@ -36,7 +33,6 @@ public class UserConfigFactory : IFactory<Instance, string>
     public string Create(Instance instance)
     {
         string sshdConfigContent = EmbeddedResourceHelpers.GetText("Resources/Templates/sshd_config");
-        string netplanContent = _netplanFactory.Create(instance).TrimEnd();
         string configureContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/50-orbit-configure");
         string installContent = _installFactory.Create(instance);
         string runContent = _runFactory.Create(instance);
@@ -69,9 +65,6 @@ public class UserConfigFactory : IFactory<Instance, string>
               append: true
               content: |
             {sshdConfigContent.Indent(2)}
-            - path: /etc/netplan/10-custom.yaml
-              content: |
-            {netplanContent.Indent(2)}
             - path: /var/lib/cloud/scripts/per-instance/30-orbit-configure
               permissions: 0o500
               content: |

@@ -14,6 +14,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
     private readonly UserConfigFactory _userConfig;
+    private readonly NetplanFactory _netplanFactory;
 
     /// <summary>
     /// DI constructor for <see cref="LxdConfigFactory"/>.
@@ -21,10 +22,12 @@ public class LxdConfigFactory : IFactory<Instance, string>
     public LxdConfigFactory(
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
-        UserConfigFactory userConfig)
+        UserConfigFactory userConfig,
+        NetplanFactory netplanFactory)
     {
         _instances = instances;
         _userConfig = userConfig;
+        _netplanFactory = netplanFactory;
         _servers = servers;
     }
 
@@ -40,6 +43,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
         string? userConfig = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);
         if (userConfig is null)
             userConfig = _userConfig.Create(instance);
+        string networkConfig = _netplanFactory.Create(instance);
         return $"""
             type: virtual-machine
             name: example-instance
@@ -50,6 +54,8 @@ public class LxdConfigFactory : IFactory<Instance, string>
             config:
               limits.cpu: '2'
               limits.memory: 2GB
+              cloud-init.network-config: |
+            {networkConfig.Indent(2).TrimEnd()}
               cloud-init.user-data: |
             {userConfig.Indent(2).TrimEnd()}
 

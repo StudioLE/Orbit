@@ -102,50 +102,6 @@ write_files:
 
     # Encryption provides confidentiality, message authentication code provides integrity.
     MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
-- path: /etc/netplan/10-custom.yaml
-  content: |
-    network:
-      version: 2
-      ethernets:
-        int3:
-          dhcp4: no
-          match:
-            macaddress: 7C:62:7E:63:55:E5
-          addresses:
-          - 10.0.3.9/24
-          - fc00::0:3:9/112
-          nameservers:
-            addresses:
-            - 10.0.3.2
-            - fc00::0:3:2
-          routes:
-          - to: default
-            via: 10.0.3.1
-            metric: 50
-          - to: default
-            via: fc00::0:3:1
-            metric: 50
-        ext3:
-          dhcp4: no
-          match:
-            macaddress: 7C:62:7E:63:55:E5
-          addresses:
-          - 2001:db8::9/128
-          nameservers:
-            addresses:
-            - 1.1.1.1
-            - 1.0.0.1
-            - 2606:4700:4700::1111
-            - 2606:4700:4700::1001
-          routes:
-          - to: default
-            via: 203.0.113.255
-            metric: 50
-            on-link: true
-          - to: default
-            via: '2001:db8::'
-            metric: 50
-            on-link: true
 - path: /var/lib/cloud/scripts/per-instance/30-orbit-configure
   permissions: 0o500
   content: |
@@ -196,14 +152,6 @@ write_files:
       echo-success "Restarted SSH"
     else
       echo-error "Failed to restart SSH"
-    fi
-
-    echo-step "Applying Netplan configuration"
-    if netplan apply
-    then
-      echo-success "Applied Netplan configuration"
-    else
-      echo-error "Failed to apply netplan configuration"
     fi
 
     echo-information "Completed Orbit configuration"

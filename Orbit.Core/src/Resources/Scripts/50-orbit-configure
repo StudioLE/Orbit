@@ -47,12 +47,4 @@ else
   echo-error "Failed to restart SSH"
 fi
 
-echo-step "Applying Netplan configuration"
-if netplan apply
-then
-  echo-success "Applied Netplan configuration"
-else
-  echo-error "Failed to apply netplan configuration"
-fi
-
 echo-information "Completed Orbit configuration"
