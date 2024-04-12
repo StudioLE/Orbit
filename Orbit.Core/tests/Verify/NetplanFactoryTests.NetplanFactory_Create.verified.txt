@@ -15,10 +15,6 @@
         - 2606:4700:4700::1001
       routes:
       - to: default
-        via: 203.0.113.255
-        metric: 50
-        on-link: true
-      - to: default
         via: '2001:db8::'
         metric: 50
         on-link: true

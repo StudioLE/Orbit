@@ -12,7 +12,6 @@ Interfaces:
   Addresses:
   - 2001:db8::9/128
   Gateways:
-  - 203.0.113.255
   - '2001:db8::'
   Subnets: []
   Dns:

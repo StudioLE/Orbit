@@ -40,7 +40,7 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
                 ipv6.ToString()
             ],
             // TODO: Add subnet
-            Gateways = nic.Gateways,
+            Gateways = nic.Gateways.Where(IPHelpers.IsIPv6).ToArray(),
             Dns = nic.Dns
         };
     }
