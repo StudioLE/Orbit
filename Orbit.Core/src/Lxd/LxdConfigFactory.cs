@@ -47,8 +47,6 @@ public class LxdConfigFactory : IFactory<Instance, string>
             type: virtual-machine
             name: {instance.Name}
             devices:
-              root:
-                size: {instance.Hardware.Disk}GB
             {interfaces}
             config:
               limits.cpu: '{instance.Hardware.Cpus}'

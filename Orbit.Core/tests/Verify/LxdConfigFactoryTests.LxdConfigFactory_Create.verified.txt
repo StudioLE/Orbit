@@ -1,8 +1,6 @@
 type: virtual-machine
 name: example-instance
 devices:
-  root:
-    size: 20GB
   ext3:
     ipv6.address: '2001:db8::9'
     nictype: routed
