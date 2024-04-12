@@ -31,7 +31,9 @@ public static class EmbeddedResourceHelpers
         IFileInfo templateFile = GetFile(path);
         using Stream readStream = templateFile.CreateReadStream();
         using StreamReader reader = new(readStream);
-        return reader.ReadToEnd();
+        return reader
+            .ReadToEnd()
+            .TrimEnd('\n');
     }
 
     /// <summary>

@@ -1,7 +1,0 @@
-#cloud-config
-
-packages:
-- resolvconf
-ssh_genkeytypes:
-- rsa
-- ed25519

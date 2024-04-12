@@ -30,7 +30,7 @@ internal sealed class UserConfigFactoryTests
 
     [Test]
     [Category("Factory")]
-    public async Task CloudInitFactory_Create()
+    public async Task UserConfigFactory_Create()
     {
         // Arrange
         Instance instance = TestHelpers.GetExampleInstance();

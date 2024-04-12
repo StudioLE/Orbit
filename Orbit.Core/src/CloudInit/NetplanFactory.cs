@@ -101,6 +101,6 @@ public class NetplanFactory : IFactory<Instance, string>
 
         // Serialize
         string output = _serializer.Serialize(yaml);
-        return output;
+        return output.TrimEnd('\n');
     }
 }

@@ -32,7 +32,6 @@ public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
             {MultiLine("AllowedIPs", wg.AllowedIPs)}
             Endpoint = {wg.Endpoint}
             PersistentKeepAlive = 25
-
             """;
     }
 

@@ -21,9 +21,9 @@ public class InstallFactory : IFactory<Instance, string>
     private static string Create(string package)
     {
         return $"""
+
             log "Installing {package}"
             curl -fsS https://install.studiole.uk/{package} | sudo bash
-
             """;
     }
 }
