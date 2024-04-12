@@ -37,7 +37,7 @@ config:
           routes:
           - to: default
             via: '2001:db8::'
-            metric: 50
+            metric: 10
             on-link: true
         int3:
           dhcp4: no
@@ -51,12 +51,12 @@ config:
             - 10.0.3.2
             - fc00::0:3:2
           routes:
-          - to: 10.0.3.0/24
+          - to: default
             via: 10.0.3.1
-            metric: 50
-          - to: 'fc00::3:0/112'
+            metric: 20
+          - to: default
             via: fc00::0:3:1
-            metric: 50
+            metric: 20
   cloud-init.user-data: |
     #cloud-config
 
