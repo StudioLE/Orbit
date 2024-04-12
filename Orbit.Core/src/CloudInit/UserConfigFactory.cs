@@ -55,7 +55,7 @@ public class UserConfigFactory : IFactory<Instance, string>
               sudo: ALL=(ALL) NOPASSWD:ALL
               lock_passwd: true
               ssh_authorized_keys:{_options.SshAuthorizedKeys.AsYamlSequence(1)}
-            - name: user
+            - name: {_options.User}
               shell: /bin/bash
               lock_passwd: true
               ssh_authorized_keys:{_options.SshAuthorizedKeys.AsYamlSequence(1)}
