@@ -1,4 +1,5 @@
 using Orbit.Schema;
+using Orbit.Utils.Networking;
 using Orbit.Utils.Yaml;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
@@ -31,7 +32,7 @@ public class NetplanFactory : IFactory<Instance, string>
             """;
     }
 
-    private string SerializeInterface(Interface iface)
+    private static string SerializeInterface(Interface iface, int index)
     {
         string output = $"""
                 {iface.Name}:
@@ -45,9 +46,30 @@ public class NetplanFactory : IFactory<Instance, string>
             """;
         foreach (string address in iface.Gateways)
         {
+            string range = "default";
+            if (index != 0 && IPv4Parser.Parse(address) is IPv4 ipv4)
+            {
+                // TODO: Range should be determined by inspecting CIDR of interface
+                byte[] octets = ipv4.Octets
+                    .SkipLast(1)
+                    .Append((byte)0)
+                    .ToArray();
+                IPv4 ipv4Range = new(octets, 24);
+                range = ipv4Range.ToString();
+            }
+            else if (index != 0 && IPv6Parser.Parse(address) is IPv6 ipv6)
+            {
+                // TODO: Range should be determined by inspecting CIDR of interface
+                ushort[] hextets = ipv6.GetHextets()
+                    .SkipLast(1)
+                    .Append((ushort)0)
+                    .ToArray();
+                IPv6 ipv6Range = new(hextets, 112);
+                range = $"'{ipv6Range}'";
+            }
             output += $"""
 
-                      - to: default
+                      - to: {range}
                         via: {address.AsYamlString()}
                         metric: 50
                 """;
