@@ -93,7 +93,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
         Interface internalInterface = _internalInterfaceFactory.Create(result);
         Interface? externalInterfaceQuery = _externalInterfaceFactory.Create(result);
         return externalInterfaceQuery is Interface externalInterface
-            ? [internalInterface, externalInterface]
+            ? [externalInterface, internalInterface]
             : [internalInterface];
     }
 

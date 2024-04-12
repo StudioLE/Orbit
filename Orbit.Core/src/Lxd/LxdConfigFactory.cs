@@ -37,7 +37,6 @@ public class LxdConfigFactory : IFactory<Instance, string>
         Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
         string interfaces = instance
             .Interfaces
-            .OrderBy(x => x.Name)
             .Select(x => CreateInterface(x, server))
             .Join();
         string? userConfig = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);

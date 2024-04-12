@@ -8,25 +8,6 @@
   ],
   "Interfaces": [
     {
-      "Name": "int3",
-      "Server": "example-server",
-      "Type": "Bridge",
-      "MacAddress": "7C:62:7E:63:55:E5",
-      "Addresses": [
-        "10.0.3.9/24",
-        "fc00::0:3:9/112"
-      ],
-      "Gateways": [
-        "10.0.3.1",
-        "fc00::0:3:1"
-      ],
-      "Subnets": [],
-      "Dns": [
-        "10.0.3.2",
-        "fc00::0:3:2"
-      ]
-    },
-    {
       "Name": "ext3",
       "Server": "example-server",
       "Type": "RoutedNic",
@@ -44,6 +25,25 @@
         "1.0.0.1",
         "2606:4700:4700::1111",
         "2606:4700:4700::1001"
+      ]
+    },
+    {
+      "Name": "int3",
+      "Server": "example-server",
+      "Type": "Bridge",
+      "MacAddress": "7C:62:7E:63:55:E5",
+      "Addresses": [
+        "10.0.3.9/24",
+        "fc00::0:3:9/112"
+      ],
+      "Gateways": [
+        "10.0.3.1",
+        "fc00::0:3:1"
+      ],
+      "Subnets": [],
+      "Dns": [
+        "10.0.3.2",
+        "fc00::0:3:2"
       ]
     }
   ],
