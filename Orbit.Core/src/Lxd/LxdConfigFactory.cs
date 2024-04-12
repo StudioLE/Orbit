@@ -3,17 +3,14 @@ using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
 using Orbit.Utils.Networking;
+using Orbit.Utils.Yaml;
+using StudioLE.Extensions.System;
 using StudioLE.Patterns;
-using StudioLE.Serialization;
-using StudioLE.Serialization.Yaml;
-using YamlDotNet.Core;
-using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Lxd;
 
 public class LxdConfigFactory : IFactory<Instance, string>
 {
-    private readonly ISerializer _serializer;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
     private readonly UserConfigFactory _userConfig;
@@ -22,12 +19,10 @@ public class LxdConfigFactory : IFactory<Instance, string>
     /// DI constructor for <see cref="LxdConfigFactory"/>.
     /// </summary>
     public LxdConfigFactory(
-        ISerializer serializer,
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
         UserConfigFactory userConfig)
     {
-        _serializer = serializer;
         _instances = instances;
         _userConfig = userConfig;
         _servers = servers;
@@ -36,93 +31,89 @@ public class LxdConfigFactory : IFactory<Instance, string>
     /// <inheritdoc/>
     public string Create(Instance instance)
     {
-        YamlNode resource = EmbeddedResourceHelpers.GetYaml("Resources/Templates/lxd-config-template.yml");
-        if (resource is not YamlMappingNode yaml)
-            throw new($"Expected a {nameof(YamlMappingNode)}");
-
-        // TODO: Rewrite to use multiline interpolated strings
-
-        // Name
-        yaml.SetValue("name", instance.Name.ToString(), false);
-
-        // Devices
-        YamlMappingNode? devices = yaml.GetValue<YamlMappingNode>("config");
-        if (devices is null)
-        {
-            devices = new();
-            yaml.SetValue("devices", devices);
-        }
-
-        // Root disk
-        YamlMappingNode rootDisk = new()
-        {
-            { "size", $"{instance.Hardware.Disk}GB" }
-        };
-        devices.SetValue("root", rootDisk);
-
-        // Networks
         Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
-        Interface? routedNicQuery = instance.Interfaces.FirstOrNull(x => x.Type == NetworkType.RoutedNic);
-        if (routedNicQuery is Interface routedNic)
-        {
-            string routedIPv6 = routedNic.Addresses.FirstOrDefault(IPHelpers.IsIPv6) ?? throw new("No IPv6 found.");
-            routedIPv6 = IPHelpers.RemoveCidr(routedIPv6);
-            Interface serverNic = server.Interfaces.FirstOrNull(x => x.Type == NetworkType.Nic) ?? throw new($"NIC not found for server: {server.Name}.");
-            YamlMappingNode routedNicDevice = new()
-            {
-                { "ipv6.address", new YamlScalarNode(routedIPv6) { Style = ScalarStyle.SingleQuoted } },
-                { "nictype", "routed" },
-                { "parent", serverNic.Name },
-                { "type", "nic" },
-                { "name", routedNic.Name },
-                { "hwaddr", routedNic.MacAddress }
-            };
-            devices.SetValue(routedNic.Name, routedNicDevice);
-        }
-        Interface bridge = instance.Interfaces.FirstOrNull(x => x.Type == NetworkType.Bridge) ?? throw new($"Bridge not found for instance: {instance.Name}.");
-        string ipv4 = bridge.Addresses.FirstOrDefault(IPHelpers.IsIPv4) ?? string.Empty;
-        string ipv6 = bridge.Addresses.FirstOrDefault(IPHelpers.IsIPv6) ?? string.Empty;
-        // TODO: The server may have more than one bridge. If so how do we know which one to use?
-        string bridgeParent = server.Interfaces.FirstOrNull(x => x.Type == NetworkType.Bridge)?.Name ?? throw new($"Bridge not found for server: {server.Name}.");
-        ipv4 = IPHelpers.RemoveCidr(ipv4);
-        ipv6 = IPHelpers.RemoveCidr(ipv6);
-        YamlMappingNode bridgeDevice = new()
-        {
-            { "ipv4.address", ipv4 },
-            { "ipv6.address", new YamlScalarNode(ipv6) { Style = ScalarStyle.SingleQuoted } },
-            { "network", bridgeParent },
-            { "type", "nic" },
-            { "name", bridge.Name },
-            { "hwaddr", bridge.MacAddress }
-        };
-        devices.SetValue(bridge.Name, bridgeDevice);
-
-        // Config
-        YamlMappingNode? config = yaml.GetValue<YamlMappingNode>("config");
-        if (config is null)
-        {
-            config = new();
-            yaml.SetValue("config", config);
-        }
-
-        // See: https://documentation.ubuntu.com/lxd/en/latest/reference/instance_options
-
-        // Hardware
-        config.SetValue("limits.cpu", new YamlScalarNode(instance.Hardware.Cpus.ToString()) { Style = ScalarStyle.SingleQuoted });
-        config.SetValue("limits.memory", $"{instance.Hardware.Memory}GB");
-
-        // Cloud Init
+        string interfaces = instance
+            .Interfaces
+            .OrderBy(x => x.Name)
+            .Select(x => CreateInterface(x, server))
+            .Join();
         string? userConfig = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);
         if (userConfig is null)
             userConfig = _userConfig.Create(instance);
-        config.SetValue("cloud-init.user-data", new YamlScalarNode(userConfig)
-        {
-            Style = ScalarStyle.Literal
-        });
-        // TODO: Cloud init Network config
+        return $"""
+            type: virtual-machine
+            name: example-instance
+            devices:
+              root:
+                size: 20GB
+            {interfaces}
+            config:
+              limits.cpu: '2'
+              limits.memory: 2GB
+              cloud-init.user-data: |
+            {userConfig.Indent(2).TrimEnd()}
 
-        // Serialize
-        string output = _serializer.Serialize(yaml);
+            """;
+    }
+
+    private static string CreateInterface(Interface iface, Server server)
+    {
+        return iface.Type switch
+        {
+            NetworkType.Bridge => CreateBridge(iface, server),
+            NetworkType.RoutedNic => CreateRoutedNic(iface, server),
+            _ => throw new NotSupportedException($"Network type {iface.Type} is not supported.")
+        };
+    }
+
+    private static string CreateRoutedNic(Interface iface, Server server)
+    {
+        Interface serverNic = server
+                                  .Interfaces
+                                  .FirstOrNull(x => x.Type == NetworkType.Nic)
+                              ?? throw new($"NIC not found for server: {server.Name}.");
+        string ipv6 = iface
+                          .Addresses
+                          .FirstOrDefault(IPHelpers.IsIPv6)
+                      ?? string.Empty;
+        ipv6 = IPHelpers.RemoveCidr(ipv6);
+        string output = $"""
+              {iface.Name}:
+                ipv6.address: '{ipv6}'
+                nictype: routed
+                parent: {serverNic.Name}
+                type: nic
+                name: {iface.Name}
+                hwaddr: {iface.MacAddress}
+            """;
+        return output;
+    }
+
+    private static string CreateBridge(Interface iface, Server server)
+    {
+        Interface serverInterface = server
+                                        .Interfaces
+                                        .FirstOrNull(x => x.Type == NetworkType.Bridge)
+                                    ?? throw new($"Bridge not found for server: {server.Name}.");
+        string ipv4 = iface
+                          .Addresses
+                          .FirstOrDefault(IPHelpers.IsIPv4)
+                      ?? string.Empty;
+        string ipv6 = iface
+                          .Addresses
+                          .FirstOrDefault(IPHelpers.IsIPv6)
+                      ?? string.Empty;
+        ipv4 = IPHelpers.RemoveCidr(ipv4);
+        ipv6 = IPHelpers.RemoveCidr(ipv6);
+        string output = $"""
+              {iface.Name}:
+                ipv4.address: {ipv4}
+                ipv6.address: '{ipv6}'
+                network: {serverInterface.Name}
+                type: nic
+                name: {iface.Name}
+                hwaddr: {iface.MacAddress}
+            """;
         return output;
     }
 }

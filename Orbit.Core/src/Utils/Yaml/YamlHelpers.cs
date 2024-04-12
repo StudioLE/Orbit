@@ -23,12 +23,12 @@ public static class YamlHelpers
         return output.ToString();
     }
 
-    public static string AsYamlString(this string value)
+    public static string AsYamlString(this string? value)
     {
-        if (value.Contains("\n") || value.Contains("\r"))
-            throw new NotSupportedException("Multi-line strings are not supported.");
         if (string.IsNullOrWhiteSpace(value))
             return "''";
+        if (value.Contains("\n") || value.Contains("\r"))
+            throw new NotSupportedException("Multi-line strings are not supported.");
         value = EscapeStart(value);
         value = EscapeEnd(value);
         return value;
