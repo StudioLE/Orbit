@@ -36,7 +36,7 @@ public class UserConfigFactory : IFactory<Instance, string>
     public string Create(Instance instance)
     {
         string sshdConfigContent = EmbeddedResourceHelpers.GetText("Resources/Templates/sshd_config");
-        string netplanContent = _netplanFactory.Create(instance);
+        string netplanContent = _netplanFactory.Create(instance).TrimEnd();
         string configureContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/50-orbit-configure");
         string installContent = _installFactory.Create(instance);
         string runContent = _runFactory.Create(instance);

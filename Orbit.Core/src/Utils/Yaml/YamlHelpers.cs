@@ -16,7 +16,10 @@ public static class YamlHelpers
         StringBuilder output = new();
         string indent = string.Concat(Enumerable.Repeat(" ", indentLevel * IndentSize));
         foreach (string item in items)
-            output.AppendLine($"{indent}{item}- {item.AsYamlString()}");
+        {
+            output.AppendLine();
+            output.Append($"{indent}- {item.AsYamlString()}");
+        }
         return output.ToString();
     }
 
@@ -26,6 +29,13 @@ public static class YamlHelpers
             throw new NotSupportedException("Multi-line strings are not supported.");
         if (string.IsNullOrWhiteSpace(value))
             return "''";
+        value = EscapeStart(value);
+        value = EscapeEnd(value);
+        return value;
+    }
+
+    private static string EscapeStart(this string value)
+    {
         char firstChar = value.First();
         if (SingleQuoteRequired.Contains(firstChar))
             return value
@@ -35,6 +45,15 @@ public static class YamlHelpers
             return value
                 .Escape('"')
                 .Wrap('"');
+        return value;
+    }
+
+    private static string EscapeEnd(string value)
+    {
+        if (value.EndsWith("::"))
+            return value
+                .Escape('\'')
+                .Wrap('\'');
         return value;
     }
 
