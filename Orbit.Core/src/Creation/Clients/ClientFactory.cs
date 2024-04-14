@@ -1,7 +1,6 @@
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
-using Orbit.Utils.Networking;
 using Orbit.WireGuard;
 using StudioLE.Patterns;
 
@@ -40,8 +39,6 @@ public class ClientFactory : IFactory<Client, Client>
             client.Number = DefaultNumber();
         if (client.Name.IsDefault())
             client.Name = new($"client-{client.Number:00}");
-        if (client.Interfaces.IsDefault())
-            client.Interfaces = DefaultInterfaces(client);
         if (client.WireGuard.IsDefault())
             client.WireGuard = _wireGuardClientFactory.Create(client);
         return client;
@@ -50,9 +47,9 @@ public class ClientFactory : IFactory<Client, Client>
     private ServerId[] DefaultServers()
     {
         return _servers
-                   .GetAll()
-                   .Select(x => x.Name)
-                   .ToArray();
+            .GetAll()
+            .Select(x => x.Name)
+            .ToArray();
     }
 
     private int DefaultNumber()
@@ -65,24 +62,5 @@ public class ClientFactory : IFactory<Client, Client>
             ? numbers.Max()
             : DefaultClientNumber - 1;
         return finalNumber + 1;
-    }
-
-    private static Interface[] DefaultInterfaces(Client client)
-    {
-        return
-        [
-            new()
-            {
-                Name = "eth0",
-                Type = NetworkType.Nic,
-                MacAddress = GetMacAddress(client),
-                Addresses = ["203.0.113.1", "2001:db8::"]
-            }
-        ];
-    }
-
-    private static string GetMacAddress(Client client)
-    {
-        return MacAddressHelpers.Generate(2, 0, client.Number);
     }
 }

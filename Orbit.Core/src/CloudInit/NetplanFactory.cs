@@ -1,59 +1,73 @@
+using Orbit.Creation.Instances;
+using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Utils;
+using Orbit.Utils.Networking;
 using Orbit.Utils.Yaml;
-using StudioLE.Extensions.System;
 using StudioLE.Patterns;
-using StudioLE.Serialization;
 
 namespace Orbit.CloudInit;
 
 public class NetplanFactory : IFactory<Instance, string>
 {
-    private readonly ISerializer _serializer;
+    private readonly IEntityProvider<Server> _servers;
+    private readonly ExternalInterfaceFactory _externalInterfaceFactory;
+    private readonly InternalInterfaceFactory _internalInterfaceFactory;
 
-    public NetplanFactory(ISerializer serializer)
+    public NetplanFactory(
+        IEntityProvider<Server> servers,
+        ExternalInterfaceFactory externalInterfaceFactory,
+        InternalInterfaceFactory internalInterfaceFactory)
     {
-        _serializer = serializer;
+        _servers = servers;
+        _externalInterfaceFactory = externalInterfaceFactory;
+        _internalInterfaceFactory = internalInterfaceFactory;
     }
 
     /// <inheritdoc/>
     public string Create(Instance instance)
     {
-        string interfaces = instance
-            .Interfaces
-            .Select(SerializeInterface)
-            .Join();
+        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
+        Interface nic = server
+                            .Interfaces
+                            .FirstOrNull(x => x.Type == NetworkType.Nic)
+                        ?? throw new($"NIC not found for server: {instance.Server}.");
         return $"""
             network:
               version: 2
               ethernets:
-            {interfaces}
-
-            """;
-    }
-
-    private static string SerializeInterface(Interface iface, int index)
-    {
-        string output = $"""
-                {iface.Name}:
+                {_externalInterfaceFactory.GetName(server)}:
                   dhcp4: no
                   match:
-                    macaddress: {iface.MacAddress}
-                  addresses:{iface.Addresses.AsYamlSequence(3)}
+                    macaddress: {_externalInterfaceFactory.GetMacAddress(instance, server)}
+                  addresses:
+                  - {_externalInterfaceFactory.GetIPv6AddressWithCidr(instance, nic).AsYamlString()}
                   nameservers:
-                    addresses:{iface.Dns.AsYamlSequence(4)}
+                    addresses:{nic.Dns.AsYamlSequence(4)}
                   routes:
-            """;
-        foreach (string address in iface.Gateways)
-        {
-            output += $"""
+                  - to: default
+                    via: '{nic.Gateways.Where(IPHelpers.IsIPv6).First()}'
+                    metric: 10
+                    on-link: true
+                {_internalInterfaceFactory.GetName(server)}:
+                  dhcp4: no
+                  match:
+                    macaddress: {_internalInterfaceFactory.GetMacAddress(instance, server)}
+                  addresses:
+                  - {_internalInterfaceFactory.GetIPv4AddressWithCidr(instance, server)}
+                  - {_internalInterfaceFactory.GetIPv6AddressWithCidr(instance, server).AsYamlString()}
+                  nameservers:
+                    addresses:
+                    - {_internalInterfaceFactory.GetIPv4Dns(server)}
+                    - {_internalInterfaceFactory.GetIPv6Dns(server).AsYamlString()}
+                  routes:
+                  - to: default
+                    via: {_internalInterfaceFactory.GetIPv4Gateway(server)}
+                    metric: 20
+                  - to: default
+                    via: {_internalInterfaceFactory.GetIPv6Gateway(server).AsYamlString()}
+                    metric: 20
 
-                      - to: default
-                        via: {address.AsYamlString()}
-                        metric: {(index + 1) * 10}
-                """;
-            if (iface.Type == NetworkType.RoutedNic)
-                output += "\non-link: true".Indent(4);
-        }
-        return output;
+            """;
     }
 }

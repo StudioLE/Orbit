@@ -27,9 +27,6 @@ public record struct Client() : IEntity, IHasWireGuardClient, IHasValidationAttr
     [Required]
     public ServerId[] Connections { get; set; } = Array.Empty<ServerId>();
 
-    /// <inheritdoc/>
-    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
-
     /// <summary>
     /// The WireGuard configuration of the client.
     /// </summary>

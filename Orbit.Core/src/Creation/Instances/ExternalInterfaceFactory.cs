@@ -1,72 +1,41 @@
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
 using Orbit.Utils.Networking;
-using StudioLE.Patterns;
 
 namespace Orbit.Creation.Instances;
 
 /// <summary>
-/// A factory for creating a network <see cref="Interface"/> to connect to the external network.
+/// A factory to create a routed nic <see cref="Interface"/> for an <see cref="Instance"/>.
 /// </summary>
-public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
+public class ExternalInterfaceFactory
 {
-    private readonly IEntityProvider<Server> _servers;
-
-    public ExternalInterfaceFactory(IEntityProvider<Server> servers)
+    public string GetName(Server server)
     {
-        _servers = servers;
+        return "ext" + server.Number;
     }
 
-    /// <inheritdoc/>
-    public Interface? Create(Instance instance)
+    public IPv6? GetIPv6Address(Instance instance, Interface nic)
     {
-        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
-        Interface nic = server
-                            .Interfaces
-                            .FirstOrNull(x => x.Type == NetworkType.Nic)
-                        ?? throw new($"NIC not found for server: {instance.Server}.");
-        IPv6? ipv6Query = GetIPv6(nic, instance);
-        if (ipv6Query is not IPv6 ipv6)
-            return null;
-        return new()
-        {
-            Name = "ext" + server.Number,
-            Server = server.Name,
-            Type = NetworkType.RoutedNic,
-            MacAddress = GetMacAddress(instance, server),
-            Addresses =
-            [
-                ipv6.ToString()
-            ],
-            // TODO: Add subnet
-            Gateways = nic.Gateways.Where(IPHelpers.IsIPv6).ToArray(),
-            Dns = nic.Dns
-        };
-    }
-
-    private static IPv6? GetIPv6(Interface nic, Instance instance)
-    {
-        string? ipv6Str = nic.Subnets.FirstOrDefault(IPHelpers.IsIPv6);
-        if (ipv6Str is null)
-            return null;
-        ipv6Str = IPHelpers.RemoveCidr(ipv6Str);
-        IPv6? ipv6Query = IPv6Parser.Parse(ipv6Str);
+        IPv6? ipv6Query = nic
+            .Subnets
+            .Select(IPv6Parser.Parse)
+            .OfType<IPv6>()
+            .FirstOrDefault();
         if (ipv6Query is not IPv6 ipv6)
             return null;
         ushort[] hextets = ipv6.GetHextets();
-        int count = 8 - hextets.Length;
-        if (count > 0)
-        {
-            ushort[] padding = Enumerable.Repeat((ushort)0, count).ToArray();
-            hextets = hextets.Concat(padding).ToArray();
-        }
-
+        if(hextets.Length != 8)
+            throw new("Expected 8 hextets in IPv6 address.");
         hextets[^1] = HexadecimalHelpers.ToUShort(instance.Number.ToString()) ?? throw new("Invalid instance number.");
-        return new(hextets, 128);
+        return new(hextets);
     }
 
-    private static string GetMacAddress(Instance instance, Server server)
+    public string GetIPv6AddressWithCidr(Instance instance, Interface nic)
+    {
+        return GetIPv6Address(instance, nic) + "/128";
+    }
+
+    public string GetMacAddress(Instance instance, Server server)
     {
         return MacAddressHelpers.Generate(3, server.Number, instance.Number);
     }

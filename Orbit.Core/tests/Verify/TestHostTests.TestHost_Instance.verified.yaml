@@ -4,35 +4,6 @@ Role: node
 Server: example-server
 Connections:
 - example-server
-Interfaces:
-- Name: ext3
-  Server: example-server
-  Type: RoutedNic
-  MacAddress: 14:42:80:CD:E7:59
-  Addresses:
-  - 2001:db8::9/128
-  Gateways:
-  - '2001:db8::'
-  Subnets: []
-  Dns:
-  - 1.1.1.1
-  - 1.0.0.1
-  - 2606:4700:4700::1111
-  - 2606:4700:4700::1001
-- Name: int3
-  Server: example-server
-  Type: Bridge
-  MacAddress: 20:6D:29:C7:2C:85
-  Addresses:
-  - 10.0.3.9/24
-  - fc00::0:3:9/112
-  Gateways:
-  - 10.0.3.1
-  - fc00::0:3:1
-  Subnets: []
-  Dns:
-  - 10.0.3.2
-  - fc00::0:3:2
 OS:
   Name: ubuntu
   Version: jammy

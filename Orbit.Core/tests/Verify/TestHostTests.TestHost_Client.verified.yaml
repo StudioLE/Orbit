@@ -2,17 +2,6 @@ Name: example-client
 Number: 111
 Connections:
 - example-server
-Interfaces:
-- Name: eth0
-  Server: ''
-  Type: Nic
-  MacAddress: EC:8F:3D:CA:B7:F9
-  Addresses:
-  - 203.0.113.1
-  - '2001:db8::'
-  Gateways: []
-  Subnets: []
-  Dns: []
 WireGuard:
 - Interface:
     Name: wg3

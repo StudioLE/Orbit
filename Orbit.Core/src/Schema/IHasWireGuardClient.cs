@@ -11,11 +11,6 @@ public interface IHasWireGuardClient : IEntity
     public ServerId[] Connections { get; set; }
 
     /// <summary>
-    /// The network interfaces of the entity.
-    /// </summary>
-    public Interface[] Interfaces { get; set; }
-
-    /// <summary>
     /// The WireGuard configuration of the entity.
     /// </summary>
     public WireGuardClient[] WireGuard { get; set; }

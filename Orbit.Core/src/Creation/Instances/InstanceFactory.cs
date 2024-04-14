@@ -74,8 +74,6 @@ public class InstanceFactory : IFactory<Instance, Instance>
             instance.Role = DefaultRole;
         if (instance.Name.IsDefault())
             instance.Name = new($"instance-{instance.Number:00}");
-        if (instance.Interfaces.IsDefault())
-            instance.Interfaces = DefaultInterfaces(instance);
         instance.WireGuard = _wireGuardClientFactory.Create(instance);
         if (instance.Mounts.IsDefault())
             instance.Mounts = Array.Empty<Mount>();
@@ -86,15 +84,6 @@ public class InstanceFactory : IFactory<Instance, Instance>
         if (instance.Run.IsDefault())
             instance.Run = _defaultRun;
         return instance;
-    }
-
-    private Interface[] DefaultInterfaces(Instance result)
-    {
-        Interface internalInterface = _internalInterfaceFactory.Create(result);
-        Interface? externalInterfaceQuery = _externalInterfaceFactory.Create(result);
-        return externalInterfaceQuery is Interface externalInterface
-            ? [externalInterface, internalInterface]
-            : [internalInterface];
     }
 
     private ServerId DefaultServer()

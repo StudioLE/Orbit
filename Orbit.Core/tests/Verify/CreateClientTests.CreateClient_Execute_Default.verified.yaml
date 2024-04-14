@@ -2,17 +2,6 @@ Name: client-112
 Number: 112
 Connections:
 - example-server
-Interfaces:
-- Name: eth0
-  Server: ''
-  Type: Nic
-  MacAddress: 14:52:7D:DD:9B:1B
-  Addresses:
-  - 203.0.113.1
-  - '2001:db8::'
-  Gateways: []
-  Subnets: []
-  Dns: []
 WireGuard:
 - Interface:
     Name: wg3

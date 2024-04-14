@@ -41,12 +41,6 @@ public record struct Instance() : IHasWireGuardClient, IEntity, IHasValidationAt
     public ServerId[] Connections { get; set; } = Array.Empty<ServerId>();
 
     /// <summary>
-    /// The network interfaces of the instance.
-    /// </summary>
-    [Required]
-    public Interface[] Interfaces { get; set; } = Array.Empty<Interface>();
-
-    /// <summary>
     /// The operating system of the instance.
     /// </summary>
     [ValidateComplexType]

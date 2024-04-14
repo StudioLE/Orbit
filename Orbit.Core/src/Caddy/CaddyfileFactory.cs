@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
+using Orbit.Creation.Instances;
+using Orbit.Provision;
 using Orbit.Schema;
-using Orbit.Utils.Networking;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
@@ -9,13 +10,20 @@ namespace Orbit.Caddy;
 public class CaddyfileFactory : IFactory<Instance, string?>
 {
     private readonly ILogger<CaddyfileFactory> _logger;
+    private readonly IEntityProvider<Server> _servers;
+    private readonly InternalInterfaceFactory _internalInterfaceFactory;
 
     /// <summary>
     /// DI constructor for <see cref="CaddyfileFactory"/>.
     /// </summary>
-    public CaddyfileFactory(ILogger<CaddyfileFactory> logger)
+    public CaddyfileFactory(
+        ILogger<CaddyfileFactory> logger,
+        IEntityProvider<Server> servers,
+        InternalInterfaceFactory internalInterfaceFactory)
     {
         _logger = logger;
+        _servers = servers;
+        _internalInterfaceFactory = internalInterfaceFactory;
     }
 
     /// <inheritdoc/>
@@ -26,15 +34,10 @@ public class CaddyfileFactory : IFactory<Instance, string?>
             _logger.LogWarning("Domains are required for Caddyfile generation.");
             return null;
         }
-        Interface iface = instance
-            .Interfaces
-            .First(x => x.Type == NetworkType.Bridge);
-        // TODO: We have no idea what server the domain is point at so this is irrelevant
-        // Interface iface = instance
-        //         .Interfaces
-        //         .First(x => x.Type == NetworkType.WireGuard);
         string domains = instance.Domains.Join(", ");
-        string address = IPHelpers.RemoveCidr(iface.Addresses.First()) + ":80";
+
+        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
+        string address = _internalInterfaceFactory.GetIPv4Address(instance, server) + ":80";
         return $$"""
             {{domains}} {
                 reverse_proxy {{address}}

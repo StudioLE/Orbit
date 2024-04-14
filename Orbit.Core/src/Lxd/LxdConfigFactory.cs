@@ -1,10 +1,9 @@
 using Orbit.CloudInit;
+using Orbit.Creation.Instances;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
-using Orbit.Utils.Networking;
 using Orbit.Utils.Yaml;
-using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
 namespace Orbit.Lxd;
@@ -15,6 +14,8 @@ public class LxdConfigFactory : IFactory<Instance, string>
     private readonly IEntityProvider<Server> _servers;
     private readonly UserConfigFactory _userConfig;
     private readonly NetplanFactory _netplanFactory;
+    private readonly ExternalInterfaceFactory _externalInterfaceFactory;
+    private readonly InternalInterfaceFactory _internalInterfaceFactory;
 
     /// <summary>
     /// DI constructor for <see cref="LxdConfigFactory"/>.
@@ -23,11 +24,15 @@ public class LxdConfigFactory : IFactory<Instance, string>
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
         UserConfigFactory userConfig,
-        NetplanFactory netplanFactory)
+        NetplanFactory netplanFactory,
+        ExternalInterfaceFactory externalInterfaceFactory,
+        InternalInterfaceFactory internalInterfaceFactory)
     {
         _instances = instances;
         _userConfig = userConfig;
         _netplanFactory = netplanFactory;
+        _externalInterfaceFactory = externalInterfaceFactory;
+        _internalInterfaceFactory = internalInterfaceFactory;
         _servers = servers;
     }
 
@@ -35,19 +40,36 @@ public class LxdConfigFactory : IFactory<Instance, string>
     public string Create(Instance instance)
     {
         Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
-        string interfaces = instance
-            .Interfaces
-            .Select(x => CreateInterface(x, server))
-            .Join();
         string? userConfig = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);
         if (userConfig is null)
             userConfig = _userConfig.Create(instance);
+        Interface serverNic = server
+                                  .Interfaces
+                                  .FirstOrNull(x => x.Type == NetworkType.Nic)
+                              ?? throw new($"NIC not found for server: {server.Name}.");
+        Interface serverBridge = server
+                                  .Interfaces
+                                  .FirstOrNull(x => x.Type == NetworkType.Bridge)
+                              ?? throw new($"Bridge not found for server: {server.Name}.");
         string networkConfig = _netplanFactory.Create(instance);
         return $"""
             type: virtual-machine
             name: {instance.Name}
             devices:
-            {interfaces}
+              {_externalInterfaceFactory.GetName(server)}:
+                ipv6.address: '{_externalInterfaceFactory.GetIPv6Address(instance, serverNic)}'
+                nictype: routed
+                parent: {serverNic.Name}
+                type: nic
+                name: {_externalInterfaceFactory.GetName(server)}
+                hwaddr: {_externalInterfaceFactory.GetMacAddress(instance, server)}
+              {_internalInterfaceFactory.GetName(server)}:
+                ipv4.address: {_internalInterfaceFactory.GetIPv4Address(instance, server)}
+                ipv6.address: '{_internalInterfaceFactory.GetIPv6Address(instance, server)}'
+                network: {serverBridge.Name}
+                type: nic
+                name: {_internalInterfaceFactory.GetName(server)}
+                hwaddr: {_internalInterfaceFactory.GetMacAddress(instance, server)}
             config:
               limits.cpu: '{instance.Hardware.Cpus}'
               limits.memory: {instance.Hardware.Memory}GB
@@ -57,66 +79,5 @@ public class LxdConfigFactory : IFactory<Instance, string>
             {userConfig.Indent(2).TrimEnd()}
 
             """;
-    }
-
-    private static string CreateInterface(Interface iface, Server server)
-    {
-        return iface.Type switch
-        {
-            NetworkType.Bridge => CreateBridge(iface, server),
-            NetworkType.RoutedNic => CreateRoutedNic(iface, server),
-            _ => throw new NotSupportedException($"Network type {iface.Type} is not supported.")
-        };
-    }
-
-    private static string CreateRoutedNic(Interface iface, Server server)
-    {
-        Interface serverNic = server
-                                  .Interfaces
-                                  .FirstOrNull(x => x.Type == NetworkType.Nic)
-                              ?? throw new($"NIC not found for server: {server.Name}.");
-        string ipv6 = iface
-                          .Addresses
-                          .FirstOrDefault(IPHelpers.IsIPv6)
-                      ?? string.Empty;
-        ipv6 = IPHelpers.RemoveCidr(ipv6);
-        string output = $"""
-              {iface.Name}:
-                ipv6.address: '{ipv6}'
-                nictype: routed
-                parent: {serverNic.Name}
-                type: nic
-                name: {iface.Name}
-                hwaddr: {iface.MacAddress}
-            """;
-        return output;
-    }
-
-    private static string CreateBridge(Interface iface, Server server)
-    {
-        Interface serverInterface = server
-                                        .Interfaces
-                                        .FirstOrNull(x => x.Type == NetworkType.Bridge)
-                                    ?? throw new($"Bridge not found for server: {server.Name}.");
-        string ipv4 = iface
-                          .Addresses
-                          .FirstOrDefault(IPHelpers.IsIPv4)
-                      ?? string.Empty;
-        string ipv6 = iface
-                          .Addresses
-                          .FirstOrDefault(IPHelpers.IsIPv6)
-                      ?? string.Empty;
-        ipv4 = IPHelpers.RemoveCidr(ipv4);
-        ipv6 = IPHelpers.RemoveCidr(ipv6);
-        string output = $"""
-              {iface.Name}:
-                ipv4.address: {ipv4}
-                ipv6.address: '{ipv6}'
-                network: {serverInterface.Name}
-                type: nic
-                name: {iface.Name}
-                hwaddr: {iface.MacAddress}
-            """;
-        return output;
     }
 }
