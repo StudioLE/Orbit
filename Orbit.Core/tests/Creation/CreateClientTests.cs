@@ -46,13 +46,11 @@ internal sealed class CreateClientTests
         Client createdClient = await _activity.Execute(sourceClient);
 
         // Assert
-        createdClient = createdClient.WithMockMacAddress();
         Assert.That(createdClient, Is.Not.Null);
         await _context.VerifyAsSerialized(createdClient, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {createdClient.Name}"));
         Client storedClient = _clients.Get(createdClient.Name) ?? throw new("Failed to get client.");
-        storedClient = storedClient.WithMockMacAddress();
         await _context.VerifyAsSerialized(storedClient, createdClient, _serializer);
     }
 }

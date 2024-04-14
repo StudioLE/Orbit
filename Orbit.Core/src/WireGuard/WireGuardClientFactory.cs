@@ -82,7 +82,7 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
         if (iface.Type.IsDefault())
             iface.Type = NetworkType.WireGuard;
         if (iface.MacAddress.IsDefault())
-            iface.MacAddress = MacAddressHelpers.Generate();
+            iface.MacAddress = GetMacAddress(entity, server);
         if (iface.Addresses.IsDefault())
             iface.Addresses =
             [
@@ -144,5 +144,10 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
         if (interfaceQuery is not Interface iface)
             throw new($"NIC not found for server: {server.Name}.");
         return iface;
+    }
+
+    private static string GetMacAddress(IEntity entity, Server server)
+    {
+        return MacAddressHelpers.Generate(5, server.Number, entity.Number);
     }
 }

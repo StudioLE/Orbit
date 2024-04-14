@@ -41,7 +41,7 @@ public class ClientFactory : IFactory<Client, Client>
         if (client.Name.IsDefault())
             client.Name = new($"client-{client.Number:00}");
         if (client.Interfaces.IsDefault())
-            client.Interfaces = DefaultInterfaces();
+            client.Interfaces = DefaultInterfaces(client);
         if (client.WireGuard.IsDefault())
             client.WireGuard = _wireGuardClientFactory.Create(client);
         return client;
@@ -67,7 +67,7 @@ public class ClientFactory : IFactory<Client, Client>
         return finalNumber + 1;
     }
 
-    private static Interface[] DefaultInterfaces()
+    private static Interface[] DefaultInterfaces(Client client)
     {
         return
         [
@@ -75,9 +75,14 @@ public class ClientFactory : IFactory<Client, Client>
             {
                 Name = "eth0",
                 Type = NetworkType.Nic,
-                MacAddress = MacAddressHelpers.Generate(),
+                MacAddress = GetMacAddress(client),
                 Addresses = ["203.0.113.1", "2001:db8::"]
             }
         ];
+    }
+
+    private static string GetMacAddress(Client client)
+    {
+        return MacAddressHelpers.Generate(2, 0, client.Number);
     }
 }

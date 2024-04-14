@@ -50,8 +50,7 @@ public static class TestHelpers
                     Port = 22,
                     User = "user"
                 }
-            })
-            .WithMockMacAddress();
+            });
         IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
         servers.Put(server);
         _exampleServer = server;
@@ -66,8 +65,7 @@ public static class TestHelpers
                 Name = new(MockConstants.InstanceName),
                 Number = MockConstants.InstanceNumber,
                 Domains = ["example.com", "example.org"]
-            })
-            .WithMockMacAddress();
+            });
         IEntityProvider<Instance> instances = services.GetRequiredService<IEntityProvider<Instance>>();
         instances.Put(instance);
         _exampleInstance = instance;
@@ -81,8 +79,7 @@ public static class TestHelpers
             {
                 Name = new(MockConstants.ClientName),
                 Number = MockConstants.ClientNumber
-            })
-            .WithMockMacAddress();
+            });
         IEntityProvider<Client> clients = services.GetRequiredService<IEntityProvider<Client>>();
         clients.Put(client);
         _exampleClient = client;
@@ -151,39 +148,5 @@ public static class TestHelpers
                 // logging.AddConsole();
                 logging.AddCache();
             });
-    }
-
-    public static Server WithMockMacAddress(this Server server)
-    {
-        server.Interfaces = server
-            .Interfaces
-            .Select(WithMockMacAddress)
-            .ToArray();
-        return server;
-    }
-
-    public static T WithMockMacAddress<T>(this T entity) where T : struct, IHasWireGuardClient
-    {
-        entity.Interfaces = entity
-            .Interfaces
-            .Select(WithMockMacAddress)
-            .ToArray();
-        entity.WireGuard = entity
-            .WireGuard
-            .Select(WithMockMacAddress)
-            .ToArray();
-        return entity;
-    }
-
-    private static WireGuardClient WithMockMacAddress(WireGuardClient wg)
-    {
-        wg.Interface = WithMockMacAddress(wg.Interface);
-        return wg;
-    }
-
-    private static Interface WithMockMacAddress(Interface iface)
-    {
-        iface.MacAddress = MockConstants.MacAddress;
-        return iface;
     }
 }

@@ -30,7 +30,6 @@ internal sealed class TestHostTests
         Server server = TestHelpers.GetExampleServer();
 
         // Assert
-        server = server.WithMockMacAddress();
         await _context.VerifyAsSerialized(server, _serializer);
     }
 
@@ -43,7 +42,6 @@ internal sealed class TestHostTests
         Instance instance = TestHelpers.GetExampleInstance();
 
         // Assert
-        instance = instance.WithMockMacAddress();
         await _context.VerifyAsSerialized(instance, _serializer);
     }
 
@@ -56,7 +54,6 @@ internal sealed class TestHostTests
         Client client = TestHelpers.GetExampleClient();
 
         // Assert
-        client = client.WithMockMacAddress();
         await _context.VerifyAsSerialized(client, _serializer);
     }
 }

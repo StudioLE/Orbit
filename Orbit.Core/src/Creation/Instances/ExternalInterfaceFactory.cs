@@ -34,7 +34,7 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
             Name = "ext" + server.Number,
             Server = server.Name,
             Type = NetworkType.RoutedNic,
-            MacAddress = MacAddressHelpers.Generate(),
+            MacAddress = GetMacAddress(instance, server),
             Addresses =
             [
                 ipv6.ToString()
@@ -64,5 +64,10 @@ public class ExternalInterfaceFactory : IFactory<Instance, Interface?>
 
         hextets[^1] = HexadecimalHelpers.ToUShort(instance.Number.ToString()) ?? throw new("Invalid instance number.");
         return new(hextets, 128);
+    }
+
+    private static string GetMacAddress(Instance instance, Server server)
+    {
+        return MacAddressHelpers.Generate(3, server.Number, instance.Number);
     }
 }

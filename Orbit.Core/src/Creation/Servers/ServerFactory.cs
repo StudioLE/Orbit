@@ -49,7 +49,7 @@ public class ServerFactory : IFactory<Server, Server>
             Name = "eth0",
             Server = server.Name,
             Type = NetworkType.Nic,
-            MacAddress = MacAddressHelpers.Generate(),
+            MacAddress = GetMacAddress(server),
             Addresses = ["203.0.113.64/24", "2001:db8::64/112"],
             Gateways = ["203.0.113.255", "2001:db8::"],
             Subnets = ["203.0.113.0/24", "2001:db8::/112"],
@@ -57,6 +57,11 @@ public class ServerFactory : IFactory<Server, Server>
         };
         Interface bridge = _bridgeFactory.Create(server);
         return [nic, bridge];
+    }
+
+    private static string GetMacAddress(Server server)
+    {
+        return MacAddressHelpers.Generate(5, server.Number, 0);
     }
 
     private int DefaultNumber()

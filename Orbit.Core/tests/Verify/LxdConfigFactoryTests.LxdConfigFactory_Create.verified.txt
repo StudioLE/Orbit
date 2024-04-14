@@ -7,14 +7,14 @@ devices:
     parent: eth0
     type: nic
     name: ext3
-    hwaddr: 7C:62:7E:63:55:E5
+    hwaddr: 14:42:80:CD:E7:59
   int3:
     ipv4.address: 10.0.3.9
     ipv6.address: 'fc00::0:3:9'
     network: br3
     type: nic
     name: int3
-    hwaddr: 7C:62:7E:63:55:E5
+    hwaddr: 20:6D:29:C7:2C:85
 config:
   limits.cpu: '2'
   limits.memory: 2GB
@@ -25,7 +25,7 @@ config:
         ext3:
           dhcp4: no
           match:
-            macaddress: 7C:62:7E:63:55:E5
+            macaddress: 14:42:80:CD:E7:59
           addresses:
           - 2001:db8::9/128
           nameservers:
@@ -42,7 +42,7 @@ config:
         int3:
           dhcp4: no
           match:
-            macaddress: 7C:62:7E:63:55:E5
+            macaddress: 20:6D:29:C7:2C:85
           addresses:
           - 10.0.3.9/24
           - fc00::0:3:9/112

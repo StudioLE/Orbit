@@ -6,7 +6,7 @@ Interfaces:
 - Name: eth0
   Server: ''
   Type: Nic
-  MacAddress: 7C:62:7E:63:55:E5
+  MacAddress: 14:52:7D:DD:9B:1B
   Addresses:
   - 203.0.113.1
   - '2001:db8::'
@@ -18,7 +18,7 @@ WireGuard:
     Name: wg3
     Server: example-server
     Type: WireGuard
-    MacAddress: 7C:62:7E:63:55:E5
+    MacAddress: 88:AB:79:8E:26:CE
     Addresses:
     - 10.1.3.112/24
     - fc00::1:3:112/112

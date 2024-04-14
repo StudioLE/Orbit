@@ -26,7 +26,7 @@ public class InternalInterfaceFactory : IFactory<Instance, Interface>
             Name = "int" + server.Number,
             Server = server.Name,
             Type = NetworkType.Bridge,
-            MacAddress = MacAddressHelpers.Generate(),
+            MacAddress = GetMacAddress(instance, server),
             Addresses =
             [
                 $"10.0.{server.Number}.{instance.Number}/24",
@@ -43,5 +43,10 @@ public class InternalInterfaceFactory : IFactory<Instance, Interface>
                 $"fc00::0:{server.Number}:2"
             ]
         };
+    }
+
+    private static string GetMacAddress(Instance instance, Server server)
+    {
+        return MacAddressHelpers.Generate(1, server.Number, instance.Number);
     }
 }

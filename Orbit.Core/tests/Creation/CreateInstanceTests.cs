@@ -49,12 +49,10 @@ internal sealed class CreateInstanceTests
         Instance createdInstance = await _activity.Execute(sourceInstance);
 
         // Assert
-        createdInstance = createdInstance.WithMockMacAddress();
         await _context.VerifyAsSerialized(createdInstance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance.Name}"));
         Instance storedInstance = _instances.Get(createdInstance.Name) ?? throw new("Failed to get instance.");
-        storedInstance = storedInstance.WithMockMacAddress();
         await _context.VerifyAsSerialized(storedInstance, createdInstance, _serializer);
     }
 }
