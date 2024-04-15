@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Orbit.Utils.Networking;
 using Orbit.Utils.Serialization;
 using StudioLE.Serialization.Yaml;
 using YamlDotNet.Serialization;
@@ -41,6 +42,7 @@ public static class YamlHelpers
             .DisableAliases()
             .WithLiteralMultilineStrings()
             .WithTypeConverter(converter)
+            .WithTypeConverter(new MacAddressYamlConverter())
             .Build();
         YamlSerializer serializer = new(yamlSerializer);
         return serializer;
@@ -53,6 +55,7 @@ public static class YamlHelpers
             .WithNodeTypeResolver(new ReadOnlyCollectionNodeTypeResolver())
             .IgnoreUnmatchedProperties()
             .WithTypeConverter(converter)
+            .WithTypeConverter(new MacAddressYamlConverter())
             .Build();
         YamlDeserializer deserializer = new(logger, yamlDeserializer);
         return deserializer;

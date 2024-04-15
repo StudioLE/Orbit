@@ -61,7 +61,7 @@ public class ServerFactory : IFactory<Server, Server>
         return [nic, bridge];
     }
 
-    private static string GetMacAddress(Server server)
+    private static MacAddress GetMacAddress(Server server)
     {
         return MacAddressHelpers.Generate(5, server.Number, 0);
     }

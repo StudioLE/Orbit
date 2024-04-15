@@ -41,7 +41,7 @@ public class BridgeInterfaceFactory : IFactory<Server, Interface>
         };
     }
 
-    private static string GetMacAddress(Server server)
+    private MacAddress GetMacAddress(Server server)
     {
         return MacAddressHelpers.Generate(4, server.Number, 0);
     }

@@ -1,5 +1,3 @@
-using StudioLE.Extensions.System;
-
 namespace Orbit.Utils.Networking;
 
 // TODO: Replace with a MacAddress class
@@ -15,7 +13,7 @@ public static class MacAddressHelpers
     /// <param name="server">The server number.</param>
     /// <param name="entity">The entity number.</param>
     /// <returns>A MAC Address.</returns>
-    public static string Generate(int type, int server, int entity)
+    public static MacAddress Generate(int type, int server, int entity)
     {
         int seed = type * 1_000_000
                    + server * 1000
@@ -23,14 +21,12 @@ public static class MacAddressHelpers
         return Generate(seed);
     }
 
-    private static string Generate(int seed)
+    private static MacAddress Generate(int seed)
     {
         byte[] bytes = new byte[6];
         Random random = new(seed);
         random.NextBytes(bytes);
         bytes[0] = (byte)(bytes[0] & 0xFC); // zeroing last 2 bits to make it unicast and locally administered
-        return bytes
-            .Select(b => b.ToString("X2"))
-            .Join(":");
+        return new(bytes);
     }
 }

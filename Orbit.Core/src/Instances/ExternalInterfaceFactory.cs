@@ -67,7 +67,7 @@ public class ExternalInterfaceFactory
     /// <returns>
     /// The MAC address for the instance.
     /// </returns>
-    public string GetMacAddress(Instance instance, Server server)
+    public MacAddress GetMacAddress(Instance instance, Server server)
     {
         return MacAddressHelpers.Generate(3, server.Number, instance.Number);
     }

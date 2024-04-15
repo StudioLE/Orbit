@@ -1,5 +1,6 @@
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
+using Orbit.Utils.Networking;
 
 namespace Orbit.Schema;
 
@@ -28,7 +29,7 @@ public record struct Interface() : IHasValidationAttributes
     /// <summary>
     /// The mac address of the interface.
     /// </summary>
-    public string MacAddress { get; set; } = string.Empty;
+    public MacAddress MacAddress { get; set; } = new();
 
     /// <summary>
     /// The IPv4 or IPv6 addresses of the interface.

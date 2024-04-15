@@ -136,7 +136,7 @@ public class InternalInterfaceFactory
     /// <returns>
     /// The MAC address for the instance.
     /// </returns>
-    public string GetMacAddress(Instance instance, Server server)
+    public MacAddress GetMacAddress(Instance instance, Server server)
     {
         return MacAddressHelpers.Generate(1, server.Number, instance.Number);
     }
