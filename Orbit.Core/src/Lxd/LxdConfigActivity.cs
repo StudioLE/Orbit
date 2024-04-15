@@ -47,13 +47,13 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, string>
         [Required]
         [NameSchema]
         [Argument]
-        public string Instance { get; set; } = string.Empty;
+        public InstanceId Instance { get; set; }
     }
 
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Instance? instanceQuery = _instances.Get(new InstanceId(inputs.Instance));
+        Instance? instanceQuery = _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))

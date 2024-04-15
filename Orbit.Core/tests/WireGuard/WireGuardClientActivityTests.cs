@@ -41,7 +41,7 @@ internal sealed class WireGuardClientActivityTests
         // Arrange
         WireGuardClientActivity.Inputs inputs = new()
         {
-            Client = MockConstants.ClientName
+            Client = new(MockConstants.ClientName)
         };
 
         // Act
@@ -51,7 +51,7 @@ internal sealed class WireGuardClientActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _provider.Get(new(inputs.Client), $"wg{MockConstants.ServerNumber}.conf");
+        string? resource = _provider.Get(inputs.Client, $"wg{MockConstants.ServerNumber}.conf");
         Assert.That(resource, Is.Not.Null);
 
         // Yaml serialization is inconsistent on Windows

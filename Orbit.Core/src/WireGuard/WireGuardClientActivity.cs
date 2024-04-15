@@ -50,13 +50,13 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
         [Required]
         [NameSchema]
         [Argument]
-        public string Client { get; set; } = string.Empty;
+        public ClientId Client { get; set; }
     }
 
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Client? clientQuery = _clients.Get(new ClientId(inputs.Client));
+        Client? clientQuery = _clients.Get(inputs.Client);
         if (clientQuery is not Client client)
             return Failure("The client does not exist.");
         bool isValid = client.TryValidate(_logger);

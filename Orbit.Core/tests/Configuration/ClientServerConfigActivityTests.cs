@@ -41,7 +41,7 @@ internal sealed class ClientServerConfigActivityTests
         // Arrange
         ClientServerConfigActivity.Inputs inputs = new()
         {
-            Client = MockConstants.ClientName
+            Client = new(MockConstants.ClientName)
         };
 
         // Act
@@ -51,7 +51,7 @@ internal sealed class ClientServerConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        ServerConfiguration? config = _provider.Get(new ClientId(inputs.Client));
+        ServerConfiguration? config = _provider.Get(inputs.Client);
         Assert.That(config, Is.Not.Null);
     }
 }

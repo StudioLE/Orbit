@@ -41,7 +41,7 @@ internal sealed class InstanceServerConfigActivityTests
         // Arrange
         InstanceServerConfigActivity.Inputs inputs = new()
         {
-            Instance = MockConstants.InstanceName
+            Instance = new(MockConstants.InstanceName)
         };
 
         // Act
@@ -51,7 +51,7 @@ internal sealed class InstanceServerConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        ServerConfiguration? config = _provider.Get(new InstanceId(inputs.Instance));
+        ServerConfiguration? config = _provider.Get(inputs.Instance);
         Assert.That(config, Is.Not.Null);
     }
 }

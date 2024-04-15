@@ -51,7 +51,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
         [Required]
         [NameSchema]
         [Argument]
-        public string Instance { get; set; } = string.Empty;
+        public InstanceId Instance { get; set; }
     }
 
     /// <inheritdoc/>
@@ -59,7 +59,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
     {
         if (!_options.TryValidate(_logger))
             return Failure();
-        Instance? result = _instances.Get(new InstanceId(inputs.Instance));
+        Instance? result = _instances.Get(inputs.Instance);
         if (result is not Instance instance)
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))

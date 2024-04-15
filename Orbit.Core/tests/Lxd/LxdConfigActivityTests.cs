@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
-using Orbit.Instances;
 using Orbit.Lxd;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
@@ -16,7 +15,6 @@ internal sealed class LxdConfigActivityTests
     private readonly IContext _context = new NUnitContext();
     private readonly CommandContext _commandContext;
     private readonly LxdConfigActivity _activity;
-    private readonly InstanceProvider _instances;
     private readonly IReadOnlyCollection<LogEntry> _logs;
     private readonly LxdConfigProvider _lxdConfigProvider;
 
@@ -30,7 +28,6 @@ internal sealed class LxdConfigActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<LxdConfigActivity>();
-        _instances = provider.GetRequiredService<InstanceProvider>();
         _lxdConfigProvider = provider.GetRequiredService<LxdConfigProvider>();
         _logs = provider.GetCachedLogs();
     }
@@ -42,7 +39,7 @@ internal sealed class LxdConfigActivityTests
         // Arrange
         LxdConfigActivity.Inputs inputs = new()
         {
-            Instance = MockConstants.InstanceName
+            Instance = new(MockConstants.InstanceName)
         };
 
         // Act
@@ -52,7 +49,7 @@ internal sealed class LxdConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _lxdConfigProvider.Get(new(inputs.Instance));
+        string? resource = _lxdConfigProvider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
 
         // TODO: We have no easy way to normalize the MacAddresses for unstructured data

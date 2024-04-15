@@ -48,13 +48,13 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
         [Required]
         [NameSchema]
         [Argument]
-        public string Client { get; set; } = string.Empty;
+        public ClientId Client { get; set; }
     }
 
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Client? clientQuery = _clients.Get(new(inputs.Client));
+        Client? clientQuery = _clients.Get(inputs.Client);
         if (clientQuery is not Client client)
             return Failure("The client does not exist.");
         if (!client.TryValidate(_logger))

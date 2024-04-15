@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.CloudInit;
 using Orbit.Core.Tests.Resources;
-using Orbit.Instances;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
@@ -16,7 +15,6 @@ internal sealed class UserConfigActivityTests
     private readonly IContext _context = new NUnitContext();
     private readonly CommandContext _commandContext;
     private readonly UserConfigActivity _activity;
-    private readonly InstanceProvider _instances;
     private readonly UserConfigProvider _provider;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
@@ -30,7 +28,6 @@ internal sealed class UserConfigActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<UserConfigActivity>();
-        _instances = provider.GetRequiredService<InstanceProvider>();
         _provider = provider.GetRequiredService<UserConfigProvider>();
         _logs = provider.GetCachedLogs();
     }
@@ -42,7 +39,7 @@ internal sealed class UserConfigActivityTests
         // Arrange
         UserConfigActivity.Inputs inputs = new()
         {
-            Instance = MockConstants.InstanceName
+            Instance = new(MockConstants.InstanceName)
         };
 
         // Act
@@ -52,7 +49,7 @@ internal sealed class UserConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _provider.Get(new(inputs.Instance));
+        string? resource = _provider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
 
         // TODO: We have no easy way to normalize the MacAddresses for unstructured data
