@@ -1,5 +1,5 @@
 using Orbit.CloudInit;
-using Orbit.Creation.Instances;
+using Orbit.Instances;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
@@ -40,7 +40,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
     public string Create(Instance instance)
     {
         Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
-        string? userConfig = _instances.GetArtifact(instance.Name, GenerateUserConfig.FileName);
+        string? userConfig = _instances.GetArtifact(instance.Name, UserConfigActivity.FileName);
         if (userConfig is null)
             userConfig = _userConfig.Create(instance);
         Interface serverNic = server

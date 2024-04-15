@@ -1,15 +1,15 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orbit.Caddy;
+using Orbit.Clients;
 using Orbit.CloudInit;
 using Orbit.Configuration;
-using Orbit.Creation.Clients;
-using Orbit.Creation.Instances;
-using Orbit.Creation.Servers;
+using Orbit.Instances;
 using Orbit.Lxd;
 using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Serialization;
+using Orbit.Servers;
 using Orbit.Utils.CommandLine;
 using Orbit.WireGuard;
 using Tectonic;
@@ -39,12 +39,12 @@ public static class ServiceExtensions
 
             .AddScoped<CommandContext>()
 
-            .AddTransient<CreateServer>()
+            .AddTransient<ServerActivity>()
             .AddTransient<ServerFactory>()
             .AddTransient<WireGuardServerFactory>()
             .AddTransient<BridgeInterfaceFactory>()
 
-            .AddTransient<CreateInstance>()
+            .AddTransient<InstanceActivity>()
             .AddTransient<InstanceFactory>()
             .AddTransient<HardwareFactory>()
             .AddTransient<ExternalInterfaceFactory>()
@@ -54,33 +54,33 @@ public static class ServiceExtensions
             .AddTransient<WireGuardClientFactory>()
             .AddTransient<IWireGuardFacade, WireGuardFacade>()
 
-            .AddTransient<CreateClient>()
+            .AddTransient<ClientActivity>()
             .AddTransient<ClientFactory>()
 
-            .AddTransient<GenerateUserConfig>()
+            .AddTransient<UserConfigActivity>()
             .AddTransient<UserConfigFactory>()
             .AddTransient<InstallFactory>()
             .AddTransient<RunFactory>()
             .AddTransient<NetplanFactory>()
             .AddTransient<WireGuardClientConfigFactory>()
 
-            .AddTransient<GenerateLxdConfig>()
+            .AddTransient<LxdConfigActivity>()
             .AddTransient<LxdConfigFactory>()
             .AddTransient<LxdConfigProvider>()
 
             .AddTransient<GenerateWireGuardClient>()
             .AddTransient<IQREncodeFacade, QREncodeFacade>()
 
-            .AddTransient<GenerateServerConfigurationForInstance>()
-            .AddTransient<GenerateServerConfigurationForClient>()
+            .AddTransient<InstanceServerConfigActivity>()
+            .AddTransient<ClientServerConfigActivity>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()
             .AddTransient<WireGuardSetCommandFactory>()
             .AddTransient<WireGuardServerConfigFactory>()
 
-            .AddTransient<ExecuteServerConfiguration>()
+            .AddTransient<ServerConfigurationActivity>()
 
-            .AddTransient<Init>()
+            .AddTransient<LxdInitActivity>()
 
             .AddTransient<Cli>()
             .AddTransient<Ssh>()
