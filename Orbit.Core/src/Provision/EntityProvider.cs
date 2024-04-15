@@ -62,33 +62,6 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
             .Select(x => x.Name);
     }
 
-    /// <inheritdoc/>
-    public bool PutArtifact(IEntityId<T> id, string fileName, string content)
-    {
-        string path = Path.Combine(GetFilePath(id), "..", "artifacts", fileName);
-        IFileInfo file = _fileProvider.GetFileInfo(path);
-        FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
-        DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if (!directory.Exists)
-            directory.Create();
-        using StreamWriter writer = physicalFile.CreateText();
-        writer.Write(content);
-        return true;
-    }
-
-    /// <inheritdoc/>
-    public string? GetArtifact(IEntityId<T> id, string fileName)
-    {
-
-        string path = Path.Combine(GetFilePath(id), "..", "artifacts", fileName);
-        IFileInfo file = _fileProvider.GetFileInfo(path);
-        if (!file.Exists)
-            return null;
-        using Stream stream = file.CreateReadStream();
-        using StreamReader reader = new(stream);
-        return reader.ReadToEnd();
-    }
-
     private static string GetSubDirectory()
     {
         Type type = typeof(T);

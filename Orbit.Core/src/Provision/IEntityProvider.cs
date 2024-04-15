@@ -21,23 +21,4 @@ public interface IEntityProvider<T> : IProvider<IEntityId<T>, T> where T : struc
     /// </summary>
     /// <returns></returns>
     public IEnumerable<string> GetIndex();
-
-    /// <summary>
-    /// Store an entity artifact.
-    /// </summary>
-    /// <param name="id">The id of the entity.</param>
-    /// <param name="fileName">The file name of the artifact.</param>
-    /// <param name="content">The content of the artifact.</param>
-    /// <returns>
-    /// <see langword="true"/> if the artifact was stored; otherwise <see langword="false"/>.
-    /// </returns>
-    bool PutArtifact(IEntityId<T> id, string fileName, string content);
-
-    /// <summary>
-    /// Retrieve an entity artifact.
-    /// </summary>
-    /// <param name="id">The id of the entity.</param>
-    /// <param name="fileName">The file name of the artifact.</param>
-    /// <return>The content of the artifact.</return>
-    string? GetArtifact(IEntityId<T> id, string fileName);
 }
