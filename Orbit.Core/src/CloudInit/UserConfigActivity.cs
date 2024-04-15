@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orbit.Provision;
+using Orbit.Instances;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
@@ -16,7 +16,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
 {
     private readonly ILogger<UserConfigActivity> _logger;
     private readonly CloudInitOptions _options;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly UserConfigProvider _provider;
     private readonly CommandContext _context;
     private readonly UserConfigFactory _factory;
@@ -27,7 +27,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
     public UserConfigActivity(
         ILogger<UserConfigActivity> logger,
         IOptions<CloudInitOptions> options,
-        IEntityProvider<Instance> instances,
+        InstanceProvider instances,
         UserConfigProvider provider,
         CommandContext context,
         UserConfigFactory factory)

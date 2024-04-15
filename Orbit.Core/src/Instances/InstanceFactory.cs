@@ -31,7 +31,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
     };
 
     private readonly IEntityProvider<Server> _servers;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly ExternalInterfaceFactory _externalInterfaceFactory;
     private readonly InternalInterfaceFactory _internalInterfaceFactory;
     private readonly WireGuardClientFactory _wireGuardClientFactory;
@@ -43,7 +43,7 @@ public class InstanceFactory : IFactory<Instance, Instance>
     /// </summary>
     public InstanceFactory(
         IEntityProvider<Server> servers,
-        IEntityProvider<Instance> instances,
+        InstanceProvider instances,
         ExternalInterfaceFactory externalInterfaceFactory,
         InternalInterfaceFactory internalInterfaceFactory,
         OSFactory osFactory,

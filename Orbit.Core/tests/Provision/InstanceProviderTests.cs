@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
 using Orbit.Instances;
-using Orbit.Provision;
 using Orbit.Schema;
 
 namespace Orbit.Core.Tests.Provision;
@@ -12,13 +11,13 @@ internal sealed class InstanceProviderTests
 {
     private readonly InstanceId _instanceId = new("instance-10");
     private readonly InstanceFactory _instanceFactory;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
 
     public InstanceProviderTests()
     {
         IHost host = TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
-        _instances = host.Services.GetRequiredService<IEntityProvider<Instance>>();
+        _instances = host.Services.GetRequiredService<InstanceProvider>();
     }
 
     [Test]
@@ -26,10 +25,10 @@ internal sealed class InstanceProviderTests
     public void InstanceProvider_In_Sequence()
     {
         InstanceProvider_Get_Before();
-        InstanceProvider_GetIndex_Before();
+        InstanceProvider_GetAll_Before();
         InstanceProvider_Put();
         InstanceProvider_Get_After();
-        InstanceProvider_GetIndex_After();
+        InstanceProvider_GetAll_After();
     }
 
     private void InstanceProvider_Get_Before()
@@ -42,11 +41,11 @@ internal sealed class InstanceProviderTests
         Assert.That(instance, Is.Null);
     }
 
-    private void InstanceProvider_GetIndex_Before()
+    private void InstanceProvider_GetAll_Before()
     {
         // Arrange
         // Act
-        string[] ids = _instances.GetIndex().ToArray();
+        Instance[] ids = _instances.GetAll().ToArray();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(1));
@@ -74,11 +73,11 @@ internal sealed class InstanceProviderTests
         Assert.That(instance, Is.Not.Null);
     }
 
-    private void InstanceProvider_GetIndex_After()
+    private void InstanceProvider_GetAll_After()
     {
         // Arrange
         // Act
-        string[] ids = _instances.GetIndex().ToArray();
+        Instance[] ids = _instances.GetAll().ToArray();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(2));

@@ -66,7 +66,7 @@ public static class TestHelpers
                 Number = MockConstants.InstanceNumber,
                 Domains = ["example.com", "example.org"]
             });
-        IEntityProvider<Instance> instances = services.GetRequiredService<IEntityProvider<Instance>>();
+        InstanceProvider instances = services.GetRequiredService<InstanceProvider>();
         instances.Put(instance);
         _exampleInstance = instance;
     }

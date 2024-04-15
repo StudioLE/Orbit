@@ -33,7 +33,7 @@ public static class ServiceExtensions
             .AddTransient(YamlHelpers.CreateDeserializer)
 
             .AddTransient<IEntityFileProvider, EntityFileProvider>()
-            .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
+            .AddTransient<InstanceProvider>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
             .AddTransient<ClientProvider>()
 

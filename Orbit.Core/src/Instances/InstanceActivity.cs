@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
@@ -12,7 +11,7 @@ namespace Orbit.Instances;
 public class InstanceActivity : IActivity<Instance, Instance>
 {
     private readonly ILogger<InstanceActivity> _logger;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly InstanceFactory _factory;
     private readonly CommandContext _context;
 
@@ -21,7 +20,7 @@ public class InstanceActivity : IActivity<Instance, Instance>
     /// </summary>
     public InstanceActivity(
         ILogger<InstanceActivity> logger,
-        IEntityProvider<Instance> instances,
+        InstanceProvider instances,
         InstanceFactory factory,
         CommandContext context)
     {

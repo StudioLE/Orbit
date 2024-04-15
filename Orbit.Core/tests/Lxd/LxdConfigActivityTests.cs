@@ -2,9 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
+using Orbit.Instances;
 using Orbit.Lxd;
-using Orbit.Provision;
-using Orbit.Schema;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
@@ -17,7 +16,7 @@ internal sealed class LxdConfigActivityTests
     private readonly IContext _context = new NUnitContext();
     private readonly CommandContext _commandContext;
     private readonly LxdConfigActivity _activity;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly IReadOnlyCollection<LogEntry> _logs;
     private readonly LxdConfigProvider _lxdConfigProvider;
 
@@ -31,7 +30,7 @@ internal sealed class LxdConfigActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<LxdConfigActivity>();
-        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _instances = provider.GetRequiredService<InstanceProvider>();
         _lxdConfigProvider = provider.GetRequiredService<LxdConfigProvider>();
         _logs = provider.GetCachedLogs();
     }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
 using Orbit.Instances;
-using Orbit.Provision;
 using Orbit.Schema;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
@@ -17,7 +16,7 @@ internal sealed class InstanceActivityTests
 {
     private readonly IContext _context = new NUnitContext();
     private readonly InstanceActivity _activity;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly ISerializer _serializer;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
@@ -29,7 +28,7 @@ internal sealed class InstanceActivityTests
         IHost host = TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
-        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _instances = provider.GetRequiredService<InstanceProvider>();
         _activity = provider.GetRequiredService<InstanceActivity>();
         _serializer = provider.GetRequiredService<ISerializer>();
         _logs = provider.GetCachedLogs();

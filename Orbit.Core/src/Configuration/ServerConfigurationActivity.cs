@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
+using Orbit.Instances;
 using Orbit.Lxd;
 using Orbit.Provision;
 using Orbit.Schema;
@@ -17,7 +18,7 @@ namespace Orbit.Configuration;
 public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity.Inputs, string>
 {
     private readonly ILogger<ServerConfigurationActivity> _logger;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly IEntityProvider<Server> _servers;
     private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
@@ -29,7 +30,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
     /// </summary>
     public ServerConfigurationActivity(
         ILogger<ServerConfigurationActivity> logger,
-        IEntityProvider<Instance> instances,
+        InstanceProvider instances,
         IEntityProvider<Server> servers,
         ServerConfigurationProvider provider,
         CommandContext context,

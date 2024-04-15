@@ -3,8 +3,7 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.CloudInit;
 using Orbit.Core.Tests.Resources;
-using Orbit.Provision;
-using Orbit.Schema;
+using Orbit.Instances;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
@@ -17,7 +16,7 @@ internal sealed class UserConfigActivityTests
     private readonly IContext _context = new NUnitContext();
     private readonly CommandContext _commandContext;
     private readonly UserConfigActivity _activity;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly UserConfigProvider _provider;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
@@ -31,7 +30,7 @@ internal sealed class UserConfigActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<UserConfigActivity>();
-        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _instances = provider.GetRequiredService<InstanceProvider>();
         _provider = provider.GetRequiredService<UserConfigProvider>();
         _logs = provider.GetCachedLogs();
     }

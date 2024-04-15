@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Orbit.Caddy;
-using Orbit.Provision;
+using Orbit.Instances;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
@@ -17,7 +17,7 @@ namespace Orbit.Configuration;
 public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivity.Inputs, string>
 {
     private readonly ILogger<InstanceServerConfigActivity> _logger;
-    private readonly IEntityProvider<Instance> _instances;
+    private readonly InstanceProvider _instances;
     private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
@@ -29,7 +29,7 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
     /// </summary>
     public InstanceServerConfigActivity(
         ILogger<InstanceServerConfigActivity> logger,
-        IEntityProvider<Instance> instances,
+        InstanceProvider instances,
         ServerConfigurationProvider provider,
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
