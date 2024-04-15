@@ -18,6 +18,7 @@ internal sealed class UserConfigActivityTests
     private readonly CommandContext _commandContext;
     private readonly UserConfigActivity _activity;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly UserConfigProvider _provider;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public UserConfigActivityTests()
@@ -31,6 +32,7 @@ internal sealed class UserConfigActivityTests
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<UserConfigActivity>();
         _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _provider = provider.GetRequiredService<UserConfigProvider>();
         _logs = provider.GetCachedLogs();
     }
 
@@ -51,7 +53,7 @@ internal sealed class UserConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _instances.GetArtifact(new InstanceId(inputs.Instance), UserConfigActivity.FileName);
+        string? resource = _provider.Get(new(inputs.Instance));
         Assert.That(resource, Is.Not.Null);
 
         // TODO: We have no easy way to normalize the MacAddresses for unstructured data

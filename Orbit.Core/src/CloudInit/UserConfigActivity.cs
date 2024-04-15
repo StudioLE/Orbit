@@ -14,13 +14,10 @@ namespace Orbit.CloudInit;
 /// </summary>
 public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public const string FileName = "user-config.yml";
     private readonly ILogger<UserConfigActivity> _logger;
     private readonly CloudInitOptions _options;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly UserConfigProvider _provider;
     private readonly CommandContext _context;
     private readonly UserConfigFactory _factory;
 
@@ -31,12 +28,14 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
         ILogger<UserConfigActivity> logger,
         IOptions<CloudInitOptions> options,
         IEntityProvider<Instance> instances,
+        UserConfigProvider provider,
         CommandContext context,
         UserConfigFactory factory)
     {
         _logger = logger;
         _options = options.Value;
         _instances = instances;
+        _provider = provider;
         _context = context;
         _factory = factory;
     }
@@ -67,7 +66,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
             return Failure();
         string output = _factory.Create(instance);
         // TODO: Make save optional
-        if (!_instances.PutArtifact(instance.Name, FileName, output))
+        if (!_provider.Put(instance.Name, output))
             return Failure("Failed to write the user config file.");
         return Success(string.Empty);
     }

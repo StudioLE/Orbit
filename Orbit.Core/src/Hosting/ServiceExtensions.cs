@@ -58,6 +58,7 @@ public static class ServiceExtensions
             .AddTransient<ClientFactory>()
 
             .AddTransient<UserConfigActivity>()
+            .AddTransient<UserConfigProvider>()
             .AddTransient<UserConfigFactory>()
             .AddTransient<InstallFactory>()
             .AddTransient<RunFactory>()
