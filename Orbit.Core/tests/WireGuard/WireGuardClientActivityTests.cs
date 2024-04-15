@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Core.Tests.Resources;
-using Orbit.Provision;
-using Orbit.Schema;
 using Orbit.WireGuard;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
@@ -19,7 +17,7 @@ internal sealed class WireGuardClientActivityTests
     private readonly IContext _context = new NUnitContext();
     private readonly CommandContext _commandContext;
     private readonly WireGuardClientActivity _activity;
-    private readonly IEntityProvider<Client> _clients;
+    private readonly WireGuardConfigProvider _provider;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
     public WireGuardClientActivityTests()
@@ -32,7 +30,7 @@ internal sealed class WireGuardClientActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<WireGuardClientActivity>();
-        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
+        _provider = provider.GetRequiredService<WireGuardConfigProvider>();
         _logs = provider.GetCachedLogs();
     }
 
@@ -53,7 +51,7 @@ internal sealed class WireGuardClientActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _clients.GetArtifact(new ClientId(inputs.Client), $"wg{MockConstants.ServerNumber}.conf");
+        string? resource = _provider.Get(new(inputs.Client), $"wg{MockConstants.ServerNumber}.conf");
         Assert.That(resource, Is.Not.Null);
 
         // Yaml serialization is inconsistent on Windows

@@ -15,6 +15,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
 {
     private readonly ILogger<WireGuardClientActivity> _logger;
     private readonly IEntityProvider<Client> _clients;
+    private readonly WireGuardConfigProvider _provider;
     private readonly CommandContext _context;
     private readonly WireGuardClientConfigFactory _factory;
     private readonly IQREncodeFacade _qr;
@@ -25,12 +26,14 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
     public WireGuardClientActivity(
         ILogger<WireGuardClientActivity> logger,
         IEntityProvider<Client> clients,
+        WireGuardConfigProvider provider,
         CommandContext context,
         WireGuardClientConfigFactory factory,
         IQREncodeFacade qr)
     {
         _logger = logger;
         _clients = clients;
+        _provider = provider;
         _context = context;
         _factory = factory;
         _qr = qr;
@@ -64,7 +67,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
             string fileName = $"{wg.Interface.Name}.conf";
             string config = _factory.Create(wg);
             // TODO: Make save optional
-            if (!_clients.PutArtifact(client.Name, fileName, config))
+            if (!_provider.Put(client.Name, fileName, config))
                 return Failure("Failed to write the wireguard config file.");
             string svg = _qr.GenerateSvg(config);
             if (string.IsNullOrEmpty(svg))
@@ -73,7 +76,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
                 continue;
             }
             // TODO: Make save optional
-            if (!_clients.PutArtifact(client.Name, fileName + ".svg", svg))
+            if (!_provider.Put(client.Name, fileName + ".svg", svg))
                 return Failure("Failed to write the QR code file.");
         }
         return Success(string.Empty);

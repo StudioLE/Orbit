@@ -70,6 +70,7 @@ public static class ServiceExtensions
             .AddTransient<LxdConfigProvider>()
 
             .AddTransient<WireGuardClientActivity>()
+            .AddTransient<WireGuardConfigProvider>()
             .AddTransient<IQREncodeFacade, QREncodeFacade>()
 
             .AddTransient<InstanceServerConfigActivity>()
