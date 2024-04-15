@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
-using YamlDotNet.RepresentationModel;
 
 namespace Orbit.Provision;
 
@@ -9,20 +8,6 @@ namespace Orbit.Provision;
 /// </summary>
 public static class EmbeddedResourceHelpers
 {
-    /// <summary>
-    /// Get the content of an embedded yaml file as a <see cref="YamlNode"/>.
-    /// </summary>
-    public static YamlNode GetYaml(string path)
-    {
-        IFileInfo templateFile = GetFile(path);
-        using Stream readStream = templateFile.CreateReadStream();
-        using StreamReader reader = new(readStream);
-        YamlStream yamlStream = new();
-        yamlStream.Load(reader);
-        YamlDocument document = yamlStream.Documents.First();
-        return document.RootNode;
-    }
-
     /// <summary>
     /// Get the context of an embedded text file.
     /// </summary>
