@@ -37,7 +37,7 @@ internal static class Program
             .Register<LxdConfigActivity>("create", "lxd")
             .Register<InstanceServerConfigActivity>("generate", "server-config", "instance")
             .Register<ClientServerConfigActivity>("generate", "server-config", "client")
-            .Register<GenerateWireGuardClient>("generate", "wireguard", "client")
+            .Register<WireGuardClientActivity>("generate", "wireguard", "client")
             .Register<ServerConfigurationActivity>("execute", "server-config")
             .Register<LxdInitActivity>("init")
             .Build();

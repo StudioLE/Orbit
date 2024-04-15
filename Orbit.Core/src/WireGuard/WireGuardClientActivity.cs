@@ -11,19 +11,19 @@ namespace Orbit.WireGuard;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the WireGuard config for a <see cref="Client"/>.
 /// </summary>
-public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs, string>
+public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs, string>
 {
-    private readonly ILogger<GenerateWireGuardClient> _logger;
+    private readonly ILogger<WireGuardClientActivity> _logger;
     private readonly IEntityProvider<Client> _clients;
     private readonly CommandContext _context;
     private readonly WireGuardClientConfigFactory _factory;
     private readonly IQREncodeFacade _qr;
 
     /// <summary>
-    /// DI constructor for <see cref="GenerateWireGuardClient"/>.
+    /// DI constructor for <see cref="WireGuardClientActivity"/>.
     /// </summary>
-    public GenerateWireGuardClient(
-        ILogger<GenerateWireGuardClient> logger,
+    public WireGuardClientActivity(
+        ILogger<WireGuardClientActivity> logger,
         IEntityProvider<Client> clients,
         CommandContext context,
         WireGuardClientConfigFactory factory,
@@ -37,7 +37,7 @@ public class GenerateWireGuardClient : IActivity<GenerateWireGuardClient.Inputs,
     }
 
     /// <summary>
-    /// The inputs for <see cref="GenerateWireGuardClient"/>.
+    /// The inputs for <see cref="WireGuardClientActivity"/>.
     /// </summary>
     public class Inputs
     {

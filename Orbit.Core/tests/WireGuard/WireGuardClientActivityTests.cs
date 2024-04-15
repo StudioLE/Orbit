@@ -14,15 +14,15 @@ using Tectonic;
 
 namespace Orbit.Core.Tests.WireGuard;
 
-internal sealed class GenerateWireGuardClientTests
+internal sealed class WireGuardClientActivityTests
 {
     private readonly IContext _context = new NUnitContext();
     private readonly CommandContext _commandContext;
-    private readonly GenerateWireGuardClient _activity;
+    private readonly WireGuardClientActivity _activity;
     private readonly IEntityProvider<Client> _clients;
     private readonly IReadOnlyCollection<LogEntry> _logs;
 
-    public GenerateWireGuardClientTests()
+    public WireGuardClientActivityTests()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
@@ -31,17 +31,17 @@ internal sealed class GenerateWireGuardClientTests
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
-        _activity = provider.GetRequiredService<GenerateWireGuardClient>();
+        _activity = provider.GetRequiredService<WireGuardClientActivity>();
         _clients = provider.GetRequiredService<IEntityProvider<Client>>();
         _logs = provider.GetCachedLogs();
     }
 
     [Test]
     [Category("Activity")]
-    public async Task GenerateWireGuardClient_Execute()
+    public async Task WireGuardClientActivity_Execute()
     {
         // Arrange
-        GenerateWireGuardClient.Inputs inputs = new()
+        WireGuardClientActivity.Inputs inputs = new()
         {
             Client = MockConstants.ClientName
         };
