@@ -1,6 +1,5 @@
 namespace Orbit.Utils.Networking;
 
-// TODO: Replace with a MacAddress class
 /// <summary>
 /// Methods to help with MacAddress.
 /// </summary>

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
@@ -6,6 +7,7 @@ using Orbit.Core.Tests.Resources;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
+using StudioLE.Verify;
 using Tectonic;
 
 namespace Orbit.Core.Tests.CloudInit;
@@ -52,10 +54,9 @@ internal sealed class UserConfigActivityTests
         string? resource = _provider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
 
-        // TODO: We have no easy way to normalize the MacAddresses for unstructured data
-        // // Yaml serialization is inconsistent on Windows
-        // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        //     return;
-        // await _context.Verify(resource!);
+        // Yaml serialization is inconsistent on Windows
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
+        await _context.Verify(resource!);
     }
 }
