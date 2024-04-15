@@ -7,6 +7,15 @@ using StudioLE.Patterns;
 
 namespace Orbit.Caddy;
 
+/// <summary>
+/// Generate a Caddyfile that reverse proxies requests for <see cref="Instance.Domains"/> from <see cref="Server"/> to <see cref="Instance"/>.
+/// </summary>
+/// <remarks>
+/// Proxying is necessary when the <see cref="Instance"/> is running on a private network and
+/// is not directly accessible from the internet.
+/// If the <see cref="Instance"/> has a <see cref="NetworkType.RoutedNic"/> this is not necessary.
+/// Follows a <see href="https://refactoring.guru/design-patterns/factory-method">factory method pattern</see>.
+/// </remarks>
 public class CaddyfileFactory : IFactory<Instance, string?>
 {
     private readonly ILogger<CaddyfileFactory> _logger;

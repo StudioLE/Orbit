@@ -2,9 +2,18 @@ using StudioLE.Extensions.System;
 
 namespace Orbit.Utils.Networking;
 
+/// <summary>
+/// Methods to help with <see cref="IPv6"/>.
+/// </summary>
 // ReSharper disable once InconsistentNaming
 public static class IPv6Helpers
 {
+    /// <summary>
+    /// Get the string representation of the IPv6 address with every octet.
+    /// </summary>
+    /// <param name="ip">The IPv6 address.</param>
+    /// <param name="condensed">Should `0` values be condensed?</param>
+    /// <returns>The string representation of the IPv6 address with every octet.</returns>
     public static string ToFullString(this IPv6 ip, bool condensed = true)
     {
         return ip._hextets
@@ -13,6 +22,12 @@ public static class IPv6Helpers
                + ip.GetCidrSuffix();
     }
 
+    /// <summary>
+    /// Get the string representation of the IPv6 address shortened from the start.
+    /// </summary>
+    /// <param name="ip">The IPv6 address.</param>
+    /// <param name="condensed">Should `0` values be condensed?</param>
+    /// <returns>The string representation of the IPv6 address shortened from the start.</returns>
     public static string ShortenFromStart(this IPv6 ip, bool condensed = true)
     {
         int zerosAtStart = ip._hextets
@@ -27,6 +42,12 @@ public static class IPv6Helpers
         return "::" + result + ip.GetCidrSuffix();
     }
 
+    /// <summary>
+    /// Get the string representation of the IPv6 address shortened from the end.
+    /// </summary>
+    /// <param name="ip">The IPv6 address.</param>
+    /// <param name="condensed">Should `0` values be condensed?</param>
+    /// <returns>The string representation of the IPv6 address shortened from the end.</returns>
     public static string ShortenFromEnd(this IPv6 ip, bool condensed = true)
     {
         int zerosAtEnd = ip._hextets
@@ -42,6 +63,13 @@ public static class IPv6Helpers
         return result + "::" + ip.GetCidrSuffix();
     }
 
+
+    /// <summary>
+    /// Get the shortest string representation of the IPv6 address.
+    /// </summary>
+    /// <param name="ip">The IPv6 address.</param>
+    /// <param name="condensed">Should `0` values be condensed?</param>
+    /// <returns>The shortest string representation of the IPv6 address.</returns>
     public static string Shorten(this IPv6 ip, bool condensed = true)
     {
         int[] counts = ip._hextets

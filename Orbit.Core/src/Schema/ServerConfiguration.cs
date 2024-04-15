@@ -2,10 +2,16 @@ using System.Collections;
 
 namespace Orbit.Schema;
 
-public record struct ServerConfiguration : IReadOnlyDictionary<string, ShellCommand[]>
+/// <summary>
+/// A set of shell commands to configure a <see cref="Server"/>.
+/// </summary>
+public readonly record struct ServerConfiguration : IReadOnlyDictionary<string, ShellCommand[]>
 {
     private readonly IReadOnlyDictionary<string, ShellCommand[]> _readOnlyDictionaryImplementation;
 
+    /// <summary>
+    /// Create a new instance of <see cref="ServerConfiguration"/>.
+    /// </summary>
     public ServerConfiguration(IReadOnlyDictionary<string, ShellCommand[]> readOnlyDictionaryImplementation)
     {
         _readOnlyDictionaryImplementation = readOnlyDictionaryImplementation;

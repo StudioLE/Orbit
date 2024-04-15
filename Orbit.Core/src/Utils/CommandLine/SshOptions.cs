@@ -7,6 +7,10 @@ namespace Orbit.Utils.CommandLine;
 /// </summary>
 public class SshOptions
 {
+    /// <summary>
+    /// The
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#bind-hierarchical-configuration-data-using-the-options-pattern">options pattern</see> key.
+    /// </summary>
     public const string SectionKey = "SSH";
 
     /// <summary>

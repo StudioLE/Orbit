@@ -6,10 +6,16 @@ using StudioLE.Patterns;
 
 namespace Orbit.WireGuard;
 
+/// <summary>
+/// Create a WireGuard configuration file for a <see cref="Client"/> or <see cref="Instance"/>.
+/// </summary>
 public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
 {
     private readonly IEntityProvider<Server> _servers;
 
+    /// <summary>
+    /// DI constructor for <see cref="WireGuardClientConfigFactory"/>.
+    /// </summary>
     public WireGuardClientConfigFactory(IEntityProvider<Server> servers)
     {
         _servers = servers;

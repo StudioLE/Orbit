@@ -10,7 +10,8 @@ using Tectonic;
 namespace Orbit.Lxd;
 
 /// <summary>
-/// An <see cref="IActivity"/> to remotely launch an instance with Multipass.
+/// An <see cref="IActivity"/> to initialize an <see cref="Instance"/> on a <see cref="Server"/>
+/// using LXD.
 /// </summary>
 public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
 {

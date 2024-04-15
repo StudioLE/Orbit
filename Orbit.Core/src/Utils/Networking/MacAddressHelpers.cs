@@ -2,8 +2,19 @@ using StudioLE.Extensions.System;
 
 namespace Orbit.Utils.Networking;
 
+// TODO: Replace with a MacAddress class
+/// <summary>
+/// Methods to help with MacAddress.
+/// </summary>
 public static class MacAddressHelpers
 {
+    /// <summary>
+    /// Generate a deterministic MAC address from seed values.
+    /// </summary>
+    /// <param name="type">The context seed.</param>
+    /// <param name="server">The server number.</param>
+    /// <param name="entity">The entity number.</param>
+    /// <returns>A MAC Address.</returns>
     public static string Generate(int type, int server, int entity)
     {
         int seed = type * 1_000_000

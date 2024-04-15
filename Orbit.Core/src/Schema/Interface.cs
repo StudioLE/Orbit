@@ -52,11 +52,33 @@ public record struct Interface() : IHasValidationAttributes
     public string[] Dns { get; set; } = Array.Empty<string>();
 }
 
+/// <summary>
+/// The type of network.
+/// </summary>
 public enum NetworkType
 {
+    /// <summary>
+    /// Unknown
+    /// </summary>
     Unknown,
+
+    /// <summary>
+    /// A bridge network.
+    /// </summary>
     Bridge,
+
+    /// <summary>
+    /// A WireGuard network.
+    /// </summary>
     WireGuard,
+
+    /// <summary>
+    /// A routed nic network.
+    /// </summary>
     RoutedNic,
+
+    /// <summary>
+    /// A nic network.
+    /// </summary>
     Nic
 }

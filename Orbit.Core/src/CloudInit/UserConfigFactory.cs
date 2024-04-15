@@ -7,6 +7,9 @@ using StudioLE.Patterns;
 
 namespace Orbit.CloudInit;
 
+/// <summary>
+/// Create a cloud-init user-data yaml for an <see cref="Instance"/>.
+/// </summary>
 public class UserConfigFactory : IFactory<Instance, string>
 {
     private readonly CloudInitOptions _options;

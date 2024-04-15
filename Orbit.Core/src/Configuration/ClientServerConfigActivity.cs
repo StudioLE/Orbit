@@ -11,10 +11,13 @@ using Tectonic;
 namespace Orbit.Configuration;
 
 /// <summary>
-/// An <see cref="IActivity"/> to generate the server configuration for a client.
+/// An <see cref="IActivity"/> to generate the server configuration for a <see cref="Client"/>.
 /// </summary>
 public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.Inputs, string>
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public const string FileName = "server-config.yml";
     private readonly ILogger<ClientServerConfigActivity> _logger;
     private readonly IEntityProvider<Client> _clients;

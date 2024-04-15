@@ -4,6 +4,9 @@ using YamlDotNet.Serialization;
 
 namespace Orbit.Utils.Networking;
 
+/// <summary>
+/// Convert an <see cref="IPv6"/> to and from YAML.
+/// </summary>
 // ReSharper disable once InconsistentNaming
 public class IPv6YamlConverter : IYamlTypeConverter
 {

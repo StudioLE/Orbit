@@ -4,17 +4,24 @@ using StudioLE.Patterns;
 
 namespace Orbit.Caddy;
 
+/// <summary>
+/// Create a <see cref="ShellCommand"/> to write a Caddyfile using <see cref="CaddyfileFactory"/> to a server.
+/// </summary>
 public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
 {
     private readonly ILogger<WriteCaddyfileCommandFactory> _logger;
     private readonly CaddyfileFactory _factory;
 
+    /// <summary>
+    /// Create a new instance of <see cref="WriteCaddyfileCommandFactory"/>.
+    /// </summary>
     public WriteCaddyfileCommandFactory(ILogger<WriteCaddyfileCommandFactory> logger, CaddyfileFactory factory)
     {
         _logger = logger;
         _factory = factory;
     }
 
+    /// <inheritdoc/>
     public ShellCommand[] Create(Instance instance)
     {
         string? caddyfile = _factory.Create(instance);
@@ -23,8 +30,8 @@ public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
             _logger.LogError("Failed to create Caddyfile");
             return Array.Empty<ShellCommand>();
         }
-        return new ShellCommand[]
-        {
+        return
+        [
             new()
             {
                 Command = $$"""
@@ -41,6 +48,6 @@ public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
                 Command = "cd /caddy && sudo caddy reload",
                 ErrorMessage = "Failed to reload Caddy"
             }
-        };
+        ];
     }
 }

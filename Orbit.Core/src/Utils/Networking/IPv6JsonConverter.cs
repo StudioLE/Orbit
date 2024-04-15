@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Orbit.Utils.Networking;
 
+/// <summary>
+/// Convert an <see cref="IPv6"/> to and from JSON.
+/// </summary>
 // ReSharper disable once InconsistentNaming
 public class IPv6JsonConverter : JsonConverter<IPv6>
 {

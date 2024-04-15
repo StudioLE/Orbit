@@ -3,12 +3,24 @@ using StudioLE.Extensions.System;
 
 namespace Orbit.Utils.Yaml;
 
+/// <summary>
+/// Methods to help with YAML.
+/// </summary>
 public static class YamlHelpers
 {
-    public const int IndentSize = 2;
+    /// <summary>
+    /// The number of spaces to indent.
+    /// </summary>
+    private const int IndentSize = 2;
     private const string SingleQuoteRequired = ":,[]{}#&*!|>'%@`";
     private const string DoubleQuoteRequired = "\"\\";
 
+    /// <summary>
+    /// Serialize a collection as a YAML sequence.
+    /// </summary>
+    /// <param name="items">The items</param>
+    /// <param name="indentLevel">The indentation level.</param>
+    /// <returns>The collection serialized as a YAML sequence</returns>
     public static string AsYamlSequence(this IReadOnlyCollection<string> items, int indentLevel = 0)
     {
         if (items.Count == 0)
@@ -23,6 +35,17 @@ public static class YamlHelpers
         return output.ToString();
     }
 
+    /// <summary>
+    /// Serialize a string as a YAML string with quotes and escaping where necessary
+    /// </summary>
+    /// <remarks>
+    /// Multi-line strings are not supported.
+    /// </remarks>
+    /// <param name="value">The value to serialize.</param>
+    /// <returns>
+    /// A YAML string with quotes and escaping where necessary.
+    /// </returns>
+    /// <exception cref="NotSupportedException">Thrown for multi-line strings.</exception>
     public static string AsYamlString(this string? value)
     {
         if (string.IsNullOrWhiteSpace(value))

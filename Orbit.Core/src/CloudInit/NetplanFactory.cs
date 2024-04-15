@@ -8,12 +8,19 @@ using StudioLE.Patterns;
 
 namespace Orbit.CloudInit;
 
+/// <summary>
+/// Create a Netplan configuration for an <see cref="Instance"/> with a external routed nic interface using <see cref="ExternalInterfaceFactory"/> and an internal bridge interface using <see cref="InternalInterfaceFactory"/>.
+/// </summary>
+/// <seealso href="https://netplan.readthedocs.io/en/stable/netplan-yaml/"/>
 public class NetplanFactory : IFactory<Instance, string>
 {
     private readonly IEntityProvider<Server> _servers;
     private readonly ExternalInterfaceFactory _externalInterfaceFactory;
     private readonly InternalInterfaceFactory _internalInterfaceFactory;
 
+    /// <summary>
+    /// DI constructor for <see cref="NetplanFactory"/>.
+    /// </summary>
     public NetplanFactory(
         IEntityProvider<Server> servers,
         ExternalInterfaceFactory externalInterfaceFactory,

@@ -1,5 +1,8 @@
 namespace Orbit.Schema;
 
+/// <summary>
+/// An entity.
+/// </summary>
 public interface IEntity
 {
     /// <summary>

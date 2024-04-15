@@ -4,6 +4,9 @@ using StudioLE.Patterns;
 
 namespace Orbit.WireGuard;
 
+/// <summary>
+/// Create a shell command to set a WireGuard peer on a <see cref="Server"/>.
+/// </summary>
 public class WireGuardSetCommandFactory : IFactory<WireGuardClient, ShellCommand>
 {
     /// <inheritdoc/>

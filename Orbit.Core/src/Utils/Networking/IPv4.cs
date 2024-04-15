@@ -2,14 +2,26 @@ using System.Text.Json.Serialization;
 
 namespace Orbit.Utils.Networking;
 
+/// <summary>
+/// An IPv4 address.
+/// </summary>
 [JsonConverter(typeof(IPv4JsonConverter))]
 // ReSharper disable once InconsistentNaming
 public readonly struct IPv4
 {
+    /// <summary>
+    /// The four octets of the IPv4 address.
+    /// </summary>
     public byte[] Octets { get; }
 
+    /// <summary>
+    /// The optional CIDR of the IPv4 address.
+    /// </summary>
     public byte? Cidr { get; }
 
+    /// <summary>
+    /// Create a new instance of <see cref="IPv4"/>.
+    /// </summary>
     public IPv4(byte[] octets, byte? cidr = null)
     {
         Octets = octets.Length != 4
@@ -20,10 +32,19 @@ public readonly struct IPv4
             : cidr;
     }
 
-    public IPv4(byte a, byte b, byte c, byte d, byte? cidr = null) : this(new[] { a, b, c, d }, cidr)
+    /// <summary>
+    /// Create a new instance of <see cref="IPv4"/>.
+    /// </summary>
+    public IPv4(byte a, byte b, byte c, byte d, byte? cidr = null) : this([a, b, c, d], cidr)
     {
     }
 
+    /// <summary>
+    /// Create a new instance of <see cref="IPv4"/> by parsing a string.
+    /// </summary>
+    /// <remarks>
+    /// The string is parsed with <see cref="IPv4Parser.Parse"/>.
+    /// </remarks>
     public IPv4(string ipv4)
     {
         IPv4 parsed = IPv4Parser.Parse(ipv4) ?? throw new ArgumentException("Invalid IPv4 address.", nameof(ipv4));

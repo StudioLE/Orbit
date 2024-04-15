@@ -3,6 +3,8 @@
 // ReSharper disable once CheckNamespace
 namespace StudioLE.Serialization;
 
+// TODO: Move to StudioLE.Serialization
+
 /// <summary>
 /// Methods to help with <see cref="T:StudioLE.Serialization.IDeserializer"/>.
 /// </summary>

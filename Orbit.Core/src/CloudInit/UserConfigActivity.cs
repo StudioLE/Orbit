@@ -14,6 +14,9 @@ namespace Orbit.CloudInit;
 /// </summary>
 public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public const string FileName = "user-config.yml";
     private readonly ILogger<UserConfigActivity> _logger;
     private readonly CloudInitOptions _options;

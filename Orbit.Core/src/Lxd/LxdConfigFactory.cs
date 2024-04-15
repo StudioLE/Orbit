@@ -8,6 +8,9 @@ using StudioLE.Patterns;
 
 namespace Orbit.Lxd;
 
+/// <summary>
+/// Create the LXD configuration for an <see cref="Instance"/>.
+/// </summary>
 public class LxdConfigFactory : IFactory<Instance, string>
 {
     private readonly IEntityProvider<Instance> _instances;

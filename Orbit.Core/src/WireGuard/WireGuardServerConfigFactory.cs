@@ -1,4 +1,3 @@
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
 using StudioLE.Extensions.System;
@@ -6,15 +5,11 @@ using StudioLE.Patterns;
 
 namespace Orbit.WireGuard;
 
+/// <summary>
+/// Create a WireGuard configuration file for a <see cref="Server"/>.
+/// </summary>
 public class WireGuardServerConfigFactory : IFactory<Server, string>
 {
-    private readonly IEntityProvider<Server> _servers;
-
-    public WireGuardServerConfigFactory(IEntityProvider<Server> servers)
-    {
-        _servers = servers;
-    }
-
     /// <inheritdoc/>
     public string Create(Server server)
     {
@@ -23,9 +18,9 @@ public class WireGuardServerConfigFactory : IFactory<Server, string>
                             .FirstOrNull(x => x.Type == NetworkType.Nic)
                         ?? throw new($"NIC not found for server: {server.Name}.");
         Interface bridge = server
-                            .Interfaces
-                            .FirstOrNull(x => x.Type == NetworkType.Bridge)
-                        ?? throw new($"Bridge not found for server: {server.Name}.");
+                               .Interfaces
+                               .FirstOrNull(x => x.Type == NetworkType.Bridge)
+                           ?? throw new($"Bridge not found for server: {server.Name}.");
         return $"""
             [Interface]
             SaveConfig = true
@@ -39,11 +34,6 @@ public class WireGuardServerConfigFactory : IFactory<Server, string>
             PreDown = iptables -t nat -D POSTROUTING -o {nic.Name} -j MASQUERADE
             PreDown = ip6tables -t nat -D POSTROUTING -o {nic.Name} -j MASQUERADE
             """;
-    }
-
-    public static string GetFileName(Server server)
-    {
-        return $"{server.WireGuard.Name}.conf";
     }
 
     private static string MultiLine(string key, IEnumerable<string> values)

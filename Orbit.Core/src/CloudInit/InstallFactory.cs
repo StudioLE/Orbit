@@ -5,6 +5,9 @@ using StudioLE.Patterns;
 
 namespace Orbit.CloudInit;
 
+/// <summary>
+/// Create a bash script to install the packages <see cref="Instance.Install"/> on the <see cref="Instance"/>.
+/// </summary>
 public class InstallFactory : IFactory<Instance, string>
 {
     /// <inheritdoc/>

@@ -12,7 +12,7 @@ using Tectonic;
 namespace Orbit.Configuration;
 
 /// <summary>
-/// An <see cref="IActivity"/> to configure a server.
+/// An <see cref="IActivity"/> to execute stored server configuration files on a server.
 /// </summary>
 public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity.Inputs, string>
 {

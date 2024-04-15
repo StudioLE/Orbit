@@ -4,6 +4,10 @@ using YamlDotNet.Serialization;
 
 namespace Orbit.Utils.Serialization;
 
+// TODO: Move to StudioLE.Serialization
+/// <summary>
+/// Convert <see cref="IParsable{TSelf}"/> to and from YAML.
+/// </summary>
 public class ParseableYamlConverter : IYamlTypeConverter
 {
     /// <inheritdoc/>

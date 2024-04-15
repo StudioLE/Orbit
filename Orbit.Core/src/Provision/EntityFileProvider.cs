@@ -6,6 +6,10 @@ using Orbit.Utils.DataAnnotations;
 
 namespace Orbit.Provision;
 
+/// <summary>
+/// A concrete implementation of <see cref="IEntityFileProvider"/> that stores entities as files using a
+/// <see cref="PhysicalFileProvider"/>.
+/// </summary>
 public class EntityFileProvider : IEntityFileProvider
 {
     private readonly IFileProvider? _fileProvider;

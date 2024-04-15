@@ -5,6 +5,10 @@ using StudioLE.Serialization;
 
 namespace Orbit.Provision;
 
+/// <summary>
+/// A provider for entities that stores them as files.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
 {
     private readonly IEntityFileProvider _fileProvider;
@@ -58,6 +62,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
             .Select(x => x.Name);
     }
 
+    /// <inheritdoc/>
     public bool PutArtifact(IEntityId<T> id, string fileName, string content)
     {
         string path = Path.Combine(GetFilePath(id), "..", "artifacts", fileName);
@@ -71,6 +76,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
         return true;
     }
 
+    /// <inheritdoc/>
     public string? GetArtifact(IEntityId<T> id, string fileName)
     {
 
@@ -83,7 +89,7 @@ public class EntityProvider<T> : IEntityProvider<T> where T : struct, IEntity
         return reader.ReadToEnd();
     }
 
-    public static string GetSubDirectory()
+    private static string GetSubDirectory()
     {
         Type type = typeof(T);
         if (type == typeof(Instance))

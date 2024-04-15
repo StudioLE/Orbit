@@ -2,8 +2,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Orbit.Utils.Serialization;
+// TODO: Move to StudioLE.Serialization
 
-// ReSharper disable once InconsistentNaming
+/// <summary>
+/// Convert <see cref="IParsable{TSelf}"/> to and from JSON.
+/// </summary>
 public class ParseableJsonConverter : JsonConverter<object>
 {
     /// <inheritdoc/>

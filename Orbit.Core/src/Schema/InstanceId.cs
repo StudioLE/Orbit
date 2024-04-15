@@ -1,9 +1,15 @@
 namespace Orbit.Schema;
 
+/// <summary>
+/// The id of an <see cref="Instance"/>.
+/// </summary>
 public readonly record struct InstanceId : IEntityId<Instance>, IParsable<InstanceId>
 {
     private readonly string _name = string.Empty;
 
+    /// <summary>
+    /// Create a new instance of <see cref="InstanceId"/>.
+    /// </summary>
     public InstanceId(string name)
     {
         _name = name;

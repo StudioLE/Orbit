@@ -4,18 +4,26 @@ using Orbit.Schema;
 
 namespace Orbit.Lxd;
 
+/// <summary>
+/// Provides the LXD configuration yaml for a virtual machine instance.
+/// </summary>
 public class LxdConfigProvider
 {
     private readonly IEntityFileProvider _fileProvider;
 
     /// <summary>
-    /// DI constructor for <see cref="EntityProvider{T}"/>.
+    /// DI constructor for <see cref="LxdConfigProvider"/>.
     /// </summary>
     public LxdConfigProvider(IEntityFileProvider fileProvider)
     {
         _fileProvider = fileProvider;
     }
 
+    /// <summary>
+    /// Retrieve the LXD configuration yaml for a virtual machine instance.
+    /// </summary>
+    /// <param name="id">The instance id.</param>
+    /// <returns>The LXD configuration yaml, or <see langword="null"/> if it doesn't exist.</returns>
     public string? Get(InstanceId id)
     {
         IFileInfo file = GetFileInfo(id);
@@ -26,6 +34,13 @@ public class LxdConfigProvider
         return reader.ReadToEnd();
     }
 
+    /// <summary>
+    /// Store the LXD configuration yaml for a virtual machine instance.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="content"></param>
+    /// <returns><see langword="true"/> if the configuration is stored successfully, otherwise <see langword="false"/>.</returns>
+    /// <exception cref="Exception">Thrown if the file provider is not physical.</exception>
     public bool Put(InstanceId id, string content)
     {
         IFileInfo file = GetFileInfo(id);

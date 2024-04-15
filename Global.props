@@ -43,7 +43,6 @@
     <TargetFramework Condition="'$(TargetFramework)' == '' AND '$(TargetFrameworks)' == ''">net8.0</TargetFramework>
     <IsPackable Condition="'$(IsPackable)' == ''">true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="$(IsExecutable) OR $(IsLibrary)">

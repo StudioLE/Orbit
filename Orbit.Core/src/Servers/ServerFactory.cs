@@ -18,7 +18,9 @@ public class ServerFactory : IFactory<Server, Server>
     private readonly BridgeInterfaceFactory _bridgeFactory;
     private readonly WireGuardServerFactory _wireGuardServerFactory;
 
-
+    /// <summary>
+    /// DI constructor for <see cref="ServerFactory"/>.
+    /// </summary>
     public ServerFactory(
         IEntityProvider<Server> servers,
         BridgeInterfaceFactory bridgeFactory,

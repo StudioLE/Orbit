@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace Orbit.Utils.Networking;
 
+/// <summary>
+/// An IPv6 address.
+/// </summary>
 [JsonConverter(typeof(IPv6JsonConverter))]
 // ReSharper disable once InconsistentNaming
 public readonly struct IPv6
@@ -9,6 +12,9 @@ public readonly struct IPv6
     internal readonly ushort[] _hextets;
     internal readonly byte? _cidr;
 
+    /// <summary>
+    /// Create a new instance of <see cref="IPv6"/>.
+    /// </summary>
     public IPv6(ushort[] hextets, byte? cidr = null) : this(hextets, Array.Empty<ushort>(), cidr)
     {
     }
@@ -30,6 +36,12 @@ public readonly struct IPv6
         _cidr = cidr;
     }
 
+    /// <summary>
+    /// Create a new instance of <see cref="IPv6"/> by parsing a string.
+    /// </summary>
+    /// <remarks>
+    /// The string is parsed with <see cref="IPv6Parser.Parse"/>.
+    /// </remarks>
     public IPv6(string ipv6)
     {
         IPv6 parsed = IPv6Parser.Parse(ipv6) ?? throw new ArgumentException("Invalid IPv4 address.", nameof(ipv6));
@@ -37,11 +49,19 @@ public readonly struct IPv6
         _cidr = parsed._cidr;
     }
 
+    // TODO: Use auto-property instead
+    /// <summary>
+    /// Get the CIDR of the IPv6 address.
+    /// </summary>
     public string? GetCidr()
     {
         return _cidr.ToString();
     }
 
+    // TODO: Use auto-property instead
+    /// <summary>
+    /// Get the hextets of the IPv6 address.
+    /// </summary>
     public ushort[] GetHextets()
     {
         return _hextets;
