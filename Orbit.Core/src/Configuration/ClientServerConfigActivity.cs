@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
-using Orbit.Provision;
+using Orbit.Clients;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Orbit.WireGuard;
-using StudioLE.Serialization;
 using Tectonic;
 
 namespace Orbit.Configuration;
@@ -15,34 +14,27 @@ namespace Orbit.Configuration;
 /// </summary>
 public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.Inputs, string>
 {
-    /// <summary>
-    ///
-    /// </summary>
-    public const string FileName = "server-config.yml";
     private readonly ILogger<ClientServerConfigActivity> _logger;
-    private readonly IEntityProvider<Client> _clients;
+    private readonly ClientProvider _clients;
     private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
-    private readonly ISerializer _serializer;
 
     /// <summary>
     /// DI constructor for <see cref="ClientServerConfigActivity"/>.
     /// </summary>
     public ClientServerConfigActivity(
         ILogger<ClientServerConfigActivity> logger,
-        IEntityProvider<Client> clients,
+        ClientProvider clients,
         ServerConfigurationProvider provider,
         CommandContext context,
-        WireGuardSetCommandFactory wireGuardSetCommandFactory,
-        ISerializer serializer)
+        WireGuardSetCommandFactory wireGuardSetCommandFactory)
     {
         _logger = logger;
         _clients = clients;
         _provider = provider;
         _context = context;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
-        _serializer = serializer;
     }
 
     /// <summary>
@@ -62,7 +54,7 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
     /// <inheritdoc/>
     public Task<string> Execute(Inputs inputs)
     {
-        Client? clientQuery = _clients.Get(new ClientId(inputs.Client));
+        Client? clientQuery = _clients.Get(new(inputs.Client));
         if (clientQuery is not Client client)
             return Failure("The client does not exist.");
         if (!client.TryValidate(_logger))

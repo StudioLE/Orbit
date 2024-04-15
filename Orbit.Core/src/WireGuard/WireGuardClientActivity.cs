@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
-using Orbit.Provision;
+using Orbit.Clients;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
@@ -14,7 +14,7 @@ namespace Orbit.WireGuard;
 public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs, string>
 {
     private readonly ILogger<WireGuardClientActivity> _logger;
-    private readonly IEntityProvider<Client> _clients;
+    private readonly ClientProvider _clients;
     private readonly WireGuardConfigProvider _provider;
     private readonly CommandContext _context;
     private readonly WireGuardClientConfigFactory _factory;
@@ -25,7 +25,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
     /// </summary>
     public WireGuardClientActivity(
         ILogger<WireGuardClientActivity> logger,
-        IEntityProvider<Client> clients,
+        ClientProvider clients,
         WireGuardConfigProvider provider,
         CommandContext context,
         WireGuardClientConfigFactory factory,

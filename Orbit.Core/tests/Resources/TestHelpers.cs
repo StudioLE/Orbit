@@ -80,7 +80,7 @@ public static class TestHelpers
                 Name = new(MockConstants.ClientName),
                 Number = MockConstants.ClientNumber
             });
-        IEntityProvider<Client> clients = services.GetRequiredService<IEntityProvider<Client>>();
+        ClientProvider clients = services.GetRequiredService<ClientProvider>();
         clients.Put(client);
         _exampleClient = client;
     }

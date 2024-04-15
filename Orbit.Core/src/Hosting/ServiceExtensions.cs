@@ -35,7 +35,7 @@ public static class ServiceExtensions
             .AddTransient<IEntityFileProvider, EntityFileProvider>()
             .AddTransient<IEntityProvider<Instance>, EntityProvider<Instance>>()
             .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
-            .AddTransient<IEntityProvider<Client>, EntityProvider<Client>>()
+            .AddTransient<ClientProvider>()
 
             .AddScoped<CommandContext>()
 

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
@@ -12,7 +11,7 @@ namespace Orbit.Clients;
 public class ClientActivity : IActivity<Client, Client>
 {
     private readonly ILogger<ClientActivity> _logger;
-    private readonly IEntityProvider<Client> _clients;
+    private readonly ClientProvider _clients;
     private readonly ClientFactory _factory;
     private readonly CommandContext _context;
 
@@ -21,7 +20,7 @@ public class ClientActivity : IActivity<Client, Client>
     /// </summary>
     public ClientActivity(
         ILogger<ClientActivity> logger,
-        IEntityProvider<Client> clients,
+        ClientProvider clients,
         ClientFactory factory,
         CommandContext context)
     {

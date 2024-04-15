@@ -14,7 +14,7 @@ public class ClientFactory : IFactory<Client, Client>
     private const int DefaultClientNumber = 100;
 
     private readonly IEntityProvider<Server> _servers;
-    private readonly IEntityProvider<Client> _clients;
+    private readonly ClientProvider _clients;
     private readonly WireGuardClientFactory _wireGuardClientFactory;
 
     /// <summary>
@@ -22,7 +22,7 @@ public class ClientFactory : IFactory<Client, Client>
     /// </summary>
     public ClientFactory(
         IEntityProvider<Server> servers,
-        IEntityProvider<Client> clients,
+        ClientProvider clients,
         WireGuardClientFactory wireGuardClientFactory)
     {
         _servers = servers;
