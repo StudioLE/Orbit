@@ -19,6 +19,7 @@ internal sealed class GenerateLxdConfigTests
     private readonly GenerateLxdConfig _activity;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IReadOnlyCollection<LogEntry> _logs;
+    private readonly LxdConfigProvider _lxdConfigProvider;
 
     public GenerateLxdConfigTests()
     {
@@ -31,6 +32,7 @@ internal sealed class GenerateLxdConfigTests
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<GenerateLxdConfig>();
         _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _lxdConfigProvider = provider.GetRequiredService<LxdConfigProvider>();
         _logs = provider.GetCachedLogs();
     }
 
@@ -51,7 +53,7 @@ internal sealed class GenerateLxdConfigTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _instances.GetArtifact(new InstanceId(inputs.Instance), GenerateLxdConfig.FileName);
+        string? resource = _lxdConfigProvider.Get(new(inputs.Instance));
         Assert.That(resource, Is.Not.Null);
 
         // TODO: We have no easy way to normalize the MacAddresses for unstructured data

@@ -13,9 +13,9 @@ namespace Orbit.Lxd;
 /// </summary>
 public class GenerateLxdConfig : IActivity<GenerateLxdConfig.Inputs, string>
 {
-    public const string FileName = "lxd-config.yml";
     private readonly ILogger<GenerateLxdConfig> _logger;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly LxdConfigProvider _lxdConfigProvider;
     private readonly CommandContext _context;
     private readonly LxdConfigFactory _factory;
 
@@ -25,11 +25,13 @@ public class GenerateLxdConfig : IActivity<GenerateLxdConfig.Inputs, string>
     public GenerateLxdConfig(
         ILogger<GenerateLxdConfig> logger,
         IEntityProvider<Instance> instances,
+        LxdConfigProvider lxdConfigProvider,
         CommandContext context,
         LxdConfigFactory factory)
     {
         _logger = logger;
         _instances = instances;
+        _lxdConfigProvider = lxdConfigProvider;
         _context = context;
         _factory = factory;
     }
@@ -58,7 +60,7 @@ public class GenerateLxdConfig : IActivity<GenerateLxdConfig.Inputs, string>
             return Failure();
         string output = _factory.Create(instance);
         // TODO: Make save optional
-        if (!_instances.PutArtifact(instance.Name, FileName, output))
+        if (!_lxdConfigProvider.Put(instance.Name, output))
             return Failure("Failed to write the lxd config file.");
         return Success(string.Empty);
     }

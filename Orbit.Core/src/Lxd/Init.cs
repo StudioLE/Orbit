@@ -17,6 +17,7 @@ public class Init : IActivity<Init.Inputs, string>
     private readonly ILogger<Init> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
+    private readonly LxdConfigProvider _lxdConfigProvider;
     private readonly CommandContext _context;
     private readonly Ssh _ssh;
 
@@ -27,12 +28,14 @@ public class Init : IActivity<Init.Inputs, string>
         ILogger<Init> logger,
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
+        LxdConfigProvider lxdConfigProvider,
         CommandContext context,
         Ssh ssh)
     {
         _logger = logger;
         _instances = instances;
         _servers = servers;
+        _lxdConfigProvider = lxdConfigProvider;
         _context = context;
         _ssh = ssh;
     }
@@ -63,7 +66,7 @@ public class Init : IActivity<Init.Inputs, string>
         if (serverQuery is not Server server)
             return Failure("Failed to get server");
         _ssh.SetServer(server);
-        string? config = _instances.GetArtifact(instance.Name, GenerateLxdConfig.FileName);
+        string? config = _lxdConfigProvider.Get(instance.Name);
         if (config is null)
             return Failure("Failed to get user-config");
         string[] args =
