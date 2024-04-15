@@ -18,6 +18,7 @@ public class Init : IActivity<Init.Inputs, string>
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
     private readonly LxdConfigProvider _lxdConfigProvider;
+    private readonly LxdConfigFactory _lxdConfigFactory;
     private readonly CommandContext _context;
     private readonly Ssh _ssh;
 
@@ -29,6 +30,7 @@ public class Init : IActivity<Init.Inputs, string>
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
         LxdConfigProvider lxdConfigProvider,
+        LxdConfigFactory lxdConfigFactory,
         CommandContext context,
         Ssh ssh)
     {
@@ -36,6 +38,7 @@ public class Init : IActivity<Init.Inputs, string>
         _instances = instances;
         _servers = servers;
         _lxdConfigProvider = lxdConfigProvider;
+        _lxdConfigFactory = lxdConfigFactory;
         _context = context;
         _ssh = ssh;
     }
@@ -64,11 +67,16 @@ public class Init : IActivity<Init.Inputs, string>
             return Failure();
         Server? serverQuery = _servers.Get(instance.Server);
         if (serverQuery is not Server server)
-            return Failure("Failed to get server");
+            return Failure("The server does not exist");
         _ssh.SetServer(server);
         string? config = _lxdConfigProvider.Get(instance.Name);
-        if (config is null)
-            return Failure("Failed to get user-config");
+        if (config is not null)
+            _logger.LogDebug("Using existing LXD config.");
+        else
+        {
+            _logger.LogDebug("Generating LXD config for instance.");
+            config = _lxdConfigFactory.Create(instance);
+        }
         string[] args =
         [
             "lxc",
@@ -80,7 +88,7 @@ public class Init : IActivity<Init.Inputs, string>
         int exitCode = _ssh.Execute(string.Join(" ", args), config);
         if (exitCode != 0)
             return Failure("Failed to run multipass launch on server.");
-        _logger.LogInformation($"Launched instance {instance.Name}");
+        _logger.LogInformation($"Initialized instance {instance.Name} on server {server.Name}.");
         return Success(string.Empty);
     }
 
