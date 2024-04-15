@@ -55,7 +55,7 @@ public class LxdConfigProvider
 
     private IFileInfo GetFileInfo(InstanceId id)
     {
-        string path = Path.Combine("instances", "artifacts", id.ToString(), "lxd-config.yml");
+        string path = Path.Combine("instances", id.ToString(), "lxd-config.yml");
         return _fileProvider.GetFileInfo(path);
     }
 }
