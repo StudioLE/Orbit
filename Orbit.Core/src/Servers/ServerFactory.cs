@@ -63,7 +63,7 @@ public class ServerFactory : IFactory<Server, Server>
 
     private static MacAddress GetMacAddress(Server server)
     {
-        return MacAddressHelpers.Generate(5, server.Number, 0);
+        return MacAddressHelpers.Generate((int)NetworkType.RoutedNic + 5, server.Number, 0);
     }
 
     private int DefaultNumber()

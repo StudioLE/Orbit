@@ -148,6 +148,6 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
 
     private static MacAddress GetMacAddress(IEntity entity, Server server)
     {
-        return MacAddressHelpers.Generate(5, server.Number, entity.Number);
+        return MacAddressHelpers.Generate((int)NetworkType.WireGuard, server.Number, entity.Number);
     }
 }

@@ -69,6 +69,6 @@ public class ExternalInterfaceFactory
     /// </returns>
     public MacAddress GetMacAddress(Instance instance, Server server)
     {
-        return MacAddressHelpers.Generate(3, server.Number, instance.Number);
+        return MacAddressHelpers.Generate((int)NetworkType.RoutedNic, server.Number, instance.Number);
     }
 }

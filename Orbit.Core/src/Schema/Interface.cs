@@ -61,25 +61,25 @@ public enum NetworkType
     /// <summary>
     /// Unknown
     /// </summary>
-    Unknown,
+    Unknown = -1,
 
     /// <summary>
     /// A bridge network.
     /// </summary>
-    Bridge,
+    Bridge = 0,
 
     /// <summary>
     /// A WireGuard network.
     /// </summary>
-    WireGuard,
+    WireGuard = 1,
 
     /// <summary>
     /// A routed nic network.
     /// </summary>
-    RoutedNic,
+    RoutedNic = 2,
 
     /// <summary>
     /// A nic network.
     /// </summary>
-    Nic
+    Nic = 3
 }

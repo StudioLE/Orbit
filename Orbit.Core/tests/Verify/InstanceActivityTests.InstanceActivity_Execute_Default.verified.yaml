@@ -17,8 +17,8 @@ WireGuard:
 - Interface:
     Name: wg3
     Server: example-server
-    Type: WireGuard
-    MacAddress: 30:DB:18:E6:86:4F
+    Type: Unknown
+    MacAddress: 02:00:00:01:03:0A
     Addresses:
     - 10.1.3.10/24
     - fc00::1:3:10/112

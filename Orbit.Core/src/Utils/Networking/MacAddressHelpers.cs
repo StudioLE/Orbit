@@ -15,6 +15,21 @@ public static class MacAddressHelpers
     /// <returns>A MAC Address.</returns>
     public static MacAddress Generate(int type, int server, int entity)
     {
+        byte a = (byte)type;
+        byte b = (byte)server;
+        byte c = (byte)entity;
+        return new([0x2, 0x0, 0x0, a, b, c]);
+    }
+
+    /// <summary>
+    /// Generate a deterministic MAC address from seed values.
+    /// </summary>
+    /// <param name="type">The context seed.</param>
+    /// <param name="server">The server number.</param>
+    /// <param name="entity">The entity number.</param>
+    /// <returns>A MAC Address.</returns>
+    public static MacAddress GenerateRandom(int type, int server, int entity)
+    {
         int seed = type * 1_000_000
                    + server * 1000
                    + entity;

@@ -4,7 +4,7 @@ Interfaces:
 - Name: eth0
   Server: example-server
   Type: Nic
-  MacAddress: 80:3A:9B:26:A4:FC
+  MacAddress: 02:00:00:07:03:00
   Addresses:
   - 203.0.113.64/24
   - 2001:db8::64/112
@@ -22,7 +22,7 @@ Interfaces:
 - Name: br3
   Server: example-server
   Type: Bridge
-  MacAddress: 04:4F:6F:A3:46:12
+  MacAddress: 02:00:00:0A:03:00
   Addresses:
   - 10.0.3.1/24
   - fc00::0:3:1/112

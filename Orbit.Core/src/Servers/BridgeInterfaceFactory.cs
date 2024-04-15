@@ -43,6 +43,6 @@ public class BridgeInterfaceFactory : IFactory<Server, Interface>
 
     private MacAddress GetMacAddress(Server server)
     {
-        return MacAddressHelpers.Generate(4, server.Number, 0);
+        return MacAddressHelpers.Generate((int)NetworkType.Bridge + 10, server.Number, 0);
     }
 }

@@ -138,6 +138,6 @@ public class InternalInterfaceFactory
     /// </returns>
     public MacAddress GetMacAddress(Instance instance, Server server)
     {
-        return MacAddressHelpers.Generate(1, server.Number, instance.Number);
+        return MacAddressHelpers.Generate((int)NetworkType.Bridge, server.Number, instance.Number);
     }
 }

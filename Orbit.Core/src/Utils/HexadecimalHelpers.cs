@@ -21,4 +21,19 @@ public static class HexadecimalHelpers
         ushort hexAsUShort = (ushort)hexAsInt;
         return hexAsUShort;
     }
+
+    /// <summary>
+    /// Convert a hexadecimal string to a ushort.
+    /// </summary>
+    /// <param name="hexadecimal"></param>
+    /// <returns>A <see cref="ushort"/> or <see langword="null"/> if the hexadecimal is invalid.</returns>
+    public static byte? ToByte(string hexadecimal)
+    {
+        if(hexadecimal.Length != 2)
+            return null;
+        if(!int.TryParse(hexadecimal, NumberStyles.HexNumber, null, out int hexAsInt))
+            return null;
+        byte hexAsByte = (byte)hexAsInt;
+        return hexAsByte;
+    }
 }
