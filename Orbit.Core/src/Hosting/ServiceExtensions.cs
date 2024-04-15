@@ -74,6 +74,7 @@ public static class ServiceExtensions
             .AddTransient<IQREncodeFacade, QREncodeFacade>()
 
             .AddTransient<InstanceServerConfigActivity>()
+            .AddTransient<ServerConfigurationProvider>()
             .AddTransient<ClientServerConfigActivity>()
             .AddTransient<CaddyfileFactory>()
             .AddTransient<WriteCaddyfileCommandFactory>()

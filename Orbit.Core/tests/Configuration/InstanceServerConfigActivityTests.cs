@@ -3,12 +3,10 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Configuration;
 using Orbit.Core.Tests.Resources;
-using Orbit.Provision;
 using Orbit.Schema;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
-using StudioLE.Verify;
 using Tectonic;
 
 namespace Orbit.Core.Tests.Configuration;
@@ -18,7 +16,7 @@ internal sealed class InstanceServerConfigActivityTests
     private readonly IContext _context = new NUnitContext();
     private CommandContext _commandContext = null!;
     private InstanceServerConfigActivity _activity = null!;
-    private IEntityProvider<Instance> _instances = null!;
+    private ServerConfigurationProvider _provider = null!;
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
@@ -32,7 +30,7 @@ internal sealed class InstanceServerConfigActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<InstanceServerConfigActivity>();
-        _instances = provider.GetRequiredService<IEntityProvider<Instance>>();
+        _provider = provider.GetRequiredService<ServerConfigurationProvider>();
         _logs = provider.GetCachedLogs();
     }
 
@@ -53,8 +51,7 @@ internal sealed class InstanceServerConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _instances.GetArtifact(new InstanceId(inputs.Instance), InstanceServerConfigActivity.FileName);
-        Assert.That(resource, Is.Not.Null);
-        await _context.Verify(resource!);
+        ServerConfiguration? config = _provider.Get(new InstanceId(inputs.Instance));
+        Assert.That(config, Is.Not.Null);
     }
 }

@@ -1,4 +1,4 @@
-
+using Microsoft.Extensions.FileProviders;
 
 // ReSharper disable once CheckNamespace
 namespace StudioLE.Serialization;
@@ -48,6 +48,20 @@ public static class DeserializerHelpers
     public static T? Deserialize<T>(this IDeserializer deserializer, FileInfo file) where T : struct
     {
         using Stream stream = file.OpenRead();
+        using StreamReader reader = new(stream);
+        return deserializer.Deserialize<T>(reader);
+    }
+
+    /// <summary>
+    /// Deserialize the <paramref name="file"/> to <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="deserializer">The deserializer to use.</param>
+    /// <param name="file">The serialized file.</param>
+    /// <typeparam name="T">The type to deserialize to.</typeparam>
+    /// <returns>The deserialized value, or <see langword="null"/> if deserialization failed.</returns>
+    public static T? Deserialize<T>(this IDeserializer deserializer, IFileInfo file) where T : struct
+    {
+        using Stream stream = file.CreateReadStream();
         using StreamReader reader = new(stream);
         return deserializer.Deserialize<T>(reader);
     }

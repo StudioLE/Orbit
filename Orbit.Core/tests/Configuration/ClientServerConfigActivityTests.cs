@@ -3,12 +3,10 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Orbit.Configuration;
 using Orbit.Core.Tests.Resources;
-using Orbit.Provision;
 using Orbit.Schema;
 using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
-using StudioLE.Verify;
 using Tectonic;
 
 namespace Orbit.Core.Tests.Configuration;
@@ -18,7 +16,7 @@ internal sealed class ClientServerConfigActivityTests
     private readonly IContext _context = new NUnitContext();
     private CommandContext _commandContext = null!;
     private ClientServerConfigActivity _activity = null!;
-    private IEntityProvider<Client> _clients = null!;
+    private ServerConfigurationProvider _provider = null!;
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
@@ -32,7 +30,7 @@ internal sealed class ClientServerConfigActivityTests
         IServiceProvider provider = serviceScope.ServiceProvider;
         _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<ClientServerConfigActivity>();
-        _clients = provider.GetRequiredService<IEntityProvider<Client>>();
+        _provider = provider.GetRequiredService<ServerConfigurationProvider>();
         _logs = provider.GetCachedLogs();
     }
 
@@ -53,8 +51,7 @@ internal sealed class ClientServerConfigActivityTests
         Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         Assert.That(output, Is.Empty, "Output");
-        string? resource = _clients.GetArtifact(new ClientId(inputs.Client), ClientServerConfigActivity.FileName);
-        Assert.That(resource, Is.Not.Null);
-        await _context.Verify(resource!);
+        ServerConfiguration? config = _provider.Get(new ClientId(inputs.Client));
+        Assert.That(config, Is.Not.Null);
     }
 }

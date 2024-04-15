@@ -16,12 +16,9 @@ namespace Orbit.Configuration;
 /// </summary>
 public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivity.Inputs, string>
 {
-    /// <summary>
-    ///
-    /// </summary>
-    public const string FileName = "server-config.yml";
     private readonly ILogger<InstanceServerConfigActivity> _logger;
     private readonly IEntityProvider<Instance> _instances;
+    private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
@@ -33,6 +30,7 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
     public InstanceServerConfigActivity(
         ILogger<InstanceServerConfigActivity> logger,
         IEntityProvider<Instance> instances,
+        ServerConfigurationProvider provider,
         CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
@@ -40,6 +38,7 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
     {
         _logger = logger;
         _instances = instances;
+        _provider = provider;
         _context = context;
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
@@ -77,8 +76,7 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
         Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
-        string serialized = _serializer.Serialize(dictionary);
-        if (!_instances.PutArtifact(instance.Name, FileName, serialized))
+        if (!_provider.Put(instance.Name, dictionary))
             return Failure("Failed to write server configuration.");
         return Success(string.Empty);
     }

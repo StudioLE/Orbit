@@ -16,11 +16,12 @@ namespace Orbit.Configuration;
 public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.Inputs, string>
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public const string FileName = "server-config.yml";
     private readonly ILogger<ClientServerConfigActivity> _logger;
     private readonly IEntityProvider<Client> _clients;
+    private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
     private readonly ISerializer _serializer;
@@ -31,12 +32,14 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
     public ClientServerConfigActivity(
         ILogger<ClientServerConfigActivity> logger,
         IEntityProvider<Client> clients,
+        ServerConfigurationProvider provider,
         CommandContext context,
         WireGuardSetCommandFactory wireGuardSetCommandFactory,
         ISerializer serializer)
     {
         _logger = logger;
         _clients = clients;
+        _provider = provider;
         _context = context;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
         _serializer = serializer;
@@ -75,8 +78,7 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
         Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
-        string serialized = _serializer.Serialize(dictionary);
-        if (!_clients.PutArtifact(client.Name, FileName, serialized))
+        if (!_provider.Put(client.Name, dictionary))
             return Failure("Failed to write server configuration.");
         return Success(string.Empty);
     }

@@ -19,6 +19,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
     private readonly ILogger<ServerConfigurationActivity> _logger;
     private readonly IEntityProvider<Instance> _instances;
     private readonly IEntityProvider<Server> _servers;
+    private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
     private readonly IDeserializer _deserializer;
     private readonly Ssh _ssh;
@@ -30,6 +31,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
         ILogger<ServerConfigurationActivity> logger,
         IEntityProvider<Instance> instances,
         IEntityProvider<Server> servers,
+        ServerConfigurationProvider provider,
         CommandContext context,
         IDeserializer deserializer,
         Ssh ssh)
@@ -37,6 +39,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
         _logger = logger;
         _instances = instances;
         _servers = servers;
+        _provider = provider;
         _context = context;
         _deserializer = deserializer;
         _ssh = ssh;
@@ -63,10 +66,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
             return Failure("The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure();
-        string? resource = _instances.GetArtifact(instance.Name, InstanceServerConfigActivity.FileName);
-        if (resource is null)
-            return Failure("Failed to get server configuration");
-        ServerConfiguration? config = _deserializer.Deserialize<ServerConfiguration>(resource);
+        ServerConfiguration? config = _provider.Get(instance.Name);
         if (config is null)
             return Failure("Failed to deserialize server configuration");
         foreach ((string serverName, ShellCommand[] commands) in config)
