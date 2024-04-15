@@ -7,7 +7,6 @@ using Orbit.Configuration;
 using Orbit.Instances;
 using Orbit.Lxd;
 using Orbit.Provision;
-using Orbit.Schema;
 using Orbit.Serialization;
 using Orbit.Servers;
 using Orbit.Utils.CommandLine;
@@ -34,7 +33,7 @@ public static class ServiceExtensions
 
             .AddTransient<IEntityFileProvider, EntityFileProvider>()
             .AddTransient<InstanceProvider>()
-            .AddTransient<IEntityProvider<Server>, EntityProvider<Server>>()
+            .AddTransient<ServerProvider>()
             .AddTransient<ClientProvider>()
 
             .AddScoped<CommandContext>()

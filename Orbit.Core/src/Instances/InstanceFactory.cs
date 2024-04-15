@@ -1,5 +1,5 @@
-using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Servers;
 using Orbit.Utils;
 using Orbit.WireGuard;
 using StudioLE.Patterns;
@@ -30,10 +30,8 @@ public class InstanceFactory : IFactory<Instance, Instance>
         "upgrade-packages"
     };
 
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly InstanceProvider _instances;
-    private readonly ExternalInterfaceFactory _externalInterfaceFactory;
-    private readonly InternalInterfaceFactory _internalInterfaceFactory;
     private readonly WireGuardClientFactory _wireGuardClientFactory;
     private readonly HardwareFactory _hardwareFactory;
     private readonly OSFactory _osFactory;
@@ -42,18 +40,14 @@ public class InstanceFactory : IFactory<Instance, Instance>
     /// The DI constructor for <see cref="InstanceFactory"/>.
     /// </summary>
     public InstanceFactory(
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         InstanceProvider instances,
-        ExternalInterfaceFactory externalInterfaceFactory,
-        InternalInterfaceFactory internalInterfaceFactory,
         OSFactory osFactory,
         HardwareFactory hardwareFactory,
         WireGuardClientFactory wireGuardClientFactory)
     {
         _servers = servers;
         _instances = instances;
-        _externalInterfaceFactory = externalInterfaceFactory;
-        _internalInterfaceFactory = internalInterfaceFactory;
         _osFactory = osFactory;
         _hardwareFactory = hardwareFactory;
         _wireGuardClientFactory = wireGuardClientFactory;

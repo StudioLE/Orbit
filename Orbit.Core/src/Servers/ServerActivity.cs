@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
@@ -12,7 +11,7 @@ namespace Orbit.Servers;
 public class ServerActivity : IActivity<Server, Server>
 {
     private readonly ILogger<ServerActivity> _logger;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly ServerFactory _factory;
     private readonly CommandContext _context;
 
@@ -21,7 +20,7 @@ public class ServerActivity : IActivity<Server, Server>
     /// </summary>
     public ServerActivity(
         ILogger<ServerActivity> logger,
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         ServerFactory factory,
         CommandContext context)
     {

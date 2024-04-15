@@ -1,5 +1,5 @@
-using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Servers;
 using Orbit.Utils;
 using Orbit.WireGuard;
 using StudioLE.Patterns;
@@ -13,7 +13,7 @@ public class ClientFactory : IFactory<Client, Client>
 {
     private const int DefaultClientNumber = 100;
 
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly ClientProvider _clients;
     private readonly WireGuardClientFactory _wireGuardClientFactory;
 
@@ -21,7 +21,7 @@ public class ClientFactory : IFactory<Client, Client>
     /// The DI constructor for <see cref="ClientFactory"/>.
     /// </summary>
     public ClientFactory(
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         ClientProvider clients,
         WireGuardClientFactory wireGuardClientFactory)
     {

@@ -51,7 +51,7 @@ public static class TestHelpers
                     User = "user"
                 }
             });
-        IEntityProvider<Server> servers = services.GetRequiredService<IEntityProvider<Server>>();
+        ServerProvider servers = services.GetRequiredService<ServerProvider>();
         servers.Put(server);
         _exampleServer = server;
     }

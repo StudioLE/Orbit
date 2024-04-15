@@ -16,7 +16,7 @@ public class ClientProvider
     private readonly IDeserializer _deserializer;
 
     /// <summary>
-    /// DI constructor for <see cref="EntityProvider{T}"/>.
+    /// DI constructor for <see cref="ClientProvider"/>.
     /// </summary>
     public ClientProvider(IEntityFileProvider fileProvider, ISerializer serializer, IDeserializer deserializer)
     {

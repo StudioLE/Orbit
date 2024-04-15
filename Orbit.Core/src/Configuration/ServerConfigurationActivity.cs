@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Orbit.Instances;
 using Orbit.Lxd;
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
+using Orbit.Servers;
 using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
 using StudioLE.Serialization;
@@ -19,7 +19,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
 {
     private readonly ILogger<ServerConfigurationActivity> _logger;
     private readonly InstanceProvider _instances;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly ServerConfigurationProvider _provider;
     private readonly CommandContext _context;
     private readonly IDeserializer _deserializer;
@@ -31,7 +31,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
     public ServerConfigurationActivity(
         ILogger<ServerConfigurationActivity> logger,
         InstanceProvider instances,
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         ServerConfigurationProvider provider,
         CommandContext context,
         IDeserializer deserializer,

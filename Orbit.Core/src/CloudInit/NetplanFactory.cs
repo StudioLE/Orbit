@@ -1,6 +1,6 @@
 using Orbit.Instances;
-using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Servers;
 using Orbit.Utils;
 using Orbit.Utils.Networking;
 using Orbit.Utils.Yaml;
@@ -14,7 +14,7 @@ namespace Orbit.CloudInit;
 /// <seealso href="https://netplan.readthedocs.io/en/stable/netplan-yaml/"/>
 public class NetplanFactory : IFactory<Instance, string>
 {
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly ExternalInterfaceFactory _externalInterfaceFactory;
     private readonly InternalInterfaceFactory _internalInterfaceFactory;
 
@@ -22,7 +22,7 @@ public class NetplanFactory : IFactory<Instance, string>
     /// DI constructor for <see cref="NetplanFactory"/>.
     /// </summary>
     public NetplanFactory(
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         ExternalInterfaceFactory externalInterfaceFactory,
         InternalInterfaceFactory internalInterfaceFactory)
     {

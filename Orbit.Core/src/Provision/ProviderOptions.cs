@@ -3,7 +3,7 @@ using Orbit.Utils.DataAnnotations;
 namespace Orbit.Provision;
 
 /// <summary>
-/// Configuration options for <see cref="IEntityProvider{T}"/>.
+/// Configuration options for <see cref="EntityFileProvider"/>.
 /// </summary>
 /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#bind-hierarchical-configuration-data-using-the-options-pattern">Options pattern</see>
 public class ProviderOptions : IHasValidationAttributes

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Orbit.CloudInit;
 using Orbit.Instances;
-using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Servers;
 using Orbit.Utils;
 using Orbit.Utils.Yaml;
 using StudioLE.Patterns;
@@ -15,7 +15,7 @@ namespace Orbit.Lxd;
 public class LxdConfigFactory : IFactory<Instance, string>
 {
     private readonly ILogger<LxdConfigFactory> _logger;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly UserConfigProvider _userConfigProvider;
     private readonly UserConfigFactory _userConfig;
     private readonly NetplanFactory _netplanFactory;
@@ -27,7 +27,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
     /// </summary>
     public LxdConfigFactory(
         ILogger<LxdConfigFactory> logger,
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         UserConfigProvider userConfigProvider,
         UserConfigFactory userConfig,
         NetplanFactory netplanFactory,

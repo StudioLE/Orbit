@@ -1,4 +1,3 @@
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Utils;
 using Orbit.Utils.Networking;
@@ -14,7 +13,7 @@ public class ServerFactory : IFactory<Server, Server>
 {
     private const string DefaultName = "server";
     private const int DefaultNumberValue = 1;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly BridgeInterfaceFactory _bridgeFactory;
     private readonly WireGuardServerFactory _wireGuardServerFactory;
 
@@ -22,7 +21,7 @@ public class ServerFactory : IFactory<Server, Server>
     /// DI constructor for <see cref="ServerFactory"/>.
     /// </summary>
     public ServerFactory(
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         BridgeInterfaceFactory bridgeFactory,
         WireGuardServerFactory wireGuardServerFactory)
     {

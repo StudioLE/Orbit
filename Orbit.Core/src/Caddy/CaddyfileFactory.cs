@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Orbit.Instances;
-using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Servers;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
@@ -19,7 +19,7 @@ namespace Orbit.Caddy;
 public class CaddyfileFactory : IFactory<Instance, string?>
 {
     private readonly ILogger<CaddyfileFactory> _logger;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly InternalInterfaceFactory _internalInterfaceFactory;
 
     /// <summary>
@@ -27,7 +27,7 @@ public class CaddyfileFactory : IFactory<Instance, string?>
     /// </summary>
     public CaddyfileFactory(
         ILogger<CaddyfileFactory> logger,
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         InternalInterfaceFactory internalInterfaceFactory)
     {
         _logger = logger;

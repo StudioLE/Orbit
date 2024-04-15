@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Orbit.Instances;
-using Orbit.Provision;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
+using Orbit.Servers;
 using Orbit.Utils.CommandLine;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
@@ -18,7 +18,7 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
 {
     private readonly ILogger<LxdInitActivity> _logger;
     private readonly InstanceProvider _instances;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
     private readonly LxdConfigProvider _lxdConfigProvider;
     private readonly LxdConfigFactory _lxdConfigFactory;
     private readonly CommandContext _context;
@@ -30,7 +30,7 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
     public LxdInitActivity(
         ILogger<LxdInitActivity> logger,
         InstanceProvider instances,
-        IEntityProvider<Server> servers,
+        ServerProvider servers,
         LxdConfigProvider lxdConfigProvider,
         LxdConfigFactory lxdConfigFactory,
         CommandContext context,

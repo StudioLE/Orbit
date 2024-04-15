@@ -1,5 +1,5 @@
-using Orbit.Provision;
 using Orbit.Schema;
+using Orbit.Servers;
 using Orbit.Utils;
 using Orbit.Utils.Networking;
 using StudioLE.Extensions.System.Exceptions;
@@ -13,12 +13,12 @@ namespace Orbit.WireGuard;
 public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardClient[]>
 {
     private readonly IWireGuardFacade _wg;
-    private readonly IEntityProvider<Server> _servers;
+    private readonly ServerProvider _servers;
 
     /// <summary>
     /// The DI constructor for <see cref="WireGuardClientFactory"/>.
     /// </summary>
-    public WireGuardClientFactory(IWireGuardFacade wg, IEntityProvider<Server> servers)
+    public WireGuardClientFactory(IWireGuardFacade wg, ServerProvider servers)
     {
         _wg = wg;
         _servers = servers;
