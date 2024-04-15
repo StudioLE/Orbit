@@ -45,13 +45,14 @@ internal sealed class InstanceActivityTests
         };
 
         // Act
-        Instance createdInstance = await _activity.Execute(sourceInstance);
+        InstanceActivity.Outputs outputs = await _activity.Execute(sourceInstance);
 
         // Assert
-        await _context.VerifyAsSerialized(createdInstance, _serializer);
+        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0));
+        await _context.VerifyAsSerialized(outputs.Instance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {createdInstance.Name}"));
-        Instance storedInstance = _instances.Get(createdInstance.Name) ?? throw new("Failed to get instance.");
-        await _context.VerifyAsSerialized(storedInstance, createdInstance, _serializer);
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {outputs.Instance.Name}"));
+        Instance storedInstance = _instances.Get(outputs.Instance.Name) ?? throw new("Failed to get instance.");
+        await _context.VerifyAsSerialized(storedInstance, outputs.Instance, _serializer);
     }
 }

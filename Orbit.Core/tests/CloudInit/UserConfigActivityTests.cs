@@ -8,14 +8,12 @@ using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
-using Tectonic;
 
 namespace Orbit.Core.Tests.CloudInit;
 
 internal sealed class UserConfigActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly CommandContext _commandContext;
     private readonly UserConfigActivity _activity;
     private readonly UserConfigProvider _provider;
     private readonly IReadOnlyCollection<LogEntry> _logs;
@@ -28,7 +26,6 @@ internal sealed class UserConfigActivityTests
         IHost host = TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
-        _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<UserConfigActivity>();
         _provider = provider.GetRequiredService<UserConfigProvider>();
         _logs = provider.GetCachedLogs();
@@ -45,18 +42,18 @@ internal sealed class UserConfigActivityTests
         };
 
         // Act
-        string output = await _activity.Execute(inputs);
+        UserConfigActivity.Outputs outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
-        Assert.That(output, Is.Empty, "Output");
-        string? resource = _provider.Get(inputs.Instance);
-        Assert.That(resource, Is.Not.Null);
+        string? retrieved = _provider.Get(inputs.Instance);
+        Assert.That(retrieved, Is.Not.Null);
+        Assert.That(retrieved, Is.EqualTo(outputs.Asset?.Content));
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             return;
-        await _context.Verify(resource!);
+        await _context.Verify(retrieved!);
     }
 }

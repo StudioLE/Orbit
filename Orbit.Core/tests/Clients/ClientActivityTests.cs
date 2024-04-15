@@ -42,14 +42,15 @@ internal sealed class ClientActivityTests
         Client sourceClient = new();
 
         // Act
-        Client createdClient = await _activity.Execute(sourceClient);
+        ClientActivity.Outputs outputs = await _activity.Execute(sourceClient);
 
         // Assert
-        Assert.That(createdClient, Is.Not.Null);
-        await _context.VerifyAsSerialized(createdClient, _serializer);
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0));
+        await _context.VerifyAsSerialized(outputs.Client, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {createdClient.Name}"));
-        Client storedClient = _clients.Get(createdClient.Name) ?? throw new("Failed to get client.");
-        await _context.VerifyAsSerialized(storedClient, createdClient, _serializer);
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {outputs.Client.Name}"));
+        Client storedClient = _clients.Get(outputs.Client.Name) ?? throw new("Failed to get client.");
+        await _context.VerifyAsSerialized(storedClient, outputs.Client, _serializer);
     }
 }

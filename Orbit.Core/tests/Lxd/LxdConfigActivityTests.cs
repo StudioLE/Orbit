@@ -8,14 +8,12 @@ using StudioLE.Diagnostics;
 using StudioLE.Diagnostics.NUnit;
 using StudioLE.Extensions.Logging.Cache;
 using StudioLE.Verify;
-using Tectonic;
 
 namespace Orbit.Core.Tests.Lxd;
 
 internal sealed class LxdConfigActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly CommandContext _commandContext;
     private readonly LxdConfigActivity _activity;
     private readonly IReadOnlyCollection<LogEntry> _logs;
     private readonly LxdConfigProvider _lxdConfigProvider;
@@ -28,7 +26,6 @@ internal sealed class LxdConfigActivityTests
         IHost host = TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
-        _commandContext = provider.GetRequiredService<CommandContext>();
         _activity = provider.GetRequiredService<LxdConfigActivity>();
         _lxdConfigProvider = provider.GetRequiredService<LxdConfigProvider>();
         _logs = provider.GetCachedLogs();
@@ -45,14 +42,14 @@ internal sealed class LxdConfigActivityTests
         };
 
         // Act
-        string output = await _activity.Execute(inputs);
+        LxdConfigActivity.Outputs outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(_commandContext.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
-        Assert.That(output, Is.Empty, "Output");
         string? resource = _lxdConfigProvider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
+        Assert.That(resource, Is.EqualTo(outputs.Asset?.Content));
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orbit.Instances;
@@ -6,19 +7,19 @@ using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
+using Tectonic.Assets;
 
 namespace Orbit.CloudInit;
 
 /// <summary>
 /// An <see cref="IActivity"/> to generate the cloud init user-data yaml for a virtual machine instance.
 /// </summary>
-public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
+public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfigActivity.Outputs>
 {
     private readonly ILogger<UserConfigActivity> _logger;
     private readonly CloudInitOptions _options;
     private readonly InstanceProvider _instances;
     private readonly UserConfigProvider _provider;
-    private readonly CommandContext _context;
     private readonly UserConfigFactory _factory;
 
     /// <summary>
@@ -29,14 +30,12 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
         IOptions<CloudInitOptions> options,
         InstanceProvider instances,
         UserConfigProvider provider,
-        CommandContext context,
         UserConfigFactory factory)
     {
         _logger = logger;
         _options = options.Value;
         _instances = instances;
         _provider = provider;
-        _context = context;
         _factory = factory;
     }
 
@@ -54,34 +53,66 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, string>
         public InstanceId Instance { get; set; }
     }
 
+    /// <summary>
+    /// The outputs for <see cref="UserConfigActivity"/>.
+    /// </summary>
+    public class Outputs
+    {
+        /// <summary>
+        /// The status.
+        /// </summary>
+        public Status Status { get; set; }
+
+        /// <summary>
+        /// The generated asset.
+        /// </summary>
+        public InternalAsset? Asset { get; set; }
+    }
+
     /// <inheritdoc/>
-    public Task<string> Execute(Inputs inputs)
+    public Task<Outputs> Execute(Inputs inputs)
     {
         if (!_options.TryValidate(_logger))
-            return Failure();
+            return Failure(HttpStatusCode.BadRequest);
         Instance? result = _instances.Get(inputs.Instance);
         if (result is not Instance instance)
-            return Failure("The instance does not exist.");
+            return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
-            return Failure();
+            return Failure(HttpStatusCode.BadRequest);
         string output = _factory.Create(instance);
         // TODO: Make save optional
         if (!_provider.Put(instance.Name, output))
-            return Failure("Failed to write the user config file.");
-        return Success(string.Empty);
+            return Failure(HttpStatusCode.InternalServerError, "Failed to save the user config.");
+        return Success(output);
     }
 
-    private Task<string> Success(string output)
+    private Task<Outputs> Success(string output)
     {
-        _context.ExitCode = 0;
-        return Task.FromResult(output);
+        Outputs outputs = new()
+        {
+            Status = new(HttpStatusCode.OK),
+            Asset = new()
+            {
+                ContentType = "text/x-yaml",
+                Content = output
+            }
+        };
+        return Task.FromResult(outputs);
     }
 
-    private Task<string> Failure(string error = "", int exitCode = 1)
+    private Task<Outputs> Failure(HttpStatusCode statusCode, string? error = null, string output = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        _context.ExitCode = exitCode;
-        return Task.FromResult(error);
+        Outputs outputs = new()
+        {
+            Status = new(statusCode),
+            Asset = new()
+            {
+                ContentType = "text/x-yaml",
+                Content = output
+            }
+        };
+        return Task.FromResult(outputs);
     }
 }

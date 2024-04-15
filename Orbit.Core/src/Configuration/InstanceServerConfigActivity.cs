@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Orbit.Caddy;
 using Orbit.Instances;
@@ -6,7 +7,6 @@ using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Orbit.WireGuard;
-using StudioLE.Serialization;
 using Tectonic;
 
 namespace Orbit.Configuration;
@@ -14,15 +14,13 @@ namespace Orbit.Configuration;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for an <see cref="Instance"/>.
 /// </summary>
-public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivity.Inputs, string>
+public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivity.Inputs, InstanceServerConfigActivity.Outputs>
 {
     private readonly ILogger<InstanceServerConfigActivity> _logger;
     private readonly InstanceProvider _instances;
     private readonly ServerConfigurationProvider _provider;
-    private readonly CommandContext _context;
     private readonly WriteCaddyfileCommandFactory _writeCaddyfileCommandFactory;
     private readonly WireGuardSetCommandFactory _wireGuardSetCommandFactory;
-    private readonly ISerializer _serializer;
 
     /// <summary>
     /// DI constructor for <see cref="InstanceServerConfigActivity"/>.
@@ -31,18 +29,14 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
         ILogger<InstanceServerConfigActivity> logger,
         InstanceProvider instances,
         ServerConfigurationProvider provider,
-        CommandContext context,
         WriteCaddyfileCommandFactory writeCaddyfileCommandFactory,
-        WireGuardSetCommandFactory wireGuardSetCommandFactory,
-        ISerializer serializer)
+        WireGuardSetCommandFactory wireGuardSetCommandFactory)
     {
         _logger = logger;
         _instances = instances;
         _provider = provider;
-        _context = context;
         _writeCaddyfileCommandFactory = writeCaddyfileCommandFactory;
         _wireGuardSetCommandFactory = wireGuardSetCommandFactory;
-        _serializer = serializer;
     }
 
     /// <summary>
@@ -59,61 +53,76 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
         public InstanceId Instance { get; set; }
     }
 
+    /// <summary>
+    /// The outputs for <see cref="InstanceServerConfigActivity"/>.
+    /// </summary>
+    public class Outputs
+    {
+        /// <summary>
+        /// The status.
+        /// </summary>
+        public Status Status { get; set; }
+    }
+
     /// <inheritdoc/>
-    public Task<string> Execute(Inputs inputs)
+    public Task<Outputs> Execute(Inputs inputs)
     {
         Instance? instanceQuery = _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
-            return Failure("The instance does not exist.");
+            return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
-            return Failure();
+            return Failure(HttpStatusCode.BadRequest);
         List<KeyValuePair<ServerId, ShellCommand>> commands = new();
-        if (!SetWireGuardPeer(instance, commands))
-            return Failure();
+        SetWireGuardPeer(instance, commands);
         if (!WriteCaddyfile(instance, commands))
-            return Failure();
+            return Failure(HttpStatusCode.InternalServerError);
         // Write configuration
         Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
         if (!_provider.Put(instance.Name, dictionary))
-            return Failure("Failed to write server configuration.");
-        return Success(string.Empty);
+            return Failure(HttpStatusCode.InternalServerError, "Failed to write server configuration.");
+        return Success();
     }
 
-    private bool SetWireGuardPeer(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
+    private void SetWireGuardPeer(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
     {
         foreach (WireGuardClient wg in instance.WireGuard)
         {
             ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
             commands.Add(new(wg.Interface.Server, command));
         }
-        return true;
     }
 
     private bool WriteCaddyfile(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
     {
-        if (!instance.Domains.Any())
+        if (instance.Domains.Length == 0)
             return true;
         ShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
-        if (!results.Any())
+        if (results.Length == 0)
             return false;
         commands.AddRange(results
             .Select(x => new KeyValuePair<ServerId, ShellCommand>(instance.Server, x)));
         return true;
     }
 
-    private Task<string> Success(string output)
+    private Task<Outputs> Success()
     {
-        _context.ExitCode = 0;
-        return Task.FromResult(output);
+        Outputs outputs = new()
+        {
+            Status = new(HttpStatusCode.Created)
+        };
+        return Task.FromResult(outputs);
     }
 
-    private Task<string> Failure(string error = "", int exitCode = 1)
+    private Task<Outputs> Failure(HttpStatusCode statusCode, string error = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        _context.ExitCode = exitCode;
-        return Task.FromResult(error);
+        Outputs outputs = new()
+        {
+            Status = new(statusCode)
+        };
+        return Task.FromResult(outputs);
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Orbit.Instances;
 using Orbit.Schema;
@@ -14,14 +15,13 @@ namespace Orbit.Lxd;
 /// An <see cref="IActivity"/> to initialize an <see cref="Instance"/> on a <see cref="Server"/>
 /// using LXD.
 /// </summary>
-public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
+public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, LxdInitActivity.Outputs>
 {
     private readonly ILogger<LxdInitActivity> _logger;
     private readonly InstanceProvider _instances;
     private readonly ServerProvider _servers;
     private readonly LxdConfigProvider _lxdConfigProvider;
     private readonly LxdConfigFactory _lxdConfigFactory;
-    private readonly CommandContext _context;
     private readonly Ssh _ssh;
 
     /// <summary>
@@ -33,7 +33,6 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
         ServerProvider servers,
         LxdConfigProvider lxdConfigProvider,
         LxdConfigFactory lxdConfigFactory,
-        CommandContext context,
         Ssh ssh)
     {
         _logger = logger;
@@ -41,7 +40,6 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
         _servers = servers;
         _lxdConfigProvider = lxdConfigProvider;
         _lxdConfigFactory = lxdConfigFactory;
-        _context = context;
         _ssh = ssh;
     }
 
@@ -59,17 +57,28 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
         public string Instance { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// The outputs for <see cref="LxdInitActivity"/>.
+    /// </summary>
+    public class Outputs
+    {
+        /// <summary>
+        /// The status.
+        /// </summary>
+        public Status Status { get; set; }
+    }
+
     /// <inheritdoc/>
-    public Task<string> Execute(Inputs inputs)
+    public Task<Outputs> Execute(Inputs inputs)
     {
         Instance? instanceQuery = _instances.Get(new InstanceId(inputs.Instance));
         if (instanceQuery is not Instance instance)
-            return Failure("The instance does not exist.");
+            return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
-            return Failure();
+            return Failure(HttpStatusCode.BadRequest);
         Server? serverQuery = _servers.Get(instance.Server);
         if (serverQuery is not Server server)
-            return Failure("The server does not exist");
+            return Failure(HttpStatusCode.NotFound, "The server does not exist");
         _ssh.SetServer(server);
         string? config = _lxdConfigProvider.Get(instance.Name);
         if (config is not null)
@@ -89,22 +98,28 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, string>
         ];
         int exitCode = _ssh.Execute(string.Join(" ", args), config);
         if (exitCode != 0)
-            return Failure("Failed to run multipass launch on server.");
+            return Failure(HttpStatusCode.InternalServerError, "Failed to run LXD init on server.");
         _logger.LogInformation($"Initialized instance {instance.Name} on server {server.Name}.");
-        return Success(string.Empty);
+        return Success();
     }
 
-    private Task<string> Success(string output)
+    private Task<Outputs> Success()
     {
-        _context.ExitCode = 0;
-        return Task.FromResult(output);
+        Outputs outputs = new()
+        {
+            Status = new(HttpStatusCode.Created)
+        };
+        return Task.FromResult(outputs);
     }
 
-    private Task<string> Failure(string error = "", int exitCode = 1)
+    private Task<Outputs> Failure(HttpStatusCode statusCode, string error = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        _context.ExitCode = exitCode;
-        return Task.FromResult(error);
+        Outputs outputs = new()
+        {
+            Status = new(statusCode)
+        };
+        return Task.FromResult(outputs);
     }
 }

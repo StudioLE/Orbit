@@ -1,22 +1,23 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Orbit.Instances;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
+using Tectonic.Assets;
 
 namespace Orbit.Lxd;
 
 /// <summary>
 /// An <see cref="IActivity"/> to generate the LXD configuration yaml for a virtual machine instance.
 /// </summary>
-public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, string>
+public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigActivity.Outputs>
 {
     private readonly ILogger<LxdConfigActivity> _logger;
     private readonly InstanceProvider _instances;
     private readonly LxdConfigProvider _lxdConfigProvider;
-    private readonly CommandContext _context;
     private readonly LxdConfigFactory _factory;
 
     /// <summary>
@@ -26,13 +27,11 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, string>
         ILogger<LxdConfigActivity> logger,
         InstanceProvider instances,
         LxdConfigProvider lxdConfigProvider,
-        CommandContext context,
         LxdConfigFactory factory)
     {
         _logger = logger;
         _instances = instances;
         _lxdConfigProvider = lxdConfigProvider;
-        _context = context;
         _factory = factory;
     }
 
@@ -50,32 +49,64 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, string>
         public InstanceId Instance { get; set; }
     }
 
+    /// <summary>
+    /// The outputs for <see cref="LxdConfigActivity"/>.
+    /// </summary>
+    public class Outputs
+    {
+        /// <summary>
+        /// The status.
+        /// </summary>
+        public Status Status { get; set; }
+
+        /// <summary>
+        /// The generated asset.
+        /// </summary>
+        public InternalAsset? Asset { get; set; }
+    }
+
     /// <inheritdoc/>
-    public Task<string> Execute(Inputs inputs)
+    public Task<Outputs> Execute(Inputs inputs)
     {
         Instance? instanceQuery = _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
-            return Failure("The instance does not exist.");
+            return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
-            return Failure();
+            return Failure(HttpStatusCode.BadRequest);
         string output = _factory.Create(instance);
         // TODO: Make save optional
         if (!_lxdConfigProvider.Put(instance.Name, output))
-            return Failure("Failed to write the lxd config file.");
-        return Success(string.Empty);
+            return Failure(HttpStatusCode.InternalServerError, "Failed to write the lxd config file.");
+        return Success(output);
     }
 
-    private Task<string> Success(string output)
+    private Task<Outputs> Success(string output)
     {
-        _context.ExitCode = 0;
-        return Task.FromResult(output);
+        Outputs outputs = new()
+        {
+            Status = new(HttpStatusCode.OK),
+            Asset = new()
+            {
+                ContentType = "text/x-yaml",
+                Content = output
+            }
+        };
+        return Task.FromResult(outputs);
     }
 
-    private Task<string> Failure(string error = "", int exitCode = 1)
+    private Task<Outputs> Failure(HttpStatusCode statusCode, string? error = null, string output = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        _context.ExitCode = exitCode;
-        return Task.FromResult(error);
+        Outputs outputs = new()
+        {
+            Status = new(statusCode),
+            Asset = new()
+            {
+                ContentType = "text/x-yaml",
+                Content = output
+            }
+        };
+        return Task.FromResult(outputs);
     }
 }

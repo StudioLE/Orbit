@@ -11,7 +11,6 @@ using Orbit.Serialization;
 using Orbit.Servers;
 using Orbit.Utils.CommandLine;
 using Orbit.WireGuard;
-using Tectonic;
 
 namespace Orbit.Hosting;
 
@@ -35,8 +34,6 @@ public static class ServiceExtensions
             .AddTransient<InstanceProvider>()
             .AddTransient<ServerProvider>()
             .AddTransient<ClientProvider>()
-
-            .AddScoped<CommandContext>()
 
             .AddTransient<ServerActivity>()
             .AddTransient<ServerFactory>()

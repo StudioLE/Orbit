@@ -45,14 +45,15 @@ internal sealed class ServerActivityTests
         };
 
         // Act
-        Server createdServer = await _activity.Execute(sourceServer);
+        ServerActivity.Outputs outputs = await _activity.Execute(sourceServer);
 
         // Assert
-        Assert.That(createdServer, Is.Not.Null);
-        await _context.VerifyAsSerialized(createdServer, _serializer);
+        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0));
+        Assert.That(outputs.Server, Is.Not.Null);
+        await _context.VerifyAsSerialized(outputs.Server, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
-        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created server {createdServer.Name}"));
-        Server storedServer = _servers.Get(createdServer.Name) ?? throw new("Failed to get server.");
-        await _context.VerifyAsSerialized(storedServer, createdServer, _serializer);
+        Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created server {outputs.Server.Name}"));
+        Server storedServer = _servers.Get(outputs.Server.Name) ?? throw new("Failed to get server.");
+        await _context.VerifyAsSerialized(storedServer, outputs.Server, _serializer);
     }
 }
