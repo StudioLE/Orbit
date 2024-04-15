@@ -16,7 +16,7 @@ public static class IPv6Helpers
     /// <returns>The string representation of the IPv6 address with every octet.</returns>
     public static string ToFullString(this IPv6 ip, bool condensed = true)
     {
-        return ip._hextets
+        return ip.Hextets
                    .Select(x => x.ToHexString(condensed))
                    .Join(":")
                + ip.GetCidrSuffix();
@@ -30,12 +30,12 @@ public static class IPv6Helpers
     /// <returns>The string representation of the IPv6 address shortened from the start.</returns>
     public static string ShortenFromStart(this IPv6 ip, bool condensed = true)
     {
-        int zerosAtStart = ip._hextets
+        int zerosAtStart = ip.Hextets
             .TakeWhile(x => x == 0)
             .Count();
         if (zerosAtStart == 0)
             return ip.ToFullString();
-        string result = ip._hextets
+        string result = ip.Hextets
             .Skip(zerosAtStart)
             .Select(x => x.ToHexString(condensed))
             .Join(":");
@@ -50,14 +50,14 @@ public static class IPv6Helpers
     /// <returns>The string representation of the IPv6 address shortened from the end.</returns>
     public static string ShortenFromEnd(this IPv6 ip, bool condensed = true)
     {
-        int zerosAtEnd = ip._hextets
+        int zerosAtEnd = ip.Hextets
             .Reverse()
             .TakeWhile(x => x == 0)
             .Count();
         if (zerosAtEnd == 0)
             return ip.ToFullString();
-        string result = ip._hextets
-            .Take(ip._hextets.Length - zerosAtEnd)
+        string result = ip.Hextets
+            .Take(ip.Hextets.Length - zerosAtEnd)
             .Select(x => x.ToHexString(condensed))
             .Join(":");
         return result + "::" + ip.GetCidrSuffix();
@@ -72,9 +72,9 @@ public static class IPv6Helpers
     /// <returns>The shortest string representation of the IPv6 address.</returns>
     public static string Shorten(this IPv6 ip, bool condensed = true)
     {
-        int[] counts = ip._hextets
+        int[] counts = ip.Hextets
             .Select((_, i) => ip
-                ._hextets
+                .Hextets
                 .Skip(i)
                 .TakeWhile(xx => xx == 0)
                 .Count())
@@ -87,10 +87,10 @@ public static class IPv6Helpers
                 ? i
                 : -1)
             .FirstOrDefault(x => x > -1);
-        string before = ip._hextets.Take(startIndex)
+        string before = ip.Hextets.Take(startIndex)
             .Select(x => x.ToHexString(condensed))
             .Join(":");
-        string after = ip._hextets.Skip(startIndex + zeroCount)
+        string after = ip.Hextets.Skip(startIndex + zeroCount)
             .Select(x => x.ToHexString(condensed))
             .Join(":");
         return before + "::" + after + ip.GetCidrSuffix();
@@ -98,9 +98,9 @@ public static class IPv6Helpers
 
     private static string GetCidrSuffix(this IPv6 ip)
     {
-        return ip._cidr is null
+        return ip.Cidr is null
             ? string.Empty
-            : "/" + ip._cidr;
+            : "/" + ip.Cidr;
     }
 
     private static string ToHexString(this ushort hextet, bool condensed)

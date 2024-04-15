@@ -36,7 +36,7 @@ public class ExternalInterfaceFactory
             .FirstOrDefault();
         if (ipv6Query is not IPv6 ipv6)
             return null;
-        ushort[] hextets = ipv6.GetHextets();
+        ushort[] hextets = ipv6.Hextets;
         if(hextets.Length != 8)
             throw new("Expected 8 hextets in IPv6 address.");
         hextets[^1] = HexadecimalHelpers.ToUShort(instance.Number.ToString()) ?? throw new("Invalid instance number.");
