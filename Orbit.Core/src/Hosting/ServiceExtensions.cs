@@ -65,10 +65,11 @@ public static class ServiceExtensions
             .AddTransient<HardwareFactory>()
             .AddTransient<ExternalInterfaceFactory>()
             .AddTransient<InternalInterfaceFactory>()
-
             .AddTransient<OSFactory>()
             .AddTransient<WireGuardClientFactory>()
             .AddTransient<IWireGuardFacade, WireGuardFacade>()
+
+            .AddTransient<InstanceUpdateActivity>()
 
             .AddTransient<ClientActivity>()
             .AddTransient<ClientFactory>()

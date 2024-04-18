@@ -35,6 +35,7 @@ internal static class Program
             .Register<ClientActivity>("create", "client")
             .Register<UserConfigActivity>("create", "user-config")
             .Register<LxdConfigActivity>("create", "lxd")
+            .Register<InstanceUpdateActivity>("update", "instance")
             .Register<InstanceServerConfigActivity>("generate", "server-config", "instance")
             .Register<ClientServerConfigActivity>("generate", "server-config", "client")
             .Register<WireGuardClientActivity>("generate", "wireguard", "client")
