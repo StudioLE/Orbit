@@ -97,8 +97,8 @@ public class UserConfigFactory : IFactory<Instance, Task<string>>
         {
             string config = await _wgConfigFactory.Create(wg);
             output += $"""
-                  - name: {wg.Interface.Name}
-                    config_path: /etc/wireguard/{wg.Interface.Name}.conf
+                  - name: {wg.Name}
+                    config_path: /etc/wireguard/{wg.Name}.conf
                     content: |
                 {config.Indent(3)}
                 """;

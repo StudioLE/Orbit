@@ -9,9 +9,21 @@ namespace Orbit.Schema;
 public record struct WireGuardClient()
 {
     /// <summary>
-    /// The WireGuard interface.
+    /// The name of the WireGuard interface.
     /// </summary>
-    public Interface Interface { get; set; } = new();
+    [NameSchema]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The WireGuard server.
+    /// </summary>
+    [NameSchema]
+    public ServerId Server { get; set; }
+
+    /// <summary>
+    /// The addresses of the WireGuard interface.
+    /// </summary>
+    public string[] Addresses { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// The WireGuard listen port.

@@ -90,7 +90,7 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
         foreach (WireGuardClient wg in instance.WireGuard)
         {
             ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
-            commands.Add(new(wg.Interface.Server, command));
+            commands.Add(new(wg.Server, command));
         }
     }
 

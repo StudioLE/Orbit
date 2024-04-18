@@ -80,7 +80,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
         List<InternalAsset> assets = new();
         foreach (WireGuardClient wg in client.WireGuard)
         {
-            string fileName = $"{wg.Interface.Name}.conf";
+            string fileName = $"{wg.Name}.conf";
             string config = await _factory.Create(wg);
             assets.Add(new()
             {

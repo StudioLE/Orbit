@@ -14,14 +14,16 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
 {
     private readonly IWireGuardFacade _wg;
     private readonly ServerProvider _servers;
+    private readonly WireGuardInterfaceFactory _wgInterfaceFactory;
 
     /// <summary>
     /// The DI constructor for <see cref="WireGuardClientFactory"/>.
     /// </summary>
-    public WireGuardClientFactory(IWireGuardFacade wg, ServerProvider servers)
+    public WireGuardClientFactory(IWireGuardFacade wg, ServerProvider servers, WireGuardInterfaceFactory wgInterfaceFactory)
     {
         _wg = wg;
         _servers = servers;
+        _wgInterfaceFactory = wgInterfaceFactory;
     }
 
     /// <inheritdoc/>
@@ -39,15 +41,12 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
     {
         if (entity.WireGuard.IsDefault())
             entity.WireGuard = entity
-                    .Connections
-                    .Select(server => new WireGuardClient
-                    {
-                        Interface = new()
-                        {
-                            Server = server
-                        }
-                    })
-                    .ToArray();
+                .Connections
+                .Select(server => new WireGuardClient
+                {
+                    Server = server
+                })
+                .ToArray();
         return entity
             .WireGuard
             .ToAsyncEnumerable()
@@ -57,12 +56,19 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
 
     private async Task<WireGuardClient> Create(WireGuardClient wg, IHasWireGuardClient entity)
     {
-        if (wg.Interface.Server.IsDefault())
-            throw new($"{nameof(WireGuardClient.Interface.Server)} must be set.");
-        Server server = await _servers.Get(wg.Interface.Server) ?? throw new("Failed to get the server.");
-        wg.Interface = ApplyInterfaceDefaults(wg.Interface, entity, server);
+        if (wg.Server.IsDefault())
+            throw new($"{nameof(WireGuardClient.Server)} must be set.");
+        Server server = await _servers.Get(wg.Server) ?? throw new("Failed to get the server.");
+        if(wg.Name.IsDefault())
+            wg.Name = _wgInterfaceFactory.GetName(server);
         if (wg.Port.IsDefault())
-            wg.Port = server.WireGuard.Port;
+            wg.Port = server.WireGuard.Port; // TODO: Peer port should be different to server port.
+        if (wg.Addresses.IsDefault())
+            wg.Addresses =
+            [
+                _wgInterfaceFactory.GetIPv4Address(entity, server),
+                _wgInterfaceFactory.GetIPv6Address(entity, server)
+            ];
         if (wg.PrivateKey.IsDefault())
             wg.PrivateKey = _wg.GeneratePrivateKey() ?? throw new("Failed to generate WireGuard private key");
         if (wg.PublicKey.IsDefault())
@@ -70,45 +76,14 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
         if (wg.PreSharedKey.IsDefault())
             wg.PreSharedKey = _wg.GeneratePreSharedKey() ?? throw new("Failed to generate WireGuard pre-shared key");
         if (wg.AllowedIPs.IsDefault())
-            wg.AllowedIPs = wg.Interface.Subnets;
+            wg.AllowedIPs =
+            [
+                _wgInterfaceFactory.GetIPv4Subnet(server),
+                _wgInterfaceFactory.GetIPv6Subnet(server)
+            ];
         if (wg.Endpoint.IsDefault())
             wg.Endpoint = GetEndpoint(entity, server);
         return wg;
-    }
-
-    private static Interface ApplyInterfaceDefaults(Interface iface, IEntity entity, Server server)
-    {
-        if (iface.Name.IsDefault())
-            iface.Name = $"wg{server.Number}";
-        if (iface.Type.IsDefault())
-            iface.Type = NetworkType.WireGuard;
-        if (iface.MacAddress.IsDefault())
-            iface.MacAddress = GetMacAddress(entity, server);
-        if (iface.Addresses.IsDefault())
-            iface.Addresses =
-            [
-                $"10.1.{server.Number}.{entity.Number}/24",
-                $"fc00::1:{server.Number}:{entity.Number}/112"
-            ];
-        if (iface.Gateways.IsDefault())
-            iface.Gateways =
-            [
-                $"10.1.{server.Number}.1",
-                $"fc00::1:{server.Number}:1"
-            ];
-        if (iface.Subnets.IsDefault())
-            iface.Subnets =
-            [
-                $"10.1.{server.Number}.0/24",
-                $"fc00::1:{server.Number}:0/112"
-            ];
-        if (iface.Dns.IsDefault())
-            iface.Dns =
-            [
-                $"10.1.{server.Number}.2",
-                $"fc00::1:{server.Number}:2"
-            ];
-        return iface;
     }
 
     private static string GetEndpoint(IHasWireGuardClient entity, Server server)
@@ -119,9 +94,9 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
             ? GetNicInterface(server)
             : GetBridgeInterface(server);
         string endpoint = iface
-                .Addresses
-                .FirstOrDefault()
-            ?? throw new($"Failed to get the endpoint for {entity.GetType()}.");
+                              .Addresses
+                              .FirstOrDefault()
+                          ?? throw new($"Failed to get the endpoint for {entity.GetType()}.");
         endpoint = IPHelpers.RemoveCidr(endpoint);
         endpoint += ":" + server.WireGuard.Port;
         return endpoint;
@@ -130,8 +105,8 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
     private static Interface GetBridgeInterface(Server server)
     {
         Interface? interfaceQuery = server
-                   .Interfaces
-                   .FirstOrNull(x => x.Type == NetworkType.Bridge && x.Server == server.Name);
+            .Interfaces
+            .FirstOrNull(x => x.Type == NetworkType.Bridge && x.Server == server.Name);
         if (interfaceQuery is not Interface iface)
             throw new($"Bridge not found for server: {server.Name}.");
         return iface;
@@ -140,8 +115,8 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
     private static Interface GetNicInterface(Server server)
     {
         Interface? interfaceQuery = server
-                   .Interfaces
-                   .FirstOrNull(x => x.Type == NetworkType.Nic);
+            .Interfaces
+            .FirstOrNull(x => x.Type == NetworkType.Nic);
         if (interfaceQuery is not Interface iface)
             throw new($"NIC not found for server: {server.Name}.");
         return iface;

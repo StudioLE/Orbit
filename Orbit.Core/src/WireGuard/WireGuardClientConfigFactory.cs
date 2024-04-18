@@ -1,6 +1,5 @@
 using Orbit.Schema;
 using Orbit.Servers;
-using Orbit.Utils.Networking;
 using StudioLE.Extensions.System;
 using StudioLE.Patterns;
 
@@ -12,25 +11,28 @@ namespace Orbit.WireGuard;
 public class WireGuardClientConfigFactory : IFactory<WireGuardClient, Task<string>>
 {
     private readonly ServerProvider _servers;
+    private readonly WireGuardInterfaceFactory _wgInterfaceFactory;
 
     /// <summary>
     /// DI constructor for <see cref="WireGuardClientConfigFactory"/>.
     /// </summary>
-    public WireGuardClientConfigFactory(ServerProvider servers)
+    public WireGuardClientConfigFactory(ServerProvider servers, WireGuardInterfaceFactory wgInterfaceFactory)
     {
         _servers = servers;
+        _wgInterfaceFactory = wgInterfaceFactory;
     }
 
     /// <inheritdoc/>
     public async Task<string> Create(WireGuardClient wg)
     {
-        Server server = await _servers.Get(wg.Interface.Server) ?? throw new($"Server not found: {wg.Interface.Server}.");
+        Server server = await _servers.Get(wg.Server) ?? throw new($"Server not found: {wg.Server}.");
         return $"""
             [Interface]
             ListenPort = {wg.Port}
             PrivateKey = {wg.PrivateKey}
-            {MultiLine("Address", wg.Interface.Addresses.Select(IPHelpers.RemoveCidr))}
-            {MultiLine("DNS", wg.Interface.Dns)}
+            {MultiLine("Address", wg.Addresses)}
+            DNS = {_wgInterfaceFactory.GetIPv4Dns(server)}
+            DNS = {_wgInterfaceFactory.GetIPv6Dns(server)}
 
             [Peer]
             PublicKey = {server.WireGuard.PublicKey}

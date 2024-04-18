@@ -3,23 +3,11 @@ Number: 112
 Connections:
 - example-server
 WireGuard:
-- Interface:
-    Name: wg3
-    Server: example-server
-    Type: Unknown
-    MacAddress: 02:00:00:01:03:70
-    Addresses:
-    - 10.1.3.112/24
-    - fc00::1:3:112/112
-    Gateways:
-    - 10.1.3.1
-    - fc00::1:3:1
-    Subnets:
-    - 10.1.3.0/24
-    - fc00::1:3:0/112
-    Dns:
-    - 10.1.3.2
-    - fc00::1:3:2
+- Name: wg3
+  Server: example-server
+  Addresses:
+  - 10.1.3.112
+  - fc00::1:3:112
   Port: 61003
   PrivateKey: 8Dh1P7/6fm9C/wHYzDrEhnyKmFgzL6yH6WuslXPLbVQ=
   PublicKey: Rc9kAH9gclSHur2vbbmIj3pvWizuxB5ly1Drv0tRXRE=

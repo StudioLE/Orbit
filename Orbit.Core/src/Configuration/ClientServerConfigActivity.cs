@@ -73,7 +73,7 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
         foreach (WireGuardClient wg in client.WireGuard)
         {
             ShellCommand command = _wireGuardSetCommandFactory.Create(wg);
-            commands.Add(new(wg.Interface.Server, command));
+            commands.Add(new(wg.Server, command));
         }
         // Write configuration
         Dictionary<ServerId, ShellCommand[]> dictionary = commands
