@@ -1,26 +1,34 @@
-using Microsoft.Extensions.FileProviders;
-using Orbit.Provision;
 using Orbit.Schema;
 using StudioLE.Serialization;
+using StudioLE.Storage.Files;
 
 namespace Orbit.Servers;
 
 /// <summary>
-/// Retrieves and stores <see cref="Server"/>s.
+/// Provide and store <see cref="Server"/>.
 /// </summary>
 public class ServerProvider
 {
     internal const string DirectoryName = "servers";
-    private readonly IEntityFileProvider _fileProvider;
+    private readonly IFileReader _reader;
+    private readonly IFileWriter _writer;
+    private readonly IDirectoryReader _index;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
 
     /// <summary>
     /// DI constructor for <see cref="ServerProvider"/>.
     /// </summary>
-    public ServerProvider(IEntityFileProvider fileProvider, ISerializer serializer, IDeserializer deserializer)
+    public ServerProvider(
+        IFileReader reader,
+        IFileWriter writer,
+        IDirectoryReader index,
+        ISerializer serializer,
+        IDeserializer deserializer)
     {
-        _fileProvider = fileProvider;
+        _reader = reader;
+        _writer = writer;
+        _index = index;
         _serializer = serializer;
         _deserializer = deserializer;
     }
@@ -32,14 +40,15 @@ public class ServerProvider
     /// <returns>
     /// The server with the given <paramref name="id"/> if it exists; otherwise, <see langword="null"/>.
     /// </returns>
-    public Server? Get(ServerId id)
+    public async Task<Server?> Get(ServerId id)
     {
-        IFileInfo file = _fileProvider.GetFileInfo(GetFilePath(id));
-        if (!file.Exists)
+        string path = GetFilePath(id);
+        await using Stream? stream = await _reader.Read(path);
+        if (stream is null)
             return null;
-        using Stream stream = file.CreateReadStream();
         using StreamReader reader = new(stream);
-        return _deserializer.Deserialize<Server>(reader);
+        string yaml = await reader.ReadToEndAsync();
+        return _deserializer.Deserialize<Server>(yaml);
     }
 
     /// <summary>
@@ -49,22 +58,17 @@ public class ServerProvider
     /// <returns>
     /// <see langword="true"/> if the server was stored; otherwise, <see langword="false"/>.
     /// </returns>
-    public bool Put(Server server)
+    public async Task<bool> Put(Server server)
     {
-        IFileInfo file = _fileProvider.GetFileInfo(GetFilePath(server.Name));
-        if (file.Exists)
-            return false;
-        FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
-        DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if (!directory.Exists)
-            directory.Create();
-        if (file.Exists)
-            return false;
-        using StreamWriter writer = physicalFile.CreateText();
+        string path = GetFilePath(server.Name);
+        MemoryStream stream = new();
+        StreamWriter writer = new(stream);
         _serializer.Serialize(writer, server);
-        return true;
+        await writer.FlushAsync();
+        stream.Seek(0, SeekOrigin.Begin);
+        string? uri = await _writer.Write(path, stream);
+        return uri is not null;
     }
-
 
     /// <summary>
     /// Get all stored servers.
@@ -72,12 +76,18 @@ public class ServerProvider
     /// <returns>
     /// All the stored servers.
     /// </returns>
-    public IEnumerable<Server> GetAll()
+    public async Task<Server[]> GetAll()
     {
-        return _fileProvider.GetDirectoryContents(DirectoryName)
-            .Where(x => x.IsDirectory)
-            .Select(x => Get(new(x.Name)))
-            .OfType<Server>();
+        IEnumerable<string>? names = await _index.GetDirectoryNames(DirectoryName);
+        if (names is null)
+            return Array.Empty<Server>();
+        IEnumerable<Task<Server?>> serversAsync = names
+            .Select(x => Get(new(x)));
+        Server?[] serversTask = await Task.WhenAll(serversAsync);
+        Server[] servers = serversTask
+            .OfType<Server>()
+            .ToArray();
+        return servers;
     }
 
     private static string GetFilePath(ServerId id)
@@ -85,4 +95,3 @@ public class ServerProvider
         return Path.Combine(DirectoryName, id.ToString(), id + ".yml");
     }
 }
-

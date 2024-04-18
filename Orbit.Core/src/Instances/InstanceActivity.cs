@@ -45,37 +45,35 @@ public class InstanceActivity : IActivity<Instance, InstanceActivity.Outputs>
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Instance instance)
+    public async Task<Outputs> Execute(Instance instance)
     {
-        instance = _factory.Create(instance);
+        instance = await _factory.Create(instance);
         if (!instance.TryValidate(_logger))
             return Failure(instance, HttpStatusCode.BadRequest);
-        if (!_instances.Put(instance))
+        if (!await _instances.Put(instance))
             return Failure(instance, HttpStatusCode.InternalServerError, "Failed to write the instance file.");
         _logger.LogInformation($"Created instance {instance.Name}");
         return Success(instance);
     }
 
 
-    private Task<Outputs> Success(Instance instance)
+    private Outputs Success(Instance instance)
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created),
             Instance = instance
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(Instance instance, HttpStatusCode statusCode, string? error = null)
+    private Outputs Failure(Instance instance, HttpStatusCode statusCode, string? error = null)
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode),
             Instance = instance
         };
-        return Task.FromResult(outputs);
     }
 }

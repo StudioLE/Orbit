@@ -1,26 +1,34 @@
-using Microsoft.Extensions.FileProviders;
-using Orbit.Provision;
 using Orbit.Schema;
 using StudioLE.Serialization;
+using StudioLE.Storage.Files;
 
 namespace Orbit.Instances;
 
 /// <summary>
-/// Retrieves and stores <see cref="Instance"/>s.
+/// Provide and store <see cref="Instance"/>.
 /// </summary>
 public class InstanceProvider
 {
     internal const string DirectoryName = "instances";
-    private readonly IEntityFileProvider _fileProvider;
+    private readonly IFileReader _reader;
+    private readonly IFileWriter _writer;
+    private readonly IDirectoryReader _index;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
 
     /// <summary>
     /// DI constructor for <see cref="InstanceProvider"/>.
     /// </summary>
-    public InstanceProvider(IEntityFileProvider fileProvider, ISerializer serializer, IDeserializer deserializer)
+    public InstanceProvider(
+        IFileReader reader,
+        IFileWriter writer,
+        IDirectoryReader index,
+        ISerializer serializer,
+        IDeserializer deserializer)
     {
-        _fileProvider = fileProvider;
+        _reader = reader;
+        _writer = writer;
+        _index = index;
         _serializer = serializer;
         _deserializer = deserializer;
     }
@@ -32,12 +40,12 @@ public class InstanceProvider
     /// <returns>
     /// The instance with the given <paramref name="id"/> if it exists; otherwise, <see langword="null"/>.
     /// </returns>
-    public Instance? Get(InstanceId id)
+    public async Task<Instance?> Get(InstanceId id)
     {
-        IFileInfo file = _fileProvider.GetFileInfo(GetFilePath(id));
-        if (!file.Exists)
+        string path = GetFilePath(id);
+        await using Stream? stream = await _reader.Read(path);
+        if (stream is null)
             return null;
-        using Stream stream = file.CreateReadStream();
         using StreamReader reader = new(stream);
         return _deserializer.Deserialize<Instance>(reader);
     }
@@ -49,22 +57,17 @@ public class InstanceProvider
     /// <returns>
     /// <see langword="true"/> if the instance was stored; otherwise, <see langword="false"/>.
     /// </returns>
-    public bool Put(Instance instance)
+    public async Task<bool> Put(Instance instance)
     {
-        IFileInfo file = _fileProvider.GetFileInfo(GetFilePath(instance.Name));
-        if (file.Exists)
-            return false;
-        FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
-        DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if (!directory.Exists)
-            directory.Create();
-        if (file.Exists)
-            return false;
-        using StreamWriter writer = physicalFile.CreateText();
+        string path = GetFilePath(instance.Name);
+        MemoryStream stream = new();
+        StreamWriter writer = new(stream);
         _serializer.Serialize(writer, instance);
-        return true;
+        await writer.FlushAsync();
+        stream.Seek(0, SeekOrigin.Begin);
+        string? uri = await _writer.Write(path, stream);
+        return uri is not null;
     }
-
 
     /// <summary>
     /// Get all stored instances.
@@ -72,12 +75,18 @@ public class InstanceProvider
     /// <returns>
     /// All the stored instances.
     /// </returns>
-    public IEnumerable<Instance> GetAll()
+    public async Task<IAsyncEnumerable<Instance>> GetAll()
     {
-        return _fileProvider.GetDirectoryContents(DirectoryName)
-            .Where(x => x.IsDirectory)
-            .Select(x => Get(new(x.Name)))
-            .OfType<Instance>();
+        IEnumerable<string>? names = await _index.GetDirectoryNames(DirectoryName);
+        if (names is null)
+            return AsyncEnumerable.Empty<Instance>();
+        IAsyncEnumerable<Instance> instances = names
+            .ToAsyncEnumerable()
+            .SelectAwait(async x => await Get(new(x)))
+            .Where(x => x is Instance)
+            .Select(x => (Instance)x!)
+            .Select(x => x);
+        return instances;
     }
 
     private static string GetFilePath(InstanceId id)

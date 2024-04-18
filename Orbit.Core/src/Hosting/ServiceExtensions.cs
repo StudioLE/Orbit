@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Orbit.Caddy;
 using Orbit.Clients;
 using Orbit.CloudInit;
@@ -11,6 +12,7 @@ using Orbit.Serialization;
 using Orbit.Servers;
 using Orbit.Utils.CommandLine;
 using Orbit.WireGuard;
+using StudioLE.Storage.Files;
 
 namespace Orbit.Hosting;
 
@@ -27,10 +29,28 @@ public static class ServiceExtensions
         return services
         // @formatter:off
 
+            .AddSingleton<IOptions<PhysicalFileSystemOptions>>(services =>
+            {
+                IOptions<ProviderOptions> providerOptions = services.GetRequiredService<IOptions<ProviderOptions>>();
+                PhysicalFileSystemOptions options = new()
+                {
+                    RootDirectory = providerOptions.Value.Directory
+                };
+                return Options.Create(options);
+            })
+
+            .AddSingleton<IOptions<PhysicalFileWriterOptions>>(_ => Options.Create(new PhysicalFileWriterOptions
+            {
+                AllowOverwrite = true,
+                AllowSubDirectories = true
+            }))
+
             .AddTransient(YamlHelpers.CreateSerializer)
             .AddTransient(YamlHelpers.CreateDeserializer)
 
-            .AddTransient<IEntityFileProvider, EntityFileProvider>()
+            .AddTransient<IFileReader, PhysicalFileReader>()
+            .AddTransient<IFileWriter, PhysicalFileWriter>()
+            .AddTransient<IDirectoryReader, PhysicalDirectoryReader>()
             .AddTransient<InstanceProvider>()
             .AddTransient<ServerProvider>()
             .AddTransient<ClientProvider>()

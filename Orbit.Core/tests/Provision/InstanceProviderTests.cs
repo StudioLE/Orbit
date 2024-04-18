@@ -10,74 +10,75 @@ namespace Orbit.Core.Tests.Provision;
 internal sealed class InstanceProviderTests
 {
     private readonly InstanceId _instanceId = new("instance-10");
-    private readonly InstanceFactory _instanceFactory;
-    private readonly InstanceProvider _instances;
+    private InstanceFactory _instanceFactory;
+    private InstanceProvider _instances;
 
-    public InstanceProviderTests()
+    [SetUp]
+    public async Task SetUp()
     {
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         _instanceFactory = host.Services.GetRequiredService<InstanceFactory>();
         _instances = host.Services.GetRequiredService<InstanceProvider>();
     }
 
     [Test]
     [Category("Misc")]
-    public void InstanceProvider_In_Sequence()
+    public async Task InstanceProvider_In_Sequence()
     {
-        InstanceProvider_Get_Before();
-        InstanceProvider_GetAll_Before();
-        InstanceProvider_Put();
-        InstanceProvider_Get_After();
-        InstanceProvider_GetAll_After();
+        await InstanceProvider_Get_Before();
+        await InstanceProvider_GetAll_Before();
+        await InstanceProvider_Put();
+        await InstanceProvider_Get_After();
+        await InstanceProvider_GetAll_After();
     }
 
-    private void InstanceProvider_Get_Before()
+    private async Task InstanceProvider_Get_Before()
     {
         // Arrange
         // Act
-        Instance? instance = _instances.Get(_instanceId);
+        Instance? instance = await _instances.Get(_instanceId);
 
         // Assert
         Assert.That(instance, Is.Null);
     }
 
-    private void InstanceProvider_GetAll_Before()
+    private async Task InstanceProvider_GetAll_Before()
     {
         // Arrange
         // Act
-        Instance[] ids = _instances.GetAll().ToArray();
+        Instance[] ids = await (await _instances.GetAll()).ToArrayAsync();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(1));
     }
 
-    private void InstanceProvider_Put()
+    private async Task InstanceProvider_Put()
     {
         // Arrange
-        Instance instance = _instanceFactory.Create(new());
+        Instance instance = await _instanceFactory.Create(new());
 
         // Act
-        bool result = _instances.Put(instance);
+        bool result = await _instances.Put(instance);
 
         // Assert
         Assert.That(result, Is.True);
     }
 
-    private void InstanceProvider_Get_After()
+    private async Task InstanceProvider_Get_After()
     {
         // Arrange
         // Act
-        Instance? instance = _instances.Get(_instanceId);
+        Instance? instance = await _instances.Get(_instanceId);
 
         // Assert
         Assert.That(instance, Is.Not.Null);
     }
 
-    private void InstanceProvider_GetAll_After()
+    private async Task InstanceProvider_GetAll_After()
     {
         // Arrange
         // Act
-        Instance[] ids = _instances.GetAll().ToArray();
+        Instance[] ids = await (await _instances.GetAll()).ToArrayAsync();
 
         // Assert
         Assert.That(ids.Count, Is.EqualTo(2));

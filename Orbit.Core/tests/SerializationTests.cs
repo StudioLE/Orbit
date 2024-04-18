@@ -17,12 +17,13 @@ namespace Orbit.Core.Tests;
 internal sealed class SerializationTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly ISerializer _serializer;
-    private readonly IDeserializer _deserializer;
+    private ISerializer _serializer;
+    private IDeserializer _deserializer;
 
-    public SerializationTests()
+    [SetUp]
+    public async Task SetUp()
     {
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         _serializer = host.Services.GetRequiredService<ISerializer>();
         _deserializer = host.Services.GetRequiredService<IDeserializer>();
     }

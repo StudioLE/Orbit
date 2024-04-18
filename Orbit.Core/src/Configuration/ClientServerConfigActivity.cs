@@ -61,9 +61,9 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
-        Client? clientQuery = _clients.Get(inputs.Client);
+        Client? clientQuery = await _clients.Get(inputs.Client);
         if (clientQuery is not Client client)
             return Failure(HttpStatusCode.NotFound, "The client does not exist.");
         if (!client.TryValidate(_logger))
@@ -79,28 +79,26 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
         Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
-        if (!_provider.Put(client.Name, dictionary))
+        if (!await _provider.Put(client.Name, dictionary))
             return Failure(HttpStatusCode.InternalServerError, "Failed to write server configuration.");
         return Success();
     }
 
-    private Task<Outputs> Success()
+    private Outputs Success()
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created)
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string error = "")
+    private Outputs Failure(HttpStatusCode statusCode, string error = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode)
         };
-        return Task.FromResult(outputs);
     }
 }

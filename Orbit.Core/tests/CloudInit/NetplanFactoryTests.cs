@@ -14,15 +14,16 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class NetplanFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly NetplanFactory _factory;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private NetplanFactory _factory;
+    private IReadOnlyCollection<LogEntry> _logs;
 
-    public NetplanFactoryTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         _factory = host.Services.GetRequiredService<NetplanFactory>();
         _logs = host.Services.GetCachedLogs();
     }
@@ -36,7 +37,7 @@ internal sealed class NetplanFactoryTests
         instance.Domains = ["example.com", "example.org"];
 
         // Act
-        string output = _factory.Create(instance);
+        string output = await _factory.Create(instance);
 
         // Assert
         Assert.That(_logs.Count, Is.EqualTo(0), "Logs Count");

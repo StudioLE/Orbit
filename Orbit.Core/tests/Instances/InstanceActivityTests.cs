@@ -15,17 +15,18 @@ namespace Orbit.Core.Tests.Instances;
 internal sealed class InstanceActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly InstanceActivity _activity;
-    private readonly InstanceProvider _instances;
-    private readonly ISerializer _serializer;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private InstanceActivity _activity;
+    private InstanceProvider _instances;
+    private ISerializer _serializer;
+    private IReadOnlyCollection<LogEntry> _logs;
 
-    public InstanceActivityTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _instances = provider.GetRequiredService<InstanceProvider>();
@@ -52,7 +53,7 @@ internal sealed class InstanceActivityTests
         await _context.VerifyAsSerialized(outputs.Instance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {outputs.Instance.Name}"));
-        Instance storedInstance = _instances.Get(outputs.Instance.Name) ?? throw new("Failed to get instance.");
+        Instance storedInstance = await _instances.Get(outputs.Instance.Name) ?? throw new("Failed to get instance.");
         await _context.VerifyAsSerialized(storedInstance, outputs.Instance, _serializer);
     }
 }

@@ -65,22 +65,22 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
-        Instance? instanceQuery = _instances.Get(inputs.Instance);
+        Instance? instanceQuery = await _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
             return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
         List<KeyValuePair<ServerId, ShellCommand>> commands = new();
         SetWireGuardPeer(instance, commands);
-        if (!WriteCaddyfile(instance, commands))
+        if (!await WriteCaddyfile(instance, commands))
             return Failure(HttpStatusCode.InternalServerError);
         // Write configuration
         Dictionary<ServerId, ShellCommand[]> dictionary = commands
             .GroupBy(x => x.Key, x => x.Value)
             .ToDictionary(x => x.Key, x => x.ToArray());
-        if (!_provider.Put(instance.Name, dictionary))
+        if (!await _provider.Put(instance.Name, dictionary))
             return Failure(HttpStatusCode.InternalServerError, "Failed to write server configuration.");
         return Success();
     }
@@ -94,11 +94,11 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
         }
     }
 
-    private bool WriteCaddyfile(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
+    private async Task<bool> WriteCaddyfile(Instance instance, List<KeyValuePair<ServerId, ShellCommand>> commands)
     {
         if (instance.Domains.Length == 0)
             return true;
-        ShellCommand[] results = _writeCaddyfileCommandFactory.Create(instance);
+        ShellCommand[] results = await _writeCaddyfileCommandFactory.Create(instance);
         if (results.Length == 0)
             return false;
         commands.AddRange(results
@@ -106,23 +106,21 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
         return true;
     }
 
-    private Task<Outputs> Success()
+    private Outputs Success()
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created)
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string error = "")
+    private Outputs Failure(HttpStatusCode statusCode, string error = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode)
         };
-        return Task.FromResult(outputs);
     }
 }

@@ -12,7 +12,7 @@ namespace Orbit.CloudInit;
 /// Create a Netplan configuration for an <see cref="Instance"/> with a external routed nic interface using <see cref="ExternalInterfaceFactory"/> and an internal bridge interface using <see cref="InternalInterfaceFactory"/>.
 /// </summary>
 /// <seealso href="https://netplan.readthedocs.io/en/stable/netplan-yaml/"/>
-public class NetplanFactory : IFactory<Instance, string>
+public class NetplanFactory : IFactory<Instance, Task<string>>
 {
     private readonly ServerProvider _servers;
     private readonly ExternalInterfaceFactory _externalInterfaceFactory;
@@ -32,9 +32,9 @@ public class NetplanFactory : IFactory<Instance, string>
     }
 
     /// <inheritdoc/>
-    public string Create(Instance instance)
+    public async Task<string> Create(Instance instance)
     {
-        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
+        Server server = await _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
         Interface nic = server
                             .Interfaces
                             .FirstOrNull(x => x.Type == NetworkType.Nic)

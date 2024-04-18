@@ -45,36 +45,34 @@ public class ServerActivity : IActivity<Server, ServerActivity.Outputs>
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Server server)
+    public async Task<Outputs> Execute(Server server)
     {
-        server = _factory.Create(server);
+        server = await _factory.Create(server);
         if (!server.TryValidate(_logger))
             return Failure(server, HttpStatusCode.BadRequest);
-        if (!_servers.Put(server))
+        if (!await _servers.Put(server))
             return Failure(server, HttpStatusCode.InternalServerError, "Failed to write the server file.");
         _logger.LogInformation($"Created server {server.Name}");
         return Success(server);
     }
 
-    private Task<Outputs> Success(Server server)
+    private Outputs Success(Server server)
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created),
             Server = server
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(Server server, HttpStatusCode statusCode, string? error = null)
+    private Outputs Failure(Server server, HttpStatusCode statusCode, string? error = null)
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode),
             Server = server
         };
-        return Task.FromResult(outputs);
     }
 }

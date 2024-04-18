@@ -10,7 +10,7 @@ namespace Orbit.CloudInit;
 /// <summary>
 /// Create a cloud-init user-data yaml for an <see cref="Instance"/>.
 /// </summary>
-public class UserConfigFactory : IFactory<Instance, string>
+public class UserConfigFactory : IFactory<Instance, Task<string>>
 {
     private readonly CloudInitOptions _options;
     private readonly WireGuardClientConfigFactory _wgConfigFactory;
@@ -33,13 +33,13 @@ public class UserConfigFactory : IFactory<Instance, string>
     }
 
     /// <inheritdoc/>
-    public string Create(Instance instance)
+    public async Task<string> Create(Instance instance)
     {
         string sshdConfigContent = EmbeddedResourceHelpers.GetText("Resources/Templates/sshd_config");
         string configureContent = EmbeddedResourceHelpers.GetText("Resources/Scripts/50-orbit-configure");
         string installContent = _installFactory.Create(instance);
         string runContent = _runFactory.Create(instance);
-        string wireguardSection = WireGuardSection(instance);
+        string wireguardSection = await WireGuardSection(instance);
         return $"""
             #cloud-config
 
@@ -84,7 +84,7 @@ public class UserConfigFactory : IFactory<Instance, string>
             """;
     }
 
-    private string WireGuardSection(Instance instance)
+    private async Task<string> WireGuardSection(Instance instance)
     {
         if (instance.WireGuard.Length == 0)
             return string.Empty;
@@ -95,14 +95,12 @@ public class UserConfigFactory : IFactory<Instance, string>
             """;
         foreach (WireGuardClient wg in instance.WireGuard)
         {
-            string config = _wgConfigFactory
-                .Create(wg)
-                .Indent(3);
+            string config = await _wgConfigFactory.Create(wg);
             output += $"""
                   - name: {wg.Interface.Name}
                     config_path: /etc/wireguard/{wg.Interface.Name}.conf
                     content: |
-                {config}
+                {config.Indent(3)}
                 """;
         }
         return output;

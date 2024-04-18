@@ -13,15 +13,16 @@ namespace Orbit.Core.Tests.WireGuard;
 internal sealed class WireGuardClientConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly WireGuardClientFactory _wireGuardClientFactory;
-    private readonly WireGuardClientConfigFactory _wgConfigFactory;
+    private WireGuardClientFactory _wireGuardClientFactory;
+    private WireGuardClientConfigFactory _wgConfigFactory;
 
-    public WireGuardClientConfigFactoryTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         _wireGuardClientFactory = host.Services.GetRequiredService<WireGuardClientFactory>();
         _wgConfigFactory = host.Services.GetRequiredService<WireGuardClientConfigFactory>();
     }
@@ -32,11 +33,11 @@ internal sealed class WireGuardClientConfigFactoryTests
     {
         // Arrange
         Instance instance = TestHelpers.GetExampleInstance();
-        WireGuardClient[] interfaces = _wireGuardClientFactory.Create(instance);
+        WireGuardClient[] interfaces = await _wireGuardClientFactory.Create(instance);
         WireGuardClient wg = interfaces.First();
 
         // Act
-        string output = _wgConfigFactory.Create(wg);
+        string output = await _wgConfigFactory.Create(wg);
 
         // Assert
         await _context.Verify(output);

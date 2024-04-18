@@ -70,25 +70,25 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfi
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
         if (!_options.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
-        Instance? result = _instances.Get(inputs.Instance);
+        Instance? result = await _instances.Get(inputs.Instance);
         if (result is not Instance instance)
             return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
-        string output = _factory.Create(instance);
+        string output = await _factory.Create(instance);
         // TODO: Make save optional
-        if (!_provider.Put(instance.Name, output))
+        if (!await _provider.Put(instance.Name, output))
             return Failure(HttpStatusCode.InternalServerError, "Failed to save the user config.");
         return Success(output);
     }
 
-    private Task<Outputs> Success(string output)
+    private Outputs Success(string output)
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.OK),
             Asset = new()
@@ -97,14 +97,13 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfi
                 Content = output
             }
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string? error = null, string output = "")
+    private Outputs Failure(HttpStatusCode statusCode, string? error = null, string output = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode),
             Asset = new()
@@ -113,6 +112,5 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfi
                 Content = output
             }
         };
-        return Task.FromResult(outputs);
     }
 }

@@ -14,16 +14,17 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class UserConfigActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly UserConfigActivity _activity;
-    private readonly UserConfigProvider _provider;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private UserConfigActivity _activity;
+    private UserConfigProvider _provider;
+    private IReadOnlyCollection<LogEntry> _logs;
 
-    public UserConfigActivityTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _activity = provider.GetRequiredService<UserConfigActivity>();
@@ -47,7 +48,7 @@ internal sealed class UserConfigActivityTests
         // Assert
         Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
-        string? retrieved = _provider.Get(inputs.Instance);
+        string? retrieved = await _provider.Get(inputs.Instance);
         Assert.That(retrieved, Is.Not.Null);
         Assert.That(retrieved, Is.EqualTo(outputs.Asset?.Content));
 

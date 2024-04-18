@@ -45,36 +45,34 @@ public class ClientActivity : IActivity<Client, ClientActivity.Outputs>
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Client client)
+    public async Task<Outputs> Execute(Client client)
     {
-        client = _factory.Create(client);
+        client = await _factory.Create(client);
         if (!client.TryValidate(_logger))
             return Failure(client, HttpStatusCode.BadRequest);
-        if (!_clients.Put(client))
+        if (!await _clients.Put(client))
             return Failure(client, HttpStatusCode.InternalServerError, "Failed to write the client file.");
         _logger.LogInformation($"Created client {client.Name}");
         return Success(client);
     }
 
-    private Task<Outputs> Success(Client client)
+    private Outputs Success(Client client)
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created),
             Client = client
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(Client client, HttpStatusCode statusCode, string? error = null)
+    private Outputs Failure(Client client, HttpStatusCode statusCode, string? error = null)
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode),
             Client = client
         };
-        return Task.FromResult(outputs);
     }
 }

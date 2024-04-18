@@ -12,7 +12,7 @@ namespace Orbit.Lxd;
 /// <summary>
 /// Create the LXD configuration for an <see cref="Instance"/>.
 /// </summary>
-public class LxdConfigFactory : IFactory<Instance, string>
+public class LxdConfigFactory : IFactory<Instance, Task<string>>
 {
     private readonly ILogger<LxdConfigFactory> _logger;
     private readonly ServerProvider _servers;
@@ -44,16 +44,17 @@ public class LxdConfigFactory : IFactory<Instance, string>
     }
 
     /// <inheritdoc/>
-    public string Create(Instance instance)
+    public async Task<string> Create(Instance instance)
     {
-        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
-        string? userConfig = _userConfigProvider.Get(instance.Name);
+        Server server = await _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
+        // TODO: Set LogLevel None on IFileReader prior to calling as this results in an error which isn't an issue because we're only calling to see if it exist. Alternatively, add an Exists method to IFileReader.
+        string? userConfig = await _userConfigProvider.Get(instance.Name);
         if (userConfig is not null)
             _logger.LogDebug("Using existing user config.");
         else
         {
             _logger.LogDebug("Generating user config.");
-            userConfig = _userConfig.Create(instance);
+            userConfig = await _userConfig.Create(instance);
         }
         Interface serverNic = server
                                   .Interfaces
@@ -63,7 +64,7 @@ public class LxdConfigFactory : IFactory<Instance, string>
                                   .Interfaces
                                   .FirstOrNull(x => x.Type == NetworkType.Bridge)
                               ?? throw new($"Bridge not found for server: {server.Name}.");
-        string networkConfig = _netplanFactory.Create(instance);
+        string networkConfig = await _netplanFactory.Create(instance);
         return $"""
             type: virtual-machine
             name: {instance.Name}

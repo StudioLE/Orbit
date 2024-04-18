@@ -15,17 +15,18 @@ namespace Orbit.Core.Tests.Clients;
 internal sealed class ClientActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly ClientActivity _activity;
-    private readonly ClientProvider _clients;
-    private readonly ISerializer _serializer;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private ClientActivity _activity;
+    private ClientProvider _clients;
+    private ISerializer _serializer;
+    private IReadOnlyCollection<LogEntry> _logs;
 
-    public ClientActivityTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _clients = provider.GetRequiredService<ClientProvider>();
@@ -50,7 +51,7 @@ internal sealed class ClientActivityTests
         await _context.VerifyAsSerialized(outputs.Client, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {outputs.Client.Name}"));
-        Client storedClient = _clients.Get(outputs.Client.Name) ?? throw new("Failed to get client.");
+        Client storedClient = await _clients.Get(outputs.Client.Name) ?? throw new("Failed to get client.");
         await _context.VerifyAsSerialized(storedClient, outputs.Client, _serializer);
     }
 }

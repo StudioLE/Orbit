@@ -15,15 +15,16 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class UserConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly UserConfigFactory _factory;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private UserConfigFactory _factory;
+    private IReadOnlyCollection<LogEntry> _logs;
 
-    public UserConfigFactoryTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         _factory = host.Services.GetRequiredService<UserConfigFactory>();
         _logs = host.Services.GetCachedLogs();
     }
@@ -36,7 +37,7 @@ internal sealed class UserConfigFactoryTests
         Instance instance = TestHelpers.GetExampleInstance();
 
         // Act
-        string output = _factory.Create(instance);
+        string output = await _factory.Create(instance);
 
         // Assert
         Assert.That(_logs.Count, Is.EqualTo(0), "Logs Count");

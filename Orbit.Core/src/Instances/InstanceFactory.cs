@@ -9,7 +9,7 @@ namespace Orbit.Instances;
 /// <summary>
 /// A factory for creating <see cref="Instance"/> with default values.
 /// </summary>
-public class InstanceFactory : IFactory<Instance, Instance>
+public class InstanceFactory : IFactory<Instance, Task<Instance>>
 {
     private const int DefaultInstanceNumber = 1;
     private const string DefaultRole = "node";
@@ -54,21 +54,21 @@ public class InstanceFactory : IFactory<Instance, Instance>
     }
 
     /// <inheritdoc/>
-    public Instance Create(Instance instance)
+    public async Task<Instance> Create(Instance instance)
     {
         if (instance.Server.IsDefault())
-            instance.Server = DefaultServer();
+            instance.Server = await DefaultServer();
         if (instance.Connections.IsDefault())
             instance.Connections = [instance.Server];
         instance.Hardware = _hardwareFactory.Create(instance.Hardware);
         instance.OS = _osFactory.Create(instance.OS);
         if (instance.Number.IsDefault())
-            instance.Number = DefaultNumber();
+            instance.Number = await DefaultNumber();
         if (instance.Role.IsDefault())
             instance.Role = DefaultRole;
         if (instance.Name.IsDefault())
             instance.Name = new($"instance-{instance.Number:00}");
-        instance.WireGuard = _wireGuardClientFactory.Create(instance);
+        instance.WireGuard = await _wireGuardClientFactory.Create(instance);
         if (instance.Mounts.IsDefault())
             instance.Mounts = Array.Empty<Mount>();
         if (instance.Domains.IsDefault())
@@ -80,22 +80,23 @@ public class InstanceFactory : IFactory<Instance, Instance>
         return instance;
     }
 
-    private ServerId DefaultServer()
+    private async Task<ServerId> DefaultServer()
     {
-        return _servers
-                   .GetAll()
-                   .OrderBy(x => x.Number)
-                   .FirstOrNull()
-                   ?.Name
-               ?? throw new("Server must be set if more than one exist.");
+        Server[] servers = await _servers.GetAll();
+        Server? serverQuery = servers
+            .OrderBy(x => x.Number)
+            .FirstOrNull();
+        if(serverQuery is not Server server)
+            throw new("Server must be set if more than one exist.");
+        return server.Name;
     }
 
-    private int DefaultNumber()
+    private async Task<int> DefaultNumber()
     {
-        int[] numbers = _instances
-            .GetAll()
+        IAsyncEnumerable<Instance> instances = await _instances.GetAll();
+        int[] numbers = await instances
             .Select(x => x.Number)
-            .ToArray();
+            .ToArrayAsync();
         int finalNumber = numbers.Length != 0
             ? numbers.Max()
             : DefaultInstanceNumber - 1;

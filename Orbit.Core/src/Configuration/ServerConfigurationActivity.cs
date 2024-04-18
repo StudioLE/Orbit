@@ -65,19 +65,19 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
-        Instance? instanceQuery = _instances.Get(inputs.Instance);
+        Instance? instanceQuery = await _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
             return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
-        ServerConfiguration? config = _provider.Get(instance.Name);
+        ServerConfiguration? config = await _provider.Get(instance.Name);
         if (config is null)
             return Failure(HttpStatusCode.NotFound, "Failed to deserialize server configuration");
         foreach ((string serverName, ShellCommand[] commands) in config)
         {
-            Server? serverQuery = _servers.Get(new(serverName));
+            Server? serverQuery = await _servers.Get(new(serverName));
             if (serverQuery is not Server server)
                 return Failure(HttpStatusCode.NotFound, "Failed to get server");
             _ssh.SetServer(server);
@@ -94,23 +94,21 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
         return Success();
     }
 
-    private Task<Outputs> Success()
+    private Outputs Success()
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created)
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string error = "")
+    private Outputs Failure(HttpStatusCode statusCode, string error = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode)
         };
-        return Task.FromResult(outputs);
     }
 }

@@ -7,7 +7,7 @@ namespace Orbit.Caddy;
 /// <summary>
 /// Create a <see cref="ShellCommand"/> to write a Caddyfile using <see cref="CaddyfileFactory"/> to a server.
 /// </summary>
-public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
+public class WriteCaddyfileCommandFactory : IFactory<Instance, Task<ShellCommand[]>>
 {
     private readonly ILogger<WriteCaddyfileCommandFactory> _logger;
     private readonly CaddyfileFactory _factory;
@@ -22,9 +22,9 @@ public class WriteCaddyfileCommandFactory : IFactory<Instance, ShellCommand[]>
     }
 
     /// <inheritdoc/>
-    public ShellCommand[] Create(Instance instance)
+    public async Task<ShellCommand[]> Create(Instance instance)
     {
-        string? caddyfile = _factory.Create(instance);
+        string? caddyfile = await _factory.Create(instance);
         if (caddyfile is null)
         {
             _logger.LogError("Failed to create Caddyfile");

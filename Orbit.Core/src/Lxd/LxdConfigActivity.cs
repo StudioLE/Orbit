@@ -66,23 +66,23 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigAc
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
-        Instance? instanceQuery = _instances.Get(inputs.Instance);
+        Instance? instanceQuery = await _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
             return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
-        string output = _factory.Create(instance);
+        string output = await _factory.Create(instance);
         // TODO: Make save optional
-        if (!_lxdConfigProvider.Put(instance.Name, output))
+        if (!await _lxdConfigProvider.Put(instance.Name, output))
             return Failure(HttpStatusCode.InternalServerError, "Failed to write the lxd config file.");
         return Success(output);
     }
 
-    private Task<Outputs> Success(string output)
+    private Outputs Success(string output)
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.OK),
             Asset = new()
@@ -91,14 +91,13 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigAc
                 Content = output
             }
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string? error = null, string output = "")
+    private Outputs Failure(HttpStatusCode statusCode, string? error = null, string output = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode),
             Asset = new()
@@ -107,6 +106,5 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigAc
                 Content = output
             }
         };
-        return Task.FromResult(outputs);
     }
 }

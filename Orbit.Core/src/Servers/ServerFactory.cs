@@ -9,7 +9,7 @@ namespace Orbit.Servers;
 /// <summary>
 /// A factory for creating <see cref="Server"/> with default values.
 /// </summary>
-public class ServerFactory : IFactory<Server, Server>
+public class ServerFactory : IFactory<Server, Task<Server>>
 {
     private const string DefaultName = "server";
     private const int DefaultNumberValue = 1;
@@ -31,10 +31,10 @@ public class ServerFactory : IFactory<Server, Server>
     }
 
     /// <inheritdoc />
-    public Server Create(Server server)
+    public async Task<Server> Create(Server server)
     {
         if (server.Number.IsDefault())
-            server.Number = DefaultNumber();
+            server.Number = await DefaultNumber();
         if (server.Name.IsDefault())
             server.Name = new($"{DefaultName}-{server.Number:00}");
         if (server.Interfaces.IsDefault())
@@ -65,13 +65,13 @@ public class ServerFactory : IFactory<Server, Server>
         return MacAddressHelpers.Generate((int)NetworkType.RoutedNic + 5, server.Number, 0);
     }
 
-    private int DefaultNumber()
+    private async Task<int> DefaultNumber()
     {
-        int[] numbers = _servers
-            .GetAll()
+        Server[] servers = await _servers.GetAll();
+        int[] numbers = servers
             .Select(x => x.Number)
             .ToArray();
-        int finalNumber = numbers.Any()
+        int finalNumber = numbers.Length != 0
             ? numbers.Max()
             : DefaultNumberValue - 1;
         return finalNumber + 1;

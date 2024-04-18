@@ -36,10 +36,10 @@ public static class TestHelpers
         return _exampleClient ?? throw new("Example client must be created using TestHelpers.CreateTestHost()");
     }
 
-    private static void CreateExampleServer(IServiceProvider services)
+    private static async Task CreateExampleServer(IServiceProvider services)
     {
         ServerFactory factory = services.GetRequiredService<ServerFactory>();
-        Server server = factory
+        Server server = await factory
             .Create(new()
             {
                 Name = new(MockConstants.ServerName),
@@ -52,14 +52,14 @@ public static class TestHelpers
                 }
             });
         ServerProvider servers = services.GetRequiredService<ServerProvider>();
-        servers.Put(server);
+        await servers.Put(server);
         _exampleServer = server;
     }
 
-    private static void CreateExampleInstance(IServiceProvider services)
+    private static async Task CreateExampleInstance(IServiceProvider services)
     {
         InstanceFactory factory = services.GetRequiredService<InstanceFactory>();
-        Instance instance = factory
+        Instance instance = await factory
             .Create(new()
             {
                 Name = new(MockConstants.InstanceName),
@@ -67,25 +67,25 @@ public static class TestHelpers
                 Domains = ["example.com", "example.org"]
             });
         InstanceProvider instances = services.GetRequiredService<InstanceProvider>();
-        instances.Put(instance);
+        await instances.Put(instance);
         _exampleInstance = instance;
     }
 
-    private static void CreateExampleClient(IServiceProvider services)
+    private static async Task CreateExampleClient(IServiceProvider services)
     {
         ClientFactory factory = services.GetRequiredService<ClientFactory>();
-        Client client = factory
+        Client client = await factory
             .Create(new()
             {
                 Name = new(MockConstants.ClientName),
                 Number = MockConstants.ClientNumber
             });
         ClientProvider clients = services.GetRequiredService<ClientProvider>();
-        clients.Put(client);
+        await clients.Put(client);
         _exampleClient = client;
     }
 
-    public static IHost CreateTestHost(Action<IServiceCollection>? configureServices = null)
+    public static async Task<IHost> CreateTestHost(Action<IServiceCollection>? configureServices = null)
     {
         configureServices ??= _ => { };
         IHost host = Host
@@ -99,9 +99,9 @@ public static class TestHelpers
                 .AddMockQREncodeFacade())
             .ConfigureServices(configureServices)
             .Build();
-        CreateExampleServer(host.Services);
-        CreateExampleInstance(host.Services);
-        CreateExampleClient(host.Services);
+        await CreateExampleServer(host.Services);
+        await CreateExampleInstance(host.Services);
+        await CreateExampleClient(host.Services);
         return host;
     }
 

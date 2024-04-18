@@ -10,7 +10,7 @@ namespace Orbit.WireGuard;
 /// <summary>
 /// A factory for creating <see cref="WireGuardClient"/> with default values.
 /// </summary>
-public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardClient[]>
+public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGuardClient[]>>
 {
     private readonly IWireGuardFacade _wg;
     private readonly ServerProvider _servers;
@@ -25,17 +25,17 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
     }
 
     /// <inheritdoc/>
-    public WireGuardClient[] Create(IHasWireGuardClient entity)
+    public async Task<WireGuardClient[]> Create(IHasWireGuardClient entity)
     {
         return entity switch
         {
-            Instance instance => Create(instance),
-            Client client => Create(client),
+            Instance instance => await Create(instance),
+            Client client => await Create(client),
             _ => throw new TypeSwitchException<IHasWireGuardClient>(string.Empty, entity)
         };
     }
 
-    private WireGuardClient[] Create<T>(T entity) where T : struct, IHasWireGuardClient
+    private ValueTask<WireGuardClient[]> Create<T>(T entity) where T : struct, IHasWireGuardClient
     {
         if (entity.WireGuard.IsDefault())
             entity.WireGuard = entity
@@ -50,15 +50,16 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, WireGuardCli
                     .ToArray();
         return entity
             .WireGuard
-            .Select(wg => Create(wg, entity))
-            .ToArray();
+            .ToAsyncEnumerable()
+            .SelectAwait(async wg => await Create(wg, entity))
+            .ToArrayAsync();
     }
 
-    private WireGuardClient Create(WireGuardClient wg, IHasWireGuardClient entity)
+    private async Task<WireGuardClient> Create(WireGuardClient wg, IHasWireGuardClient entity)
     {
         if (wg.Interface.Server.IsDefault())
             throw new($"{nameof(WireGuardClient.Interface.Server)} must be set.");
-        Server server = _servers.Get(wg.Interface.Server) ?? throw new("Failed to get the server.");
+        Server server = await _servers.Get(wg.Interface.Server) ?? throw new("Failed to get the server.");
         wg.Interface = ApplyInterfaceDefaults(wg.Interface, entity, server);
         if (wg.Port.IsDefault())
             wg.Port = server.WireGuard.Port;

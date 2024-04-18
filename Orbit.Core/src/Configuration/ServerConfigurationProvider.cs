@@ -1,8 +1,9 @@
-using Microsoft.Extensions.FileProviders;
-using Orbit.Provision;
+using Orbit.Clients;
+using Orbit.Instances;
 using Orbit.Schema;
 using StudioLE.Extensions.System.Exceptions;
 using StudioLE.Serialization;
+using StudioLE.Storage.Files;
 
 namespace Orbit.Configuration;
 
@@ -11,7 +12,9 @@ namespace Orbit.Configuration;
 /// </summary>
 public class ServerConfigurationProvider
 {
-    private readonly IEntityFileProvider _fileProvider;
+    internal const string FileName = "server-config.yml";
+    private readonly IFileReader _reader;
+    private readonly IFileWriter _writer;
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
 
@@ -19,11 +22,13 @@ public class ServerConfigurationProvider
     /// DI constructor for <see cref="ServerConfigurationProvider"/>.
     /// </summary>
     public ServerConfigurationProvider(
-        IEntityFileProvider fileProvider,
+        IFileReader reader,
+        IFileWriter writer,
         ISerializer serializer,
         IDeserializer deserializer)
     {
-        _fileProvider = fileProvider;
+        _reader = reader;
+        _writer = writer;
         _serializer = serializer;
         _deserializer = deserializer;
     }
@@ -33,15 +38,14 @@ public class ServerConfigurationProvider
     /// </summary>
     /// <param name="id">The instance id.</param>
     /// <returns>The LXD configuration yaml, or <see langword="null"/> if it doesn't exist.</returns>
-    public ServerConfiguration? Get<T>(IEntityId<T> id) where T : struct, IEntity
+    public async Task<ServerConfiguration?> Get<T>(IEntityId<T> id) where T : struct, IEntity
     {
-        IFileInfo file = GetFileInfo(id);
-        if (!file.Exists)
+        await using Stream? stream = await _reader.Read(GetFilePath(id));
+        if (stream is null)
             return null;
-        using Stream stream = file.CreateReadStream();
         using StreamReader reader = new(stream);
         object? obj = _deserializer.Deserialize(reader, typeof(IReadOnlyDictionary<string, ShellCommand[]>));
-        if(obj is IReadOnlyDictionary<string, ShellCommand[]> dictionary)
+        if (obj is IReadOnlyDictionary<string, ShellCommand[]> dictionary)
             return new(dictionary);
         throw new();
     }
@@ -54,28 +58,25 @@ public class ServerConfigurationProvider
     /// <param name="config">The server configuration.</param>
     /// <returns><see langword="true"/> if the configuration is stored successfully, otherwise <see langword="false"/>.</returns>
     /// <exception cref="Exception">Thrown if the file provider is not physical.</exception>
-    public bool Put<T>(IEntityId<T> id, Dictionary<ServerId, ShellCommand[]> config) where T : struct, IEntity
+    public async Task<bool> Put<T>(IEntityId<T> id, Dictionary<ServerId, ShellCommand[]> config) where T : struct, IEntity
     {
-        IFileInfo file = GetFileInfo(id);
-        FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
-        DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if (!directory.Exists)
-            directory.Create();
-        using StreamWriter writer = physicalFile.CreateText();
-        string yaml = _serializer.Serialize(config);
-        writer.Write(yaml);
-        return true;
+        string path = GetFilePath(id);
+        MemoryStream stream = new();
+        StreamWriter writer = new(stream);
+        _serializer.Serialize(writer, config);
+        await writer.FlushAsync();
+        stream.Seek(0, SeekOrigin.Begin);
+        string? uri = await _writer.Write(path, stream);
+        return uri is not null;
     }
 
-    private IFileInfo GetFileInfo<T>(IEntityId<T> id) where T : struct, IEntity
+    private static string GetFilePath<T>(IEntityId<T> id) where T : struct, IEntity
     {
-        const string fileName = "server-config.yml";
-        string path = id switch
+        return id switch
         {
-            ClientId clientId => Path.Combine("clients", clientId.ToString(), fileName),
-            InstanceId instanceId => Path.Combine("instances", instanceId.ToString(), fileName),
+            ClientId clientId => Path.Combine(ClientProvider.DirectoryName, clientId.ToString(), FileName),
+            InstanceId instanceId => Path.Combine(InstanceProvider.DirectoryName, instanceId.ToString(), FileName),
             _ => throw new TypeSwitchException<IEntityId<T>>(id)
         };
-        return _fileProvider.GetFileInfo(path);
     }
 }

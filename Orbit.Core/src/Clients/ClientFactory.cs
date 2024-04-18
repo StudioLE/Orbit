@@ -9,7 +9,7 @@ namespace Orbit.Clients;
 /// <summary>
 /// A factory for creating <see cref="Client"/> with default values.
 /// </summary>
-public class ClientFactory : IFactory<Client, Client>
+public class ClientFactory : IFactory<Client, Task<Client>>
 {
     private const int DefaultClientNumber = 100;
 
@@ -31,33 +31,33 @@ public class ClientFactory : IFactory<Client, Client>
     }
 
     /// <inheritdoc/>
-    public Client Create(Client client)
+    public async Task<Client> Create(Client client)
     {
         if (client.Connections.IsDefault())
-            client.Connections = DefaultServers();
+            client.Connections = await DefaultServers();
         if (client.Number.IsDefault())
-            client.Number = DefaultNumber();
+            client.Number = await DefaultNumber();
         if (client.Name.IsDefault())
             client.Name = new($"client-{client.Number:00}");
         if (client.WireGuard.IsDefault())
-            client.WireGuard = _wireGuardClientFactory.Create(client);
+            client.WireGuard = await _wireGuardClientFactory.Create(client);
         return client;
     }
 
-    private ServerId[] DefaultServers()
+    private async Task<ServerId[]> DefaultServers()
     {
-        return _servers
-            .GetAll()
+        Server[] servers = await _servers.GetAll();
+        return servers
             .Select(x => x.Name)
             .ToArray();
     }
 
-    private int DefaultNumber()
+    private async Task<int> DefaultNumber()
     {
-        int[] numbers = _clients
-            .GetAll()
+        IAsyncEnumerable<Client> clients = await _clients.GetAll();
+        int[] numbers = await clients
             .Select(x => x.Number)
-            .ToArray();
+            .ToArrayAsync();
         int finalNumber = numbers.Length != 0
             ? numbers.Max()
             : DefaultClientNumber - 1;

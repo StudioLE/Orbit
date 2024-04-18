@@ -15,17 +15,18 @@ namespace Orbit.Core.Tests.Servers;
 internal sealed class ServerActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly ServerActivity _activity;
-    private readonly ServerProvider _servers;
-    private readonly ISerializer _serializer;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
+    private ServerActivity _activity;
+    private ServerProvider _servers;
+    private ISerializer _serializer;
+    private IReadOnlyCollection<LogEntry> _logs;
 
-    public ServerActivityTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _servers = provider.GetRequiredService<ServerProvider>();
@@ -53,7 +54,7 @@ internal sealed class ServerActivityTests
         await _context.VerifyAsSerialized(outputs.Server, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created server {outputs.Server.Name}"));
-        Server storedServer = _servers.Get(outputs.Server.Name) ?? throw new("Failed to get server.");
+        Server storedServer = await _servers.Get(outputs.Server.Name) ?? throw new("Failed to get server.");
         await _context.VerifyAsSerialized(storedServer, outputs.Server, _serializer);
     }
 }

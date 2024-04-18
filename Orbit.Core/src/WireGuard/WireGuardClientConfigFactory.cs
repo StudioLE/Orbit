@@ -9,7 +9,7 @@ namespace Orbit.WireGuard;
 /// <summary>
 /// Create a WireGuard configuration file for a <see cref="Client"/> or <see cref="Instance"/>.
 /// </summary>
-public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
+public class WireGuardClientConfigFactory : IFactory<WireGuardClient, Task<string>>
 {
     private readonly ServerProvider _servers;
 
@@ -22,9 +22,9 @@ public class WireGuardClientConfigFactory : IFactory<WireGuardClient, string>
     }
 
     /// <inheritdoc/>
-    public string Create(WireGuardClient wg)
+    public async Task<string> Create(WireGuardClient wg)
     {
-        Server server = _servers.Get(wg.Interface.Server) ?? throw new($"Server not found: {wg.Interface.Server}.");
+        Server server = await _servers.Get(wg.Interface.Server) ?? throw new($"Server not found: {wg.Interface.Server}.");
         return $"""
             [Interface]
             ListenPort = {wg.Port}

@@ -16,7 +16,7 @@ namespace Orbit.Caddy;
 /// If the <see cref="Instance"/> has a <see cref="NetworkType.RoutedNic"/> this is not necessary.
 /// Follows a <see href="https://refactoring.guru/design-patterns/factory-method">factory method pattern</see>.
 /// </remarks>
-public class CaddyfileFactory : IFactory<Instance, string?>
+public class CaddyfileFactory : IFactory<Instance, Task<string?>>
 {
     private readonly ILogger<CaddyfileFactory> _logger;
     private readonly ServerProvider _servers;
@@ -36,7 +36,7 @@ public class CaddyfileFactory : IFactory<Instance, string?>
     }
 
     /// <inheritdoc/>
-    public string? Create(Instance instance)
+    public async Task<string?> Create(Instance instance)
     {
         if (instance.Domains.Length == 0)
         {
@@ -45,7 +45,7 @@ public class CaddyfileFactory : IFactory<Instance, string?>
         }
         string domains = instance.Domains.Join(", ");
 
-        Server server = _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
+        Server server = await _servers.Get(instance.Server) ?? throw new($"Server not found: {instance.Server}.");
         string address = _internalInterfaceFactory.GetIPv4Address(instance, server) + ":80";
         return $$"""
             {{domains}} {

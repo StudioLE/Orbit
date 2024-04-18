@@ -69,24 +69,24 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, LxdInitActivity
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
-        Instance? instanceQuery = _instances.Get(new InstanceId(inputs.Instance));
+        Instance? instanceQuery = await _instances.Get(new(inputs.Instance));
         if (instanceQuery is not Instance instance)
             return Failure(HttpStatusCode.NotFound, "The instance does not exist.");
         if (!instance.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
-        Server? serverQuery = _servers.Get(instance.Server);
+        Server? serverQuery = await _servers.Get(instance.Server);
         if (serverQuery is not Server server)
             return Failure(HttpStatusCode.NotFound, "The server does not exist");
         _ssh.SetServer(server);
-        string? config = _lxdConfigProvider.Get(instance.Name);
+        string? config = await _lxdConfigProvider.Get(instance.Name);
         if (config is not null)
             _logger.LogDebug("Using existing LXD config.");
         else
         {
             _logger.LogDebug("Generating LXD config for instance.");
-            config = _lxdConfigFactory.Create(instance);
+            config = await _lxdConfigFactory.Create(instance);
         }
         string[] args =
         [
@@ -103,23 +103,21 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, LxdInitActivity
         return Success();
     }
 
-    private Task<Outputs> Success()
+    private Outputs Success()
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.Created)
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string error = "")
+    private Outputs Failure(HttpStatusCode statusCode, string error = "")
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode)
         };
-        return Task.FromResult(outputs);
     }
 }

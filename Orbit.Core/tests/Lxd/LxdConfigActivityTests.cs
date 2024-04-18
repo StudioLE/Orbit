@@ -14,16 +14,17 @@ namespace Orbit.Core.Tests.Lxd;
 internal sealed class LxdConfigActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private readonly LxdConfigActivity _activity;
-    private readonly IReadOnlyCollection<LogEntry> _logs;
-    private readonly LxdConfigProvider _lxdConfigProvider;
+    private LxdConfigActivity _activity;
+    private IReadOnlyCollection<LogEntry> _logs;
+    private LxdConfigProvider _lxdConfigProvider;
 
-    public LxdConfigActivityTests()
+    [SetUp]
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _activity = provider.GetRequiredService<LxdConfigActivity>();
@@ -46,8 +47,8 @@ internal sealed class LxdConfigActivityTests
 
         // Assert
         Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
-        string? resource = _lxdConfigProvider.Get(inputs.Instance);
+        Assert.That(_logs.Count, Is.EqualTo(1), "Log Count");
+        string? resource = await _lxdConfigProvider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
         Assert.That(resource, Is.EqualTo(outputs.Asset?.Content));
 

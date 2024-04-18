@@ -15,12 +15,12 @@ internal sealed class ClientServerConfigActivityTests
     private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
-    public void SetUp()
+    public async Task SetUp()
     {
 #if DEBUG
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
 #endif
-        IHost host = TestHelpers.CreateTestHost();
+        IHost host = await TestHelpers.CreateTestHost();
         using IServiceScope serviceScope = host.Services.CreateScope();
         IServiceProvider provider = serviceScope.ServiceProvider;
         _activity = provider.GetRequiredService<ClientServerConfigActivity>();
@@ -44,7 +44,7 @@ internal sealed class ClientServerConfigActivityTests
         // Assert
         Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
-        ServerConfiguration? config = _provider.Get(inputs.Client);
+        ServerConfiguration? config = await _provider.Get(inputs.Client);
         Assert.That(config, Is.Not.Null);
     }
 }

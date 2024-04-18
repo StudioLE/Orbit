@@ -1,61 +1,61 @@
-using Microsoft.Extensions.FileProviders;
-using Orbit.Provision;
+using Orbit.Instances;
 using Orbit.Schema;
+using StudioLE.Storage.Files;
 
 namespace Orbit.Lxd;
 
 /// <summary>
-/// Provides the LXD configuration yaml for a virtual machine instance.
+/// Provide and store the LXD configuration.
 /// </summary>
 public class LxdConfigProvider
 {
-    private readonly IEntityFileProvider _fileProvider;
+    internal const string FileName = "lxd-config.yml";
+    private readonly IFileReader _reader;
+    private readonly IFileWriter _writer;
 
     /// <summary>
     /// DI constructor for <see cref="LxdConfigProvider"/>.
     /// </summary>
-    public LxdConfigProvider(IEntityFileProvider fileProvider)
+    public LxdConfigProvider(IFileReader reader, IFileWriter writer)
     {
-        _fileProvider = fileProvider;
+        _reader = reader;
+        _writer = writer;
     }
 
     /// <summary>
-    /// Retrieve the LXD configuration yaml for a virtual machine instance.
+    /// Retrieve the LXD configuration.
     /// </summary>
     /// <param name="id">The instance id.</param>
-    /// <returns>The LXD configuration yaml, or <see langword="null"/> if it doesn't exist.</returns>
-    public string? Get(InstanceId id)
+    /// <returns>The LXD configuration, or <see langword="null"/> if it doesn't exist.</returns>
+    public async Task<string?> Get(InstanceId id)
     {
-        IFileInfo file = GetFileInfo(id);
-        if (!file.Exists)
+        await using Stream? stream = await _reader.Read(GetFilePath(id));
+        if (stream is null)
             return null;
-        using Stream stream = file.CreateReadStream();
         using StreamReader reader = new(stream);
-        return reader.ReadToEnd();
+        return await reader.ReadToEndAsync();
     }
 
     /// <summary>
-    /// Store the LXD configuration yaml for a virtual machine instance.
+    /// Store the LXD configuration.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="content"></param>
+    /// <param name="id">The instance id.</param>
+    /// <param name="config">The LXD configuraiton as YAML</param>
     /// <returns><see langword="true"/> if the configuration is stored successfully, otherwise <see langword="false"/>.</returns>
-    /// <exception cref="Exception">Thrown if the file provider is not physical.</exception>
-    public bool Put(InstanceId id, string content)
+    public async Task<bool> Put(InstanceId id, string config)
     {
-        IFileInfo file = GetFileInfo(id);
-        FileInfo physicalFile = new(file.PhysicalPath ?? throw new("Not a physical path"));
-        DirectoryInfo directory = physicalFile.Directory ?? throw new("Directory was unexpectedly null.");
-        if (!directory.Exists)
-            directory.Create();
-        using StreamWriter writer = physicalFile.CreateText();
-        writer.Write(content);
-        return true;
+        string path = GetFilePath(id);
+        MemoryStream stream = new();
+        StreamWriter writer = new(stream);
+        await writer.WriteAsync(config);
+        await writer.FlushAsync();
+        stream.Seek(0, SeekOrigin.Begin);
+        string? uri = await _writer.Write(path, stream);
+        return uri is not null;
     }
 
-    private IFileInfo GetFileInfo(InstanceId id)
+    private static string GetFilePath(InstanceId id)
     {
-        string path = Path.Combine("instances", id.ToString(), "lxd-config.yml");
-        return _fileProvider.GetFileInfo(path);
+        return Path.Combine(InstanceProvider.DirectoryName, id.ToString(), FileName);
     }
 }

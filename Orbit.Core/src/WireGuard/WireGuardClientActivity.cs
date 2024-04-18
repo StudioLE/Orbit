@@ -69,9 +69,9 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
     }
 
     /// <inheritdoc/>
-    public Task<Outputs> Execute(Inputs inputs)
+    public async Task<Outputs> Execute(Inputs inputs)
     {
-        Client? clientQuery = _clients.Get(inputs.Client);
+        Client? clientQuery = await _clients.Get(inputs.Client);
         if (clientQuery is not Client client)
             return Failure(HttpStatusCode.NotFound, "The client does not exist.");
         bool isValid = client.TryValidate(_logger);
@@ -81,14 +81,14 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
         foreach (WireGuardClient wg in client.WireGuard)
         {
             string fileName = $"{wg.Interface.Name}.conf";
-            string config = _factory.Create(wg);
+            string config = await _factory.Create(wg);
             assets.Add(new()
             {
                 Name = fileName,
                 Content = config
             });
             // TODO: Make save optional
-            if (!_provider.Put(client.Name, fileName, config))
+            if (!await _provider.Put(client.Name, fileName, config))
                 return Failure(HttpStatusCode.InternalServerError, "Failed to write the wireguard config file.");
             string svg = _qr.GenerateSvg(config);
             if (string.IsNullOrEmpty(svg))
@@ -103,30 +103,28 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
                 Content = svg
             });
             // TODO: Make save optional
-            if (!_provider.Put(client.Name, fileName + ".svg", svg))
+            if (! await _provider.Put(client.Name, fileName + ".svg", svg))
                 return Failure(HttpStatusCode.InternalServerError, "Failed to write the QR code file.");
         }
         return Success(assets);
     }
 
-    private Task<Outputs> Success(IReadOnlyCollection<InternalAsset> assets)
+    private Outputs Success(IReadOnlyCollection<InternalAsset> assets)
     {
-        Outputs outputs = new()
+        return new()
         {
             Status = new(HttpStatusCode.OK),
             Assets = assets
         };
-        return Task.FromResult(outputs);
     }
 
-    private Task<Outputs> Failure(HttpStatusCode statusCode, string? error = null)
+    private Outputs Failure(HttpStatusCode statusCode, string? error = null)
     {
         if (!string.IsNullOrEmpty(error))
             _logger.LogError(error);
-        Outputs outputs = new()
+        return new()
         {
             Status = new(statusCode)
         };
-        return Task.FromResult(outputs);
     }
 }
