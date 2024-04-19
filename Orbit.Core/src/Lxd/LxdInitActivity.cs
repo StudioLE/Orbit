@@ -94,7 +94,8 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, LxdInitActivity
             "init",
             $"{instance.OS.Name.ToLower()}:{instance.OS.Version}",
             instance.Name.ToString(),
-            "--vm"
+            "--vm",
+            $"--device root,size={instance.Hardware.Disk}GB"
         ];
         int exitCode = _ssh.Execute(string.Join(" ", args), config);
         if (exitCode != 0)
