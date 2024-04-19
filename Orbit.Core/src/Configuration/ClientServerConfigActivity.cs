@@ -13,7 +13,7 @@ namespace Orbit.Configuration;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for a <see cref="Client"/>.
 /// </summary>
-public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.Inputs, ClientServerConfigActivity.Outputs>
+public class ClientServerConfigActivity : ActivityBase<ClientServerConfigActivity.Inputs, ClientServerConfigActivity.Outputs>
 {
     private readonly ILogger<ClientServerConfigActivity> _logger;
     private readonly ClientProvider _clients;
@@ -61,7 +61,7 @@ public class ClientServerConfigActivity : IActivity<ClientServerConfigActivity.I
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         Client? clientQuery = await _clients.Get(inputs.Client);
         if (clientQuery is not Client client)

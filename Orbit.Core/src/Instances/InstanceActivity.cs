@@ -9,7 +9,7 @@ namespace Orbit.Instances;
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine instance.
 /// </summary>
-public class InstanceActivity : IActivity<Instance, InstanceActivity.Outputs>
+public class InstanceActivity : ActivityBase<Instance, InstanceActivity.Outputs>
 {
     private readonly ILogger<InstanceActivity> _logger;
     private readonly InstanceProvider _instances;
@@ -45,7 +45,7 @@ public class InstanceActivity : IActivity<Instance, InstanceActivity.Outputs>
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Instance instance)
+    public override async Task<Outputs?> Execute(Instance instance)
     {
         instance = await _factory.Create(instance);
         if (!instance.TryValidate(_logger))

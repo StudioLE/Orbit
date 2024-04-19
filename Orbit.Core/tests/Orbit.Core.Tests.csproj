@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="StudioLE.Extensions.Logging.Cache" Version="0.11.0" />
-    <PackageReference Include="StudioLE.Diagnostics.NUnit" Version="0.10.0" />
-    <PackageReference Include="StudioLE.Verify.Yaml" Version="0.10.2-alpha.2" />
+    <PackageReference Include="StudioLE.Diagnostics.NUnit" Version="0.10.2" />
+    <PackageReference Include="StudioLE.Verify.Yaml" Version="0.10.2" />
   </ItemGroup>
 
   <ItemGroup>

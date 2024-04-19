@@ -14,7 +14,7 @@ namespace Orbit.Configuration;
 /// <summary>
 /// An <see cref="IActivity"/> to generate the server configuration for an <see cref="Instance"/>.
 /// </summary>
-public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivity.Inputs, InstanceServerConfigActivity.Outputs>
+public class InstanceServerConfigActivity : ActivityBase<InstanceServerConfigActivity.Inputs, InstanceServerConfigActivity.Outputs>
 {
     private readonly ILogger<InstanceServerConfigActivity> _logger;
     private readonly InstanceProvider _instances;
@@ -65,7 +65,7 @@ public class InstanceServerConfigActivity : IActivity<InstanceServerConfigActivi
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         Instance? instanceQuery = await _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)

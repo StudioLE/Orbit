@@ -1,19 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Orbit.Assets;
 using Orbit.Clients;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
-using Tectonic.Assets;
+using FileInfo = StudioLE.Storage.Files.FileInfo;
 
 namespace Orbit.WireGuard;
 
 /// <summary>
 /// An <see cref="IActivity"/> to generate the WireGuard config for a <see cref="Client"/>.
 /// </summary>
-public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs, WireGuardClientActivity.Outputs>
+public class WireGuardClientActivity : ActivityBase<WireGuardClientActivity.Inputs, WireGuardClientActivity.Outputs>
 {
     private readonly ILogger<WireGuardClientActivity> _logger;
     private readonly ClientProvider _clients;
@@ -65,11 +66,11 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
         /// <summary>
         /// The generated assets.
         /// </summary>
-        public IReadOnlyCollection<InternalAsset> Assets { get; set; } = Array.Empty<InternalAsset>();
+        public IReadOnlyCollection<FileInfo> Assets { get; set; } = Array.Empty<FileInfo>();
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         Client? clientQuery = await _clients.Get(inputs.Client);
         if (clientQuery is not Client client)
@@ -77,16 +78,12 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
         bool isValid = client.TryValidate(_logger);
         if (!isValid)
             return Failure(HttpStatusCode.BadRequest);
-        List<InternalAsset> assets = new();
+        List<FileInfo> assets = new();
         foreach (WireGuardClient wg in client.WireGuard)
         {
             string fileName = $"{wg.Name}.conf";
             string config = await _factory.Create(wg);
-            assets.Add(new()
-            {
-                Name = fileName,
-                Content = config
-            });
+            assets.Add(AssetHelpers.Create(fileName, config));
             // TODO: Make save optional
             if (!await _provider.Put(client.Name, fileName, config))
                 return Failure(HttpStatusCode.InternalServerError, "Failed to write the wireguard config file.");
@@ -96,12 +93,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
                 _logger.LogWarning("Failed to generate the QR code.");
                 continue;
             }
-            assets.Add(new()
-            {
-                Name = fileName + ".svg",
-                ContentType = "image/svg+xml",
-                Content = svg
-            });
+            assets.Add(AssetHelpers.Create(fileName, svg, "image/svg+xml"));
             // TODO: Make save optional
             if (! await _provider.Put(client.Name, fileName + ".svg", svg))
                 return Failure(HttpStatusCode.InternalServerError, "Failed to write the QR code file.");
@@ -109,7 +101,7 @@ public class WireGuardClientActivity : IActivity<WireGuardClientActivity.Inputs,
         return Success(assets);
     }
 
-    private Outputs Success(IReadOnlyCollection<InternalAsset> assets)
+    private Outputs Success(IReadOnlyCollection<FileInfo> assets)
     {
         return new()
         {

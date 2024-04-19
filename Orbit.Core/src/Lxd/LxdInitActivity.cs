@@ -15,7 +15,7 @@ namespace Orbit.Lxd;
 /// An <see cref="IActivity"/> to initialize an <see cref="Instance"/> on a <see cref="Server"/>
 /// using LXD.
 /// </summary>
-public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, LxdInitActivity.Outputs>
+public class LxdInitActivity : ActivityBase<LxdInitActivity.Inputs, LxdInitActivity.Outputs>
 {
     private readonly ILogger<LxdInitActivity> _logger;
     private readonly InstanceProvider _instances;
@@ -69,7 +69,7 @@ public class LxdInitActivity : IActivity<LxdInitActivity.Inputs, LxdInitActivity
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         Instance? instanceQuery = await _instances.Get(new(inputs.Instance));
         if (instanceQuery is not Instance instance)

@@ -43,11 +43,11 @@ internal sealed class ClientActivityTests
         Client sourceClient = new();
 
         // Act
-        ClientActivity.Outputs outputs = await _activity.Execute(sourceClient);
+        ClientActivity.Outputs? outputs = await _activity.Execute(sourceClient);
 
         // Assert
         Assert.That(outputs, Is.Not.Null);
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0));
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0));
         await _context.VerifyAsSerialized(outputs.Client, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created client {outputs.Client.Name}"));

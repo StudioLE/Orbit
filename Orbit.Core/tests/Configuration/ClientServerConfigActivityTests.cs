@@ -39,10 +39,11 @@ internal sealed class ClientServerConfigActivityTests
         };
 
         // Act
-        ClientServerConfigActivity.Outputs outputs = await _activity.Execute(inputs);
+        ClientServerConfigActivity.Outputs? outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         ServerConfiguration? config = await _provider.Get(inputs.Client);
         Assert.That(config, Is.Not.Null);

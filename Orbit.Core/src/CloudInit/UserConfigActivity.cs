@@ -2,19 +2,20 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orbit.Assets;
 using Orbit.Instances;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
-using Tectonic.Assets;
+using FileInfo = StudioLE.Storage.Files.FileInfo;
 
 namespace Orbit.CloudInit;
 
 /// <summary>
 /// An <see cref="IActivity"/> to generate the cloud init user-data yaml for a virtual machine instance.
 /// </summary>
-public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfigActivity.Outputs>
+public class UserConfigActivity : ActivityBase<UserConfigActivity.Inputs, UserConfigActivity.Outputs>
 {
     private readonly ILogger<UserConfigActivity> _logger;
     private readonly CloudInitOptions _options;
@@ -66,11 +67,11 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfi
         /// <summary>
         /// The generated asset.
         /// </summary>
-        public InternalAsset? Asset { get; set; }
+        public FileInfo? Asset { get; set; }
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         if (!_options.TryValidate(_logger))
             return Failure(HttpStatusCode.BadRequest);
@@ -91,11 +92,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfi
         return new()
         {
             Status = new(HttpStatusCode.OK),
-            Asset = new()
-            {
-                ContentType = "text/x-yaml",
-                Content = output
-            }
+            Asset = AssetHelpers.CreateFromYaml(output)
         };
     }
 
@@ -106,11 +103,7 @@ public class UserConfigActivity : IActivity<UserConfigActivity.Inputs, UserConfi
         return new()
         {
             Status = new(statusCode),
-            Asset = new()
-            {
-                ContentType = "text/x-yaml",
-                Content = output
-            }
+            Asset = AssetHelpers.CreateFromYaml(output)
         };
     }
 }

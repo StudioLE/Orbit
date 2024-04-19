@@ -43,15 +43,16 @@ internal sealed class WireGuardClientActivityTests
         };
 
         // Act
-        WireGuardClientActivity.Outputs outputs = await _activity.Execute(inputs);
+        WireGuardClientActivity.Outputs? outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log count");
         Assert.That(outputs.Assets.Count, Is.EqualTo(2), "Output");
         string? resource = await _provider.Get(inputs.Client, $"wg{MockConstants.ServerNumber}.conf");
         Assert.That(resource, Is.Not.Null);
-        Assert.That(resource, Is.EqualTo(outputs.Assets.First().Content));
+        Assert.That(resource, Is.EqualTo(outputs.Assets.First().Location));
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

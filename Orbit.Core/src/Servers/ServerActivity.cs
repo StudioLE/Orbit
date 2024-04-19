@@ -9,7 +9,7 @@ namespace Orbit.Servers;
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine server.
 /// </summary>
-public class ServerActivity : IActivity<Server, ServerActivity.Outputs>
+public class ServerActivity : ActivityBase<Server, ServerActivity.Outputs>
 {
     private readonly ILogger<ServerActivity> _logger;
     private readonly ServerProvider _servers;
@@ -45,7 +45,7 @@ public class ServerActivity : IActivity<Server, ServerActivity.Outputs>
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Server server)
+    public override async Task<Outputs?> Execute(Server server)
     {
         server = await _factory.Create(server);
         if (!server.TryValidate(_logger))

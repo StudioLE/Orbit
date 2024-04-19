@@ -1,19 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Orbit.Assets;
 using Orbit.Instances;
 using Orbit.Schema;
 using Orbit.Schema.DataAnnotations;
 using Orbit.Utils.DataAnnotations;
 using Tectonic;
-using Tectonic.Assets;
+using FileInfo = StudioLE.Storage.Files.FileInfo;
 
 namespace Orbit.Lxd;
 
 /// <summary>
 /// An <see cref="IActivity"/> to generate the LXD configuration yaml for a virtual machine instance.
 /// </summary>
-public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigActivity.Outputs>
+public class LxdConfigActivity : ActivityBase<LxdConfigActivity.Inputs, LxdConfigActivity.Outputs>
 {
     private readonly ILogger<LxdConfigActivity> _logger;
     private readonly InstanceProvider _instances;
@@ -62,11 +63,11 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigAc
         /// <summary>
         /// The generated asset.
         /// </summary>
-        public InternalAsset? Asset { get; set; }
+        public FileInfo? Asset { get; set; }
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         Instance? instanceQuery = await _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)
@@ -85,11 +86,7 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigAc
         return new()
         {
             Status = new(HttpStatusCode.OK),
-            Asset = new()
-            {
-                ContentType = "text/x-yaml",
-                Content = output
-            }
+            Asset = AssetHelpers.CreateFromYaml(output)
         };
     }
 
@@ -100,11 +97,7 @@ public class LxdConfigActivity : IActivity<LxdConfigActivity.Inputs, LxdConfigAc
         return new()
         {
             Status = new(statusCode),
-            Asset = new()
-            {
-                ContentType = "text/x-yaml",
-                Content = output
-            }
+            Asset = AssetHelpers.CreateFromYaml(output)
         };
     }
 }

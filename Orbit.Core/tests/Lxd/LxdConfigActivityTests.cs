@@ -43,14 +43,15 @@ internal sealed class LxdConfigActivityTests
         };
 
         // Act
-        LxdConfigActivity.Outputs outputs = await _activity.Execute(inputs);
+        LxdConfigActivity.Outputs? outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(1), "Log Count");
         string? resource = await _lxdConfigProvider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
-        Assert.That(resource, Is.EqualTo(outputs.Asset?.Content));
+        Assert.That(resource, Is.EqualTo(outputs.Asset?.Location));
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

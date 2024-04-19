@@ -43,14 +43,15 @@ internal sealed class UserConfigActivityTests
         };
 
         // Act
-        UserConfigActivity.Outputs outputs = await _activity.Execute(inputs);
+        UserConfigActivity.Outputs? outputs = await _activity.Execute(inputs);
 
         // Assert
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0), "ExitCode");
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         string? retrieved = await _provider.Get(inputs.Instance);
         Assert.That(retrieved, Is.Not.Null);
-        Assert.That(retrieved, Is.EqualTo(outputs.Asset?.Content));
+        Assert.That(retrieved, Is.EqualTo(outputs.Asset?.Location));
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

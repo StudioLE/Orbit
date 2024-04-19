@@ -15,7 +15,7 @@ namespace Orbit.Configuration;
 /// <summary>
 /// An <see cref="IActivity"/> to execute stored server configuration files on a server.
 /// </summary>
-public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity.Inputs, ServerConfigurationActivity.Outputs>
+public class ServerConfigurationActivity : ActivityBase<ServerConfigurationActivity.Inputs, ServerConfigurationActivity.Outputs>
 {
     private readonly ILogger<ServerConfigurationActivity> _logger;
     private readonly InstanceProvider _instances;
@@ -65,7 +65,7 @@ public class ServerConfigurationActivity : IActivity<ServerConfigurationActivity
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Inputs inputs)
+    public override async Task<Outputs?> Execute(Inputs inputs)
     {
         Instance? instanceQuery = await _instances.Get(inputs.Instance);
         if (instanceQuery is not Instance instance)

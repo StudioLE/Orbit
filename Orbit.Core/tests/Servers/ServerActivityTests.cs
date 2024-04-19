@@ -46,10 +46,11 @@ internal sealed class ServerActivityTests
         };
 
         // Act
-        ServerActivity.Outputs outputs = await _activity.Execute(sourceServer);
+        ServerActivity.Outputs? outputs = await _activity.Execute(sourceServer);
 
         // Assert
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0));
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         Assert.That(outputs.Server, Is.Not.Null);
         await _context.VerifyAsSerialized(outputs.Server, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));

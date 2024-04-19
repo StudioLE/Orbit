@@ -46,10 +46,11 @@ internal sealed class InstanceActivityTests
         };
 
         // Act
-        InstanceActivity.Outputs outputs = await _activity.Execute(sourceInstance);
+        InstanceActivity.Outputs? outputs = await _activity.Execute(sourceInstance);
 
         // Assert
-        Assert.That(outputs.Status.ExitCode, Is.EqualTo(0));
+        Assert.That(outputs, Is.Not.Null);
+        Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
         await _context.VerifyAsSerialized(outputs.Instance, _serializer);
         Assert.That(_logs.Count, Is.EqualTo(1));
         Assert.That(_logs.ElementAt(0).Message, Is.EqualTo($"Created instance {outputs.Instance.Name}"));

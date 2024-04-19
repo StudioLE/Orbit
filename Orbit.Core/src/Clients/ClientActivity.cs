@@ -9,7 +9,7 @@ namespace Orbit.Clients;
 /// <summary>
 /// An <see cref="IActivity"/> to create and store the yaml configuration of a virtual machine client.
 /// </summary>
-public class ClientActivity : IActivity<Client, ClientActivity.Outputs>
+public class ClientActivity : ActivityBase<Client, ClientActivity.Outputs>
 {
     private readonly ILogger<ClientActivity> _logger;
     private readonly ClientProvider _clients;
@@ -45,7 +45,7 @@ public class ClientActivity : IActivity<Client, ClientActivity.Outputs>
     }
 
     /// <inheritdoc/>
-    public async Task<Outputs> Execute(Client client)
+    public override async Task<Outputs?> Execute(Client client)
     {
         client = await _factory.Create(client);
         if (!client.TryValidate(_logger))
