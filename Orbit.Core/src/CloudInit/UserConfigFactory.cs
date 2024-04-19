@@ -101,8 +101,9 @@ public class UserConfigFactory : IFactory<Instance, Task<string>>
                     config_path: /etc/wireguard/{wg.Name}.conf
                     content: |
                 {config.Indent(3)}
+
                 """;
         }
-        return output;
+        return output.TrimEnd();
     }
 }
