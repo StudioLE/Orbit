@@ -166,4 +166,17 @@ public class WireGuardInterfaceFactory
     {
         return MacAddressHelpers.Generate((int)NetworkType.WireGuard, server.Number, entity.Number);
     }
+
+    /// <summary>
+    /// Get the port for the entity.
+    /// </summary>
+    /// <param name="entity">The entity.</param>
+    /// <param name="server">The server.</param>
+    /// <returns>
+    /// The port for the entity.
+    /// </returns>
+    public int GetPort(IHasWireGuardClient entity, Server server)
+    {
+        return 60000 + server.Number * 1000 + entity.Number;
+    }
 }

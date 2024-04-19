@@ -62,7 +62,7 @@ public class WireGuardClientFactory : IFactory<IHasWireGuardClient, Task<WireGua
         if(wg.Name.IsDefault())
             wg.Name = _wgInterfaceFactory.GetName(server);
         if (wg.Port.IsDefault())
-            wg.Port = server.WireGuard.Port; // TODO: Peer port should be different to server port.
+            wg.Port = _wgInterfaceFactory.GetPort(entity, server);
         if (wg.Addresses.IsDefault())
             wg.Addresses =
             [
