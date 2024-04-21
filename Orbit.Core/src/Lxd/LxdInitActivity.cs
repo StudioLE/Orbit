@@ -90,7 +90,7 @@ public class LxdInitActivity : ActivityBase<LxdInitActivity.Inputs, LxdInitActiv
         }
         string[] args =
         [
-            "lxc",
+            "/snap/bin/lxc",
             "init",
             $"{instance.OS.Name.ToLower()}:{instance.OS.Version}",
             instance.Name.ToString(),
