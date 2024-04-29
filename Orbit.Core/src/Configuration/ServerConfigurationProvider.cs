@@ -61,13 +61,12 @@ public class ServerConfigurationProvider
     public async Task<bool> Put<T>(IEntityId<T> id, Dictionary<ServerId, ShellCommand[]> config) where T : struct, IEntity
     {
         string path = GetFilePath(id);
-        MemoryStream stream = new();
-        StreamWriter writer = new(stream);
+        await using Stream? stream = await _writer.Open(path, out string uri);
+        if (stream is null)
+            return false;
+        await using StreamWriter writer = new(stream);
         _serializer.Serialize(writer, config);
-        await writer.FlushAsync();
-        stream.Seek(0, SeekOrigin.Begin);
-        string? uri = await _writer.Write(path, stream);
-        return uri is not null;
+        return !string.IsNullOrEmpty(uri);
     }
 
     private static string GetFilePath<T>(IEntityId<T> id) where T : struct, IEntity

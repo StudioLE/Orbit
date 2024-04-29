@@ -45,13 +45,12 @@ public class LxdConfigProvider
     public async Task<bool> Put(InstanceId id, string config)
     {
         string path = GetFilePath(id);
-        MemoryStream stream = new();
-        StreamWriter writer = new(stream);
+        await using Stream? stream = await _writer.Open(path, out string uri);
+        if (stream is null)
+            return false;
+        await using StreamWriter writer = new(stream);
         await writer.WriteAsync(config);
-        await writer.FlushAsync();
-        stream.Seek(0, SeekOrigin.Begin);
-        string? uri = await _writer.Write(path, stream);
-        return uri is not null;
+        return !string.IsNullOrEmpty(uri);
     }
 
     private static string GetFilePath(InstanceId id)

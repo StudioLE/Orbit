@@ -61,13 +61,12 @@ public class ServerProvider
     public async Task<bool> Put(Server server)
     {
         string path = GetFilePath(server.Name);
-        MemoryStream stream = new();
-        StreamWriter writer = new(stream);
+        await using Stream? stream = await _writer.Open(path, out string uri);
+        if (stream is null)
+            return false;
+        await using StreamWriter writer = new(stream);
         _serializer.Serialize(writer, server);
-        await writer.FlushAsync();
-        stream.Seek(0, SeekOrigin.Begin);
-        string? uri = await _writer.Write(path, stream);
-        return uri is not null;
+        return !string.IsNullOrEmpty(uri);
     }
 
     /// <summary>
