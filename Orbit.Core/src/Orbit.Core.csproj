@@ -17,7 +17,7 @@
     <PackageReference Include="StudioLE.Extensions.Logging.Console" Version="0.11.0" />
     <PackageReference Include="StudioLE.Extensions.System" Version="0.11.0" />
     <PackageReference Include="StudioLE.Patterns.Abstractions" Version="0.11.0" />
-    <PackageReference Include="StudioLE.Serialization.Yaml" Version="0.11.0" />
+    <PackageReference Include="StudioLE.Serialization.Yaml" Version="0.11.3" />
     <PackageReference Include="StudioLE.Storage" Version="0.13.0-alpha.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
