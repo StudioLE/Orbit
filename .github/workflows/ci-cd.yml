@@ -3,11 +3,15 @@ name: CI/CD
 on:
   push:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   test-ubuntu:
     name: Ubuntu
-    uses: StudioLE/Actions/.github/workflows/dotnet-test.yml@v5
+    uses: StudioLE/Actions/.github/workflows/dotnet-test.yml@v6
     with:
       project: ""
       os: ubuntu-latest
@@ -19,8 +23,8 @@ jobs:
 
   test-windows:
     name: Windows
-    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "beta", "alpha"]'), github.ref_name) }}
-    uses: StudioLE/Actions/.github/workflows/dotnet-test.yml@v5
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name) }}
+    uses: StudioLE/Actions/.github/workflows/dotnet-test.yml@v6
     with:
       project: ""
       os: windows-latest
@@ -31,13 +35,19 @@ jobs:
 
   publish-cli-linux:
     name: Linux CLI
-    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "beta", "alpha"]'), github.ref_name) }}
-    uses: StudioLE/Actions/.github/workflows/dotnet-publish.yml@v5
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name) }}
+    uses: StudioLE/Actions/.github/workflows/dotnet-publish.yml@v6
     with:
       project: Orbit.Cli/src/Orbit.Cli.csproj
       runtime: linux-x64
       npm: ""
       workload: ""
+      properties: >
+        -p:PublishSingleFile=true
+        -p:IncludeNativeLibrariesForSelfExtract=true
+        -p:SelfContained=false
+        -p:DebugType=embedded
+        -p:GenerateDocumentationFile=false
       artifact: Cli-Linux
       nuget_feed: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       nuget_username: ${{ github.repository_owner }}
@@ -46,13 +56,19 @@ jobs:
 
   publish-cli-windows:
     name: Windows CLI
-    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "beta", "alpha"]'), github.ref_name) }}
-    uses: StudioLE/Actions/.github/workflows/dotnet-publish.yml@v5
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name) }}
+    uses: StudioLE/Actions/.github/workflows/dotnet-publish.yml@v6
     with:
       project: Orbit.Cli/src/Orbit.Cli.csproj
       runtime: win-x64
       npm: ""
       workload: ""
+      properties: >
+        -p:PublishSingleFile=true
+        -p:IncludeNativeLibrariesForSelfExtract=true
+        -p:SelfContained=false
+        -p:DebugType=embedded
+        -p:GenerateDocumentationFile=false
       artifact: Cli-Windows
       nuget_feed: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       nuget_username: ${{ github.repository_owner }}
@@ -61,14 +77,14 @@ jobs:
 
   documentation:
     name: Documentation
-    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "beta", "alpha"]'), github.ref_name) }}
-    uses: StudioLE/Actions/.github/workflows/illuminate-generate.yml@v5
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name) }}
+    uses: StudioLE/Actions/.github/workflows/illuminate-generate.yml@v6
     with:
       project: ""
       os: ubuntu-latest
       nuget_feed: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       nuget_username: ${{ github.repository_owner }}
-      latest: ${{ github.ref_type == 'branch' && contains(fromJSON('["main"]'), github.ref_name) }}
+      latest: ${{ github.ref_type == 'branch' && github.ref_name == 'release' }}
       source: "*/src/bin/Release/*/Orbit.*.dll"
       section: "orbit"
     secrets:
@@ -76,10 +92,10 @@ jobs:
 
   release:
     name: Release
-    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta"]'), github.ref_name) }}
+    if: ${{ github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name) }}
     needs:
     - test-ubuntu
-    uses: StudioLE/Actions/.github/workflows/surveyor-release.yml@v5
+    uses: StudioLE/Actions/.github/workflows/surveyor-release.yml@v6
     with:
       nuget_feed: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       nuget_username: ${{ github.repository_owner }}
@@ -91,7 +107,7 @@ jobs:
     if: ${{ always() }}
     needs:
     - test-ubuntu
-    uses: StudioLE/Actions/.github/workflows/push-to-repo.yml@v5
+    uses: StudioLE/Actions/.github/workflows/push-to-repo.yml@v6
     with:
       repo: StudioLE/Tests
       artifact: Tests-Linux-X64
@@ -105,7 +121,7 @@ jobs:
     name: Packages
     needs:
     - release
-    uses: StudioLE/Actions/.github/workflows/push-to-nuget.yml@v5
+    uses: StudioLE/Actions/.github/workflows/push-to-nuget.yml@v6
     with:
       nuget_feed: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       nuget_username: ${{ github.repository_owner }}
@@ -117,10 +133,11 @@ jobs:
     needs:
     - publish-cli-linux
     - release
-    uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v5
+    uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v6
     with:
       artifact: Cli-Linux
-      name: Orbit.Cli-${{ needs.release.outputs.version }}-Linux-x64
+      name: StudioLE.Example.Cli-linux-x64-v${{ needs.release.outputs.version }}
+      file: true
       version: ${{ needs.release.outputs.version }}
 
   push-cli-windows:
@@ -129,10 +146,11 @@ jobs:
     - test-windows
     - publish-cli-windows
     - release
-    uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v5
+    uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v6
     with:
       artifact: Cli-Windows
-      name: Orbit.Cli-${{ needs.release.outputs.version }}-Windows-x64
+      name: StudioLE.Example.Cli-win-x64-v${{ needs.release.outputs.version }}.exe
+      file: true
       version: ${{ needs.release.outputs.version }}
 
   push-documentation:
@@ -140,7 +158,7 @@ jobs:
     needs:
     - documentation
     - release
-    uses: StudioLE/Actions/.github/workflows/push-to-repo.yml@v5
+    uses: StudioLE/Actions/.github/workflows/push-to-repo.yml@v6
     with:
       repo: StudioLE/Documentation
       artifact: Documentation
