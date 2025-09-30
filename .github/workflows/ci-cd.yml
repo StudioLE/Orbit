@@ -136,7 +136,7 @@ jobs:
     uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v6
     with:
       artifact: Cli-Linux
-      name: StudioLE.Example.Cli-linux-x64-v${{ needs.release.outputs.version }}
+      name: Orbit.Cli-linux-x64-v${{ needs.release.outputs.version }}
       file: true
       version: ${{ needs.release.outputs.version }}
 
@@ -149,7 +149,7 @@ jobs:
     uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v6
     with:
       artifact: Cli-Windows
-      name: StudioLE.Example.Cli-win-x64-v${{ needs.release.outputs.version }}.exe
+      name: Orbit.Cli-win-x64-v${{ needs.release.outputs.version }}.exe
       file: true
       version: ${{ needs.release.outputs.version }}
 
