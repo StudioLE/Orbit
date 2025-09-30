@@ -5,7 +5,7 @@ ARG NUGET_FEED
 ARG CONFIGURATION="Release"
 ENV CONFIGURATION="${CONFIGURATION}"
 WORKDIR /app
-RUN apk add wireguard-tools --no-cache
+RUN apk add libqrencode-tools wireguard-tools --no-cache
 RUN dotnet nuget add source \
   --username "${NUGET_USER}" \
   --password "${NUGET_PASSWORD}" \
