@@ -16,7 +16,7 @@
     },
     "CreateClient": {
       "commandName": "Project",
-      "commandLineArgs": "create client --name test",
+      "commandLineArgs": "create client --name test --number 141",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
@@ -53,12 +53,13 @@
       "commandName": "Project",
       "commandLineArgs": "generate wireguard client test",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
+        "DOTNET_ENVIRONMENT": "Production",
+        "PATH": "/home/linuxbrew/.linuxbrew/bin:${PATH}"
       }
     },
     "ExecuteServerConfig": {
       "commandName": "Project",
-      "commandLineArgs": "execute server-config test",
+      "commandLineArgs": "execute server-config --instance test",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Production"
       }
