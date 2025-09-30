@@ -48,7 +48,7 @@ public class WireGuardConfigProvider
     public async Task<bool> Put(ClientId id, string fileName, string config)
     {
         string path = GetFilePath(id, fileName);
-        await using Stream? stream = await _writer.Open(path, out string uri);
+        await using Stream? stream = await _writer.OpenWrite(path, out string uri);
         if (stream is null)
             return false;
         await using StreamWriter writer = new(stream);

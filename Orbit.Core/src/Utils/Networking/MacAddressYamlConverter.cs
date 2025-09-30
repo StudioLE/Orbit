@@ -17,7 +17,7 @@ public class MacAddressYamlConverter : IYamlTypeConverter
     }
 
     /// <inheritdoc />
-    public object ReadYaml(IParser parser, Type type)
+    public object ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
         string value = parser.Consume<Scalar>().Value;
         MacAddress macAddress = new(value);
@@ -25,7 +25,7 @@ public class MacAddressYamlConverter : IYamlTypeConverter
     }
 
     /// <inheritdoc />
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         string serialized = value?.ToString() ?? string.Empty;
         Scalar scalar = new(serialized);

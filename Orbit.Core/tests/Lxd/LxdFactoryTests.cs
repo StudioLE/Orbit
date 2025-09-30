@@ -40,7 +40,7 @@ internal sealed class LxdConfigFactoryTests
         string output = await _factory.Create(instance);
 
         // Assert
-        Assert.That(_logs.Count, Is.EqualTo(1), "Logs Count");
+        Assert.That(_logs.Count, Is.EqualTo(0), "Logs Count");
 
         // Yaml serialization is inconsistent on Windows
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

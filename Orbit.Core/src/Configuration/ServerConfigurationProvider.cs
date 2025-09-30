@@ -61,7 +61,7 @@ public class ServerConfigurationProvider
     public async Task<bool> Put<T>(IEntityId<T> id, Dictionary<ServerId, ShellCommand[]> config) where T : struct, IEntity
     {
         string path = GetFilePath(id);
-        await using Stream? stream = await _writer.Open(path, out string uri);
+        await using Stream? stream = await _writer.OpenWrite(path, out string uri);
         if (stream is null)
             return false;
         await using StreamWriter writer = new(stream);

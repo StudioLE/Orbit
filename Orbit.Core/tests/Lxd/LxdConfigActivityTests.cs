@@ -48,7 +48,7 @@ internal sealed class LxdConfigActivityTests
         // Assert
         Assert.That(outputs, Is.Not.Null);
         Assert.That(outputs!.Status.ExitCode, Is.EqualTo(0), "ExitCode");
-        Assert.That(_logs.Count, Is.EqualTo(1), "Log Count");
+        Assert.That(_logs.Count, Is.EqualTo(0), "Log Count");
         string? resource = await _lxdConfigProvider.Get(inputs.Instance);
         Assert.That(resource, Is.Not.Null);
         Assert.That(resource, Is.EqualTo(outputs.Asset?.Location));

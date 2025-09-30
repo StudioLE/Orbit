@@ -60,7 +60,7 @@ public class InstanceProvider
     public async Task<bool> Put(Instance instance)
     {
         string path = GetFilePath(instance.Name);
-        await using Stream? stream = await _writer.Open(path, out string uri);
+        await using Stream? stream = await _writer.OpenWrite(path, out string uri);
         if (stream is null)
             return false;
         await using StreamWriter writer = new(stream);

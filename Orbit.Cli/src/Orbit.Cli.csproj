@@ -9,9 +9,9 @@
   <Import Project="..\..\Global.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageReference Include="Tectonic.Extensions.CommandLine" Version="0.10.0" />
+    <PackageReference Include="Tectonic.Extensions.CommandLine" Version="0.11.1" />
   </ItemGroup>
 
   <ItemGroup>
