@@ -45,7 +45,10 @@ public readonly record struct ServerConfiguration : IReadOnlyDictionary<string, 
     }
 
     /// <inheritdoc />
-    public ShellCommand[] this[string key] => _readOnlyDictionaryImplementation[key];
+    public ShellCommand[] this[string key]
+    {
+        get => _readOnlyDictionaryImplementation[key];
+    }
 
     /// <inheritdoc />
     public IEnumerable<string> Keys => _readOnlyDictionaryImplementation.Keys;

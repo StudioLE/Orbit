@@ -14,9 +14,9 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class UserConfigActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private UserConfigActivity _activity;
-    private UserConfigProvider _provider;
-    private IReadOnlyCollection<LogEntry> _logs;
+    private UserConfigActivity _activity = null!;
+    private UserConfigProvider _provider = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public async Task SetUp()

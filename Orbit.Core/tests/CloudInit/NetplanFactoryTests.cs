@@ -14,8 +14,8 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class NetplanFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private NetplanFactory _factory;
-    private IReadOnlyCollection<LogEntry> _logs;
+    private NetplanFactory _factory = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public async Task SetUp()

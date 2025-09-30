@@ -15,8 +15,8 @@ namespace Orbit.Core.Tests.Lxd;
 internal sealed class LxdConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private LxdConfigFactory _factory;
-    private IReadOnlyCollection<LogEntry> _logs;
+    private LxdConfigFactory _factory = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public async Task SetUp()

@@ -14,9 +14,9 @@ namespace Orbit.Core.Tests.WireGuard;
 internal sealed class WireGuardClientActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private WireGuardClientActivity _activity;
-    private WireGuardConfigProvider _provider;
-    private IReadOnlyCollection<LogEntry> _logs;
+    private WireGuardClientActivity _activity = null!;
+    private WireGuardConfigProvider _provider = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public async Task SetUp()

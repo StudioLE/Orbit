@@ -13,8 +13,8 @@ namespace Orbit.Core.Tests.WireGuard;
 internal sealed class WireGuardClientConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private WireGuardClientFactory _wireGuardClientFactory;
-    private WireGuardClientConfigFactory _wgConfigFactory;
+    private WireGuardClientFactory _wireGuardClientFactory = null!;
+    private WireGuardClientConfigFactory _wgConfigFactory = null!;
 
     [SetUp]
     public async Task SetUp()

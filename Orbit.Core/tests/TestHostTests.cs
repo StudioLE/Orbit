@@ -13,7 +13,7 @@ namespace Orbit.Core.Tests;
 internal sealed class TestHostTests
 {
     private readonly IContext _context = new NUnitContext();
-    private ISerializer _serializer;
+    private ISerializer _serializer = null!;
 
     [SetUp]
     public async Task SetUp()

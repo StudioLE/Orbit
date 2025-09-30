@@ -17,8 +17,8 @@ namespace Orbit.Core.Tests;
 internal sealed class SerializationTests
 {
     private readonly IContext _context = new NUnitContext();
-    private ISerializer _serializer;
-    private IDeserializer _deserializer;
+    private ISerializer _serializer = null!;
+    private IDeserializer _deserializer = null!;
 
     [SetUp]
     public async Task SetUp()

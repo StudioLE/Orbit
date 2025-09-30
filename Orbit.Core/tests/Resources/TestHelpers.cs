@@ -132,6 +132,7 @@ public static class TestHelpers
         return services.AddSingleton<IQREncodeFacade, MockQREncodeFacade>();
     }
 
+    // ReSharper disable once InvalidXmlDocComment
     /// <summary>
     /// Replace the loggers with <see cref="Microsoft.Extensions.Logging.Debug.DebugLogger"/>,
     /// <see cref="BasicConsoleFormatter"/>  and <see cref="CacheLogger"/>

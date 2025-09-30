@@ -10,8 +10,8 @@ namespace Orbit.Core.Tests.Provision;
 internal sealed class InstanceProviderTests
 {
     private readonly InstanceId _instanceId = new("instance-10");
-    private InstanceFactory _instanceFactory;
-    private InstanceProvider _instances;
+    private InstanceFactory _instanceFactory = null!;
+    private InstanceProvider _instances = null!;
 
     [SetUp]
     public async Task SetUp()

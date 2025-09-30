@@ -15,8 +15,8 @@ namespace Orbit.Core.Tests.CloudInit;
 internal sealed class UserConfigFactoryTests
 {
     private readonly IContext _context = new NUnitContext();
-    private UserConfigFactory _factory;
-    private IReadOnlyCollection<LogEntry> _logs;
+    private UserConfigFactory _factory = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public async Task SetUp()

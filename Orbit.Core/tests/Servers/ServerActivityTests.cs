@@ -15,10 +15,10 @@ namespace Orbit.Core.Tests.Servers;
 internal sealed class ServerActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private ServerActivity _activity;
-    private ServerProvider _servers;
-    private ISerializer _serializer;
-    private IReadOnlyCollection<LogEntry> _logs;
+    private ServerActivity _activity = null!;
+    private ServerProvider _servers = null!;
+    private ISerializer _serializer = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
 
     [SetUp]
     public async Task SetUp()

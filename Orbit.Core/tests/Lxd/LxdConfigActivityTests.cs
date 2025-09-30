@@ -14,9 +14,9 @@ namespace Orbit.Core.Tests.Lxd;
 internal sealed class LxdConfigActivityTests
 {
     private readonly IContext _context = new NUnitContext();
-    private LxdConfigActivity _activity;
-    private IReadOnlyCollection<LogEntry> _logs;
-    private LxdConfigProvider _lxdConfigProvider;
+    private LxdConfigActivity _activity = null!;
+    private IReadOnlyCollection<LogEntry> _logs = null!;
+    private LxdConfigProvider _lxdConfigProvider = null!;
 
     [SetUp]
     public async Task SetUp()
