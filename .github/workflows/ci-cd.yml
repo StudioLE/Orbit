@@ -123,6 +123,7 @@ jobs:
       name: orbit
       user: studiole
       version: ${{ needs.release.outputs.version }}
+      tag: alpha
     secrets:
       password: ${{ secrets.GITHUB_TOKEN }}
 
