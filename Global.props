@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Authors>StudioLE</Authors>
-    <Copyright>Copyright © Laurence Elsdon 2023-2024</Copyright>
+    <Copyright>Copyright © Laurence Elsdon 2023-2025</Copyright>
     <PackageProjectUrl>https://github.com/StudioLE/Orbit</PackageProjectUrl>
     <PackageTags>multipass launcher wrapper cli console launch vm virtual machine infrastructure as code iac</PackageTags>
     <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
