@@ -1,5 +1,10 @@
-artifacts/
-.github/
+*
+
+!Orbit.*/
+!Global.props
+
+*/samples/bin
+*/samples/obj
 */src/bin
 */src/obj
 */tests/bin

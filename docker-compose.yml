@@ -1,0 +1,11 @@
+services:
+  orbit:
+    build: .
+    container_name: orbit
+    user: "1000:1000"
+    volumes:
+    - /home/$USER/.orbit:/home/.orbit
+    - /home/$USER/.orbit/appsettings.json:/app/appsettings.json:ro
+    environment:
+      PROVIDER__DIRECTORY: /home/.orbit
+    restart: "no"
