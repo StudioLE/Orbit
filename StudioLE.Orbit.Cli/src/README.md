@@ -20,4 +20,4 @@ Refer to [launchsettings.json](Properties/launchSettings.json) for examples of e
 
 ## How it Works
 
-Each CLI command is defined in the [Orbit.Core library](../../Orbit.Core/src) as a [Tectonic activity](https://github.com/StudioLE/Tectonic/tree/main/Tectonic.Abstractions/src), the [Program.cs](Program.cs) registers each command to be called be executed with [Tectonic.Extensions.Cli](https://github.com/StudioLE/Tectonic/tree/main/Tectonic.Extensions.CommandLine/src).
+Each CLI command is defined in the [Orbit.Core library](../../StudioLE.Orbit.Core/src) as a [Tectonic activity](https://github.com/StudioLE/Tectonic/tree/main/Tectonic.Abstractions/src), the [Program.cs](Program.cs) registers each command to be called be executed with [Tectonic.Extensions.Cli](https://github.com/StudioLE/Tectonic/tree/main/Tectonic.Extensions.CommandLine/src).

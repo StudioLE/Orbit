@@ -1,10 +1,10 @@
 ## Contents
 
-### [Orbit.Cli](Orbit.Cli/src)
+### [StudioLE.Orbit.Cli](StudioLE.Orbit.Cli/src)
 
 A CLI tool providing infrastructure-as-code and git-ops methods for creating and managing virtual machines with [LXD](https://canonical.com/lxd).
 
-### [Orbit.Core](Orbit.Core/src)
+### [StudioLE.Orbit.Core](StudioLE.Orbit.Core/src)
 
 A library providing infrastructure-as-code and git-ops methods for creating and managing virtual machines with [LXD](https://canonical.com/lxd).
 
