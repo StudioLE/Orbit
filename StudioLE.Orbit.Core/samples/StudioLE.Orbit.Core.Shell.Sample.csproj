@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Description>Hello, world!</Description>
     <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <!-- Use consistent properties across all projects -->
