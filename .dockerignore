@@ -1,11 +1,11 @@
 *
 
-!Orbit.*/
+!StudioLE.*/
 !Global.props
 
-*/samples/bin
-*/samples/obj
-*/src/bin
-*/src/obj
-*/tests/bin
-*/tests/obj
+StudioLE.*/samples/bin
+StudioLE.*/samples/obj
+StudioLE.*/src/bin
+StudioLE.*/src/obj
+StudioLE.*/tests/bin
+StudioLE.*/tests/obj

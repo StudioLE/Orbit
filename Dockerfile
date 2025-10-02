@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS builder
 ARG CONFIGURATION="Release"
-ARG PROJECT="Orbit.Cli/src/Orbit.Cli.csproj"
+ARG PROJECT="StudioLE.Orbit.Cli/src/StudioLE.Orbit.Cli.csproj"
 ARG RUNTIME="linux-musl-x64"
 WORKDIR /app
 COPY . .
@@ -15,7 +15,7 @@ RUN dotnet publish "${PROJECT}" \
   --output artifacts
 
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine
-ARG EXECUTABLE="Orbit.Cli"
+ARG EXECUTABLE="StudioLE.Orbit"
 WORKDIR /app
 RUN apk add libqrencode-tools wireguard-tools --no-cache
 COPY --from=builder /app/artifacts/"${EXECUTABLE}" /bin/app

@@ -1,0 +1,53 @@
+using Microsoft.Extensions.Logging;
+using StudioLE.Orbit.Schema;
+using StudioLE.Orbit.Utils.CommandLine;
+
+namespace StudioLE.Orbit.Lxd;
+
+/// <summary>
+/// Methods to help with LXD.
+/// </summary>
+public static class LxdHelpers
+{
+    /// <summary>
+    /// Create a <see cref="Ssh"/> to execute LXD commands on <see cref="Server"/>.
+    /// </summary>
+    /// <param name="ssh">The ssh client.</param>
+    /// <param name="server">The server to connect to.</param>
+    /// <returns>The created <see cref="Ssh"/></returns>
+    public static void SetServer(this Ssh ssh, Server server)
+    {
+        ssh.Host = server.Ssh.Host;
+        ssh.User = server.Ssh.User;
+        ssh.Port = server.Ssh.Port;
+    }
+
+    /// <summary>
+    /// Remove the rotating spinner and pass the standard output of a LXD command to the logger.
+    /// </summary>
+    /// <param name="logger">The logger to pass to.</param>
+    /// <param name="output">The standard output.</param>
+    public static void OutputToLogger(ILogger logger, string output)
+    {
+        string filtered = RemoveSpinner(output);
+        if (!string.IsNullOrEmpty(filtered))
+            logger.LogInformation(filtered);
+    }
+
+    /// <summary>
+    /// Filter the standard output of a LXD command to remove the rotating spinner.
+    /// </summary>
+    /// <param name="output">The standard output of a Multipass command.</param>
+    /// <returns>The output without spinner or unicode backspaces</returns>
+    public static string RemoveSpinner(string output)
+    {
+        const char unicodeBackspace = '\b';
+        return output
+            .Replace(unicodeBackspace + "/", string.Empty)
+            .Replace(unicodeBackspace + "-", string.Empty)
+            .Replace(unicodeBackspace + @"\", string.Empty)
+            .Replace(unicodeBackspace + "-", string.Empty)
+            .Replace(unicodeBackspace + "|", string.Empty)
+            .Replace(unicodeBackspace.ToString(), string.Empty);
+    }
+}

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Hello, world!</Description>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <!-- Use consistent properties across all projects -->
+  <Import Project="..\..\Global.props"/>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\StudioLE.Orbit.Core.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="countdown">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,26 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace StudioLE.Orbit.Core.Shell.Sample;
+
+internal static class Program
+{
+    public static void Main(string[] args)
+    {
+        IHost host = Host
+            .CreateDefaultBuilder()
+            .ConfigureLogging((hostingContext, logging) =>
+            {
+                logging.ClearProviders();
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                logging.AddDebug();
+                logging.AddConsole();
+            })
+            .ConfigureServices((_, services) => services
+                .AddTransient<ShellCommandSample>())
+            .Build();
+        ShellCommandSample shellCommandSample = host.Services.GetRequiredService<ShellCommandSample>();
+        shellCommandSample.Execute();
+    }
+}

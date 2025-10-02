@@ -38,7 +38,7 @@ jobs:
     if: github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name)
     uses: StudioLE/Actions/.github/workflows/dotnet-publish.yml@v7
     with:
-      project: Orbit.Cli/src/Orbit.Cli.csproj
+      project: StudioLE.Orbit.Cli/src/StudioLE.Orbit.Cli.csproj
       runtime: linux-x64
       npm: ""
       workload: ""
@@ -59,7 +59,7 @@ jobs:
     if: github.ref_type == 'branch' && contains(fromJSON('["main", "alpha", "beta", "release"]'), github.ref_name)
     uses: StudioLE/Actions/.github/workflows/dotnet-publish.yml@v7
     with:
-      project: Orbit.Cli/src/Orbit.Cli.csproj
+      project: StudioLE.Orbit.Cli/src/StudioLE.Orbit.Cli.csproj
       runtime: win-x64
       npm: ""
       workload: ""
@@ -85,7 +85,7 @@ jobs:
       nuget_feed: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
       nuget_username: ${{ github.repository_owner }}
       latest: ${{ github.ref_type == 'branch' && github.ref_name == 'release' }}
-      source: "*/src/bin/Release/*/Orbit.*.dll"
+      source: "*/src/bin/Release/*/StudioLE.*.dll"
       section: "orbit"
     secrets:
       nuget_password: ${{ secrets.PACKAGES_TOKEN }}
@@ -187,7 +187,7 @@ jobs:
     uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v7
     with:
       artifact: Cli-Linux
-      name: Orbit.Cli-linux-x64-v${{ needs.release.outputs.version }}
+      name: Orbit-linux-x64-v${{ needs.release.outputs.version }}
       file: false
       version: ${{ needs.release.outputs.version }}
 
@@ -201,7 +201,7 @@ jobs:
     uses: StudioLE/Actions/.github/workflows/push-to-github-releases.yml@v7
     with:
       artifact: Cli-Windows
-      name: Orbit.Cli-win-x64-v${{ needs.release.outputs.version }}.exe
+      name: Orbit-win-x64-v${{ needs.release.outputs.version }}.exe
       file: false
       version: ${{ needs.release.outputs.version }}
 

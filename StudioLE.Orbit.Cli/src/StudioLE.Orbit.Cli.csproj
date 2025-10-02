@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A CLI tool providing infrastructure-as-code and git-ops methods for creating and managing virtual machines with LXD.</Description>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>StudioLE.Orbit</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Use consistent properties across all projects -->
+  <Import Project="..\..\Global.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageReference Include="Tectonic.Extensions.CommandLine" Version="0.11.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\StudioLE.Orbit.Core\src\StudioLE.Orbit.Core.csproj" />
+  </ItemGroup>
+
+</Project>
