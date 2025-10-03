@@ -13,8 +13,8 @@ jobs:
     name: CI/CD
     uses: StudioLE/Actions/.github/workflows/ci-cd.yml@v7
     with:
-      project: StudioLE.Orbit.Cli/src/StudioLE.Orbit.Cli.csproj
-      cli: StudioLE.Orbit
+      cli_name: StudioLE.Orbit
+      cli_project: StudioLE.Orbit.Cli/src/StudioLE.Orbit.Cli.csproj
       cli_file: false
       docker_name: orbit
       documentation_section: orbit
