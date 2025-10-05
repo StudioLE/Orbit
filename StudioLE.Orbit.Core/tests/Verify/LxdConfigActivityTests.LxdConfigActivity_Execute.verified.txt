@@ -102,7 +102,6 @@ config:
           PersistentKeepAlive = 25
     write_files:
     - path: /etc/ssh/sshd_config
-      append: true
       content: |
         Port 22
 

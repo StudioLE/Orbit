@@ -65,7 +65,6 @@ public class UserConfigFactory : IFactory<Instance, Task<string>>
             {wireguardSection}
             write_files:
             - path: /etc/ssh/sshd_config
-              append: true
               content: |
             {sshdConfigContent.Indent(2)}
             - path: /var/lib/cloud/scripts/per-instance/30-orbit-configure
