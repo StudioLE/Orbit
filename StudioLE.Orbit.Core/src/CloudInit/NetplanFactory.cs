@@ -58,6 +58,7 @@ public class NetplanFactory : IFactory<Instance, Task<string>>
                     on-link: true
                 {_internalInterfaceFactory.GetName(server)}:
                   dhcp4: no
+                  accept-ra: no
                   match:
                     macaddress: {_internalInterfaceFactory.GetMacAddress(instance, server)}
                   addresses:

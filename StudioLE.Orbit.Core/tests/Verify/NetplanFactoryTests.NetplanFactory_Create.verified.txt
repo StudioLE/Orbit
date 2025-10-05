@@ -20,6 +20,7 @@
         on-link: true
     int3:
       dhcp4: no
+      accept-ra: no
       match:
         macaddress: 02:00:00:00:03:09
       addresses:
