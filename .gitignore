@@ -9,6 +9,7 @@ appsettings.Production.json
 *.patch
 **/tests/**/Verify/*.received.*
 **/tests/**/Verify/BC*.html
+.claude/
 .idea/
 
 ## Ignore Visual Studio temporary files, build results, and

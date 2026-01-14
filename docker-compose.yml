@@ -8,4 +8,5 @@ services:
     - /home/$USER/.orbit/appsettings.json:/app/appsettings.json:ro
     environment:
       PROVIDER__DIRECTORY: /home/.orbit
+      LOGGING__LOGLEVEL__DEFAULT: Trace
     restart: "no"
