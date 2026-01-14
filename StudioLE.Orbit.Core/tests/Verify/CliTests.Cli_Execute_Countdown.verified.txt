@@ -1,10 +1,10 @@
-[Orbit.Utils.CommandLine.Cli]
+[StudioLE.Orbit.Utils.CommandLine.Cli]
 2.0
-[Orbit.Utils.CommandLine.Cli]
+[StudioLE.Orbit.Utils.CommandLine.Cli]
 1.5
-[Orbit.Utils.CommandLine.Cli]
+[StudioLE.Orbit.Utils.CommandLine.Cli]
 1.0
-[Orbit.Utils.CommandLine.Cli]
+[StudioLE.Orbit.Utils.CommandLine.Cli]
 0.5
-[Orbit.Utils.CommandLine.Cli]
+[StudioLE.Orbit.Utils.CommandLine.Cli]
 0.0
