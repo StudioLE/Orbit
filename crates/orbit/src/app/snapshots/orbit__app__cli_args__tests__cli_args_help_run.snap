@@ -1,0 +1,17 @@
+---
+source: crates/orbit/src/app/cli_args.rs
+expression: output
+---
+Run a one-off command in a new container on the Docker host.
+
+Usage: orbit run [--rm] [--pull <PULL>] <SERVICE> [ARGS]…
+
+Arguments:
+  <SERVICE>  Service to run.
+  [ARGS]…    Arguments passed to the container verbatim.
+
+Flags:
+      --rm           Remove the container when it exits.
+      --pull <PULL>  Pull images before starting.
+                     [possible values: always, missing, never]
+  -h, --help         Print help

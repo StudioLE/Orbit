@@ -1,0 +1,10 @@
+---
+source: crates/orbit/src/services/stack/stack_validator.rs
+expression: report.to_string()
+---
+Stack is invalid
+▷ problem: Service `web` config `./web` is not a file
+▷ problem: Service `worker` config `./missing.conf` does not exist
+▷ problem: Secret `API_TOKEN` is not in `.sops.env`
+▷ problem: Secret `MAIL_PASSWORD` is not in `.sops.env`
+▷ problem: Secret `TLS_KEY` is not in `.sops.env`

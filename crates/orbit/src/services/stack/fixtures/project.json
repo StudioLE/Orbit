@@ -1,0 +1,113 @@
+{
+  "name": "hello",
+  "networks": {
+    "default": {
+      "name": "hello_default"
+    }
+  },
+  "secrets": {
+    "orbit": {
+      "external": true,
+      "name": "orbit"
+    }
+  },
+  "services": {
+    "app": {
+      "image": "alpine",
+      "labels": [
+        "com.example.team=ops"
+      ],
+      "networks": {
+        "default": null
+      },
+      "secrets": [
+        {
+          "source": "orbit",
+          "target": "/run/secrets/orbit"
+        }
+      ],
+      "x-orbit": {
+        "configs": [
+          {
+            "source": "./app/app.conf",
+            "target": "/etc/app.conf"
+          }
+        ],
+        "environment": [
+          {
+            "source": "MAIL_PASSWORD",
+            "target": "SMTP_PASSWORD"
+          }
+        ],
+        "secrets": [
+          "TLS_KEY"
+        ]
+      }
+    },
+    "db": {
+      "environment": {
+        "POSTGRES_DB": "app"
+      },
+      "image": "postgres",
+      "networks": {
+        "default": null
+      }
+    },
+    "web": {
+      "environment": {
+        "LOG_LEVEL": "info"
+      },
+      "image": "caddy",
+      "labels": {
+        "com.example.role": "proxy"
+      },
+      "networks": {
+        "default": null
+      },
+      "secrets": [
+        {
+          "source": "orbit",
+          "target": "/run/secrets/orbit"
+        }
+      ],
+      "x-orbit": {
+        "configs": [
+          {
+            "source": "./web/Caddyfile",
+            "target": "/etc/caddy/Caddyfile"
+          },
+          {
+            "source": "./web/site.conf",
+            "target": "/etc/caddy/site.conf"
+          }
+        ],
+        "environment": [
+          "API_TOKEN"
+        ]
+      }
+    },
+    "worker": {
+      "image": "alpine",
+      "networks": {
+        "default": null
+      },
+      "secrets": [
+        {
+          "source": "orbit",
+          "target": "/run/secrets/orbit"
+        }
+      ],
+      "x-orbit": {
+        "configs": [
+          {
+            "source": "./worker.conf",
+            "target": "/etc/worker.conf"
+          }
+        ]
+      }
+    }
+  },
+  "x-orbit": {
+    "host": "ssh://example-host"
+  }
+}

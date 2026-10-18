@@ -1,0 +1,25 @@
+x-orbit:
+  host: ssh://example-host
+
+services:
+  app:
+    image: alpine
+    command: sleep 3600
+    x-orbit:
+      environment:
+      - API_TOKEN
+      - source: MAIL_PASSWORD
+        target: SMTP_PASSWORD
+      secrets:
+      - TLS_KEY
+      - source: SIGNING_KEY
+        target: /etc/app/signing.key
+      configs:
+      - source: ./app.conf
+        target: /etc/app.conf
+    secrets:
+    - orbit
+
+secrets:
+  orbit:
+    external: true

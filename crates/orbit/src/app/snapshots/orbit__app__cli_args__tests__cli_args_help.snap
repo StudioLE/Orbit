@@ -1,0 +1,24 @@
+---
+source: crates/orbit/src/app/cli_args.rs
+expression: output
+---
+orbit x.y.z
+Extends `docker compose up` and `run` to deploy local config files and
+sops-encrypted secrets to a remote host
+
+Usage: orbit [--log-level <LOG_LEVEL>] [--host <HOST>] <SUBCOMMAND>
+
+Commands:
+  run   Run a one-off command in a new container on the Docker host.
+  up    Create and start containers on the Docker host.
+  help  Print this message or the help of the given subcommand(s)
+
+Flags:
+      --log-level <LOG_LEVEL>  Set the log level.
+                               [possible values: error, warn, info, debug,
+                               trace]
+      --host <HOST>            Docker host to deploy to.
+
+                               Default: `x-orbit.host` in `docker-compose.yml`
+  -h, --help                   Print help
+  -V, --version                Print version

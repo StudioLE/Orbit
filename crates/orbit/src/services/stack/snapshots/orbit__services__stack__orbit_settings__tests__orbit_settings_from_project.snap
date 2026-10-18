@@ -1,0 +1,37 @@
+---
+source: crates/orbit/src/services/stack/orbit_settings.rs
+expression: settings
+---
+host: "ssh://example-host"
+services:
+  app:
+    environment:
+      - source: MAIL_PASSWORD
+        target: SMTP_PASSWORD
+    secrets:
+      - source: TLS_KEY
+        target: /run/secrets/TLS_KEY
+    configs:
+      - source: "./app/app.conf"
+        target: /etc/app.conf
+  db:
+    environment: []
+    secrets: []
+    configs: []
+  web:
+    environment:
+      - source: API_TOKEN
+        target: API_TOKEN
+    secrets: []
+    configs:
+      - source: "./web/Caddyfile"
+        target: /etc/caddy/Caddyfile
+      - source: "./web/site.conf"
+        target: /etc/caddy/site.conf
+  worker:
+    environment: []
+    secrets: []
+    configs:
+      - source: "./worker.conf"
+        target: /etc/worker.conf
+warnings: []

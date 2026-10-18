@@ -1,0 +1,38 @@
+[package]
+name = "studiole-orbit"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Extends `docker compose up` and `run` to deploy local config files and sops-encrypted secrets to a remote host"
+readme = "../../README.md"
+
+[lib]
+name = "orbit"
+
+[[bin]]
+name = "orbit"
+path = "src/main.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+signal-hook = { workspace = true }
+strum = { workspace = true }
+studiole-di = { workspace = true }
+studiole-logging = { workspace = true }
+studiole-report = { workspace = true }
+tempfile = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+usage-rs = { workspace = true }
+
+[dev-dependencies]
+insta = { workspace = true }
+mockall = { workspace = true }
+usage-rs = { workspace = true, features = ["test"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,20 @@
+---
+source: crates/orbit/src/app/cli_args.rs
+expression: output
+---
+Create and start containers on the Docker host.
+
+Usage: orbit up [FLAGS] [SERVICES]…
+
+Arguments:
+  [SERVICES]…  Services to start.
+
+               Default: every service
+
+Flags:
+  -d, --detach          Run containers in the background.
+      --force-recreate  Recreate containers even if their configuration is
+                        unchanged.
+      --pull <PULL>     Pull images before starting.
+                        [possible values: always, missing, never]
+  -h, --help            Print help

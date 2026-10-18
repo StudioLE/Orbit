@@ -1,0 +1,106 @@
+---
+source: crates/orbit/src/services/stack/stack_transformer.rs
+expression: project
+---
+{
+  "configs": {
+    "orbit_app_0": {
+      "content": "listen = 8080\npath = $$HOME/data\n"
+    },
+    "orbit_web_0": {
+      "content": "example.com {\n\treverse_proxy app:8080\n\theader X-Token {$$API_TOKEN}\n}\n"
+    },
+    "orbit_web_1": {
+      "content": "root * /srv\n"
+    },
+    "orbit_worker_0": {
+      "content": "threads = 4\n"
+    }
+  },
+  "name": "hello",
+  "networks": {
+    "default": {
+      "name": "hello_default"
+    }
+  },
+  "secrets": {
+    "orbit_TLS_KEY": {
+      "environment": "TLS_KEY"
+    }
+  },
+  "services": {
+    "app": {
+      "configs": [
+        {
+          "source": "orbit_app_0",
+          "target": "/etc/app.conf"
+        }
+      ],
+      "environment": {
+        "SMTP_PASSWORD": "${MAIL_PASSWORD}"
+      },
+      "image": "alpine",
+      "labels": [
+        "com.example.team=ops",
+        "orbit.config-hash=d0c72bdebfe078a1c2458f28d32e69ff18ed5e2777806ed7dc7aee85061c7fd5"
+      ],
+      "networks": {
+        "default": null
+      },
+      "secrets": [
+        {
+          "source": "orbit_TLS_KEY",
+          "target": "/run/secrets/TLS_KEY"
+        }
+      ]
+    },
+    "db": {
+      "environment": {
+        "POSTGRES_DB": "app"
+      },
+      "image": "postgres",
+      "networks": {
+        "default": null
+      }
+    },
+    "web": {
+      "configs": [
+        {
+          "source": "orbit_web_0",
+          "target": "/etc/caddy/Caddyfile"
+        },
+        {
+          "source": "orbit_web_1",
+          "target": "/etc/caddy/site.conf"
+        }
+      ],
+      "environment": {
+        "API_TOKEN": "${API_TOKEN}",
+        "LOG_LEVEL": "info"
+      },
+      "image": "caddy",
+      "labels": {
+        "com.example.role": "proxy",
+        "orbit.config-hash": "3caf762c759b188b792a8f45eb53a2ed608c97a9000464a126a20c52cec5c4fd"
+      },
+      "networks": {
+        "default": null
+      }
+    },
+    "worker": {
+      "configs": [
+        {
+          "source": "orbit_worker_0",
+          "target": "/etc/worker.conf"
+        }
+      ],
+      "image": "alpine",
+      "labels": {
+        "orbit.config-hash": "6b96cdf29f9b81a852648c5c311ff37287be44d47a010ca831ce141e44062eb0"
+      },
+      "networks": {
+        "default": null
+      }
+    }
+  }
+}

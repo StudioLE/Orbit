@@ -1,0 +1,4 @@
+example.com {
+	reverse_proxy app:8080
+	header X-Token {$API_TOKEN}
+}
