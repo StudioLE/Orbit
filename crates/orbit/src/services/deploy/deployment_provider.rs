@@ -84,7 +84,7 @@ fn create_private_file(name: &str, directory: &Path) -> io::Result<NamedTempFile
 }
 
 /// Write `value` as pretty JSON to `writer` and flush it.
-fn write_json(writer: &mut impl IoWrite, value: &Value) -> io::Result<()> {
+fn write_json(writer: &mut impl Write, value: &Value) -> io::Result<()> {
     to_writer_pretty(&mut *writer, value)?;
     writer.flush()
 }
@@ -119,7 +119,6 @@ pub enum DeploymentError {
 mod tests {
     use super::*;
     use mockall::Sequence;
-    use serde_json::from_str;
     use std::fs;
 
     /// [`DeploymentProvider::get`] loads, then decrypts, then writes a private temp file.
@@ -155,7 +154,7 @@ mod tests {
             .mode();
         assert_eq!(mode & 0o777, 0o600);
         let text = fs::read_to_string(&path).expect("file should be readable");
-        let project: Value = from_str(&text).expect("file should be JSON");
+        let project: Value = serde_json::from_str(&text).expect("file should be JSON");
         assert!(project.get("x-orbit").is_none());
         assert!(project.pointer("/configs/orbit_web_0").is_some());
         drop(deployment);

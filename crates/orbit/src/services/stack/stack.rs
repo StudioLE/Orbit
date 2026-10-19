@@ -18,8 +18,7 @@ pub struct Stack {
 #[cfg(test)]
 mod mocks {
     use super::*;
-    use serde_json::from_str;
-    use std::fs::{copy, create_dir, read_dir, write};
+    use std::fs::{self, create_dir, read_dir};
     use tempfile::TempDir;
 
     impl Stack {
@@ -40,7 +39,8 @@ mod mocks {
 
         /// Fixture project JSON.
         pub fn mock_project() -> Value {
-            from_str(include_str!("fixtures/project.json")).expect("fixture should be valid JSON")
+            serde_json::from_str(include_str!("fixtures/project.json"))
+                .expect("fixture should be valid JSON")
         }
 
         /// Fixture project JSON without the `orbit` guard secret.
@@ -66,7 +66,7 @@ mod mocks {
         pub fn mock_temp_directory() -> TempDir {
             let directory = TempDir::new().expect("should create temp dir");
             copy_directory(&Self::mock_directory(), directory.path());
-            write(directory.path().join(".sops.env"), "").expect("should write .sops.env");
+            fs::write(directory.path().join(".sops.env"), "").expect("should write .sops.env");
             directory
         }
     }
@@ -79,7 +79,7 @@ mod mocks {
                 create_dir(&target).expect("should create directory");
                 copy_directory(&entry.path(), &target);
             } else {
-                copy(entry.path(), &target).expect("should copy file");
+                fs::copy(entry.path(), &target).expect("should copy file");
             }
         }
     }

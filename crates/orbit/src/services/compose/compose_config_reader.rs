@@ -1,7 +1,6 @@
 //! Trait and adapter for reading the Compose project with `docker compose config`.
 
 use crate::prelude::*;
-use serde_json::from_slice as json_from_slice;
 use std::process::Command;
 
 /// Read the Compose project in the [`WorkingDirectory`].
@@ -31,7 +30,7 @@ impl ComposeConfigReader for ComposeConfigReaderAdapter {
             .attach_path(directory)?
             .ok_or_report(ComposeConfigError::Config)
             .attach_path(directory)?;
-        json_from_slice(&output.stdout)
+        serde_json::from_slice(&output.stdout)
             .change_context(ComposeConfigError::Parse)
             .attach_path(directory)
     }

@@ -49,7 +49,7 @@ impl FromStr for Secrets {
 }
 
 impl Debug for Secrets {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("Secrets")
             .field("names", &self.0.keys().collect::<Vec<_>>())
             .finish()

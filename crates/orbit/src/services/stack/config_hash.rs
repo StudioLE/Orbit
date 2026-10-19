@@ -27,7 +27,7 @@ impl ConfigHash {
 }
 
 impl Display for ConfigHash {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         for byte in &self.0 {
             write!(f, "{byte:02x}")?;
         }

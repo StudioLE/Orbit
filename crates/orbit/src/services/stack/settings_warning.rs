@@ -29,7 +29,7 @@ pub enum SettingsWarning {
 }
 
 impl Display for SettingsWarning {
-    fn fmt(&self, formatter: &mut Formatter<'_>) -> FmtResult {
+    fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         match self {
             Self::BareName { service, name } => {
                 write!(formatter, "Service `{service}` sets `{name}` with no value")
