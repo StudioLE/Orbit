@@ -26,18 +26,13 @@ impl StackProvider {
             .and_then(Value::as_str)
             .ok_or_else(|| Report::new(StackError::Name))?
             .to_owned();
-        let settings =
-            OrbitSettings::from_project(&project).change_context(StackError::Settings)?;
-        trace!(%name, ?settings, "Loaded stack");
-        for warning in &settings.warnings {
+        let stack = Stack::new(name, directory.to_path_buf(), project)
+            .change_context(StackError::Settings)?;
+        trace!(name = %stack.name, settings = ?stack.settings, "Loaded stack");
+        for warning in &stack.settings.warnings {
             warn!("{warning}");
         }
-        Ok(Stack {
-            name,
-            directory: directory.to_path_buf(),
-            project,
-            settings,
-        })
+        Ok(stack)
     }
 }
 

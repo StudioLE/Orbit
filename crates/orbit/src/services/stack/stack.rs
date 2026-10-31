@@ -15,6 +15,23 @@ pub struct Stack {
     pub settings: OrbitSettings,
 }
 
+impl Stack {
+    /// Create a [`Stack`] from a Compose `project`, parsing its [`OrbitSettings`].
+    pub fn new(
+        name: impl Into<String>,
+        directory: PathBuf,
+        project: Value,
+    ) -> Result<Self, Report<OrbitSettingsError>> {
+        let settings = OrbitSettings::from_project(&project)?;
+        Ok(Self {
+            name: name.into(),
+            directory,
+            project,
+            settings,
+        })
+    }
+}
+
 #[cfg(test)]
 mod mocks {
     use super::*;
@@ -29,12 +46,7 @@ mod mocks {
 
         /// Create a mock [`Stack`] from `project` in the fixture directory.
         pub fn mock_with(project: Value) -> Self {
-            Self {
-                name: "hello".to_owned(),
-                directory: Self::mock_directory(),
-                settings: OrbitSettings::from_project(&project).expect("project should parse"),
-                project,
-            }
+            Self::new("hello", Self::mock_directory(), project).expect("project should parse")
         }
 
         /// Fixture project JSON.
