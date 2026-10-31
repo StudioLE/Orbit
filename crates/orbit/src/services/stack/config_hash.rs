@@ -44,7 +44,14 @@ mod tests {
     /// - Expected value from `printf '/etc/a\0x\0' | sha256sum`
     #[test]
     fn config_hash_new() {
-        let hash = ConfigHash::new(&[mock("/etc/a", "x")]);
+        // Arrange
+        let config = LoadedConfig {
+            target: "/etc/a".to_owned(),
+            content: "x".to_owned(),
+        };
+        // Act
+        let hash = ConfigHash::new(&[config]);
+        // Assert
         assert_eq!(
             hash.to_string(),
             "68bc2c933e58ee763cf97ec8bf9651208261b540bbb38230ca8f3f96f9c94d51"
@@ -54,25 +61,38 @@ mod tests {
     /// [`ConfigHash::new`] changes when content moves between target and content.
     #[test]
     fn config_hash_new_separator() {
-        let left = ConfigHash::new(&[mock("/etc/ab", "c")]);
-        let right = ConfigHash::new(&[mock("/etc/a", "bc")]);
+        // Arrange
+        let left = LoadedConfig {
+            target: "/etc/ab".to_owned(),
+            content: "c".to_owned(),
+        };
+        let right = LoadedConfig {
+            target: "/etc/a".to_owned(),
+            content: "bc".to_owned(),
+        };
+        // Act
+        let left = ConfigHash::new(&[left]);
+        let right = ConfigHash::new(&[right]);
+        // Assert
         assert_ne!(left, right);
     }
 
     /// [`ConfigHash::new`] changes when config order changes.
     #[test]
     fn config_hash_new_order() {
-        let a = mock("/etc/a", "1");
-        let b = mock("/etc/b", "2");
+        // Arrange
+        let a = LoadedConfig {
+            target: "/etc/a".to_owned(),
+            content: "1".to_owned(),
+        };
+        let b = LoadedConfig {
+            target: "/etc/b".to_owned(),
+            content: "2".to_owned(),
+        };
+        // Act
         let forward = ConfigHash::new(&[a.clone(), b.clone()]);
         let reverse = ConfigHash::new(&[b, a]);
+        // Assert
         assert_ne!(forward, reverse);
-    }
-
-    fn mock(target: &str, content: &str) -> LoadedConfig {
-        LoadedConfig {
-            target: target.to_owned(),
-            content: content.to_owned(),
-        }
     }
 }

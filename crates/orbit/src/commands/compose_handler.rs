@@ -43,72 +43,53 @@ mod tests {
     #[test]
     fn compose_handler_execute() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config
-            .expect_read()
-            .returning(|| Ok(Stack::mock_project()));
-        let mut runner = MockComposeRunner::new();
-        runner
-            .expect_execute()
-            .withf(|invocation| {
-                let expected = ["up", "--detach", "web"];
-                let subcommand: Vec<&str> = invocation
-                    .arguments
-                    .iter()
-                    .map(String::as_str)
-                    .skip_while(|argument| *argument != "up")
-                    .collect();
-                invocation.host == "ssh://example-host"
-                    && invocation.secrets.contains("API_TOKEN")
-                    && subcommand == expected
-            })
-            .times(1)
-            .returning(|_| Ok(()));
-        let handler = get_handler(compose_config, runner, directory.path());
+        let directory = Stack::fixture_temp_directory();
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
+            .build();
+        let handler = services.expect::<ComposeHandler>();
         let arguments = ["up", "--detach", "web"].map(str::to_owned).to_vec();
         // Act
         let output = handler.execute(arguments);
         // Assert
         assert!(output.is_ok(), "{output:?}");
+        let calls = services.expect::<ComposeRunnerSpy>().calls();
+        assert_eq!(calls.len(), 1);
+        let invocation = calls.first().expect("Compose should run");
+        let subcommand: Vec<&str> = invocation
+            .arguments
+            .iter()
+            .map(String::as_str)
+            .skip_while(|argument| *argument != "up")
+            .collect();
+        assert_eq!(subcommand, ["up", "--detach", "web"]);
+        assert_eq!(invocation.host, "ssh://example-host");
+        assert_eq!(invocation.secrets, Secrets::fixture());
     }
 
     /// [`ComposeHandler::execute`] does not run Compose when preparation fails.
     #[test]
     fn compose_handler_execute_prepare_error() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config.expect_read().returning(|| {
-            let mut project = Stack::mock_project();
-            project.expect_object_mut("").remove("x-orbit");
-            Ok(project)
-        });
-        let mut runner = MockComposeRunner::new();
-        runner.expect_execute().never();
-        let handler = get_handler(compose_config, runner, directory.path());
+        let directory = Stack::fixture_temp_directory();
+        let mut project = Stack::fixture_project();
+        project.expect_object_mut("").remove("x-orbit");
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(ComposeConfigReaderStub {
+                project: Ok(project),
+            })
+            .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
+            .build();
+        let handler = services.expect::<ComposeHandler>();
         // Act
         let report = handler
             .execute(vec!["up".to_owned()])
             .expect_err("missing host should fail");
         // Assert
         assert_eq!(report.current_context(), &ComposeHandlerError::Prepare);
-    }
-
-    fn get_handler(
-        compose_config: MockComposeConfigReader,
-        runner: MockComposeRunner,
-        directory: &Path,
-    ) -> Arc<ComposeHandler> {
-        let mut sops = MockSopsClient::new();
-        sops.expect_decrypt().returning(|_| {
-            Ok(Secrets::from_str("API_TOKEN=a\nMAIL_PASSWORD=b\nTLS_KEY=c")
-                .expect("dotenv should parse"))
-        });
-        ServiceBuilder::new()
-            .with_mock_services(compose_config, runner, sops)
-            .with_instance(WorkingDirectory::new(directory.to_path_buf()))
-            .build()
-            .expect::<ComposeHandler>()
+        let calls = services.expect::<ComposeRunnerSpy>().calls();
+        assert_eq!(calls, Vec::new());
     }
 }

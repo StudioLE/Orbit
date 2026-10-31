@@ -4,7 +4,6 @@ use crate::prelude::*;
 use std::process::{Command, Output};
 
 /// Decrypt sops-encrypted dotenv files.
-#[cfg_attr(test, mockall::automock)]
 pub trait SopsClient: Send + Sync {
     /// Decrypt the dotenv file at `path` into memory.
     fn decrypt(&self, path: &Path) -> Result<Secrets, Report<SopsError>>;

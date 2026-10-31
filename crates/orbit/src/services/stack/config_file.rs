@@ -26,7 +26,7 @@ mod tests {
     /// [`ConfigFile::get_path`] joins a relative source to the directory.
     #[test]
     fn config_file_get_path() {
-        let config = ConfigFile::mock("./web/app.conf");
+        let config = ConfigFile::fixture();
         let path = config.get_path(Path::new("/stack"));
         assert_eq!(path, PathBuf::from("/stack/./web/app.conf"));
     }
@@ -34,15 +34,18 @@ mod tests {
     /// [`ConfigFile::get_path`] keeps an absolute source.
     #[test]
     fn config_file_get_path_absolute() {
-        let config = ConfigFile::mock("/etc/app.conf");
+        let config = ConfigFile {
+            source: "/etc/app.conf".to_owned(),
+            ..ConfigFile::fixture()
+        };
         let path = config.get_path(Path::new("/stack"));
         assert_eq!(path, PathBuf::from("/etc/app.conf"));
     }
 
     impl ConfigFile {
-        fn mock(source: &str) -> Self {
+        fn fixture() -> Self {
             Self {
-                source: source.to_owned(),
+                source: "./web/app.conf".to_owned(),
                 target: "/etc/app.conf".to_owned(),
             }
         }

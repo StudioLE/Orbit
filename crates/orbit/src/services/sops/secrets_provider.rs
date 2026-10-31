@@ -49,37 +49,44 @@ pub enum SecretsError {
 mod tests {
     use super::*;
     use std::fs;
-    use tempfile::TempDir;
 
     /// [`SecretsProvider::get`] decrypts `.sops.env` in the stack directory.
     #[test]
     fn secrets_provider_get() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
-        let stack = mock_stack(&directory);
-        let mut sops = MockSopsClient::new();
-        let sops_path = directory.path().join(SOPS_FILE);
-        sops.expect_decrypt()
-            .withf(move |path| path == sops_path)
-            .times(1)
-            .returning(|_| Ok(mock_secrets()));
-        let provider = get_provider(sops);
+        let directory = Stack::fixture_temp_directory();
+        let stack = Stack {
+            directory: directory.path().to_path_buf(),
+            ..Stack::fixture()
+        };
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_trait::<dyn SopsClient, SopsClientSpy>()
+            .build();
+        let provider = services.expect::<SecretsProvider>();
         // Act
         let secrets = provider.get(&stack).expect("secrets should decrypt");
         // Assert
-        assert_eq!(secrets, mock_secrets());
+        let calls = services.expect::<SopsClientSpy>().calls();
+        assert_eq!(calls, vec![directory.path().join(SOPS_FILE)]);
+        assert_eq!(secrets, Secrets::fixture());
     }
 
     /// [`SecretsProvider::get`] lists secret names when `.sops.env` is absent.
     #[test]
     fn secrets_provider_get_sops_file_missing() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
+        let directory = Stack::fixture_temp_directory();
         fs::remove_file(directory.path().join(SOPS_FILE)).expect("should remove .sops.env");
-        let stack = mock_stack(&directory);
-        let mut sops = MockSopsClient::new();
-        sops.expect_decrypt().never();
-        let provider = get_provider(sops);
+        let stack = Stack {
+            directory: directory.path().to_path_buf(),
+            ..Stack::fixture()
+        };
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_trait::<dyn SopsClient, SopsClientSpy>()
+            .build();
+        let provider = services.expect::<SecretsProvider>();
         // Act
         let report = provider
             .get(&stack)
@@ -90,40 +97,27 @@ mod tests {
         for name in ["API_TOKEN", "MAIL_PASSWORD", "TLS_KEY"] {
             assert!(display.contains(&format!("secret: {name}")), "{display}");
         }
+        let calls = services.expect::<SopsClientSpy>().calls();
+        assert_eq!(calls, Vec::<PathBuf>::new());
     }
 
     /// [`SecretsProvider::get`] skips sops when the stack needs no secrets.
     #[test]
     fn secrets_provider_get_no_secrets() {
         // Arrange
-        let stack = Stack::mock_with(json!({ "services": { "app": {} } }));
-        let mut sops = MockSopsClient::new();
-        sops.expect_decrypt().never();
-        let provider = get_provider(sops);
+        let project = json!({ "services": { "app": {} } });
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_trait::<dyn SopsClient, SopsClientSpy>()
+            .build();
+        let provider = services.expect::<SecretsProvider>();
         // Act
         let secrets = provider.get(&stack).expect("no secrets should succeed");
         // Assert
         assert_eq!(secrets, Secrets::default());
-    }
-
-    fn get_provider(sops: MockSopsClient) -> Arc<SecretsProvider> {
-        ServiceBuilder::new()
-            .with_mock_services(
-                MockComposeConfigReader::new(),
-                MockComposeRunner::new(),
-                sops,
-            )
-            .build()
-            .expect::<SecretsProvider>()
-    }
-
-    fn mock_stack(directory: &TempDir) -> Stack {
-        let mut stack = Stack::mock();
-        stack.directory = directory.path().to_path_buf();
-        stack
-    }
-
-    fn mock_secrets() -> Secrets {
-        Secrets::from_str("API_TOKEN=a\nMAIL_PASSWORD=b\nTLS_KEY=c").expect("dotenv should parse")
+        let calls = services.expect::<SopsClientSpy>().calls();
+        assert_eq!(calls, Vec::<PathBuf>::new());
     }
 }

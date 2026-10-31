@@ -4,7 +4,6 @@ use crate::prelude::*;
 use std::process::Command;
 
 /// Read the Compose project in the [`WorkingDirectory`].
-#[cfg_attr(test, mockall::automock)]
 pub trait ComposeConfigReader: Send + Sync {
     /// Load the Compose project in the [`WorkingDirectory`] as JSON without interpolation.
     fn read(&self) -> Result<Value, Report<ComposeConfigError>>;

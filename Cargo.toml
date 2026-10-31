@@ -13,7 +13,6 @@ repository = "https://github.com/StudioLE/Orbit"
 
 [workspace.dependencies]
 insta = { version = "1.49.0", features = ["json", "yaml"] }
-mockall = { version = "0.15.0" }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1.0.154" }
 sha2 = { version = "0.11.1" }

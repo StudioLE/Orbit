@@ -32,12 +32,12 @@ impl FromServices for CliArgs {
 }
 
 #[cfg(test)]
-mod mocks {
+mod fixtures {
     use super::*;
 
     impl CliArgs {
-        /// Create a mock [`CliArgs`] for `up` without flags.
-        pub fn mock() -> Self {
+        /// Create a [`CliArgs`] fixture for `up` without flags.
+        pub fn fixture() -> Self {
             Self {
                 log_level: None,
                 host: None,

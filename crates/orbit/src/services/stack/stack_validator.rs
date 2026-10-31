@@ -86,7 +86,7 @@ mod tests {
     /// [`StackValidator::validate`] accepts the fixture stack with every secret.
     #[test]
     fn stack_validator_validate() {
-        let output = StackValidator.validate(&Stack::mock(), &mock_secrets());
+        let output = StackValidator.validate(&Stack::fixture(), &Secrets::fixture());
         assert!(output.is_ok(), "{output:?}");
     }
 
@@ -94,9 +94,9 @@ mod tests {
     #[test]
     fn stack_validator_validate_without_guard() {
         // Arrange
-        let project = Stack::mock_project_without_guard();
+        let project = Stack::fixture_project_without_guard();
         // Act
-        let problems = get_problems(project, &mock_secrets());
+        let problems = get_problems(project, &Secrets::fixture());
         // Assert
         assert!(problems.is_empty(), "{problems:?}");
     }
@@ -105,10 +105,10 @@ mod tests {
     #[test]
     fn stack_validator_validate_config_missing() {
         // Arrange
-        let mut project = Stack::mock_project();
+        let mut project = Stack::fixture_project();
         set_source(&mut project, "worker", 0, "./missing.conf");
         // Act
-        let problems = get_problems(project, &mock_secrets());
+        let problems = get_problems(project, &Secrets::fixture());
         // Assert
         assert_eq!(
             problems,
@@ -120,10 +120,10 @@ mod tests {
     #[test]
     fn stack_validator_validate_config_not_file() {
         // Arrange
-        let mut project = Stack::mock_project();
+        let mut project = Stack::fixture_project();
         set_source(&mut project, "worker", 0, "./web");
         // Act
-        let problems = get_problems(project, &mock_secrets());
+        let problems = get_problems(project, &Secrets::fixture());
         // Assert
         assert_eq!(
             problems,
@@ -137,7 +137,7 @@ mod tests {
         // Arrange
         let secrets = Secrets::from_str("API_TOKEN=a").expect("dotenv should parse");
         // Act
-        let problems = get_problems(Stack::mock_project(), &secrets);
+        let problems = get_problems(Stack::fixture_project(), &secrets);
         // Assert
         assert_eq!(
             problems,
@@ -152,10 +152,11 @@ mod tests {
     #[test]
     fn stack_validator_validate_all() {
         // Arrange
-        let mut project = Stack::mock_project();
+        let mut project = Stack::fixture_project();
         set_source(&mut project, "worker", 0, "./missing.conf");
         set_source(&mut project, "web", 1, "./web");
-        let stack = Stack::mock_with(project);
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
         let secrets = Secrets::default();
         // Act
         let report = StackValidator
@@ -167,7 +168,9 @@ mod tests {
     }
 
     fn get_problems(project: Value, secrets: &Secrets) -> Vec<String> {
-        super::get_problems(&Stack::mock_with(project), secrets)
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
+        super::get_problems(&stack, secrets)
     }
 
     fn set_source(project: &mut Value, service: &str, index: usize, source: &str) {
@@ -175,9 +178,5 @@ mod tests {
         project
             .expect_object_mut(&pointer)
             .insert("source".to_owned(), json!(source));
-    }
-
-    fn mock_secrets() -> Secrets {
-        Secrets::from_str("API_TOKEN=a\nMAIL_PASSWORD=b\nTLS_KEY=c").expect("dotenv should parse")
     }
 }

@@ -9,7 +9,6 @@ use std::process::{Command, ExitStatus};
 use std::sync::atomic::AtomicBool;
 
 /// Run Docker Compose against a Docker host.
-#[cfg_attr(test, mockall::automock)]
 pub trait ComposeRunner: Send + Sync {
     /// Run `docker compose` with inherited stdio and wait for it to exit.
     fn execute(&self, invocation: ComposeInvocation) -> Result<(), Report<ComposeRunError>>;

@@ -20,6 +20,12 @@ impl Secrets {
             .iter()
             .map(|(name, value)| (name.as_str(), value.as_str()))
     }
+
+    /// Create a [`Secrets`] fixture with every secret the fixture project needs.
+    #[cfg(test)]
+    pub fn fixture() -> Self {
+        Self::from_str("API_TOKEN=a\nMAIL_PASSWORD=b\nTLS_KEY=c").expect("dotenv should parse")
+    }
 }
 
 impl FromStr for Secrets {

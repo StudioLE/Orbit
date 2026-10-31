@@ -7,14 +7,9 @@ pub trait ServiceBuilderExt {
     /// Register all application services.
     fn with_app_services(self) -> Self;
 
-    /// Register all application services with mock Compose and sops clients and [`CliArgs::mock`].
+    /// Register all application services with stubs for external calls.
     #[cfg(test)]
-    fn with_mock_services(
-        self,
-        compose_config: MockComposeConfigReader,
-        runner: MockComposeRunner,
-        sops: MockSopsClient,
-    ) -> Self;
+    fn with_test_services(self) -> Self;
 }
 
 impl ServiceBuilderExt for ServiceBuilder {
@@ -36,17 +31,12 @@ impl ServiceBuilderExt for ServiceBuilder {
     }
 
     #[cfg(test)]
-    fn with_mock_services(
-        self,
-        compose_config: MockComposeConfigReader,
-        runner: MockComposeRunner,
-        sops: MockSopsClient,
-    ) -> Self {
+    fn with_test_services(self) -> Self {
         self.with_app_services()
-            .with_instance::<Arc<dyn ComposeConfigReader>>(Arc::new(compose_config))
-            .with_instance::<Arc<dyn ComposeRunner>>(Arc::new(runner))
-            .with_instance::<Arc<dyn SopsClient>>(Arc::new(sops))
-            .with_instance(CliArgs::mock())
+            .with_trait::<dyn ComposeConfigReader, ComposeConfigReaderStub>()
+            .with_trait::<dyn ComposeRunner, ComposeRunnerSpy>()
+            .with_trait::<dyn SopsClient, SopsClientStub>()
+            .with_instance(CliArgs::fixture())
     }
 }
 

@@ -33,31 +33,27 @@ impl Stack {
 }
 
 #[cfg(test)]
-mod mocks {
+mod fixtures {
     use super::*;
     use std::fs::{self, create_dir, read_dir};
     use tempfile::TempDir;
 
     impl Stack {
-        /// Create a mock [`Stack`] from the fixture project and directory.
-        pub fn mock() -> Self {
-            Self::mock_with(Self::mock_project())
-        }
-
-        /// Create a mock [`Stack`] from `project` in the fixture directory.
-        pub fn mock_with(project: Value) -> Self {
-            Self::new("hello", Self::mock_directory(), project).expect("project should parse")
+        /// Create a [`Stack`] fixture from the fixture project and directory.
+        pub fn fixture() -> Self {
+            Self::new("hello", Self::fixture_directory(), Self::fixture_project())
+                .expect("fixture project should parse")
         }
 
         /// Fixture project JSON.
-        pub fn mock_project() -> Value {
+        pub fn fixture_project() -> Value {
             serde_json::from_str(include_str!("fixtures/project.json"))
                 .expect("fixture should be valid JSON")
         }
 
         /// Fixture project JSON without the `orbit` guard secret.
-        pub fn mock_project_without_guard() -> Value {
-            let mut project = Self::mock_project();
+        pub fn fixture_project_without_guard() -> Value {
+            let mut project = Self::fixture_project();
             project.expect_object_mut("/secrets").remove(GUARD_SECRET);
             for service in project.expect_object_mut("/services").values_mut() {
                 if let Some(Value::Array(secrets)) = service.get_mut("secrets") {
@@ -70,14 +66,14 @@ mod mocks {
         }
 
         /// Fixture directory holding the config files of the fixture project.
-        pub fn mock_directory() -> PathBuf {
+        pub fn fixture_directory() -> PathBuf {
             Path::new(env!("CARGO_MANIFEST_DIR")).join("src/services/stack/fixtures/stack")
         }
 
-        /// Temp copy of [`Stack::mock_directory`] with a placeholder `.sops.env`.
-        pub fn mock_temp_directory() -> TempDir {
+        /// Temp copy of [`Stack::fixture_directory`] with a placeholder `.sops.env`.
+        pub fn fixture_temp_directory() -> TempDir {
             let directory = TempDir::new().expect("should create temp dir");
-            copy_directory(&Self::mock_directory(), directory.path());
+            copy_directory(&Self::fixture_directory(), directory.path());
             fs::write(directory.path().join(".sops.env"), "").expect("should write .sops.env");
             directory
         }

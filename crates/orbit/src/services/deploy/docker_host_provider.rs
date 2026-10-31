@@ -43,9 +43,14 @@ mod tests {
     #[test]
     fn docker_host_provider_get() {
         // Arrange
-        let provider = get_provider(None);
+        let services = ServiceBuilder::new().with_test_services().build();
+        let provider = services.expect::<DockerHostProvider>();
+        let settings = OrbitSettings {
+            host: Some("ssh://stack-host".to_owned()),
+            ..OrbitSettings::default()
+        };
         // Act
-        let host = provider.get(&mock_settings(Some("ssh://stack-host")));
+        let host = provider.get(&settings);
         // Assert
         assert_eq!(host.expect("host should resolve"), "ssh://stack-host");
     }
@@ -54,9 +59,20 @@ mod tests {
     #[test]
     fn docker_host_provider_get_override() {
         // Arrange
-        let provider = get_provider(Some("ssh://other"));
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(CliArgs {
+                host: Some("ssh://other".to_owned()),
+                ..CliArgs::fixture()
+            })
+            .build();
+        let provider = services.expect::<DockerHostProvider>();
+        let settings = OrbitSettings {
+            host: Some("ssh://stack-host".to_owned()),
+            ..OrbitSettings::default()
+        };
         // Act
-        let host = provider.get(&mock_settings(Some("ssh://stack-host")));
+        let host = provider.get(&settings);
         // Assert
         assert_eq!(host.expect("host should resolve"), "ssh://other");
     }
@@ -65,9 +81,16 @@ mod tests {
     #[test]
     fn docker_host_provider_get_flag_only() {
         // Arrange
-        let provider = get_provider(Some("ssh://other"));
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(CliArgs {
+                host: Some("ssh://other".to_owned()),
+                ..CliArgs::fixture()
+            })
+            .build();
+        let provider = services.expect::<DockerHostProvider>();
         // Act
-        let host = provider.get(&mock_settings(None));
+        let host = provider.get(&OrbitSettings::default());
         // Assert
         assert_eq!(host.expect("host should resolve"), "ssh://other");
     }
@@ -76,36 +99,14 @@ mod tests {
     #[test]
     fn docker_host_provider_get_missing() {
         // Arrange
-        let provider = get_provider(None);
+        let services = ServiceBuilder::new().with_test_services().build();
+        let provider = services.expect::<DockerHostProvider>();
         // Act
         let report = provider
-            .get(&mock_settings(None))
+            .get(&OrbitSettings::default())
             .expect_err("host should be missing");
         // Assert
         assert_eq!(report.current_context(), &DockerHostError::Missing);
         assert!(report.to_string().contains("x-orbit.host"));
-    }
-
-    fn get_provider(host: Option<&str>) -> Arc<DockerHostProvider> {
-        let cli = CliArgs {
-            host: host.map(str::to_owned),
-            ..CliArgs::mock()
-        };
-        ServiceBuilder::new()
-            .with_mock_services(
-                MockComposeConfigReader::new(),
-                MockComposeRunner::new(),
-                MockSopsClient::new(),
-            )
-            .with_instance(cli)
-            .build()
-            .expect::<DockerHostProvider>()
-    }
-
-    fn mock_settings(host: Option<&str>) -> OrbitSettings {
-        OrbitSettings {
-            host: host.map(str::to_owned),
-            ..OrbitSettings::default()
-        }
     }
 }

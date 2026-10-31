@@ -58,46 +58,31 @@ mod tests {
     #[test]
     fn stack_provider_get() {
         // Arrange
-        let expected = Stack::mock();
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config
-            .expect_read()
-            .times(1)
-            .returning(|| Ok(Stack::mock_project()));
-        let provider = get_provider(compose_config, &Stack::mock_directory());
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(WorkingDirectory::new(Stack::fixture_directory()))
+            .build();
+        let provider = services.expect::<StackProvider>();
         // Act
         let stack = provider.get().expect("stack should load");
         // Assert
-        assert_eq!(stack, expected);
+        assert_eq!(stack, Stack::fixture());
     }
 
     /// [`StackProvider::get`] fails when Compose cannot load the project.
     #[test]
     fn stack_provider_get_compose_error() {
         // Arrange
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config
-            .expect_read()
-            .returning(|| Err(Report::new(ComposeConfigError::Config)));
-        let provider = get_provider(compose_config, Path::new("/stack"));
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(ComposeConfigReaderStub {
+                project: Err(ComposeConfigError::Config),
+            })
+            .build();
+        let provider = services.expect::<StackProvider>();
         // Act
         let report = provider.get().expect_err("load should fail");
         // Assert
         assert_eq!(report.current_context(), &StackError::Load);
-    }
-
-    fn get_provider(
-        compose_config: MockComposeConfigReader,
-        directory: &Path,
-    ) -> Arc<StackProvider> {
-        ServiceBuilder::new()
-            .with_mock_services(
-                compose_config,
-                MockComposeRunner::new(),
-                MockSopsClient::new(),
-            )
-            .with_instance(WorkingDirectory::new(directory.to_path_buf()))
-            .build()
-            .expect::<StackProvider>()
     }
 }

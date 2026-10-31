@@ -31,7 +31,6 @@ usage-rs = { workspace = true }
 
 [dev-dependencies]
 insta = { workspace = true }
-mockall = { workspace = true }
 usage-rs = { workspace = true, features = ["test"] }
 
 [lints]

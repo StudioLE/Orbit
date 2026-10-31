@@ -118,35 +118,27 @@ pub enum DeploymentError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockall::Sequence;
     use std::fs;
 
     /// [`DeploymentProvider::get`] loads, then decrypts, then writes a private temp file.
     #[test]
     fn deployment_provider_get() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
-        let mut sequence = Sequence::new();
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config
-            .expect_read()
-            .times(1)
-            .in_sequence(&mut sequence)
-            .returning(|| Ok(Stack::mock_project()));
-        let mut sops = MockSopsClient::new();
-        let sops_path = directory.path().join(".sops.env");
-        sops.expect_decrypt()
-            .withf(move |path| path == sops_path)
-            .times(1)
-            .in_sequence(&mut sequence)
-            .returning(|_| Ok(mock_secrets()));
-        let provider = get_provider(compose_config, sops, directory.path());
+        let directory = Stack::fixture_temp_directory();
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_trait::<dyn SopsClient, SopsClientSpy>()
+            .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
+            .build();
+        let provider = services.expect::<DeploymentProvider>();
         // Act
         let deployment = provider.get().expect("stack should prepare");
         // Assert
+        let calls = services.expect::<SopsClientSpy>().calls();
+        assert_eq!(calls, vec![directory.path().join(".sops.env")]);
         assert_eq!(deployment.name, "hello");
         assert_eq!(deployment.host, "ssh://example-host");
-        assert_eq!(deployment.secrets, mock_secrets());
+        assert_eq!(deployment.secrets, Secrets::fixture());
         let path = deployment.file.path().to_path_buf();
         let mode = fs::metadata(&path)
             .expect("file should exist")
@@ -165,26 +157,35 @@ mod tests {
     #[test]
     fn deployment_provider_get_secrets_error() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
+        let directory = Stack::fixture_temp_directory();
         fs::remove_file(directory.path().join(".sops.env")).expect("should remove .sops.env");
-        let mut sops = MockSopsClient::new();
-        sops.expect_decrypt().never();
-        let provider = get_provider(mock_compose_config(), sops, directory.path());
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_trait::<dyn SopsClient, SopsClientSpy>()
+            .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
+            .build();
+        let provider = services.expect::<DeploymentProvider>();
         // Act
         let report = provider.get().expect_err("missing .sops.env should fail");
         // Assert
         assert_eq!(report.current_context(), &DeploymentError::Secrets);
+        let calls = services.expect::<SopsClientSpy>().calls();
+        assert_eq!(calls, Vec::<PathBuf>::new());
     }
 
     /// [`DeploymentProvider::get`] stops on validation problems.
     #[test]
     fn deployment_provider_get_invalid() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
-        let mut sops = MockSopsClient::new();
-        sops.expect_decrypt()
-            .returning(|_| Ok(Secrets::from_str("API_TOKEN=a").expect("dotenv should parse")));
-        let provider = get_provider(mock_compose_config(), sops, directory.path());
+        let directory = Stack::fixture_temp_directory();
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(SopsClientStub {
+                secrets: Secrets::from_str("API_TOKEN=a").expect("dotenv should parse"),
+            })
+            .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
+            .build();
+        let provider = services.expect::<DeploymentProvider>();
         // Act
         let report = provider.get().expect_err("missing secrets should fail");
         // Assert
@@ -195,47 +196,23 @@ mod tests {
     #[test]
     fn deployment_provider_get_host_missing() {
         // Arrange
-        let directory = Stack::mock_temp_directory();
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config.expect_read().returning(|| {
-            let mut project = Stack::mock_project();
-            project
-                .as_object_mut()
-                .expect("project should be an object")
-                .remove("x-orbit");
-            Ok(project)
-        });
-        let mut sops = MockSopsClient::new();
-        sops.expect_decrypt().never();
-        let provider = get_provider(compose_config, sops, directory.path());
+        let directory = Stack::fixture_temp_directory();
+        let mut project = Stack::fixture_project();
+        project.expect_object_mut("").remove("x-orbit");
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_trait::<dyn SopsClient, SopsClientSpy>()
+            .with_instance(ComposeConfigReaderStub {
+                project: Ok(project),
+            })
+            .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
+            .build();
+        let provider = services.expect::<DeploymentProvider>();
         // Act
         let report = provider.get().expect_err("host should be missing");
         // Assert
         assert_eq!(report.current_context(), &DeploymentError::Host);
-    }
-
-    fn get_provider(
-        compose_config: MockComposeConfigReader,
-        sops: MockSopsClient,
-        directory: &Path,
-    ) -> Arc<DeploymentProvider> {
-        ServiceBuilder::new()
-            .with_mock_services(compose_config, MockComposeRunner::new(), sops)
-            .with_instance(WorkingDirectory::new(directory.to_path_buf()))
-            .build()
-            .expect::<DeploymentProvider>()
-    }
-
-    fn mock_compose_config() -> MockComposeConfigReader {
-        let mut compose_config = MockComposeConfigReader::new();
-        compose_config
-            .expect_read()
-            .returning(|| Ok(Stack::mock_project()));
-        compose_config
-    }
-
-    fn mock_secrets() -> Secrets {
-        Secrets::from_str("API_TOKEN=hunter2hunter2\nMAIL_PASSWORD=swordfish\nTLS_KEY=key")
-            .expect("dotenv should parse")
+        let calls = services.expect::<SopsClientSpy>().calls();
+        assert_eq!(calls, Vec::<PathBuf>::new());
     }
 }

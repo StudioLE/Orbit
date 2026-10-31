@@ -16,7 +16,7 @@ pub(crate) use std::fmt::{self, Debug, Display, Formatter};
 pub(crate) use std::io::{self, Read, Write};
 pub(crate) use std::path::{Path, PathBuf};
 pub(crate) use std::str::FromStr;
-pub(crate) use std::sync::Arc;
+pub(crate) use std::sync::{Arc, Mutex};
 pub(crate) use strum::Display;
 pub(crate) use studiole_di::prelude::*;
 pub(crate) use studiole_logging::prelude::*;

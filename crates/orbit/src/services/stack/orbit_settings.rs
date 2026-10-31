@@ -175,7 +175,7 @@ mod tests {
     #[test]
     fn orbit_settings_from_project() {
         // Arrange
-        let project = Stack::mock_project();
+        let project = Stack::fixture_project();
         // Act
         let settings = OrbitSettings::from_project(&project).expect("project should parse");
         // Assert
@@ -186,7 +186,7 @@ mod tests {
     #[test]
     fn orbit_settings_from_project_unknown_key() {
         // Arrange
-        let mut project = Stack::mock_project();
+        let mut project = Stack::fixture_project();
         project
             .expect_object_mut("/x-orbit")
             .insert("hots".to_owned(), json!("ssh://typo"));
@@ -200,11 +200,17 @@ mod tests {
     #[test]
     fn orbit_settings_from_project_environment_short() {
         // Arrange
-        let project = mock_service_extension(json!({ "environment": ["API_TOKEN"] }));
+        let project = json!({ "services": { "app": {
+            "image": "alpine",
+            "x-orbit": { "environment": ["API_TOKEN"] }
+        }}});
         // Act
         let settings = OrbitSettings::from_project(&project).expect("project should parse");
         // Assert
-        let expected = vec![SecretEntry::mock("API_TOKEN", "API_TOKEN")];
+        let expected = vec![SecretEntry {
+            source: "API_TOKEN".to_owned(),
+            target: "API_TOKEN".to_owned(),
+        }];
         assert_eq!(get_app(&settings).environment, expected);
     }
 
@@ -212,11 +218,17 @@ mod tests {
     #[test]
     fn orbit_settings_from_project_secrets_short() {
         // Arrange
-        let project = mock_service_extension(json!({ "secrets": ["TLS_KEY"] }));
+        let project = json!({ "services": { "app": {
+            "image": "alpine",
+            "x-orbit": { "secrets": ["TLS_KEY"] }
+        }}});
         // Act
         let settings = OrbitSettings::from_project(&project).expect("project should parse");
         // Assert
-        let expected = vec![SecretEntry::mock("TLS_KEY", "/run/secrets/TLS_KEY")];
+        let expected = vec![SecretEntry {
+            source: "TLS_KEY".to_owned(),
+            target: "/run/secrets/TLS_KEY".to_owned(),
+        }];
         assert_eq!(get_app(&settings).secrets, expected);
     }
 
@@ -224,16 +236,25 @@ mod tests {
     #[test]
     fn orbit_settings_from_project_long() {
         // Arrange
-        let project = mock_service_extension(json!({
-            "environment": [{ "source": "MAIL_PASSWORD", "target": "SMTP_PASSWORD" }],
-            "secrets": [{ "source": "SIGNING_KEY", "target": "/etc/app/signing.key" }]
-        }));
+        let project = json!({ "services": { "app": {
+            "image": "alpine",
+            "x-orbit": {
+                "environment": [{ "source": "MAIL_PASSWORD", "target": "SMTP_PASSWORD" }],
+                "secrets": [{ "source": "SIGNING_KEY", "target": "/etc/app/signing.key" }]
+            }
+        }}});
         // Act
         let settings = OrbitSettings::from_project(&project).expect("project should parse");
         // Assert
         let service = get_app(&settings);
-        let environment = vec![SecretEntry::mock("MAIL_PASSWORD", "SMTP_PASSWORD")];
-        let secrets = vec![SecretEntry::mock("SIGNING_KEY", "/etc/app/signing.key")];
+        let environment = vec![SecretEntry {
+            source: "MAIL_PASSWORD".to_owned(),
+            target: "SMTP_PASSWORD".to_owned(),
+        }];
+        let secrets = vec![SecretEntry {
+            source: "SIGNING_KEY".to_owned(),
+            target: "/etc/app/signing.key".to_owned(),
+        }];
         assert_eq!(service.environment, environment);
         assert_eq!(service.secrets, secrets);
     }
@@ -242,7 +263,10 @@ mod tests {
     #[test]
     fn orbit_settings_from_project_long_missing_target() {
         // Arrange
-        let project = mock_service_extension(json!({ "secrets": [{ "source": "TLS_KEY" }] }));
+        let project = json!({ "services": { "app": {
+            "image": "alpine",
+            "x-orbit": { "secrets": [{ "source": "TLS_KEY" }] }
+        }}});
         // Act
         let report = OrbitSettings::from_project(&project).expect_err("entry should fail");
         // Assert
@@ -325,7 +349,7 @@ mod tests {
     fn orbit_settings_get_secret_names() {
         // Arrange
         let settings =
-            OrbitSettings::from_project(&Stack::mock_project()).expect("project should parse");
+            OrbitSettings::from_project(&Stack::fixture_project()).expect("project should parse");
         // Act
         let names = settings.get_secret_names();
         // Assert
@@ -333,20 +357,7 @@ mod tests {
         assert_eq!(names, BTreeSet::from(expected));
     }
 
-    impl SecretEntry {
-        fn mock(source: &str, target: &str) -> Self {
-            Self {
-                source: source.to_owned(),
-                target: target.to_owned(),
-            }
-        }
-    }
-
     fn get_app(settings: &OrbitSettings) -> &ServiceSettings {
         settings.services.get("app").expect("app should exist")
-    }
-
-    fn mock_service_extension(extension: Value) -> Value {
-        json!({ "services": { "app": { "image": "alpine", "x-orbit": extension } } })
     }
 }

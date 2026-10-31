@@ -261,7 +261,7 @@ mod tests {
     #[test]
     fn stack_transformer_transform() {
         // Arrange
-        let stack = Stack::mock();
+        let stack = Stack::fixture();
         // Act
         let project = StackTransformer
             .transform(&stack)
@@ -274,8 +274,13 @@ mod tests {
     #[test]
     fn stack_transformer_transform_without_guard() {
         // Arrange
-        let guarded = Stack::mock();
-        let unguarded = Stack::mock_with(Stack::mock_project_without_guard());
+        let guarded = Stack::fixture();
+        let unguarded = Stack::new(
+            "hello",
+            Stack::fixture_directory(),
+            Stack::fixture_project_without_guard(),
+        )
+        .expect("project should parse");
         // Act
         let expected = StackTransformer
             .transform(&guarded)
@@ -292,7 +297,15 @@ mod tests {
     fn stack_transformer_transform_content_change() {
         // Arrange
         let directory = TempDir::new().expect("should create temp dir");
-        let stack = mock_single_config_stack(directory.path());
+        let project = json!({
+            "services": { "app": {
+                "secrets": [{ "source": "orbit" }],
+                "x-orbit": { "configs": [{ "source": "app.conf", "target": "/etc/app.conf" }] }
+            }},
+            "secrets": { "orbit": { "external": true } }
+        });
+        let stack = Stack::new("hello", directory.path().to_path_buf(), project)
+            .expect("project should parse");
         let path = directory.path().join("app.conf");
         // Act
         fs::write(&path, "a").expect("should write config");
@@ -315,7 +328,15 @@ mod tests {
     fn stack_transformer_transform_not_utf8() {
         // Arrange
         let directory = TempDir::new().expect("should create temp dir");
-        let stack = mock_single_config_stack(directory.path());
+        let project = json!({
+            "services": { "app": {
+                "secrets": [{ "source": "orbit" }],
+                "x-orbit": { "configs": [{ "source": "app.conf", "target": "/etc/app.conf" }] }
+            }},
+            "secrets": { "orbit": { "external": true } }
+        });
+        let stack = Stack::new("hello", directory.path().to_path_buf(), project)
+            .expect("project should parse");
         fs::write(directory.path().join("app.conf"), [0xff, 0xfe]).expect("should write config");
         // Act
         let report = StackTransformer
@@ -331,12 +352,13 @@ mod tests {
     #[test]
     fn stack_transformer_transform_config_name() {
         // Arrange
-        let mut project = Stack::mock_project();
+        let mut project = Stack::fixture_project();
         project.expect_object_mut("").insert(
             "configs".to_owned(),
             json!({ "orbit_worker_0": { "content": "taken" } }),
         );
-        let stack = Stack::mock_with(project);
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
         // Act
         let report = StackTransformer
             .transform(&stack)
@@ -349,13 +371,15 @@ mod tests {
     #[test]
     fn stack_transformer_transform_environment() {
         // Arrange
-        let stack = Stack::mock_with(json!({ "services": { "app": {
+        let project = json!({ "services": { "app": {
             "environment": { "LOG_LEVEL": "info" },
             "x-orbit": { "environment": [
                 "API_TOKEN",
                 { "source": "MAIL_PASSWORD", "target": "SMTP_PASSWORD" }
             ]}
-        }}}));
+        }}});
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
         // Act
         let project = StackTransformer
             .transform(&stack)
@@ -376,10 +400,12 @@ mod tests {
     #[test]
     fn stack_transformer_transform_environment_replace() {
         // Arrange
-        let stack = Stack::mock_with(json!({ "services": { "app": {
+        let project = json!({ "services": { "app": {
             "environment": { "API_TOKEN": "plain" },
             "x-orbit": { "environment": ["API_TOKEN"] }
-        }}}));
+        }}});
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
         // Act
         let project = StackTransformer
             .transform(&stack)
@@ -396,12 +422,14 @@ mod tests {
     #[test]
     fn stack_transformer_transform_secrets() {
         // Arrange
-        let stack = Stack::mock_with(json!({ "services": {
+        let project = json!({ "services": {
             "app": { "x-orbit": { "secrets": ["TLS_KEY"] } },
             "web": { "x-orbit": { "secrets": [
                 { "source": "TLS_KEY", "target": "/etc/ssl/key.pem" }
             ]}}
-        }}));
+        }});
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
         // Act
         let project = StackTransformer
             .transform(&stack)
@@ -419,28 +447,17 @@ mod tests {
     #[test]
     fn stack_transformer_transform_secret_name() {
         // Arrange
-        let stack = Stack::mock_with(json!({
+        let project = json!({
             "services": { "app": { "x-orbit": { "secrets": ["TLS_KEY"] } } },
             "secrets": { "orbit_TLS_KEY": { "file": "./key.pem" } }
-        }));
+        });
+        let stack =
+            Stack::new("hello", Stack::fixture_directory(), project).expect("project should parse");
         // Act
         let report = StackTransformer
             .transform(&stack)
             .expect_err("taken name should fail");
         // Assert
         assert_eq!(report.current_context(), &TransformError::SecretName);
-    }
-
-    fn mock_single_config_stack(directory: &Path) -> Stack {
-        let project = json!({
-            "services": { "app": {
-                "secrets": [{ "source": "orbit" }],
-                "x-orbit": { "configs": [{ "source": "app.conf", "target": "/etc/app.conf" }] }
-            }},
-            "secrets": { "orbit": { "external": true } }
-        });
-        let mut stack = Stack::mock_with(project);
-        stack.directory = directory.to_path_buf();
-        stack
     }
 }
