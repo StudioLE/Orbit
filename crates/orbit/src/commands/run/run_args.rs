@@ -11,6 +11,9 @@ pub struct RunArgs {
     /// Pull images before starting.
     #[usage(long, value_enum)]
     pub pull: Option<PullPolicy>,
+    /// Set an environment variable in the container.
+    #[usage(short, long, var, value_name = "KEY=VALUE")]
+    pub env: Vec<String>,
     /// Service to run.
     #[usage(arg, double_dash = "automatic")]
     pub service: String,
@@ -30,6 +33,10 @@ impl RunArgs {
             arguments.push("--pull".to_owned());
             arguments.push(pull.to_string());
         }
+        for env in &self.env {
+            arguments.push("--env".to_owned());
+            arguments.push(env.clone());
+        }
         arguments.push(self.service.clone());
         arguments.extend(self.args.iter().cloned());
         arguments
@@ -47,13 +54,26 @@ mod tests {
         let args = RunArgs {
             rm: true,
             pull: Some(PullPolicy::Never),
+            env: vec!["NAME=a".to_owned(), "TAG=b".to_owned()],
             service: "app".to_owned(),
             args: vec!["echo".to_owned(), "--rm".to_owned()],
         };
         // Act
         let arguments = args.to_compose_arguments();
         // Assert
-        let expected = ["run", "--rm", "--pull", "never", "app", "echo", "--rm"];
+        let expected = [
+            "run",
+            "--rm",
+            "--pull",
+            "never",
+            "--env",
+            "NAME=a",
+            "--env",
+            "TAG=b",
+            "app",
+            "echo",
+            "--rm",
+        ];
         assert_eq!(arguments, expected);
     }
 }

@@ -4,7 +4,7 @@ expression: output
 ---
 Run a one-off command in a new container on the Docker host.
 
-Usage: orbit run [--rm] [--pull <PULL>] <SERVICE> [ARGS]…
+Usage: orbit run [FLAGS] <SERVICE> [ARGS]…
 
 Arguments:
   <SERVICE>  Service to run.
@@ -14,6 +14,7 @@ Flags:
       --rm                     Remove the container when it exits.
       --pull <PULL>            Pull images before starting.
                                [possible values: always, missing, never]
+  -e, --env <KEY=VALUE>        Set an environment variable in the container.
   -h, --help                   Print help
 
 Global flags:

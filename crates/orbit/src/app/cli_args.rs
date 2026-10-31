@@ -113,8 +113,29 @@ mod tests {
         let expected = RunArgs {
             rm: true,
             pull: Some(PullPolicy::Never),
+            env: Vec::new(),
             service: "app".to_owned(),
             args: vec!["hello".to_owned(), "--loud".to_owned(), "-x".to_owned()],
+        };
+        assert_eq!(cli.command, Subcommand::Run(expected));
+    }
+
+    /// [`CliArgs::parse_from`] collects every `-e` and `--env` given before the service.
+    #[test]
+    fn cli_args_parse_from_run_env() {
+        // Arrange
+        let input = argv(["run", "-e", "NAME=a", "--env", "TAG=b=c", "app"]);
+        let words = input.words();
+        let spec = CliArgs::spec();
+        // Act
+        let cli = parse(spec, &words, CliArgs::parse_from).expect("the command line should parse");
+        // Assert
+        let expected = RunArgs {
+            rm: false,
+            pull: None,
+            env: vec!["NAME=a".to_owned(), "TAG=b=c".to_owned()],
+            service: "app".to_owned(),
+            args: Vec::new(),
         };
         assert_eq!(cli.command, Subcommand::Run(expected));
     }
@@ -133,6 +154,7 @@ mod tests {
         let expected = RunArgs {
             rm: false,
             pull: None,
+            env: Vec::new(),
             service: "app".to_owned(),
             args: vec!["--rm".to_owned(), "--host".to_owned(), "x".to_owned()],
         };
@@ -166,6 +188,7 @@ mod tests {
         let expected = RunArgs {
             rm: false,
             pull: None,
+            env: Vec::new(),
             service: "app".to_owned(),
             args: vec!["--log-level".to_owned(), "debug".to_owned()],
         };
@@ -175,7 +198,7 @@ mod tests {
     /// [`CliArgs::parse_from`] rejects an undeclared flag before the service.
     #[test]
     fn cli_args_parse_from_run_unknown_flag() {
-        for flag in ["--entrypoint", "-e", "-v"] {
+        for flag in ["--entrypoint", "-u", "-v"] {
             // Arrange
             let input = argv(["run", flag, "sh", "app"]);
             let words = input.words();

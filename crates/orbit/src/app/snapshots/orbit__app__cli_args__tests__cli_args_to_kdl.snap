@@ -61,6 +61,9 @@ cmd run help="Run a one-off command in a new container on the Docker host." {
             }
         }
     }
+    flag "-e --env" help="Set an environment variable in the container." var=#true {
+        arg "<KEY=VALUE>"
+    }
     flag "-h --help" help="Print help" action=help builtin=#true
     arg <SERVICE> help="Service to run." double_dash=automatic
     arg "[ARGS]..." help="Arguments passed to the container verbatim."
