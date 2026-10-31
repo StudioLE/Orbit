@@ -8,7 +8,7 @@ use usage_rs::Cli as UsageCli;
 #[usage(bin = "orbit", about, version, unknown_flags = "error")]
 pub struct CliArgs {
     /// Set the log level.
-    #[usage(long, value_enum)]
+    #[usage(long, global, env = "ORBIT_LOG_LEVEL", value_enum)]
     pub log_level: Option<LogLevel>,
     /// Docker host to deploy to.
     ///
@@ -135,6 +135,39 @@ mod tests {
             pull: None,
             service: "app".to_owned(),
             args: vec!["--rm".to_owned(), "--host".to_owned(), "x".to_owned()],
+        };
+        assert_eq!(cli.command, Subcommand::Run(expected));
+    }
+
+    /// [`CliArgs::parse_from`] binds the global `--log-level` after a subcommand.
+    #[test]
+    fn cli_args_parse_from_log_level_after_subcommand() {
+        // Arrange
+        let input = argv(["up", "--log-level", "debug"]);
+        let words = input.words();
+        let spec = CliArgs::spec();
+        // Act
+        let cli = parse(spec, &words, CliArgs::parse_from).expect("the command line should parse");
+        // Assert
+        assert_eq!(cli.log_level, Some(LogLevel::Debug));
+    }
+
+    /// [`CliArgs::parse_from`] passes the global `--log-level` after the service to the container.
+    #[test]
+    fn cli_args_parse_from_run_log_level_after_service() {
+        // Arrange
+        let input = argv(["run", "app", "--log-level", "debug"]);
+        let words = input.words();
+        let spec = CliArgs::spec();
+        // Act
+        let cli = parse(spec, &words, CliArgs::parse_from).expect("the command line should parse");
+        // Assert
+        assert_eq!(cli.log_level, None);
+        let expected = RunArgs {
+            rm: false,
+            pull: None,
+            service: "app".to_owned(),
+            args: vec!["--log-level".to_owned(), "debug".to_owned()],
         };
         assert_eq!(cli.command, Subcommand::Run(expected));
     }

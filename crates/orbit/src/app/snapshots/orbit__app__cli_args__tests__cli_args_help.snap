@@ -17,6 +17,7 @@ Flags:
       --log-level <LOG_LEVEL>  Set the log level.
                                [possible values: error, warn, info, debug,
                                trace]
+                               [env: ORBIT_LOG_LEVEL]
       --host <HOST>            Docker host to deploy to.
 
                                Default: `x-orbit.host` in `docker-compose.yml`

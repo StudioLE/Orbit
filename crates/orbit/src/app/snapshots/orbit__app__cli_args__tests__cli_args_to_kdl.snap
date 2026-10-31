@@ -8,7 +8,7 @@ version "x.y.z"
 about "Extends `docker compose up` and `run` to deploy local config files and sops-encrypted secrets to a remote host"
 unknown_flags error
 subcommand_required #true
-flag --log-level help="Set the log level." {
+flag --log-level help="Set the log level." global=#true env=ORBIT_LOG_LEVEL {
     arg <LOG_LEVEL> {
         choices ignore_case=#true {
             choice error help="Errors only."
