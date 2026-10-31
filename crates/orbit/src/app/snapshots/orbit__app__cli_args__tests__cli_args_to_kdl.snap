@@ -1,0 +1,67 @@
+---
+source: crates/orbit/src/app/cli_args.rs
+expression: output
+---
+name orbit
+bin orbit
+version "x.y.z"
+about "Extends `docker compose up` and `run` to deploy local config files and sops-encrypted secrets to a remote host"
+unknown_flags error
+subcommand_required #true
+flag --log-level help="Set the log level." {
+    arg <LOG_LEVEL> {
+        choices ignore_case=#true {
+            choice error help="Errors only."
+            choice warn help="Errors and warnings."
+            choice info help="Errors, warnings, and info."
+            choice debug help="Errors, warnings, info, and debug."
+            choice trace help="Errors, warnings, info, debug, and trace."
+        }
+    }
+}
+flag --host help="Docker host to deploy to." {
+    long_help #"""
+Docker host to deploy to.
+
+Default: `x-orbit.host` in `docker-compose.yml`
+"""#
+    arg <HOST>
+}
+flag "-h --help" help="Print help" action=help builtin=#true
+flag "-V --version" help="Print version" action=version builtin=#true
+cmd up help="Create and start containers on the Docker host." {
+    flag "-d --detach" help="Run containers in the background."
+    flag --force-recreate help="Recreate containers even if their configuration is unchanged."
+    flag --pull help="Pull images before starting." {
+        arg <PULL> {
+            choices {
+                choice always help="Always pull."
+                choice missing help="Pull only missing images."
+                choice never help="Never pull."
+            }
+        }
+    }
+    flag "-h --help" help="Print help" action=help builtin=#true
+    arg "[SERVICES]..." help="Services to start." {
+        long_help #"""
+Services to start.
+
+Default: every service
+"""#
+    }
+}
+cmd run help="Run a one-off command in a new container on the Docker host." {
+    flag --rm help="Remove the container when it exits."
+    flag --pull help="Pull images before starting." {
+        arg <PULL> {
+            choices {
+                choice always help="Always pull."
+                choice missing help="Pull only missing images."
+                choice never help="Never pull."
+            }
+        }
+    }
+    flag "-h --help" help="Print help" action=help builtin=#true
+    arg <SERVICE> help="Service to run." double_dash=automatic
+    arg "[ARGS]..." help="Arguments passed to the container verbatim."
+}

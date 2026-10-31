@@ -5,12 +5,7 @@ use usage_rs::Cli as UsageCli;
 
 /// Parsed CLI arguments.
 #[derive(Debug, UsageCli)]
-#[usage(
-    bin = "orbit",
-    about = "Extends `docker compose up` and `run` to deploy local config files and sops-encrypted secrets to a remote host",
-    version,
-    unknown_flags = "error"
-)]
+#[usage(bin = "orbit", about, version, unknown_flags = "error")]
 pub struct CliArgs {
     /// Set the log level.
     #[usage(long, value_enum)]
@@ -225,6 +220,15 @@ mod tests {
     fn cli_args_help_run() {
         let spec = CliArgs::spec();
         let output = help(spec, &["run"], Page::Long);
+        assert_snapshot!(output);
+    }
+
+    /// The usage spec printed by `orbit __usage_spec__`.
+    ///
+    /// - Replaces the version with a placeholder, as CI sets it at build time
+    #[test]
+    fn cli_args_to_kdl() {
+        let output = CliArgs::to_kdl().replace(env!("CARGO_PKG_VERSION"), "x.y.z");
         assert_snapshot!(output);
     }
 }
