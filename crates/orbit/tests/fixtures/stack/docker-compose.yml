@@ -17,6 +17,9 @@ services:
       configs:
       - source: ./app.conf
         target: /etc/app.conf
+      - source: ./script.sh
+        target: /script.sh
+        mode: 0755
     secrets:
     - orbit
 

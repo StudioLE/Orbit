@@ -112,6 +112,23 @@ fn orbit_up_config_change() {
     assert_eq!(config, "greeting = changed\n");
 }
 
+/// Orbit gives a config the `x-orbit.configs` `mode`, and Compose's default `444` without one.
+#[test]
+#[ignore = "needs docker, sops and age-keygen"]
+fn orbit_up_config_mode() {
+    // Arrange
+    let stack = TestStack::new();
+    // Act
+    let output = stack.orbit(&["up", "--detach"]);
+    // Assert
+    assert_success(&output);
+    let id = stack.get_container_id();
+    let script = stack.exec(&id, &["stat", "-c", "%a", "/script.sh"]);
+    assert_eq!(script, "755\n");
+    let config = stack.exec(&id, &["stat", "-c", "%a", "/etc/app.conf"]);
+    assert_eq!(config, "444\n");
+}
+
 /// Plain `docker compose up` is refused and leaves the running container untouched.
 #[test]
 #[ignore = "needs docker, sops and age-keygen"]
@@ -175,7 +192,7 @@ impl TestStack {
             .tempdir()
             .expect("should create stack dir");
         let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/stack");
-        for name in ["docker-compose.yml", "app.conf"] {
+        for name in ["docker-compose.yml", "app.conf", "script.sh"] {
             fs::copy(fixture.join(name), directory.path().join(name)).expect("should copy fixture");
         }
         let keys = TempDir::new().expect("should create key dir");

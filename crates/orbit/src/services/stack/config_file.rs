@@ -10,6 +10,9 @@ pub struct ConfigFile {
     pub source: String,
     /// Path in the container.
     pub target: String,
+    /// File mode in the container.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<ConfigMode>,
 }
 
 impl ConfigFile {
@@ -43,10 +46,12 @@ mod tests {
     }
 
     impl ConfigFile {
-        fn fixture() -> Self {
+        /// Create a [`ConfigFile`] fixture without a mode.
+        pub fn fixture() -> Self {
             Self {
                 source: "./web/app.conf".to_owned(),
                 target: "/etc/app.conf".to_owned(),
+                mode: None,
             }
         }
     }

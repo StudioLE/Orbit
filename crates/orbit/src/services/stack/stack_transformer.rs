@@ -14,6 +14,7 @@ impl StackTransformer {
     /// - Sets each `x-orbit.environment` target to `${SOURCE}`, replacing any existing value
     /// - Adds a top-level secret `orbit_<SOURCE>` per `x-orbit.secrets` source, shared by services
     /// - Inlines each `x-orbit.configs` file as a top-level config with `content`
+    /// - Passes each `x-orbit.configs` `mode` to its config reference as written
     /// - Escapes `$` as `$$` in content so Compose does not interpolate it
     /// - Labels services that have configs with [`CONFIG_HASH_LABEL`]
     /// - Removes every `x-orbit` key
@@ -161,6 +162,7 @@ fn read_configs(
             Ok(LoadedConfig {
                 target: config.target.clone(),
                 content,
+                mode: config.mode.clone(),
             })
         })
         .collect()
@@ -188,7 +190,13 @@ fn add_configs(
         }
         let content = config.content.replace('$', "$$");
         top_configs.insert(config_name.clone(), json!({ "content": content }));
-        references.push(json!({ "source": config_name, "target": config.target }));
+        let mut reference = Map::new();
+        reference.insert("source".to_owned(), json!(config_name));
+        reference.insert("target".to_owned(), json!(config.target));
+        if let Some(mode) = &config.mode {
+            reference.insert("mode".to_owned(), json!(mode));
+        }
+        references.push(Value::Object(reference));
     }
     let service = get_service(root, service_name)?;
     extend_references(service, service_name, "configs", references)?;
@@ -321,6 +329,34 @@ mod tests {
         assert_ne!(before.pointer(label), after.pointer(label));
         assert!(before.get("secrets").is_none());
         assert!(before.pointer("/services/app/secrets").is_none());
+    }
+
+    /// [`StackTransformer::transform`] passes each config `mode` to its reference as written.
+    #[test]
+    fn stack_transformer_transform_config_mode() {
+        // Arrange
+        let directory = TempDir::new().expect("should create temp dir");
+        let project = json!({ "services": { "app": { "x-orbit": { "configs": [
+            { "source": "a.sh", "target": "/a.sh", "mode": 493 },
+            { "source": "b.sh", "target": "/b.sh", "mode": "0755" },
+            { "source": "c.conf", "target": "/c.conf" }
+        ]}}}});
+        let stack = Stack::new("hello", directory.path().to_path_buf(), project)
+            .expect("project should parse");
+        for name in ["a.sh", "b.sh", "c.conf"] {
+            fs::write(directory.path().join(name), "x").expect("should write config");
+        }
+        // Act
+        let project = StackTransformer
+            .transform(&stack)
+            .expect("transform should succeed");
+        // Assert
+        let expected = json!([
+            { "source": "orbit_app_0", "target": "/a.sh", "mode": 493 },
+            { "source": "orbit_app_1", "target": "/b.sh", "mode": "0755" },
+            { "source": "orbit_app_2", "target": "/c.conf" }
+        ]);
+        assert_eq!(project.pointer("/services/app/configs"), Some(&expected));
     }
 
     /// [`StackTransformer::transform`] rejects a config file that is not UTF-8, naming the path.

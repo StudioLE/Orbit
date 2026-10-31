@@ -2,6 +2,7 @@
 
 mod config_file;
 mod config_hash;
+mod config_mode;
 mod loaded_config;
 mod orbit_settings;
 mod secret_entry;
@@ -14,6 +15,7 @@ mod stack_validator;
 
 pub use config_file::*;
 pub use config_hash::*;
+pub use config_mode::*;
 pub use loaded_config::*;
 pub use orbit_settings::*;
 pub use secret_entry::*;

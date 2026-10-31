@@ -273,6 +273,27 @@ mod tests {
         assert_eq!(report.current_context(), &OrbitSettingsError::Parse);
     }
 
+    /// [`OrbitSettings::from_project`] reads a number or text `mode` on an `x-orbit.configs` entry.
+    #[test]
+    fn orbit_settings_from_project_config_mode() {
+        // Arrange
+        let project = json!({ "services": { "app": {
+            "x-orbit": { "configs": [
+                { "source": "a.sh", "target": "/a.sh", "mode": 493 },
+                { "source": "b.sh", "target": "/b.sh", "mode": "0755" }
+            ]}
+        }}});
+        // Act
+        let settings = OrbitSettings::from_project(&project).expect("project should parse");
+        // Assert
+        let configs = serde_json::to_value(&get_app(&settings).configs).expect("should serialize");
+        let expected = json!([
+            { "source": "a.sh", "target": "/a.sh", "mode": 493 },
+            { "source": "b.sh", "target": "/b.sh", "mode": "0755" }
+        ]);
+        assert_eq!(configs, expected);
+    }
+
     /// [`OrbitSettings::from_project`] warns on an `environment` key with no value.
     #[test]
     fn orbit_settings_from_project_warn_bare_name() {

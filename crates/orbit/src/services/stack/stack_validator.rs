@@ -10,6 +10,7 @@ impl StackValidator {
     /// Check `stack` has every config file and secret it needs, reporting every problem at once.
     ///
     /// - Each `x-orbit.configs` source exists and is a file
+    /// - Each `x-orbit.configs` number mode is at most `0777`
     /// - Each `x-orbit.environment` and `x-orbit.secrets` source is in `secrets`
     /// - Attaches each problem as `problem`
     #[expect(clippy::unused_self, reason = "stateless DI service")]
@@ -46,7 +47,7 @@ fn get_problems(stack: &Stack, secrets: &Secrets) -> Vec<String> {
     problems
 }
 
-/// Each `x-orbit.configs` source that does not exist or is not a file.
+/// Each `x-orbit.configs` source that does not exist or is not a file, and each number mode above `0777`.
 fn get_config_problems(stack: &Stack) -> Vec<String> {
     let mut problems = Vec::new();
     for (name, service) in &stack.settings.services {
@@ -60,6 +61,14 @@ fn get_config_problems(stack: &Stack) -> Vec<String> {
             } else if !path.is_file() {
                 problems.push(format!(
                     "Service `{name}` config `{}` is not a file",
+                    config.source
+                ));
+            }
+            if let Some(mode) = &config.mode
+                && mode.is_missing_leading_zero()
+            {
+                problems.push(format!(
+                    "Service `{name}` config `{}` mode `{mode}` is decimal, not octal, so use `0{mode}` or `\"{mode}\"`",
                     config.source
                 ));
             }
@@ -129,6 +138,63 @@ mod tests {
             problems,
             vec!["Service `worker` config `./web` is not a file"]
         );
+    }
+
+    /// [`StackValidator::validate`] reports a config mode that is octal digits written as decimal.
+    #[test]
+    fn stack_validator_validate_config_mode_decimal() {
+        // Arrange
+        let config = ConfigFile {
+            source: "./worker.conf".to_owned(),
+            mode: Some(ConfigMode::Number(755)),
+            ..ConfigFile::fixture()
+        };
+        let worker = ServiceSettings {
+            configs: vec![config],
+            ..ServiceSettings::default()
+        };
+        let stack = Stack {
+            settings: OrbitSettings {
+                services: BTreeMap::from([("worker".to_owned(), worker)]),
+                ..OrbitSettings::default()
+            },
+            ..Stack::fixture()
+        };
+        // Act
+        let problems = super::get_problems(&stack, &Secrets::fixture());
+        // Assert
+        assert_eq!(
+            problems,
+            vec![
+                "Service `worker` config `./worker.conf` mode `755` is decimal, not octal, so use `0755` or `\"755\"`"
+            ]
+        );
+    }
+
+    /// [`StackValidator::validate`] accepts a text config mode above `0777`.
+    #[test]
+    fn stack_validator_validate_config_mode_text() {
+        // Arrange
+        let config = ConfigFile {
+            source: "./worker.conf".to_owned(),
+            mode: Some(ConfigMode::Text("4755".to_owned())),
+            ..ConfigFile::fixture()
+        };
+        let worker = ServiceSettings {
+            configs: vec![config],
+            ..ServiceSettings::default()
+        };
+        let stack = Stack {
+            settings: OrbitSettings {
+                services: BTreeMap::from([("worker".to_owned(), worker)]),
+                ..OrbitSettings::default()
+            },
+            ..Stack::fixture()
+        };
+        // Act
+        let problems = super::get_problems(&stack, &Secrets::fixture());
+        // Assert
+        assert!(problems.is_empty(), "{problems:?}");
     }
 
     /// [`StackValidator::validate`] reports secret names missing from `.sops.env`.

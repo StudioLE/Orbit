@@ -48,6 +48,7 @@ mod tests {
         let config = LoadedConfig {
             target: "/etc/a".to_owned(),
             content: "x".to_owned(),
+            mode: None,
         };
         // Act
         let hash = ConfigHash::new(&[config]);
@@ -65,10 +66,12 @@ mod tests {
         let left = LoadedConfig {
             target: "/etc/ab".to_owned(),
             content: "c".to_owned(),
+            mode: None,
         };
         let right = LoadedConfig {
             target: "/etc/a".to_owned(),
             content: "bc".to_owned(),
+            mode: None,
         };
         // Act
         let left = ConfigHash::new(&[left]);
@@ -84,10 +87,12 @@ mod tests {
         let a = LoadedConfig {
             target: "/etc/a".to_owned(),
             content: "1".to_owned(),
+            mode: None,
         };
         let b = LoadedConfig {
             target: "/etc/b".to_owned(),
             content: "2".to_owned(),
+            mode: None,
         };
         // Act
         let forward = ConfigHash::new(&[a.clone(), b.clone()]);
