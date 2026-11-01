@@ -66,6 +66,15 @@ mod tests {
             "--force-recreate",
             "--pull",
             "always",
+            "--build",
+            "--no-build",
+            "--no-deps",
+            "--remove-orphans",
+            "--wait",
+            "--wait-timeout",
+            "60",
+            "-t",
+            "5",
             "web",
             "app",
         ]);
@@ -80,6 +89,13 @@ mod tests {
             detach: true,
             force_recreate: true,
             pull: Some(PullPolicy::Always),
+            build: true,
+            no_build: true,
+            no_deps: true,
+            remove_orphans: true,
+            wait: true,
+            wait_timeout: Some(60),
+            timeout: Some(5),
             services: vec!["web".to_owned(), "app".to_owned()],
         };
         assert_eq!(cli.command, Subcommand::Up(expected));
@@ -113,9 +129,8 @@ mod tests {
         let expected = RunArgs {
             rm: true,
             pull: Some(PullPolicy::Never),
-            env: Vec::new(),
-            service: "app".to_owned(),
             args: vec!["hello".to_owned(), "--loud".to_owned(), "-x".to_owned()],
+            ..RunArgs::fixture()
         };
         assert_eq!(cli.command, Subcommand::Run(expected));
     }
@@ -131,11 +146,49 @@ mod tests {
         let cli = parse(spec, &words, CliArgs::parse_from).expect("the command line should parse");
         // Assert
         let expected = RunArgs {
-            rm: false,
-            pull: None,
             env: vec!["NAME=a".to_owned(), "TAG=b=c".to_owned()],
-            service: "app".to_owned(),
-            args: Vec::new(),
+            ..RunArgs::fixture()
+        };
+        assert_eq!(cli.command, Subcommand::Run(expected));
+    }
+
+    /// [`CliArgs::parse_from`] binds every run flag given before the service.
+    #[test]
+    fn cli_args_parse_from_run_flags() {
+        // Arrange
+        let input = argv([
+            "run",
+            "--build",
+            "--no-deps",
+            "-d",
+            "-T",
+            "--entrypoint",
+            "sh",
+            "-u",
+            "1000",
+            "-w",
+            "/data",
+            "--name",
+            "job",
+            "-P",
+            "app",
+        ]);
+        let words = input.words();
+        let spec = CliArgs::spec();
+        // Act
+        let cli = parse(spec, &words, CliArgs::parse_from).expect("the command line should parse");
+        // Assert
+        let expected = RunArgs {
+            build: true,
+            no_deps: true,
+            detach: true,
+            no_tty: true,
+            entrypoint: Some("sh".to_owned()),
+            user: Some("1000".to_owned()),
+            workdir: Some("/data".to_owned()),
+            name: Some("job".to_owned()),
+            service_ports: true,
+            ..RunArgs::fixture()
         };
         assert_eq!(cli.command, Subcommand::Run(expected));
     }
@@ -152,11 +205,8 @@ mod tests {
         // Assert
         assert_eq!(cli.host, None);
         let expected = RunArgs {
-            rm: false,
-            pull: None,
-            env: Vec::new(),
-            service: "app".to_owned(),
             args: vec!["--rm".to_owned(), "--host".to_owned(), "x".to_owned()],
+            ..RunArgs::fixture()
         };
         assert_eq!(cli.command, Subcommand::Run(expected));
     }
@@ -186,11 +236,8 @@ mod tests {
         // Assert
         assert_eq!(cli.log_level, None);
         let expected = RunArgs {
-            rm: false,
-            pull: None,
-            env: Vec::new(),
-            service: "app".to_owned(),
             args: vec!["--log-level".to_owned(), "debug".to_owned()],
+            ..RunArgs::fixture()
         };
         assert_eq!(cli.command, Subcommand::Run(expected));
     }
@@ -198,7 +245,7 @@ mod tests {
     /// [`CliArgs::parse_from`] rejects an undeclared flag before the service.
     #[test]
     fn cli_args_parse_from_run_unknown_flag() {
-        for flag in ["--entrypoint", "-u", "-v"] {
+        for flag in ["--cap-add", "-v"] {
             // Arrange
             let input = argv(["run", flag, "sh", "app"]);
             let words = input.words();
@@ -215,14 +262,14 @@ mod tests {
     #[test]
     fn cli_args_parse_from_up_unknown_flag() {
         // Arrange
-        let input = argv(["up", "--build"]);
+        let input = argv(["up", "--scale", "web=2"]);
         let words = input.words();
         let spec = CliArgs::spec();
         // Act
         let message =
-            parse(spec, &words, CliArgs::parse_from).expect_err("`--build` is not a flag of `up`");
+            parse(spec, &words, CliArgs::parse_from).expect_err("`--scale` is not a flag of `up`");
         // Assert
-        assert!(message.contains("--build"), "{message}");
+        assert!(message.contains("--scale"), "{message}");
     }
 
     /// [`CliArgs::parse_from`] rejects `--host` after the subcommand.

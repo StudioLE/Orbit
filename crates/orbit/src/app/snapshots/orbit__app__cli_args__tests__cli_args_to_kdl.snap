@@ -41,6 +41,17 @@ cmd up help="Create and start containers on the Docker host." {
             }
         }
     }
+    flag --build help="Build images before starting."
+    flag --no-build help="Don't build images, even if the service's pull policy says to."
+    flag --no-deps help="Don't start dependencies of the given services."
+    flag --remove-orphans help="Remove containers for services not in the Compose file."
+    flag --wait help="Wait for services to be running or healthy, then detach."
+    flag --wait-timeout help="Maximum seconds to wait for services to be running or healthy." {
+        arg <SECONDS>
+    }
+    flag "-t --timeout" help="Seconds to wait for containers to stop before killing them." {
+        arg <SECONDS>
+    }
     flag "-h --help" help="Print help" action=help builtin=#true
     arg "[SERVICES]..." help="Services to start." {
         long_help #"""
@@ -64,6 +75,23 @@ cmd run help="Run a one-off command in a new container on the Docker host." {
     flag "-e --env" help="Set an environment variable in the container." var=#true {
         arg "<KEY=VALUE>"
     }
+    flag --build help="Build the image before starting."
+    flag --no-deps help="Don't start the service's dependencies."
+    flag "-d --detach" help="Run the container in the background and print its ID."
+    flag "-T --no-tty" help="Don't allocate a pseudo-TTY."
+    flag --entrypoint help="Override the entrypoint of the image." {
+        arg <ENTRYPOINT>
+    }
+    flag "-u --user" help="Run as this user name or UID." {
+        arg <USER>
+    }
+    flag "-w --workdir" help="Working directory inside the container." {
+        arg <PATH>
+    }
+    flag --name help="Name the container." {
+        arg <NAME>
+    }
+    flag "-P --service-ports" help="Publish the service's ports to the host."
     flag "-h --help" help="Print help" action=help builtin=#true
     arg <SERVICE> help="Service to run." double_dash=automatic
     arg "[ARGS]..." help="Arguments passed to the container verbatim."

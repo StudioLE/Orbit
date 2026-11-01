@@ -11,14 +11,24 @@ Arguments:
   [ARGS]…    Arguments passed to the container verbatim.
 
 Flags:
-      --rm                     Remove the container when it exits.
-      --pull <PULL>            Pull images before starting.
-                               [possible values: always, missing, never]
-  -e, --env <KEY=VALUE>        Set an environment variable in the container.
-  -h, --help                   Print help
+      --rm                       Remove the container when it exits.
+      --pull <PULL>              Pull images before starting.
+                                 [possible values: always, missing, never]
+  -e, --env <KEY=VALUE>          Set an environment variable in the container.
+      --build                    Build the image before starting.
+      --no-deps                  Don't start the service's dependencies.
+  -d, --detach                   Run the container in the background and print
+                                 its ID.
+  -T, --no-tty                   Don't allocate a pseudo-TTY.
+      --entrypoint <ENTRYPOINT>  Override the entrypoint of the image.
+  -u, --user <USER>              Run as this user name or UID.
+  -w, --workdir <PATH>           Working directory inside the container.
+      --name <NAME>              Name the container.
+  -P, --service-ports            Publish the service's ports to the host.
+  -h, --help                     Print help
 
 Global flags:
-      --log-level <LOG_LEVEL>  Set the log level.
-                               [possible values: error, warn, info, debug,
-                               trace]
-                               [env: ORBIT_LOG_LEVEL]
+      --log-level <LOG_LEVEL>    Set the log level.
+                                 [possible values: error, warn, info, debug,
+                                 trace]
+                                 [env: ORBIT_LOG_LEVEL]

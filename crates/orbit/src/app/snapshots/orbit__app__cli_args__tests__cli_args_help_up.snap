@@ -12,15 +12,27 @@ Arguments:
                Default: every service
 
 Flags:
-  -d, --detach                 Run containers in the background.
-      --force-recreate         Recreate containers even if their configuration
-                               is unchanged.
-      --pull <PULL>            Pull images before starting.
-                               [possible values: always, missing, never]
-  -h, --help                   Print help
+  -d, --detach                  Run containers in the background.
+      --force-recreate          Recreate containers even if their configuration
+                                is unchanged.
+      --pull <PULL>             Pull images before starting.
+                                [possible values: always, missing, never]
+      --build                   Build images before starting.
+      --no-build                Don't build images, even if the service's pull
+                                policy says to.
+      --no-deps                 Don't start dependencies of the given services.
+      --remove-orphans          Remove containers for services not in the
+                                Compose file.
+      --wait                    Wait for services to be running or healthy, then
+                                detach.
+      --wait-timeout <SECONDS>  Maximum seconds to wait for services to be
+                                running or healthy.
+  -t, --timeout <SECONDS>       Seconds to wait for containers to stop before
+                                killing them.
+  -h, --help                    Print help
 
 Global flags:
-      --log-level <LOG_LEVEL>  Set the log level.
-                               [possible values: error, warn, info, debug,
-                               trace]
-                               [env: ORBIT_LOG_LEVEL]
+      --log-level <LOG_LEVEL>   Set the log level.
+                                [possible values: error, warn, info, debug,
+                                trace]
+                                [env: ORBIT_LOG_LEVEL]
