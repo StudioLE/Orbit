@@ -302,7 +302,7 @@ fn encrypt_secrets(keys: &Path, stack: &Path, public_key: &str) {
     fs::write(
         &plain,
         format!(
-            "API_TOKEN={SECRET}\nMAIL_PASSWORD={RENAMED_SECRET}\nTLS_KEY={FILE_SECRET}\nSIGNING_KEY={TARGET_FILE_SECRET}\n"
+            "API_TOKEN={SECRET}\nMAIL_PASSWORD='{RENAMED_SECRET}'\nTLS_KEY={FILE_SECRET}\nSIGNING_KEY={TARGET_FILE_SECRET}\n"
         ),
     )
     .expect("should write plain secrets");
