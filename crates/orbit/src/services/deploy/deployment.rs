@@ -53,7 +53,7 @@ mod tests {
         // Arrange
         let file = NamedTempFile::new().expect("should create temp file");
         let path = file.path().display().to_string();
-        let secrets = Secrets::from_str("API_TOKEN=a").expect("dotenv should parse");
+        let secrets = Secrets::fixture_api_token();
         let deployment = Deployment {
             name: "hello".to_owned(),
             directory: PathBuf::from("/stack"),

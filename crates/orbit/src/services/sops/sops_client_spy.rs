@@ -2,7 +2,7 @@
 
 use crate::prelude::*;
 
-/// [`SopsClient`] that records each call and returns [`Secrets::fixture`].
+/// [`SopsClient`] that records each call and returns [`DecryptedText::fixture`].
 #[derive(FromServices)]
 pub struct SopsClientSpy {
     #[di(default)]
@@ -20,11 +20,11 @@ impl SopsClientSpy {
 }
 
 impl SopsClient for SopsClientSpy {
-    fn decrypt(&self, path: &Path) -> Result<Secrets, Report<SopsError>> {
+    fn decrypt(&self, path: &Path) -> Result<DecryptedText, Report<SopsError>> {
         self.calls
             .lock()
             .expect("should be able to lock calls")
             .push(path.to_path_buf());
-        Ok(Secrets::fixture())
+        Ok(DecryptedText::fixture())
     }
 }

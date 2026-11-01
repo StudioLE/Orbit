@@ -2,10 +2,10 @@
 
 use crate::prelude::*;
 
-/// [`SopsClient`] returning fixed [`Secrets`].
+/// [`SopsClient`] returning fixed [`DecryptedText`].
 pub struct SopsClientStub {
     /// Value returned by [`SopsClient::decrypt`].
-    pub secrets: Secrets,
+    pub text: DecryptedText,
 }
 
 impl FromServices for SopsClientStub {
@@ -13,13 +13,13 @@ impl FromServices for SopsClientStub {
 
     fn from_services(_services: &ServiceProvider) -> Result<Self, Report<Self::Error>> {
         Ok(Self {
-            secrets: Secrets::fixture(),
+            text: DecryptedText::fixture(),
         })
     }
 }
 
 impl SopsClient for SopsClientStub {
-    fn decrypt(&self, _path: &Path) -> Result<Secrets, Report<SopsError>> {
-        Ok(self.secrets.clone())
+    fn decrypt(&self, _path: &Path) -> Result<DecryptedText, Report<SopsError>> {
+        Ok(self.text.clone())
     }
 }

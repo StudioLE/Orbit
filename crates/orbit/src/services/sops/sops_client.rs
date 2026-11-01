@@ -6,7 +6,7 @@ use std::process::{Command, Output};
 /// Decrypt sops-encrypted dotenv files.
 pub trait SopsClient: Send + Sync {
     /// Decrypt the dotenv file at `path` into memory.
-    fn decrypt(&self, path: &Path) -> Result<Secrets, Report<SopsError>>;
+    fn decrypt(&self, path: &Path) -> Result<DecryptedText, Report<SopsError>>;
 }
 
 /// [`SopsClient`] that runs the `sops` binary.
@@ -18,7 +18,7 @@ impl SopsClient for SopsClientAdapter {
     ///
     /// - Captures stdout into memory only; never attaches or logs it
     /// - Attaches stderr and exit code on failure
-    fn decrypt(&self, path: &Path) -> Result<Secrets, Report<SopsError>> {
+    fn decrypt(&self, path: &Path) -> Result<DecryptedText, Report<SopsError>> {
         debug!(path = %path.display(), "Decrypting secrets");
         let output = Command::new("sops")
             .args([
@@ -46,9 +46,7 @@ impl SopsClient for SopsClientAdapter {
         // Dropped rather than wrapped, because `FromUtf8Error` holds the decrypted bytes
         let text = String::from_utf8(output.stdout)
             .map_err(|_| Report::new(SopsError::Utf8).attach_path(path))?;
-        Secrets::from_str(&text)
-            .change_context(SopsError::Parse)
-            .attach_path(path)
+        Ok(DecryptedText::from(text))
     }
 }
 
@@ -64,7 +62,4 @@ pub enum SopsError {
     /// Decrypted output is not UTF-8.
     #[error("Decrypted secrets are not UTF-8")]
     Utf8,
-    /// Decrypted output is not dotenv.
-    #[error("Unable to parse decrypted secrets")]
-    Parse,
 }

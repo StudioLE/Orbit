@@ -201,7 +201,7 @@ mod tests {
     #[test]
     fn stack_validator_validate_secret_missing() {
         // Arrange
-        let secrets = Secrets::from_str("API_TOKEN=a").expect("dotenv should parse");
+        let secrets = Secrets::fixture_api_token();
         // Act
         let problems = get_problems(Stack::fixture_project(), &secrets);
         // Assert

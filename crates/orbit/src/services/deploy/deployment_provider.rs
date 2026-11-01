@@ -181,7 +181,7 @@ mod tests {
         let services = ServiceBuilder::new()
             .with_test_services()
             .with_instance(SopsClientStub {
-                secrets: Secrets::from_str("API_TOKEN=a").expect("dotenv should parse"),
+                text: DecryptedText::from("API_TOKEN=a".to_owned()),
             })
             .with_instance(WorkingDirectory::new(directory.path().to_path_buf()))
             .build();

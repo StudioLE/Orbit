@@ -9,13 +9,14 @@ const SOPS_FILE: &str = ".sops.env";
 #[derive(FromServices)]
 pub struct SecretsProvider {
     sops: Arc<dyn SopsClient>,
+    parser: Arc<SecretsParser>,
 }
 
 impl SecretsProvider {
-    /// Decrypt `.sops.env` in the stack directory, or return no secrets IF none are needed.
+    /// Decrypt and parse `.sops.env` in the stack directory, or return no secrets if none are needed.
     ///
-    /// - Fails with every needed secret name attached IF `.sops.env` is missing
-    pub fn get(&self, stack: &Stack) -> Result<Secrets, Report<SecretsError>> {
+    /// - Fails with every needed secret name attached if `.sops.env` is missing
+    pub fn get(&self, stack: &Stack) -> Result<Secrets, Report<SecretsProviderError>> {
         let names = stack.settings.get_secret_names();
         if names.is_empty() {
             return Ok(Secrets::default());
@@ -23,26 +24,34 @@ impl SecretsProvider {
         let path = stack.directory.join(SOPS_FILE);
         if !path.exists() {
             let report = names.into_iter().fold(
-                Report::new(SecretsError::SopsFile).attach_path(&path),
+                Report::new(SecretsProviderError::SopsFile).attach_path(&path),
                 |report, name| report.attach("secret", name),
             );
             return Err(report);
         }
-        self.sops
+        let text = self
+            .sops
             .decrypt(&path)
-            .change_context(SecretsError::Decrypt)
+            .change_context(SecretsProviderError::Decrypt)?;
+        self.parser
+            .parse(&text)
+            .change_context(SecretsProviderError::Parse)
+            .attach_path(&path)
     }
 }
 
 /// Errors returned by [`SecretsProvider`].
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
-pub enum SecretsError {
+pub enum SecretsProviderError {
     /// The stack needs secrets but has no `.sops.env`.
     #[error("Stack needs secrets but has no `.sops.env`")]
     SopsFile,
     /// Unable to decrypt secrets.
     #[error("Unable to decrypt secrets")]
     Decrypt,
+    /// Unable to parse decrypted secrets.
+    #[error("Unable to parse decrypted secrets")]
+    Parse,
 }
 
 #[cfg(test)]
@@ -92,13 +101,38 @@ mod tests {
             .get(&stack)
             .expect_err("missing .sops.env should fail");
         // Assert
-        assert_eq!(report.current_context(), &SecretsError::SopsFile);
+        assert_eq!(report.current_context(), &SecretsProviderError::SopsFile);
         let display = report.to_string();
         for name in ["API_TOKEN", "MAIL_PASSWORD", "TLS_KEY"] {
             assert!(display.contains(&format!("secret: {name}")), "{display}");
         }
         let calls = services.expect::<SopsClientSpy>().calls();
         assert_eq!(calls, Vec::<PathBuf>::new());
+    }
+
+    /// [`SecretsProvider::get`] fails when the decrypted text is not dotenv.
+    #[test]
+    fn secrets_provider_get_parse() {
+        // Arrange
+        let directory = Stack::fixture_temp_directory();
+        let stack = Stack {
+            directory: directory.path().to_path_buf(),
+            ..Stack::fixture()
+        };
+        let services = ServiceBuilder::new()
+            .with_test_services()
+            .with_instance(SopsClientStub {
+                text: DecryptedText::from("bad".to_owned()),
+            })
+            .build();
+        let provider = services.expect::<SecretsProvider>();
+        // Act
+        let report = provider.get(&stack).expect_err("bad dotenv should fail");
+        // Assert
+        assert_eq!(report.current_context(), &SecretsProviderError::Parse);
+        let display = report.to_string();
+        let path = directory.path().join(SOPS_FILE);
+        assert!(display.contains(&path.display().to_string()), "{display}");
     }
 
     /// [`SecretsProvider::get`] skips sops when the stack needs no secrets.

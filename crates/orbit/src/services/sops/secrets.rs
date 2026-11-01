@@ -24,33 +24,37 @@ impl Secrets {
     /// Create a [`Secrets`] fixture with every secret the fixture project needs.
     #[cfg(test)]
     pub fn fixture() -> Self {
-        Self::from_str("API_TOKEN=a\nMAIL_PASSWORD=b\nTLS_KEY=c").expect("dotenv should parse")
+        Self::from_iter([("API_TOKEN", "a"), ("MAIL_PASSWORD", "b"), ("TLS_KEY", "c")])
+    }
+
+    /// Create a [`Secrets`] fixture with only `API_TOKEN`.
+    #[cfg(test)]
+    pub fn fixture_api_token() -> Self {
+        Self::from_iter([("API_TOKEN", "a")])
     }
 }
 
-impl FromStr for Secrets {
-    type Err = Report<SecretsError>;
-
-    /// Parse dotenv text into [`Secrets`].
+impl<K, V> FromIterator<(K, V)> for Secrets
+where
+    K: Into<String>,
+    V: Into<String>,
+{
+    /// Create [`Secrets`] from name and value pairs.
     ///
-    /// - Splits each line at the first `=`
-    /// - Unescapes `\n` as a newline, matching how sops writes multiline values
-    /// - Skips blank lines and lines starting with `#`
-    fn from_str(text: &str) -> Result<Self, Self::Err> {
-        let mut secrets = BTreeMap::new();
-        for (index, line) in text.lines().enumerate() {
-            if line.trim().is_empty() || line.starts_with('#') {
-                continue;
-            }
-            let Some((name, value)) = line.split_once('=') else {
-                return Err(Report::new(SecretsError::Separator).attach("line", index + 1));
-            };
-            if name.is_empty() {
-                return Err(Report::new(SecretsError::Name).attach("line", index + 1));
-            }
-            secrets.insert(name.to_owned(), value.replace("\\n", "\n"));
-        }
-        Ok(Self(secrets))
+    /// - Keeps the last value when a name repeats
+    fn from_iter<T>(pairs: T) -> Self
+    where
+        T: IntoIterator,
+        T::Item: Into<(K, V)>,
+    {
+        let secrets = pairs
+            .into_iter()
+            .map(|pair| {
+                let (name, value) = pair.into();
+                (name.into(), value.into())
+            })
+            .collect();
+        Self(secrets)
     }
 }
 
@@ -62,68 +66,18 @@ impl Debug for Secrets {
     }
 }
 
-/// Errors returned when parsing [`Secrets`].
-#[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
-pub enum SecretsError {
-    /// A line has no `=` separator.
-    #[error("Line is not KEY=VALUE")]
-    Separator,
-    /// A line has an empty name before `=`.
-    #[error("Line has an empty name")]
-    Name,
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    /// [`Secrets::from_str`] splits at the first `=`, unescapes `\n` and skips comments.
-    #[test]
-    fn secrets_from_str() {
-        // Arrange
-        let text = "A=has=equals and spaces \nB=\"quoted\"\n# comment\n\nC=multi\\nline\nD=\n";
-        // Act
-        let secrets = Secrets::from_str(text).expect("dotenv should parse");
-        // Assert
-        let pairs: Vec<_> = secrets.iter().collect();
-        assert_eq!(
-            pairs,
-            vec![
-                ("A", "has=equals and spaces "),
-                ("B", "\"quoted\""),
-                ("C", "multi\nline"),
-                ("D", ""),
-            ]
-        );
-    }
-
-    /// [`Secrets::from_str`] rejects a line without `=` and names the line, not its content.
-    #[test]
-    fn secrets_from_str_separator() {
-        // Arrange
-        let text = "A=1\nhunter2hunter2\n";
-        // Act
-        let report = Secrets::from_str(text).expect_err("line without `=` should fail");
-        // Assert
-        assert_eq!(report.current_context(), &SecretsError::Separator);
-        let display = format!("{report:?}");
-        assert!(display.contains("line: 2"), "{display}");
-        assert!(!display.contains("hunter2"), "{display}");
-    }
-
-    /// [`Secrets::from_str`] rejects a line with an empty name.
-    #[test]
-    fn secrets_from_str_name() {
-        let report = Secrets::from_str("=value").expect_err("empty name should fail");
-        assert_eq!(report.current_context(), &SecretsError::Name);
-    }
 
     /// [`Secrets`] debug output lists names without values.
     #[test]
     fn secrets_debug() {
         // Arrange
-        let secrets = Secrets::from_str("API_TOKEN=hunter2hunter2\nDB_PASSWORD=swordfish")
-            .expect("dotenv should parse");
+        let secrets = Secrets::from_iter([
+            ("API_TOKEN", "hunter2hunter2"),
+            ("DB_PASSWORD", "swordfish"),
+        ]);
         // Act
         let debug = format!("{secrets:?}");
         // Assert

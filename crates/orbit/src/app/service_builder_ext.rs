@@ -22,6 +22,7 @@ impl ServiceBuilderExt for ServiceBuilder {
             .with_type::<ComposeHandler>()
             .with_type::<DeploymentProvider>()
             .with_type::<DockerHostProvider>()
+            .with_type::<SecretsParser>()
             .with_type::<SecretsProvider>()
             .with_type::<StackProvider>()
             .with_type::<StackTransformer>()
